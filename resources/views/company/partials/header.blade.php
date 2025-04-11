@@ -23,78 +23,13 @@
                     </a>
                 </li>
 
-              
-
-                @if (Gate::check('create product & service') ||
-                        Gate::check('create customer') ||
-                        Gate::check('create vender') ||
-                        Gate::check('create proposal') ||
-                        Gate::check('create invoice') ||
-                        Gate::check('create bill') ||
-                        Gate::check('create goal') ||
-                        Gate::check('create bank account'))
-                    <li class="dropdown dash-h-item ml-2">
-                        <div class="dropdown notification-icon">
-                            <a class="dash-head-link dropdown-toggle arrow-none ms-0" data-bs-toggle="dropdown"
-                                href="#" role="button" aria-haspopup="true" aria-expanded="false">
-                                <i class="ti ti-plus "></i>
-                            </a>
-                            <div class="dropdown-menu" aria-labelledby="dropdownBookmark">
-                                @if (Gate::check('create product & service'))
-                                    <a class="dropdown-item" href="#"
-                                        data-url="{{ route('productservice.create') }}" data-ajax-popup="true"
-                                        data-title="{{ __('Create New Product') }}"><i
-                                            class="ti ti-shopping-cart"></i>{{ __('Create New Product') }}</a>
-                                @endif
-                                @if (Gate::check('create customer'))
-                                    <a class="dropdown-item" href="#"  data-size="lg" data-url="{{ route('customer.create') }}"
-                                        data-ajax-popup="true" data-title="{{ __('Create New Customer') }}"><i
-                                            class="ti ti-user"></i>{{ __('Create New Customer') }}</a>
-                                @endif
-                                @if (Gate::check('create vender'))
-                                    <a class="dropdown-item" href="#"  data-size="lg" data-url="{{ route('vender.create') }}"
-                                        data-ajax-popup="true" data-title="{{ __('Create New Vendor') }}"><i
-                                            class="ti ti-note"></i>{{ __('Create New Vendor') }}</a>
-                                @endif
-                                @if (Gate::check('create proposal'))
-                                    <a class="dropdown-item" href="{{ route('proposal.create', 0) }}"><i
-                                            class="ti ti-file"></i>{{ __('Create New Proposal') }}</a>
-                                @endif
-                                @if (Gate::check('create invoice'))
-                                    <a class="dropdown-item" href="{{ route('invoice.create', 0) }}"><i
-                                            class="ti ti-file-invoice"></i>{{ __('Create New Invoice') }}</a>
-                                @endif
-                                @if (Gate::check('create bill'))
-                                    <a class="dropdown-item" href="{{ route('bill.create', 0) }}"><i
-                                            class="ti ti-report-money"></i>{{ __('Create New Bill') }}</a>
-                                @endif
-                                @if (Gate::check('create bank account'))
-                                    <a class="dropdown-item" href="#"
-                                        data-url="{{ route('bank-account.create') }}" data-ajax-popup="true"
-                                        data-title="{{ __('Create New Account') }}"><i
-                                            class="ti ti-building-bank"></i>{{ __('Create New Account') }}</a>
-                                @endif
-                                @if (Gate::check('create goal'))
-                                    <a class="dropdown-item " href="#" data-url="{{ route('goal.create') }}"
-                                        data-ajax-popup="true" data-title="{{ __('Create New Goal') }}"><i
-                                            class="ti ti-target "></i>{{ __('Create New Goal') }}</a>
-                                @endif
-                            </div>
-                        </div>
-                    </li>
-                @endif
+            
             </ul>
 
         </div>
         <div class="ms-auto">
             <ul class="list-unstyled">
-                @impersonating($guard = null)
-                    <li class="dropdown dash-h-item drp-company">
-                        <a class="btn btn-danger btn-sm me-3" href="{{ route('exit.company') }}"><i class="ti ti-ban"></i>
-                            {{ __('Exit Company Login') }}
-                        </a>
-                    </li>
-                @endImpersonating
+               
                 <li class="dropdown dash-h-item drp-language">
                     {{-- <a class="dash-head-link dropdown-toggle arrow-none me-0" data-bs-toggle="dropdown"
                         href="#" role="button" aria-haspopup="false" aria-expanded="false">

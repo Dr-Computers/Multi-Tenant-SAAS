@@ -90,6 +90,18 @@ class User extends Authenticatable implements MustVerifyEmail
         }
     }
 
+    public function owner(){
+        return $this->hasOne(Owner::class,'user_id','id');
+    }
+
+    public function personal(){
+        return $this->hasOne(PersonalDetail::class,'user_id','id');
+    }
+
+    public function maintainer(){
+        return $this->hasOne(MaintenanceJob::class,'user_id','id');
+    }
+
     public function creatorId1()
     {
         if ($this->type == 'super admin') {

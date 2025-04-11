@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Comapny;
+namespace App\Http\Controllers\Company;
 
 use App\Http\Controllers\Controller;
 use App\Models\BalanceSheet;
@@ -40,11 +40,11 @@ class DashboardController extends Controller
     {
         if (Auth::check()) {
 
-                if (\Auth::user()->can('show dashboard')) {
-                    $data['latestIncome']  = Revenue::where('created_by', '=', \Auth::user()->creatorId())->orderBy('id', 'desc')->limit(5)->get();
-                    $data['latestExpense'] = Payment::where('created_by', '=', \Auth::user()->creatorId())->orderBy('id', 'desc')->limit(5)->get();
+                if (Auth::user()->can('show dashboard')) {
+                    $data['latestIncome']  = Revenue::where('created_by', '=', Auth::user()->creatorId())->orderBy('id', 'desc')->limit(5)->get();
+                    $data['latestExpense'] = Payment::where('created_by', '=', Auth::user()->creatorId())->orderBy('id', 'desc')->limit(5)->get();
 
-                    $incomeCategory = ProductServiceCategory::where('created_by', '=', \Auth::user()->creatorId())->where('type', '=', 'income')->get();
+                    $incomeCategory = ProductServiceCategory::where('created_by', '=', Auth::user()->creatorId())->where('type', '=', 'income')->get();
                     $inColor        = array();
                     $inCategory     = array();
                     $inAmount       = array();
@@ -59,7 +59,7 @@ class DashboardController extends Controller
                     $data['incomeCategory']      = $inCategory;
                     $data['incomeCatAmount']     = $inAmount;
 
-                    $expenseCategory = ProductServiceCategory::where('created_by', '=', \Auth::user()->creatorId())->where('type', '=', 'expense')->get();
+                    $expenseCategory = ProductServiceCategory::where('created_by', '=', Auth::user()->creatorId())->where('type', '=', 'expense')->get();
                     $exColor         = array();
                     $exCategory      = array();
                     $exAmount        = array();
@@ -73,30 +73,31 @@ class DashboardController extends Controller
                     $data['expenseCategory']      = $exCategory;
                     $data['expenseCatAmount']     = $exAmount;
 
-                    $data['incExpBarChartData']  = \Auth::user()->getincExpBarChartData();
-                    $data['incExpLineChartData'] = \Auth::user()->getIncExpLineChartDate();
+                    $data['incExpBarChartData']  = Auth::user()->getincExpBarChartData();
+                    $data['incExpLineChartData'] = Auth::user()->getIncExpLineChartDate();
 
                     $data['currentYear']  = date('Y');
                     $data['currentMonth'] = date('M');
 
-                    $constant['taxes']         = Tax::where('created_by', \Auth::user()->creatorId())->count();
-                    $constant['category']      = ProductServiceCategory::where('created_by', \Auth::user()->creatorId())->count();
-                    $constant['units']         = ProductServiceUnit::where('created_by', \Auth::user()->creatorId())->count();
-                    $constant['bankAccount']   = BankAccount::where('created_by', \Auth::user()->creatorId())->count();
+                    $constant['taxes']         = Tax::where('created_by', Auth::user()->creatorId())->count();
+                    $constant['category']      = ProductServiceCategory::where('created_by', Auth::user()->creatorId())->count();
+                    $constant['units']         = ProductServiceUnit::where('created_by', Auth::user()->creatorId())->count();
+                    $constant['bankAccount']   = BankAccount::where('created_by', Auth::user()->creatorId())->count();
                     $data['constant']          = $constant;
-                    $data['bankAccountDetail'] = BankAccount::where('created_by', '=', \Auth::user()->creatorId())->get();
-                    $data['recentInvoice']     = Invoice::where('created_by', '=', \Auth::user()->creatorId())->orderBy('id', 'desc')->limit(5)->get();
-                    $data['weeklyInvoice']     = \Auth::user()->weeklyInvoice();
-                    $data['monthlyInvoice']    = \Auth::user()->monthlyInvoice();
-                    $data['recentBill']        = Bill::where('created_by', '=', \Auth::user()->creatorId())->orderBy('id', 'desc')->limit(5)->get();
-                    $data['weeklyBill']        = \Auth::user()->weeklyBill();
-                    $data['monthlyBill']       = \Auth::user()->monthlyBill();
-                    $data['goals']             = Goal::where('created_by', '=', \Auth::user()->creatorId())->where('is_display', 1)->get();
+                    $data['bankAccountDetail'] = BankAccount::where('created_by', '=', Auth::user()->creatorId())->get();
+                    $data['recentInvoice']     = Invoice::where('created_by', '=', Auth::user()->creatorId())->orderBy('id', 'desc')->limit(5)->get();
+                    $data['weeklyInvoice']     = Auth::user()->weeklyInvoice();
+                    $data['monthlyInvoice']    = Auth::user()->monthlyInvoice();
+                    $data['recentBill']        = Bill::where('created_by', '=', Auth::user()->creatorId())->orderBy('id', 'desc')->limit(5)->get();
+                    $data['weeklyBill']        = Auth::user()->weeklyBill();
+                    $data['monthlyBill']       = Auth::user()->monthlyBill();
+                    $data['goals']             = Goal::where('created_by', '=', Auth::user()->creatorId())->where('is_display', 1)->get();
                 } else {
                     $data = [];
                 }
 
-                $users = User::find(\Auth::user()->creatorId());
+                
+                $users = User::find(Auth::user()->creatorId());
                 $plan = Plan::find($users->plan);
                 if(!empty($plan)){
                     if ($plan->storage_limit > 0) {

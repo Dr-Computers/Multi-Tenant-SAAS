@@ -4,19 +4,19 @@ use App\Http\Controllers\TapPaymentController;
 use App\Models\Utility;
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Admin\CompanyController;
-use App\Http\Controllers\Admin\DashboardController;
-use App\Http\Controllers\Admin\EmailTemplateController;
-use App\Http\Controllers\Admin\NotificationTemplatesController;
-use App\Http\Controllers\ExpenseController;
-use App\Http\Controllers\Admin\PlanController;
-use App\Http\Controllers\Admin\PlanRequestController;
-use App\Http\Controllers\Admin\SectionRequestController;
-use App\Http\Controllers\Admin\RoleController;
-use App\Http\Controllers\SystemController;
-use App\Http\Controllers\WebhookController;
-use App\Http\Controllers\StripePaymentController;
-use App\Http\Controllers\Admin\UserController;
+// use App\Http\Controllers\Admin\CompanyController;
+// use App\Http\Controllers\Admin\DashboardController;
+// use App\Http\Controllers\Admin\EmailTemplateController;
+// use App\Http\Controllers\Admin\NotificationTemplatesController;
+// use App\Http\Controllers\ExpenseController;
+// use App\Http\Controllers\Admin\PlanController;
+// use App\Http\Controllers\Admin\PlanRequestController;
+// use App\Http\Controllers\Admin\SectionRequestController;
+// use App\Http\Controllers\Admin\RoleController;
+// use App\Http\Controllers\SystemController;
+// use App\Http\Controllers\WebhookController;
+// use App\Http\Controllers\StripePaymentController;
+// use App\Http\Controllers\Admin\UserController;
 
 // Route::group(['prefix'=>'admin','as'=>'admin.'],
 //     [
@@ -37,6 +37,7 @@ Route::group(
             'XSS',        // Custom middleware for XSS prevention
             'revalidate', // Prevents back button after logout
         ],
+        'namespace' => 'App\Http\Controllers\Admin',
     ],
     function () {
 
@@ -84,15 +85,15 @@ Route::group(
 
         Route::post('company-email-settings', [SystemController::class, 'saveCompanyEmailSetting'])->name('company.email.settings');
 
-   
+
 
         Route::get('plan/sections/{id}', [PlanController::class, 'SectionEdit'])->name('plans.section-edit');
         Route::put('plan/sections/{id}', [PlanController::class, 'sectionUpdate'])->name('plans.section.update');
         Route::get('plan/sections', [PlanController::class, 'Sections'])->name('plans.sections');
-        
+
 
         Route::get('plan/section-request', [SectionRequestController::class, 'index'])->name('plans.section_request');
-        
+
         Route::get('plan/plan-trial/{id}', [PlanController::class, 'PlanTrial'])->name('plan.trial');
         Route::resource('plans', PlanController::class);
         Route::post('plan-disable', [PlanController::class, 'planDisable'])->name('plan.disable');
@@ -118,9 +119,20 @@ Route::group(
         Route::get('email_template_lang/{id}/{lang?}', [EmailTemplateController::class, 'manageEmailLang'])->name('manage.email.language');
         Route::put('email_template_store/{pid}', [EmailTemplateController::class, 'storeEmailLang'])->name('store.email.language');
         Route::post('email_template_status', [EmailTemplateController::class, 'updateStatus'])->name('status.email.language');
-    
-        Route::resource('email_template', EmailTemplateController::class);
-    
 
+        Route::resource('email_template', EmailTemplateController::class);
+
+
+        Route::group([
+            'prefix' => 'realestate',
+            'as' => 'realestate.',
+            'namespace' => 'Realestate',
+        ], function () {
+            Route::resource('categories', 'CategoryController')->names('categories');
+            Route::resource('amenities', 'AnimetyController')->names('amenities');
+            Route::resource('furnishings', 'FurnishingController')->names('furnishings');
+            Route::resource('landmarks', 'LandmarkController')->names('landmarks');
+
+        });
     }
 );
