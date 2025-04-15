@@ -118,7 +118,7 @@
     </style>
     <link rel="stylesheet" href="{{ asset('css/custom-color.css') }}">
     @stack('css-page')
-
+    @stack('header')
 
     <style>
         [dir="rtl"] .dash-sidebar {
@@ -306,5 +306,6 @@
 @if ($set_cookie['enable_cookie'] == 'on')
     @include('layouts.cookie_consent')
 @endif
+@stack('footer')
 
 </html>

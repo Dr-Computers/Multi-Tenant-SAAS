@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('properties', function (Blueprint $table) {
             $table->id();
+            $table->integer('company_id')->nullable(); 
             $table->string('name')->nullable();      
             $table->string('purpose_type')->nullable(); 
             $table->string('ownership')->nullable(); 
@@ -24,7 +25,7 @@ return new class extends Migration
             $table->integer('open_parking')->nullable();             
             $table->string('availability_status')->nullable(); 
             $table->string('age_property')->nullable();             
-            $table->string('building_mo')->nullable(); 
+            $table->string('building_no')->nullable(); 
             $table->integer('lifts')->nullable();       
             $table->string('maintatenance_type')->nullable(); 
             $table->string('maintatenace_fee')->nullable(); 

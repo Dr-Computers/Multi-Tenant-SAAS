@@ -7,7 +7,7 @@ use App\Models\RealestateAmenity;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
-class  AnimetyController extends Controller
+class AmenityController extends Controller
 {
     public function index()
     {

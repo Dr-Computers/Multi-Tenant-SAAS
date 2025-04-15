@@ -115,15 +115,27 @@
                                 @can('manage user')
                                     <li
                                         class="dash-item {{ Request::route()->getName() == 'realestate.index' || Request::route()->getName() == 'realestate.create' || Request::route()->getName() == 'realestate.edit' ? ' active' : '' }}">
-                                        <a class="dash-link" href="#">{{ __('Properties') }}</a>
+                                        <a class="dash-link" href="{{ route('company.realestate.categories.index') }}">{{ __('Categories') }}</a>
                                     </li>
                                 @endcan
                                 @can('manage role')
                                     <li
                                         class="dash-item {{ Request::route()->getName() == 'roles.index' || Request::route()->getName() == 'roles.create' || Request::route()->getName() == 'roles.edit' ? ' active' : '' }}">
-                                        <a class="dash-link" href="#">{{ __('Categories') }}</a>
+                                        <a class="dash-link" href="{{ route('company.realestate.amenities.index') }}">{{ __('Amenities') }}</a>
                                     </li>
                                 @endcan
+                                @can('manage user')
+                                <li
+                                    class="dash-item {{ Request::route()->getName() == 'realestate.index' || Request::route()->getName() == 'realestate.create' || Request::route()->getName() == 'realestate.edit' ? ' active' : '' }}">
+                                    <a class="dash-link" href="{{ route('company.realestate.furnishing.index') }}">{{ __('Furnishings') }}</a>
+                                </li>
+                            @endcan
+                            @can('manage role')
+                                <li
+                                    class="dash-item {{ Request::route()->getName() == 'roles.index' || Request::route()->getName() == 'roles.create' || Request::route()->getName() == 'roles.edit' ? ' active' : '' }}">
+                                    <a class="dash-link" href="{{ route('company.realestate.landmarks.index') }}">{{ __('Landmarks') }}</a>
+                                </li>
+                            @endcan
                             </ul>
                         </li>
                     </ul>
@@ -150,6 +162,13 @@
                         @endcan
 
                     </ul>
+                </li>
+                <li class="dash-item ">
+                    <a href="{{ route('dashboard') }}"
+                        class="dash-link {{ Request::route()->getName() == 'media' ? ' active' : '' }}">
+                        <span class="dash-micon"><i class="ti ti-cloud-download"></i></span>
+                        <span class="dash-mtext">{{ __('Media') }}</span>
+                    </a>
                 </li>
                 <li
                     class="dash-item dash-hasmenu {{ Request::segment(1) == 'realestate' || Request::segment(1) == 'realestate' || Request::segment(1) == 'realestate' ? ' active dash-trigger' : '' }}">
