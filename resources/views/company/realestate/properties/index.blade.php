@@ -25,74 +25,67 @@
                                 <tr>
                                     <th>{{ __('#') }}</th>
                                     <th>{{ __('Name') }}</th>
-                                    <th>{{ __('Email') }}</th>
-                                    <th>{{ __('Mobile No') }}</th>
+                                    <th>{{ __('Category') }}</th>
+                                    <th>{{ __('Type') }}</th>
                                     <th>{{ __('Status') }}</th>
                                     <th>{{ __('Action') }}</th>
-
                                 </tr>
                             </thead>
                             <tbody>
-                                @forelse ($properties ?? [] as $key => $user)
+                                @forelse ($properties ?? [] as $key => $property)
                                     <tr>
                                         <td>{{ $key + 1 }}</td>
-                                        <td>{{ $user->name }}</td>
-                                        <td>{{ $user->email }}</td>
-                                        <td>{{ $user->mobile }}</td>
+                                        <td>{{ $property->name }}</td>
+                                        <td>{{ $property->categories->pluck('name')->first() }}</td>
+                                        <td>{{ $property->purpose_type }}</td>
                                         <td>
-                                            @if ($user->is_enable_login == '1')
-                                                <i class="badge bg-success p-2 px-3 rounded"></i>
+                                            @if ($property->is_enable_login == '1')
+                                                <i class="badge text-success p-2 px-3 rounded"></i>
                                                 {{ ucfirst('Enabled') }}
                                             @else
-                                                <i class="badge bg-danger p-2 px-3 rounded"></i>
+                                                <i class="badge text-danger p-2 px-3 rounded"></i>
                                                 {{ ucfirst('Disabled') }}
                                             @endif
                                         </td>
 
                                         <td>
-                                            <div class="action-btn me-2">
-                                                <a href="#"
-                                                    class="mx-3 btn btn-sm d-inline-flex align-items-center bg-dark"
-                                                    data-bs-toggle="tooltip" title="{{ __('Reset Password') }}"
-                                                    data-url="{{ route('company.realestate.maintainers.reset.form', $user->id) }}"
-                                                    data-size="xl" data-ajax-popup="true"
-                                                    data-original-title="{{ __('Reset Password') }}">
-                                                    <span> <i class="ti ti-lock text-white"></i></span>
-                                                </a>
-                                            </div>
-                                            <div class="action-btn me-2">
-                                                <a href="{{ route('company.realestate.maintainers.show', $user->id) }}"
-                                                    class="mx-3 btn btn-sm d-inline-flex align-items-center bg-info"
-                                                    data-bs-toggle="tooltip" title="{{ __('View') }}"
-                                                    data-original-title="{{ __('Edit') }}">
-                                                    <span> <i class="ti ti-eye text-white"></i></span>
-                                                </a>
-                                            </div>
+                                            <div class="btn-group card-option">
 
-                                            <div class="action-btn me-2">
-                                                <a href="#"
-                                                    class="mx-3 btn btn-sm d-inline-flex align-items-center bg-warning"
-                                                    data-bs-toggle="tooltip" title="{{ __('Edit') }}"
-                                                    data-url="{{ route('company.realestate.maintainers.edit', $user->id) }}"
-                                                    data-size="xl" data-ajax-popup="true"
-                                                    data-original-title="{{ __('Edit') }}">
-                                                    <span> <i class="ti ti-pencil text-white"></i></span>
-                                                </a>
-                                            </div>
+                                                <button type="button" class="btn dropdown-toggle" data-bs-toggle="dropdown"
+                                                    aria-haspopup="true" aria-expanded="false">
+                                                    <i class="ti ti-dots-vertical"></i>
+                                                </button>
 
-                                            <div class="action-btn">
-                                                {!! Form::open([
-                                                    'method' => 'DELETE',
-                                                    'route' => ['company.realestate.maintainers.destroy', $user->id],
-                                                    'id' => 'delete-form-' . $user->id,
-                                                ]) !!}
-                                                <a href="#"
-                                                    class="mx-4 btn btn-sm  align-items-center bs-pass-para bg-danger"
-                                                    data-bs-toggle="tooltip" title="{{ __('Delete') }}">
-                                                    <i class="ti ti-trash text-white text-white "></i></a>
-
-                                                {!! Form::close() !!}
+                                                <div class="dropdown-menu dropdown-menu-end">
+                                                    <a class="dropdown-item"
+                                                        href="{{ route('company.realestate.properties.units', $property->id) }}"
+                                                    >
+                                                        <span> <i class="ti ti-plus text-dark"></i> {{ __('Units') }}</span>
+                                                    </a>
+                                                    <a class="dropdown-item"
+                                                        href="{{ route('company.realestate.properties.show', $property->id) }}"
+                                                    >
+                                                        <span> <i class="ti ti-eye text-dark"></i> {{ __('View') }}</span>
+                                                    </a>
+                                                    <a class="dropdown-item"
+                                                        href="{{ route('company.realestate.properties.edit', $property->id) }}"
+                                                    >
+                                                        <span> <i class="ti ti-pencil text-dark"></i> {{ __('Edit') }}</span>
+                                                    </a>
+                                                    {!! Form::open([
+                                                        'method' => 'DELETE',
+                                                        'route' => ['company.realestate.properties.destroy', $property->id],
+                                                        'id' => 'delete-form-' . $property->id,
+                                                    ]) !!}
+                                                    <a href="#"
+                                                        class="dropdown-item bs-pass-para "
+                                                        data-bs-toggle="tooltip" title="{{ __('Delete') }}">
+                                                        <i class="ti ti-trash text-dark "></i> {{ __('Delete') }}</a>
+    
+                                                    {!! Form::close() !!}
+                                                </div>
                                             </div>
+                                      
 
 
                                         </td>

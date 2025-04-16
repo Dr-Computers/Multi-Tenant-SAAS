@@ -53,29 +53,34 @@
                                         </td>
 
                                         <td>
+                                            <div class="btn-group card-option">
 
-                                            <div class="action-btn me-2">
-                                                <a href="#"
-                                                    class="mx-3 btn btn-sm d-inline-flex align-items-center bg-warning"
-                                                    data-bs-toggle="tooltip" title="{{ __('Edit') }}"
-                                                    data-url="{{ route('admin.users.edit', $user->id) }}" data-size="xl"
-                                                    data-ajax-popup="true" data-original-title="{{ __('Edit') }}">
-                                                    <span> <i class="ti ti-pencil text-white"></i></span>
-                                                </a>
-                                            </div>
+                                                <button type="button" class="btn dropdown-toggle" data-bs-toggle="dropdown"
+                                                    aria-haspopup="true" aria-expanded="false">
+                                                    <i class="ti ti-dots-vertical"></i>
+                                                </button>
 
-                                            <div class="action-btn">
-                                                {!! Form::open([
-                                                    'method' => 'DELETE',
-                                                    'route' => ['admin.users.destroy', $user->id],
-                                                    'id' => 'delete-form-' . $user->id,
-                                                ]) !!}
-                                                <a href="#"
-                                                    class="mx-4 btn btn-sm  align-items-center bs-pass-para bg-danger"
-                                                    data-bs-toggle="tooltip" title="{{ __('Delete') }}">
-                                                    <i class="ti ti-trash text-white text-white "></i></a>
+                                                <div class="dropdown-menu dropdown-menu-end">
 
-                                                {!! Form::close() !!}
+                                                    <a href="#" class="dropdown-item"
+                                                        data-bs-toggle="tooltip" title="{{ __('Edit') }}"
+                                                        data-url="{{ route('admin.users.edit', $user->id) }}"
+                                                        data-size="xl" data-ajax-popup="true"
+                                                        data-original-title="{{ __('Edit') }}">
+                                                        <span> <i class="ti ti-pencil text-dark"></i>{{ __('Edit') }}</span>
+                                                    </a>
+                                                    {!! Form::open([
+                                                        'method' => 'DELETE',
+                                                        'route' => ['admin.users.destroy', $user->id],
+                                                        'id' => 'delete-form-' . $user->id,
+                                                    ]) !!}
+                                                    <a href="#"
+                                                            class="bs-pass-para dropdown-item"
+                                                        data-bs-toggle="tooltip" title="{{ __('Delete') }}">
+                                                        <i class="ti ti-trash text-dark "></i>{{ __('Delete') }}</a>
+
+                                                    {!! Form::close() !!}
+                                                </div>
                                             </div>
 
 

@@ -19,15 +19,21 @@ Route::group(
     function () {
 
         Route::get('/', 'DashboardController@index')->name('dashboard')->middleware(['XSS', 'revalidate']);
-        Route::resource('company', 'CompanyController')->names('company');
+
         Route::resource('users', 'UserController')->names('users');
         Route::resource('roles', 'RoleController')->names('roles');
         Route::any('company-reset-password/{id}', 'CompanyController@userPassword')->name('company.reset');
         Route::post('company-reset-password/{id}', 'CompanyController@userPasswordReset')->name('company.password.update');
         Route::post('company-unable', 'CompanyController@UserUnable')->name('company.unable');
 
-        Route::get('company-login/{id}', 'CompanyController@LoginManage')->name('company.login');
+        Route::get('company-login/{id}', 'CompanyController@LoginWithCompany')->name('company.login');
+        Route::get('company-login-activty/{id}', 'CompanyController@LoginManage')->name('company.login_fn');
 
+        Route::get('login-with-company/exit', 'CompanyController@ExitCompany')->name('exit.company');
+        Route::get('company-info/{id}', 'CompanyController@CompnayInfo')->name('company.info');
+        Route::get('company/{id}/plan', 'CompanyController@upgradePlan')->name('plan.upgrade');
+        Route::get('company/{id}/plan/{pid}', 'CompanyController@activePlan')->name('plan.active');
+        Route::resource('company', 'CompanyController')->names('company');
 
         Route::resource('settings', 'SystemController');
 
@@ -44,8 +50,8 @@ Route::group(
         Route::any('twilio-settings', 'SystemController@saveTwilioSettings')->name('twilio.settings');
         Route::post('company-payment-setting', 'SystemController@saveCompanyPaymentSettings')->name('company.payment.settings');
 
+   
 
-        Route::get('company-info/{id}', 'UserController@CompnayInfo')->name('company.info');
 
 
         Route::post('cookie-setting', 'SystemController@saveCookieSettings')->name('cookie.setting');

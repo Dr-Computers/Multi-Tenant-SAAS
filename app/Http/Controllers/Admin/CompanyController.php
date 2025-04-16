@@ -462,7 +462,7 @@ class  CompanyController extends Controller
             'is_enable_login' => 1,
         ])->save();
 
-        return redirect()->route('users.index')->with(
+        return redirect()->route('admin.company.index')->with(
             'success',
             'User Password successfully updated.'
         );

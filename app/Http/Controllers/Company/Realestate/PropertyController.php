@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Company\Realestate;
 
 use App\Http\Controllers\Controller;
 use App\Models\Property;
+use App\Models\PropertyLandmark;
 use App\Models\RealestateAmenity;
 use App\Models\RealestateCategory;
 use App\Models\RealestateFurnishing;
@@ -110,16 +111,17 @@ class PropertyController extends Controller
             $property->save();
 
 
-            // $property->features()->sync($request->input('amenities', []));
-            // // if ($request->furnishing_status != 'unfurnished') {
-            // $property->furnishing()->sync($request->input('furnishing', []));
-            // // }
+            $property->amenities()->sync($request->input('amenities', []));
+            if ($request->furnishing_status != 'unfurnished') {
+                $property->furnishing()->sync($request->input('furnishing', []));
+            }
+            $this->propertyCategoryService($request, $property);
 
             // $this->saveCustomFields($property, $request->input('custom_fields', [])); //moredetail
 
-            // $this->saveFacilitiesService($property, $request->input('facilities', []));
+            $this->landmarks($property, $request->input('facilities', []));
 
-            // $this->propertyCategoryService($request, $property);
+         
 
             DB::commit();
             Session::flash('success_msg', 'Successfully Created');
@@ -139,7 +141,33 @@ class PropertyController extends Controller
             ], 500);
         }
     }
-    public function edit($id) {}
+
+    public function edit(string $id)
+    {
+        //
+        $property = Property::where(['id' => $id])->first() ?? abort(404);
+
+
+        if (! $property) {
+            abort(404);
+        }
+
+
+        $categories = RealestateCategory::where('status', 'published')->get();
+
+        $is_rent = RealestateCategory::where('is_rent', 1)->get();
+        $is_sell = RealestateCategory::where('is_sell', 1)->get();
+
+    
+        $furnishings = RealestateFurnishing::where('status', '1')->get();
+        $landmarks  = RealestateLandmark::where('status', '1')->get();
+        $amenities   = RealestateAmenity::where('status', '1')->get();
+
+        // $customFields = CustomField::get();
+
+        return view('company.realestate.properties.edit', compact('categories', 'is_rent', 'is_sell', 'furnishings', 'landmarks', 'amenities', 'property'));
+    }
+
     public function update(
         int|string $id,
         Request $request
@@ -429,8 +457,6 @@ class PropertyController extends Controller
         }
     }
 
-
-
     protected function saveCustomFields(Property $property, array $customFields = []): void
     {
         $customFields = CustomFieldValue::formatCustomFields($customFields);
@@ -438,20 +464,17 @@ class PropertyController extends Controller
         $property->customFields()->saveMany($customFields);
     }
 
-
-
     protected function saveFacilitiesService(Property $property, array $facilities = []): void
     {
 
-        FacilityDistance::where('reference_id', $property->id)->delete();
+        PropertyLandmark::where('property_id', $property->id)->delete();
 
         foreach ($facilities ?? [] as $facilityValue) {
             if ($facilityValue['id'] != '') {
-                $faciDistance              = new FacilityDistance();
-                $faciDistance->reference_id  = $property->id;
-                $faciDistance->facility_id   = $facilityValue['id'];
-                $faciDistance->reference_type = 'App\Models\Property';
-                $faciDistance->distance        = $facilityValue['distance'] ?? '';
+                $faciDistance              = new PropertyLandmark();
+                $faciDistance->property_id  = $property->id;
+                $faciDistance->landmark_id   = $facilityValue['id'];
+                $faciDistance->landmark_value        = $facilityValue['distance'] ?? '';
                 $faciDistance->save();
             }
         }
@@ -529,6 +552,11 @@ class PropertyController extends Controller
         }
     
         return false; // No valid video ID found
+    }
+
+
+    public function units(Request $request){
+
     }
     
 }

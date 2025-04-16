@@ -16,28 +16,28 @@ class Property extends Model
     {
         static::deleting(function (Property $property) {
             $property->categories()->detach();
-            $property->features()->detach();
-            $property->facilities()->detach();
+            $property->landmarks()->detach();
+            $property->amenities()->detach();
             $property->furnishing()->detach();
         });
     }
-    public function features(): BelongsToMany
+    public function amenities(): BelongsToMany
     {
-        return $this->belongsToMany(RealestateLandmark::class, 're_property_features', 'property_id', 'feature_id');
+        return $this->belongsToMany(RealestateAmenity::class, 'property_amenities', 'property_id', 'amenity_id');
     }
 
-    public function facilities(): BelongsToMany
+    public function landmarks(): BelongsToMany
     {
-        return $this->morphToMany(RealestateAmenity::class, 'reference', 're_facilities_distances')->withPivot('distance');
+        return $this->morphToMany(RealestateLandmark::class, 'property_landmarks')->withPivot('landmark_value');
     }
 
     public function furnishing(): BelongsToMany
     {
-        return $this->belongsToMany(RealestateLandmark::class, 're_property_furnishing', 'property_id', 'furnishing_id');
+        return $this->belongsToMany(RealestateLandmark::class, 'property_furnishing', 'property_id', 'furnishing_id');
     }
     public function categories(): BelongsToMany
     {
-        return $this->belongsToMany(Category::class, 're_property_categories');
+        return $this->belongsToMany(RealestateCategory::class, 'property_categories', 'property_id', 'category_id');
     }
 
 }

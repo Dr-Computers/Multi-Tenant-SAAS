@@ -1166,33 +1166,6 @@
                                 </ul>
                             </div>
 
-                            <div class="mt-5">
-                                <h6 class="mt-3 font-bold text-black fs-3">Price Details</h6>
-                                <div class="bg-white shadow rounded-lg">
-                                    <h5 class="font-medium my-3 ">Enter Price<sup class="text-danger fs-4">*</sup></h5>
-                                    <input form="propertyFrom" max="999999999" type="number" id="priceInput"
-                                        min="0" class="border p-2 rounded w-1/2" autocomplete="off"
-                                        placeholder="Enter price" oninput="convertToWords()" name="price" />
-
-                                    <p class="mt-4 text-gray-700">Price in words: <span id="priceInWords"></span></p>
-                                </div>
-                                <div class="mt-3 flex gap-3 flex-wrap">
-                                    <label class="flex items-center">
-                                        <input name="all_include" form="propertyFrom" type="checkbox"
-                                            class="mr-2">
-                                        <span>All inclusive price</span>
-                                    </label>
-                                    <label class="flex items-center">
-                                        <input name="tax_include" form="propertyFrom" type="checkbox"
-                                            class="mr-2">
-                                        <span>Tax and Govt. charges excluded</span>
-                                    </label>
-                                    <label class="flex items-center">
-                                        <input name="negotiable" form="propertyFrom" type="checkbox" class="mr-2">
-                                        <span>Price Negotiable</span>
-                                    </label>
-                                </div>
-                            </div>
 
                             <div class="mt-5">
                                 <h6 class="mt-3 font-bold text-black fs-3">What makes your property unique?</h6>
@@ -1273,10 +1246,10 @@
                             title: "Location Details",
                         },
                         {
-                            title: "More details about this",
+                            title: "More details",
                         },
                         {
-                            title: "Media & Pricing",
+                            title: "Media",
                         },
                     ],
                     nextStep() {

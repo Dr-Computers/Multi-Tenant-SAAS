@@ -168,9 +168,7 @@ Route::group(['middleware' => ['verified']], function () {
 
     Route::get('invoice/{id}/show', [InvoiceController::class, 'customerInvoiceShow'])->name('customer.invoice.show')->middleware(['auth:customer', 'XSS', 'revalidate',]);
 
-    Route::get('users/{id}/login-with-company', [UserController::class, 'LoginWithCompany'])->name('login.with.company');
-    Route::get('login-with-company/exit', [UserController::class, 'ExitCompany'])->name('exit.company');
-
+  
 
     //================================= Contract Type  ====================================//
 
@@ -262,10 +260,7 @@ Route::group(['middleware' => ['verified']], function () {
 
 
     //================================= Email Templates  ====================================//
-   
-    Route::get('user/{id}/plan', [UserController::class, 'upgradePlan'])->name('plan.upgrade')->middleware(['XSS', 'revalidate']);
 
-    Route::get('user/{id}/plan/{pid}', [UserController::class, 'activePlan'])->name('plan.active')->middleware(['XSS', 'revalidate']);
     Route::get('profile', [UserController::class, 'profile'])->name('profile')->middleware(['XSS', 'revalidate']);
     Route::post('edit-profile', [UserController::class, 'editprofile'])->name('update.account')->middleware(['XSS', 'revalidate']);
 

@@ -1,6 +1,8 @@
 @extends('layouts.company')
-
 @push('header')
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.js"></script>
+
     <style>
         .loader-overlay {
             position: fixed;
@@ -39,54 +41,107 @@
             }
         }
     </style>
-@endpush
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+        }
+    </script>
+    <style>
+        .loader-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.3s ease-in-out;
+        }
 
-@section('content')
-    <div class="container">
-        <nav class="flex flex-wrap" aria-label="Breadcrumb">
-            <ol class="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse">
-                <li class="inline-flex items-center">
-                    <a href="{{ route('user.dashboard') }}"
-                        class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-blue-600 dark:text-gray-400 dark:hover:text-white">
-                        <svg class="w-3 h-3 me-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor"
-                            viewBox="0 0 20 20">
-                            <path
-                                d="m19.707 9.293-2-2-7-7a1 1 0 0 0-1.414 0l-7 7-2 2a1 1 0 0 0 1.414 1.414L2 10.414V18a2 2 0 0 0 2 2h3a1 1 0 0 0 1-1v-4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v4a1 1 0 0 0 1 1h3a2 2 0 0 0 2-2v-7.586l.293.293a1 1 0 0 0 1.414-1.414Z" />
-                        </svg>
-                        Dashboard
-                    </a>
-                </li>
-                <li>
-                    <div class="flex items-center">
-                        <svg class="rtl:rotate-180 w-3 h-3 text-gray-400 mx-1" aria-hidden="true"
-                            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
-                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="m1 9 4-4-4-4" />
-                        </svg>
-                        <a href="{{ route('user.properties.index') }}"
-                            class="ms-1 text-sm font-medium text-gray-700 hover:text-blue-600 md:ms-2 dark:text-gray-400 dark:hover:text-white">Properties</a>
-                    </div>
-                </li>
-                <li aria-current="page">
-                    <div class="flex items-center">
-                        <svg class="rtl:rotate-180 w-3 h-3 text-gray-400 mx-1" aria-hidden="true"
-                            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
-                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="m1 9 4-4-4-4" />
-                        </svg>
-                        <span class="ms-1 text-sm font-medium text-gray-500 md:ms-2 dark:text-gray-400">Property Edit
-                            "{{ $property->name }}"</span>
-                    </div>
-                </li>
-            </ol>
-        </nav>
+        .loader-overlay.hidden {
+            display: none;
+        }
+
+        .spinner {
+            border: 8px solid rgba(255, 255, 255, 0.3);
+            border-top: 8px solid white;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .theme-toggle {
+            display: none !important;
+        }
+
+
+        input.form-control,
+        select.form-control,
+        .select2.select2-container {
+            width: 100% !important;
+        }
+
+        .select2-container .select2-selection--single {
+            height: 40px !important;
+            border: var(--bb-border-width) var(--bb-border-style) var(--bb-border-color) !important;
+        }
+
+        .select2-container--default .select2-selection--single {
+            border-radius: 6px !important;
+        }
+
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+            line-height: 35px !important;
+        }
+
+        .select2-container--default .select2-selection--single .select2-selection__clear {
+            height: 35px !important;
+        }
+
+        .select2-container--default .select2-selection--single .select2-selection__arrow {
+            height: 36px !important;
+        }
+    </style>
+
+    <link media="all" type="text/css" rel="stylesheet" href="/assets/css/core.css">
+@endpush
+@section('page-title')
+    {{ __('Properties') }}
+@endsection
+@section('breadcrumb')
+    <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">{{ __('Dashboard') }}</a></li>
+    <li class="breadcrumb-item">{{ __('Properties') }}</li>
+@endsection
+@section('action-btn')
+    <div class="d-flex">
+        <a href="{{ route('company.realestate.properties.create') }}" title="{{ __('Create New Property') }}"
+            class="btn btn-sm btn-primary me-2">
+            <i class="ti ti-plus"></i>
+        </a>
     </div>
+@endsection
+@section('content')
+   
 
     <div x-data="stepper()" class="container bg-white rounded-lg shadow-lg p-lg-6 p-2.5 mt-5">
         <div class="" x-data="formHandler()">
 
             <form method="POST" @submit.prevent="submitForm" id="propertyFrom"
-                action="{{ route('user.properties.update', $property->id) }}" enctype="multipart/form-data">
+                action="{{ route('company.realestate.properties.update', $property->id) }}" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
             </form>
@@ -154,14 +209,7 @@
                 <div class="space-y-8">
                     <!-- Step 1 -->
                     <div x-show="currentStep === 0" class="mt-2">
-                        <!-- Stepper Navigation -->
-                        <div id="pageTitleDescription">
-                            <h1 class="my-1 fw-bold fs-1">Welcome back {{ $user->name }},</h1>
-                            <h4 class="fw-bold text-dark fs-3 mt-2">Sell or Rent your Property</h4>
-                            <h6 class=" text-dark fs-5 mt-2">You are posting this property for <span
-                                    class="ms-1 bg-warning text-light px-2 py-1 rounded-5 fs-5"> FREE! </span> </h6>
-                            <br>
-                        </div>
+                     
                         <div x-data="propertyForm()" x-init="init()" class="p-2 space-y-2">
                             <!-- Mode Selection -->
                             <div>
@@ -1478,177 +1526,6 @@
                                                     </div>
 
 
-                                                    <div id="pgRules"
-                                                        class="ShowWantedSectionInPg HideUnwantedSectionsInPlot"
-                                                        style="display: none">
-
-                                                        <!-- Occupancy -->
-                                                        <div class="col-lg-12 mb-3">
-                                                            <h5 class="my-4 fs-3 text-black font-bold">Occupancy Type <sup
-                                                                    class="text-danger fs-4">*</sup></h5>
-                                                            <div class="flex items-center flex-wrap gap-3">
-                                                                <div class="flex items-center">
-                                                                    <input type="radio" form="propertyFrom"
-                                                                        id="single" name="occupancy_type"
-                                                                        value="single"
-                                                                        {{ $property->occupancy_type == 'single' ? 'checked' : 'checked' }}
-                                                                        class="w-3 h-3 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500">
-                                                                    <label for="single"
-                                                                        class="ml-2 text-sm font-medium text-gray-900">Single</label>
-                                                                </div>
-                                                                <div class="flex items-center">
-                                                                    <input type="radio" form="propertyFrom"
-                                                                        id="double" name="occupancy_type"
-                                                                        value="double"
-                                                                        {{ $property->occupancy_type == 'double' ? 'checked' : '' }}
-                                                                        class="w-3 h-3 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500">
-                                                                    <label for="double"
-                                                                        class="ml-2 text-sm font-medium text-gray-900">Double</label>
-                                                                </div>
-                                                                <div class="flex items-center">
-                                                                    <input type="radio" form="propertyFrom"
-                                                                        id="triple" name="occupancy_type"
-                                                                        value="triple"
-                                                                        {{ $property->occupancy_type == 'triple' ? 'checked' : '' }}
-                                                                        class="w-3 h-3 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500">
-                                                                    <label for="triple"
-                                                                        class="ml-2 text-sm font-medium text-gray-900">3+
-                                                                        more</label>
-                                                                </div>
-                                                                <div class="flex items-center">
-                                                                    <input type="radio" form="propertyFrom"
-                                                                        id="capsule" name="occupancy_type"
-                                                                        value="capsule"
-                                                                        {{ $property->occupancy_type == 'capsule' ? 'checked' : '' }}
-                                                                        class="w-3 h-3 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500">
-                                                                    <label for="capsule"
-                                                                        class="ml-2 text-sm font-medium text-gray-900">Capsule</label>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-
-                                                        <!-- Available For -->
-                                                        <div class="col-lg-12 mb-3">
-                                                            <h5 class="my-4 fs-3 text-black font-bold">Available For <sup
-                                                                    class="text-danger fs-4">*</sup></h5>
-                                                            <div class="flex items-center flex-wrap gap-4">
-                                                                <div class="flex items-center">
-                                                                    <input type="radio" form="propertyFrom"
-                                                                        id="male" name="available_for"
-                                                                        value="male"
-                                                                        {{ $property->available_for == 'male' ? 'checked' : 'checked' }}
-                                                                        class="w-3 h-3 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500">
-                                                                    <label for="male"
-                                                                        class="ml-2 text-sm font-medium text-gray-900">Boys</label>
-                                                                </div>
-                                                                <div class="flex items-center">
-                                                                    <input type="radio" form="propertyFrom"
-                                                                        id="female" name="available_for"
-                                                                        value="female"
-                                                                        {{ $property->available_for == 'female' ? 'checked' : '' }}
-                                                                        class="w-3 h-3 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500">
-                                                                    <label for="female"
-                                                                        class="ml-2 text-sm font-medium text-gray-900">Girls</label>
-                                                                </div>
-                                                                <div class="flex items-center">
-                                                                    <input type="radio" form="propertyFrom"
-                                                                        id="any" name="available_for"
-                                                                        value="any"
-                                                                        {{ $property->available_for == 'any' ? 'checked' : '' }}
-                                                                        class="w-3 h-3 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500">
-                                                                    <label for="any"
-                                                                        class="ml-2 text-sm font-medium text-gray-900">
-                                                                        Boys & Girls</label>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-
-
-                                                        <!-- Rules  -->
-                                                        <div class="col-lg-12 mb-3 ">
-                                                            <h5 class="my-4 fs-3 text-black font-bold">
-                                                                Rules & Informations<sup class="text-danger fs-4">*</sup>
-                                                            </h5>
-                                                        </div>
-                                                        <div class="relative col-lg-12 mt-3 card p-3">
-                                                            <div class="row">
-
-                                                                @foreach ($pg_rules as $Rkey => $ruleItem)
-                                                                    @php
-                                                                        $ruleValue = $property->pg_rules
-                                                                            ->where('rule_id', $ruleItem->id)
-                                                                            ->pluck('value')
-                                                                            ->first();
-
-                                                                    @endphp
-                                                                    @if ($ruleItem->type == 'text')
-                                                                        <div class="relative z-0  mb-3 group col-lg-6">
-                                                                            <!-- Text Input -->
-                                                                            <input form="propertyFrom" type="hidden"
-                                                                                name="rule[{{ $ruleItem->id }}][id]"
-                                                                                value="{{ $ruleItem->id }}">
-                                                                            <input form="propertyFrom"
-                                                                                name="rule[{{ $ruleItem->id }}][value]"
-                                                                                type="text" autocomplete="off"
-                                                                                id="rule_{{ $ruleItem->id }}"
-                                                                                value="{{ $ruleValue ?? '' }}"
-                                                                                class="block px-2.5 w-full text-sm text-gray-900 bg-transparent rounded-lg border-1 pt-3 pb-2 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-                                                                                placeholder=" " />
-                                                                            <label for="rule_{{ $ruleItem->id }}"
-                                                                                class="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-gray-900 px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto start-1">
-                                                                                {{ $ruleItem->name }}
-                                                                            </label>
-                                                                        </div>
-                                                                    @elseif ($ruleItem->type == 'radio')
-                                                                        <div class="relative z-0  mb-3 group col-lg-6">
-                                                                            <!-- Radio Buttons for Yes/No -->
-                                                                            <h5 class="mb-2 mt-3 font-medium">
-                                                                                {{ $ruleItem->name }}</h5>
-                                                                            <div class="flex items-center space-x-4">
-                                                                                <!-- Yes Option -->
-                                                                                <div class="flex items-center"
-                                                                                    role="button">
-                                                                                    <input form="propertyFrom"
-                                                                                        type="hidden"
-                                                                                        name="rule[{{ $ruleItem->id }}][id]"
-                                                                                        value="{{ $ruleItem->id }}">
-                                                                                    <input form="propertyFrom"
-                                                                                        id="rule_{{ $Rkey }}_yes"
-                                                                                        name="rule[{{ $ruleItem->id }}][value]"
-                                                                                        type="radio" value="Yes"
-                                                                                        {{ $ruleValue == 'Yes' ? 'checked' : '' }}
-                                                                                        class="w-3 h-3 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2" />
-                                                                                    <label
-                                                                                        for="rule_{{ $Rkey }}_yes"
-                                                                                        class="ml-2 text-sm font-medium text-gray-900">
-                                                                                        Yes
-                                                                                    </label>
-                                                                                </div>
-                                                                                <!-- No Option -->
-                                                                                <div class="flex items-center"
-                                                                                    role="button">
-                                                                                    <input form="propertyFrom"
-                                                                                        id="rule_{{ $Rkey }}_no"
-                                                                                        name="rule[{{ $ruleItem->id }}][value]"
-                                                                                        type="radio" value="No"
-                                                                                        {{ $ruleValue == 'No' ? 'checked' : '' }}
-                                                                                        class="w-3 h-3 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2" />
-                                                                                    <label
-                                                                                        for="rule_{{ $Rkey }}_no"
-                                                                                        class="ml-2 text-sm font-medium text-gray-900">
-                                                                                        No
-                                                                                    </label>
-                                                                                </div>
-                                                                            </div>
-                                                                        </div>
-                                                                    @else
-                                                                    @endif
-                                                                @endforeach
-                                                            </div>
-
-                                                        </div>
-
-                                                    </div>
                                                 </div>
                                             </div>
 
@@ -1656,20 +1533,11 @@
                                     </div>
                                     <div class=" col-lg-12">
                                         <div class="mx-2 mb-5">
-                                            @php
-                                                // $customFieldList = $property->customFields
-                                                //     ->map(function ($custom) {
-                                                //         return [
-                                                //             'selected' => $custom->name,
-                                                //             'value' => $custom->value ?? '',
-                                                //         ];
-                                                //     })
-                                                //     ->toArray();
-                                            @endphp
+                                          
 
 
 
-                                            <div id="MoreaboutDetails"
+                                            {{-- <div id="MoreaboutDetails"
                                                 class="HideUnwantedSectionsInPlot HideUnwantedSectionsInPg">
                                                 <h5 class="my-4 fs-3 text-black font-bold">More about Details</h5>
                                                 <div class="mt-3 card p-3 bg-body">
@@ -1703,120 +1571,9 @@
                                                         </div>
                                                     </div>
 
-                                                    {{-- <div x-data="{
-                                                        customFields: [],
-                                                        addField() {
-                                                            this.customFields.push({ selected: '', value: '' });
-                                                        },
-                                                        removeField(index) {
-                                                            if (this.customFields.length > 1) {
-                                                                this.customFields.splice(index, 1);
-                                                            } else {
-                                                                alert('At least one field must remain.');
-                                                            }
-                                                        }
-                                                    }">
-                                                        @foreach ($customFieldList as $keyCus => $customField)
-                                                            <div class="flex items-center gap-2 mb-3"
-                                                                id="100{{ $keyCus }}">
-                                                                <!-- Select Box -->
-                                                                <div class="w-1/2">
-                                                                    <select form="propertyFrom"
-                                                                        name="custom_fields[100{{ $keyCus }}][name]"
-                                                                        class="w-full p-2 border rounded-md">
-                                                                        <option value="">Select Option
-                                                                        </option>
-                                                                        @foreach ($customFields ?? [] as $option_item)
-                                                                            <option
-                                                                                {{ $customField['selected'] == $option_item->name ? 'selected' : '' }}
-                                                                                value="{{ $option_item->name }}">
-                                                                                {{ $option_item->name }}</option>
-                                                                        @endforeach
-                                                                    </select>
-                                                                </div>
-
-                                                                <!-- Input Box -->
-                                                                <div class="w-1/2">
-                                                                    <input type="text" form="propertyFrom"
-                                                                        autocomplete="off"
-                                                                        value="{{ $customField['value'] }}"
-                                                                        name="custom_fields[100{{ $keyCus }}][value]"
-                                                                        class="w-full p-2 border rounded-md"
-                                                                        placeholder="Enter value">
-                                                                </div>
-
-                                                                <!-- Remove Button -->
-                                                                <div class="position-absolute right-2">
-                                                                    <button
-                                                                        @click="removeFieldParentDiv(100{{ $keyCus }})"
-                                                                        class="text-red-500 hover:text-red-700">
-                                                                        <svg xmlns="http://www.w3.org/2000/svg"
-                                                                            width="20" height="20"
-                                                                            fill="currentColor" class="bi bi-x-circle"
-                                                                            viewBox="0 0 16 16">
-                                                                            <path
-                                                                                d="M11.742 4.742a1 1 0 1 0-1.414-1.414L8 6.586 5.672 4.258a1 1 0 1 0-1.414 1.414L6.586 8l-2.328 2.328a1 1 0 1 0 1.414 1.414L8 9.414l2.328 2.328a1 1 0 1 0 1.414-1.414L9.414 8l2.328-2.328z" />
-                                                                        </svg>
-                                                                    </button>
-                                                                </div>
-                                                            </div>
-                                                        @endforeach
-
-                                                        <!-- Dynamic Custom Fields -->
-                                                        <template x-for="(field, index) in customFields"
-                                                            :key="index">
-                                                            <div class="flex items-center gap-2 mb-3">
-                                                                <!-- Select Box -->
-                                                                <div class="w-1/2">
-                                                                    <select form="propertyFrom"
-                                                                        :name="'custom_fields[' + index + '][name]'"
-                                                                        x-model="field.selected"
-                                                                        class="w-full p-2 border rounded-md">
-                                                                        <option value="">Select Option
-                                                                        </option>
-                                                                        @foreach ($customFields ?? [] as $option_item)
-                                                                            <option value="{{ $option_item->name }}">
-                                                                                {{ $option_item->name }}</option>
-                                                                        @endforeach
-                                                                    </select>
-                                                                </div>
-
-                                                                <!-- Input Box -->
-                                                                <div class="w-1/2">
-                                                                    <input type="text" form="propertyFrom"
-                                                                        autocomplete="off"
-                                                                        :name="'custom_fields[' + index + '][value]'"
-                                                                        x-model="field.value"
-                                                                        class="w-full p-2 border rounded-md"
-                                                                        placeholder="Enter value">
-                                                                </div>
-
-                                                                <!-- Remove Button -->
-                                                                <div class="position-absolute right-2">
-                                                                    <button @click="removeField(index)"
-                                                                        class="text-red-500 hover:text-red-700">
-                                                                        <svg xmlns="http://www.w3.org/2000/svg"
-                                                                            width="20" height="20"
-                                                                            fill="currentColor" class="bi bi-x-circle"
-                                                                            viewBox="0 0 16 16">
-                                                                            <path
-                                                                                d="M11.742 4.742a1 1 0 1 0-1.414-1.414L8 6.586 5.672 4.258a1 1 0 1 0-1.414 1.414L6.586 8l-2.328 2.328a1 1 0 1 0 1.414 1.414L8 9.414l2.328 2.328a1 1 0 1 0 1.414-1.414L9.414 8l2.328-2.328z" />
-                                                                        </svg>
-                                                                    </button>
-                                                                </div>
-                                                            </div>
-                                                        </template>
-
-                                                        <div class="mt-4 text-end">
-                                                            <!-- Add More Button -->
-                                                            <button @click="addField"
-                                                                class="bg-gray-500 px-2 py-1 rounded-2xl text-dark text-sm">
-                                                                <i class="fa fa-plus me-2"></i> Add More
-                                                            </button>
-                                                        </div>
-                                                    </div> --}}
+                                                  
                                                 </div>
-                                            </div>
+                                            </div> --}}
 
                                             <div x-data="{ furnishingStatus: '{{ $property->furnishing_status }}' }" class="mb-5 mx-2">
                                                 <div class="section">
@@ -1915,14 +1672,14 @@
                                                     </div>
 
                                                     @php
-                                                        $facilitiesList = $property->facilities
-                                                            ->map(function ($facility) {
-                                                                return [
-                                                                    'id' => $facility->id,
-                                                                    'distance' => $facility->pivot->distance ?? '',
-                                                                ];
-                                                            })
-                                                            ->toArray();
+                                                        // $facilitiesList = $property->landmarks
+                                                        //     ->map(function ($landmark) {
+                                                        //         return [
+                                                        //             'id' => $landmark->id,
+                                                        //             'distance' => $landmark->pivot->distance ?? '',
+                                                        //         ];
+                                                        //     })
+                                                        //     ->toArray();
 
                                                     @endphp
 
@@ -1939,7 +1696,7 @@
                                                             {{-- } --}}
                                                         }
                                                     }">
-                                                        @foreach ($facilitiesList as $keyFac => $exFacility)
+                                                        {{-- @foreach ($facilitiesList as $keyFac => $exFacility)
                                                             <div class="col-lg-12 items-center  mb-4"
                                                                 id="1000{{ $keyFac }}">
                                                                 <div class="row">
@@ -1985,7 +1742,7 @@
                                                                     </button>
                                                                 </div>
                                                             </div>
-                                                        @endforeach
+                                                        @endforeach --}}
 
 
                                                         <!-- Dynamic Facility List -->
@@ -2043,7 +1800,7 @@
                                                                 <i class="fa fa-plus me-2"></i>Add Another
                                                             </button>
                                                         </div>
-                                                    </div>
+                                                    </div> */
                                                 </div>
                                             </div>
 
@@ -3101,7 +2858,7 @@
 
                         try {
                             const response = await fetch(
-                                `{{ route('user.properties.update', $property->id) }}`, {
+                                `{{ route('company.realestate.properties.update', $property->id) }}`, {
                                     method: 'POST',
                                     headers: {
                                         // 'Content-Type': 'application/x-www-form-urlencoded', // Important for serialized data

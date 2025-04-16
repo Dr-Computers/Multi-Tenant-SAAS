@@ -1,5 +1,5 @@
 @php
-    use \App\Models\Utility;
+    use App\Models\Utility;
     $users = \Auth::user();
     $profile = asset(Storage::url('uploads/avatar/'));
     $currantLang = $users->currentLanguage();
@@ -23,13 +23,19 @@
                     </a>
                 </li>
 
-            
+
             </ul>
 
         </div>
         <div class="ms-auto">
             <ul class="list-unstyled">
-               
+                @impersonating($guard = null)
+                <li class="dropdown dash-h-item drp-company">
+                    <a class="btn btn-danger btn-sm me-3" href="{{ route('admin.exit.company') }}"><i class="ti ti-ban"></i>
+                        {{ __('Exit Company Login') }}
+                    </a>
+                </li>
+                @endImpersonating
                 <li class="dropdown dash-h-item drp-language">
                     {{-- <a class="dash-head-link dropdown-toggle arrow-none me-0" data-bs-toggle="dropdown"
                         href="#" role="button" aria-haspopup="false" aria-expanded="false">
@@ -86,7 +92,7 @@
                         role="button" aria-haspopup="false" aria-expanded="false">
                         <span class="theme-avtar">
                             @if (\Auth::guard('customer')->check())
-                                <img src="{{  (isset(\Auth::user()->avatar) && !empty(\Auth::user()->avatar) ? \App\Models\Utility::get_file('uploads/avatar/'.\Auth::user()->avatar) : 'logo-dark.png') }}"
+                                <img src="{{ isset(\Auth::user()->avatar) && !empty(\Auth::user()->avatar) ? \App\Models\Utility::get_file('uploads/avatar/' . \Auth::user()->avatar) : 'logo-dark.png' }}"
                                     class="img-fluid rounded-circle">
                             @else
                                 <img src="{{ !empty(\Auth::user()->avatar) ? \App\Models\Utility::get_file(\Auth::user()->avatar) : asset(Storage::url('uploads/avatar/avatar.png')) }}"

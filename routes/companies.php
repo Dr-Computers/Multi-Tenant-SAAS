@@ -34,6 +34,8 @@ Route::group(
             Route::get('owners/{user}/reset-password', 'OwnerController@resetPasswordForm')->name('owners.reset.form');
             Route::post('owners/{user}/reset-password', 'OwnerController@resetPassword')->name('owners.reset.update');
             Route::resource('properties', 'PropertyController')->names('properties');
+            Route::get('properties/units/{id}', 'PropertyUnits@units')->name('properties.units');
+          
             Route::resource('tenants', 'TenantController')->names('tenants');
             Route::get('tenants/{user}/reset-password', 'TenantController@resetPasswordForm')->name('tenants.reset.form');
             Route::post('tenants/{user}/reset-password', 'TenantController@resetPassword')->name('tenants.reset.update');

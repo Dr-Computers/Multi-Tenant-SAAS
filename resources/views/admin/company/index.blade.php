@@ -53,11 +53,7 @@
                                                 </button>
 
                                                 <div class="dropdown-menu dropdown-menu-end">
-                                                    <a href="#" data-url="{{ route('plan.upgrade', $user->id) }}"
-                                                        data-size="lg" data-ajax-popup="true" class="dropdown-item"
-                                                        data-title="{{ __('Upgrade Plan') }}">
-                                                        <i class="ti ti-coin"></i>
-                                                        {{ __('Upgrade Plan') }}</a>
+
                                                     <a href="#"
                                                         data-url="{{ route('admin.company.info', $user->id) }}"
                                                         data-size="lg" data-ajax-popup="true" class="dropdown-item"
@@ -65,15 +61,20 @@
                                                         <i class="ti ti-info-circle"></i>
                                                         {{ __('Company Info') }}</a>
 
-                                                    <a href="#" class="dropdown-item">
+                                                    {{-- <a href="#" class="dropdown-item">
                                                         <i class="ti ti-plus"></i>
                                                         {{ __('Addon Features') }}</a>
+                                                        <a href="#" data-url="{{ route('admin.plan.upgrade', $user->id) }}"
+                                                            data-size="lg" data-ajax-popup="true" class="dropdown-item"
+                                                            data-title="{{ __('Upgrade Plan') }}">
+                                                            <i class="ti ti-coin"></i>
+                                                            {{ __('Upgrade Plan') }}</a> --}}
 
-                                                    <a href="{{ route('login.with.company', $user->id) }}"
+                                                    <a href="{{ route('admin.company.login', $user->id) }}"
                                                         class="dropdown-item"
-                                                        data-bs-original-title="{{ __('Login As Company') }}">
+                                                        data-bs-original-title="{{ __('Login as Company') }}">
                                                         <i class="ti ti-replace"></i>
-                                                        <span> {{ __('Login As Company') }}</span>
+                                                        <span> {{ __('Login as Company') }}</span>
                                                     </a>
 
 
@@ -86,7 +87,7 @@
                                                     </a>
 
                                                     @if ($user->is_enable_login == 1)
-                                                        <a href="{{ route('admin.company.login', \Crypt::encrypt($user->id)) }}"
+                                                        <a href="{{ route('admin.company.login_fn', \Crypt::encrypt($user->id)) }}"
                                                             class="dropdown-item">
                                                             <i class="ti ti-road-sign"></i>
                                                             <span class="text-danger"> {{ __('Login Disable') }}</span>
@@ -101,12 +102,13 @@
                                                             <span class="text-success"> {{ __('Login Enable') }}</span>
                                                         </a>
                                                     @else
-                                                        <a href="{{ route('admin.company.login', \Crypt::encrypt($user->id)) }}"
+                                                        <a href="{{ route('admin.company.login_fn', \Crypt::encrypt($user->id)) }}"
                                                             class="dropdown-item">
                                                             <i class="ti ti-road-sign"></i>
                                                             <span class="text-success"> {{ __('Login Enable') }}</span>
                                                         </a>
                                                     @endif
+
                                                     @can('edit user')
                                                         <a href="#!" data-size="md"
                                                             data-url="{{ route('admin.company.edit', $user->id) }}"
@@ -196,11 +198,11 @@
                         </div>
                     </div>
                 @empty
-                <div class="col-md-12 mb-4">
-                    <div class="card text-center p-5 card-2">
+                    <div class="col-md-12 mb-4">
+                        <div class="card text-center p-5 card-2">
                             <h6>No Companies found</h6>
+                        </div>
                     </div>
-                </div>
                 @endforelse
             </div>
         </div>
