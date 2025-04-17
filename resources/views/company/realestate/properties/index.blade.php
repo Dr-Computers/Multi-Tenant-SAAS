@@ -58,7 +58,7 @@
 
                                                 <div class="dropdown-menu dropdown-menu-end">
                                                     <a class="dropdown-item"
-                                                        href="{{ route('company.realestate.properties.units', $property->id) }}"
+                                                        href="{{ route('company.realestate.property.units.index', $property->id) }}"
                                                     >
                                                         <span> <i class="ti ti-plus text-dark"></i> {{ __('Units') }}</span>
                                                     </a>

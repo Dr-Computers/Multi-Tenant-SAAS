@@ -949,11 +949,11 @@
 
                     <div x-show="currentStep === 3" class="space-y-4 mt-2">
                         <div class="mb-5 mx-2">
+                           
+                          
                             <div class="section">
-                                <h5 class="mt-3 font-bold text-black fs-3">Add photos of your property</h5>
-                                <h6 class="mt-3 font-bold">
-                                    A picture is worth a thousand words. 87% of buyers look at photos before buying
-                                </h6>
+                                <h5 class="mt-3 font-bold text-black fs-3">Add Documents of your property</h5>
+                                
 
                                 <div class="mt-3 border-dashed border-2 border-gray-300 rounded-lg p-3  bg-gray-100">
                                     <div x-data="imageUploader()" class="mx-auto bg-white shadow rounded-lg space-y-6">
@@ -1013,127 +1013,69 @@
 
                                 </div>
                             </div>
-                            <div x-data="{ isModalOpen: false }" class="section mt-5">
-                                <div
-                                    class="block w-full md:w-2/3 lg:w-1/2 mx-auto p-6 mt-3 border-dashed border-2 border-gray-300 rounded-lg bg-gray-100 shadow hover:bg-gray-50">
-                                    <h5 class="mt-3 font-bold text-black fs-3 text-gray-700 text-center">Add YouTube
-                                        Videos of Your
-                                        Property</h5>
-                                    <h6 class="mt-3 font-medium text-sm text-gray-600 text-center">
-                                        A video is worth a thousand pictures. Properties with videos get higher page views.
-                                    </h6>
 
-                                    <div class="relative z-0 w-full mb-3 mt-5 group">
-                                        <input form="propertyFrom" name="youtube_video" type="text"
-                                            autocomplete="off" id="youtube_video"
-                                            class="block px-3 w-full text-sm text-gray-900 bg-transparent border rounded-lg py-3 appearance-none focus:outline-none focus:ring focus:ring-blue-200 peer"
-                                            placeholder="Paste YouTube link of your video" />
-                                        <label for="youtube_video"
-                                            class="absolute text-sm text-gray-500 duration-300 transform -translate-y-4 scale-75 top-2 z-10 bg-white px-2 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-1/2  peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4">
-                                            Paste YouTube link of your video
-                                        </label>
-                                    </div>
-                                    <div class="text-end mt-4">
-                                        <button @click="isModalOpen = true" class="text-blue-600 underline"
-                                            role="button">
-                                            How to?
-                                        </button>
-                                    </div>
-                                </div>
+                            <div class="section">
+                                <h5 class="mt-3 font-bold text-black fs-3">Add photos of your property</h5>
+                                
 
-                                <!-- Modal -->
-                                <div x-show="isModalOpen" tabindex="-1" style="display: none"
-                                    class="fixed top-0 left-0 right-0 z-50 w-full h-full flex justify-center items-center bg-gray-800 bg-opacity-50"
-                                    x-cloak>
-                                    <div class="relative w-full max-w-md">
-                                        <!-- Modal content -->
-                                        <div class="bg-white rounded-lg shadow dark:bg-gray-700">
-
-                                            <!-- Modal body -->
-                                            <div class="p-4 md:p-5">
-                                                <div class="d-flex justify-between">
-                                                    <div>
-                                                        <h3 class="text-xl font-medium text-dark-900 dark:text-white">How
-                                                            to Add YouTube Video</h3>
-                                                        <h6 class="text-sm text-gray-600">A step-by-step guide</h6>
-                                                    </div>
-                                                    <button @click="isModalOpen = false"
-                                                        class="text-gray-400 hover:bg-gray-200 rounded-lg text-sm  dark:hover:bg-gray-600">
-                                                        <svg class="w-3 h-3" xmlns="http://www.w3.org/2000/svg"
-                                                            fill="none" viewBox="0 0 14 14">
-                                                            <path stroke="currentColor" stroke-linecap="round"
-                                                                stroke-linejoin="round" stroke-width="2"
-                                                                d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
-                                                        </svg>
-                                                    </button>
-                                                </div>
-
-                                                <img src="https://newdoorventures.in/images/general/howTo_youtube.png"
-                                                    class="w-full rounded-lg mt-5" alt="How To Add YouTube Video">
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-
-
-                            <div class="section mt-5 d-none" x-data="videoUploader()">
-                                <h5 class="font-medium">Add one or more videos of your property</h5>
-                                <h6 class="mt-3 font-medium">A video is worth a thousand pictures. Properties with videos
-                                    get higher page views</h6>
                                 <div class="mt-3 border-dashed border-2 border-gray-300 rounded-lg p-3  bg-gray-100">
-                                    <!-- Drag and Drop Area for Video -->
-                                    <div class="relative text-center cursor-pointer">
-                                        <div class="flex flex-col">
-                                            <div class="relative group  rounded-lg p-2 overflow-hidden"
-                                                @click="triggerFileInputVideo()"
-                                                x-bind:class="{ 'border-blue-500': isDragging }">
-                                                <input form="propertyFrom" id="fileInputVideo" name="videos[]"
-                                                    type="file" accept="video/*" class="hidden" multiple
-                                                    @change="addVideos($event)">
-                                                <p class="text-gray-600">Drag & Drop your videos here or click to upload.
-                                                </p>
-                                                <p class="text-sm text-blue-500 font-medium ">Upload multiple videos</p>
+                                    <div x-data="imageUploader()" class="mx-auto bg-white shadow rounded-lg space-y-6">
+                                        <!-- Image Preview Grid -->
+                                        <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+                                            <!-- Existing Images -->
+                                            <template x-for="(image, index) in images" :key="index">
+                                                <div class="flex flex-col relative">
+                                                    <div class="relative group border rounded-lg overflow-hidden">
+                                                        <!-- Image -->
+                                                        <img :src="image.url" style="height: 100px;"
+                                                            alt="Uploaded Image" class="w-30 h-30 object-cover">
+
+                                                        <!-- Overlay with Cover Option -->
+                                                        <div
+                                                            class="absolute flex flex-col inset-0 group-hover:opacity-100 space-y-2 transition">
+                                                            <!-- Remove Image -->
+                                                            <button @click="removeImage(index)"
+                                                                class="absolute bg-white p-1 right-0 rounded-full top-0">
+                                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4"
+                                                                    viewBox="0 0 20 20" fill="red">
+                                                                    <path fill-rule="evenodd"
+                                                                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 011.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                                                        clip-rule="evenodd" />
+                                                                </svg>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                    <label class="flex items-center space-x-2 text-dark cursor-pointer ">
+                                                        <input type="radio" name="coverImage" form="propertyFrom"
+                                                            class="" :value="image.name"
+                                                            @change="setCoverImage(index)"
+                                                            :checked="currentCover === index" />
+                                                        <span>Make Cover Photo</span>
+                                                    </label>
+                                                    <span x-show="currentCover === index"
+                                                        class="absolute top-0 left-0 p-2 text-white bg-black opacity-50">Cover</span>
+                                                </div>
+                                            </template>
+
+                                            <!-- Upload New Images -->
+                                            <div class="flex flex-col col-auto text-center">
+                                                <div class="relative group border rounded-lg p-2 overflow-hidden"
+                                                    @click="triggerFileInput()"
+                                                    x-bind:class="{ 'border-blue-500': isDragging }">
+                                                    <input name="images[]" form="propertyFrom" type="file"
+                                                        accept="image/*" id="fileInput" class="hidden" multiple
+                                                        @change="addImages($event)">
+                                                    <p class="text-gray-600">
+                                                        click to upload your images here.</p>
+                                                    <p class="text-sm text-blue-500 font-medium hidden">Upload up to 30
+                                                        images</p>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
 
-                                    <!-- Error Message Display -->
-
-                                    <!-- Video Preview Grid -->
-                                    <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mt-4">
-                                        <template x-for="(video, index) in videos" :key="index">
-                                            <div class="flex flex-col relative">
-                                                <div class="relative group border rounded-lg overflow-hidden">
-                                                    <!-- Video Preview -->
-                                                    <video :src="video.url" controls
-                                                        class="w-30 h-30 object-cover">
-                                                        Your browser does not support the video tag.
-                                                    </video>
-
-                                                    <!-- Overlay with Remove Option -->
-                                                    <div
-                                                        class="absolute flex flex-col inset-0 group-hover:opacity-100 space-y-2 transition">
-                                                        <!-- Remove Video -->
-                                                        <button @click="removeVideo(index)"
-                                                            class="absolute bg-white p-1 right-0 rounded-full top-0">
-                                                            <!-- Remove Icon -->
-                                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4"
-                                                                viewBox="0 0 20 20" fill="red">
-                                                                <path fill-rule="evenodd"
-                                                                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 011.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                                                                    clip-rule="evenodd" />
-                                                            </svg>
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </template>
-                                    </div>
                                 </div>
                             </div>
-
 
                             <div class="mt-5">
                                 <h6 class="mt-3 font-bold text-black fs-3">Ownership<sup
@@ -1165,6 +1107,10 @@
                                     </li>
                                 </ul>
                             </div>
+                            `fire_safty_start_date`, 
+                            `fire_safty_end_date`, 
+                            `insurance_start_date`, 
+                            `insurance_end_date`,
 
 
                             <div class="mt-5">
