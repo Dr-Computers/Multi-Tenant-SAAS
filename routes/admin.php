@@ -64,7 +64,7 @@ Route::group(
 
         Route::post('setting/seo', 'SystemController@SeoSettings')->name('seo.settings');
 
-        Route::resource('webhook', 'WebhookController'::class);
+        // Route::resource('webhook', 'WebhookController'::class);
 
         Route::post('company-email-settings', 'SystemController@saveCompanyEmailSetting')->name('company.email.settings');
 

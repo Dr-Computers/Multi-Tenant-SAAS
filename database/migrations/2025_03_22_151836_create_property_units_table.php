@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('property_units', function (Blueprint $table) {
             $table->id();
+            $table->integer('property_id')->nullable();      
             $table->string('name')->nullable();      
             $table->integer('kitchen')->nullable(); 
             $table->integer('bed_rooms')->nullable(); 
