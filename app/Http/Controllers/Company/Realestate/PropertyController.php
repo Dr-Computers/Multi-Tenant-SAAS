@@ -21,6 +21,7 @@ class PropertyController extends Controller
     public function index()
     {
         $properties = Property::where('company_id', Auth::user()->creatorId())->get();
+       
         return view('company.realestate.properties.index', compact('properties'));
     }
     public function create()

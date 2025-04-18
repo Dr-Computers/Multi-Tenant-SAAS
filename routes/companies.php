@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Company\Realestate\InvoiceController;
 use Illuminate\Support\Facades\Route;
 
 Route::group(
@@ -47,6 +48,14 @@ Route::group(
             Route::resource('furnishing', 'FurnishingController')->names('furnishing');
             Route::resource('amenities', 'AmenitiesController')->names('amenities');
             Route::resource('landmarks', 'LandmarkController')->names('landmarks');
+
+            Route::resource('invoices',InvoiceController::class)->names('invoices');
+            
+
+            
+
+     
+
         });
     }
 );

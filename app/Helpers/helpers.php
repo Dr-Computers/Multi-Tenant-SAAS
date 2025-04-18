@@ -140,6 +140,17 @@ if (!function_exists('uploadFiletoMedia')) {
     }
 }
 
+if (!function_exists('creatorId')) {
+    function creatorId()
+    {
+       
+        if (\Auth::user()->type == 'company' || \Auth::user()->type == 'super admin') {
+            return \Auth::user()->id;
+        } else {
+            return\Auth::user()->created_by;
+        }
+    }
+}
 
 // if (!function_exists('uploadFile')) {
 //     /**
