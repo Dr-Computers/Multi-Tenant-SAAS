@@ -3,6 +3,8 @@
 
 @section('breadcrumb')
     <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">{{ __('Dashboard') }}</a></li>
+
+    <li class="breadcrumb-item"><a href="{{ route('company.realestate.properties.index') }}">{{ __('Properties') }}</a></li>
     <li class="breadcrumb-item"><a
             href="{{ route('company.realestate.property.units.index', $property->id) }}">{{ __('Units') }}</a></li>
     <li class="breadcrumb-item">{{ $unit->exists ? __('Edit') : __('Create') }}</li>
@@ -16,7 +18,7 @@
 @section('content')
     <div class="row">
         <div class="col-md-12">
-            <form
+            <form @submit.prevent="submitForm" id="propertyFrom"
                 action="{{ $unit->exists ? route('company.realestate.property.units.update', [$property->id, $unit->id]) : route('company.realestate.property.units.store', $property->id) }}"
                 method="POST" enctype="multipart/form-data">
                 @csrf
@@ -28,26 +30,27 @@
                         <!-- Name -->
                         <div class="form-group col-md-6">
                             <label for="name">{{ __('Name') }}<sup class="text-danger fs-6 d-none">*</sup></label>
-                            <input type="text" name="name" autocomplete="off" value="{{ old('name', $unit->name) }}" class="form-control"
-                                required>
+                            <input form="propertyFrom" type="text" name="name" autocomplete="off" value="{{ old('name', $unit->name) }}"
+                                class="form-control" required>
                         </div>
                         <!-- Registration No -->
                         <div class="form-group col-md-6">
                             <label for="registration_no">{{ __('Registration No') }}</label>
-                            <input type="text" name="registration_no"  autocomplete="off" 
+                            <input form="propertyFrom" type="text" name="registration_no" autocomplete="off"
                                 value="{{ old('registration_no', $unit->registration_no) }}" class="form-control">
                         </div>
                         <div id="room-section" class="mb-3">
                             <div class="row">
                                 {{-- === Bedrooms Section === --}}
                                 <div class="section col-lg-6 mb-2" x-data="createRoomOptionHandler('bed_room')">
-                                    <label class="mt-3">No. of Bedrooms <sup class="text-danger fs-6 d-none">*</sup></label>
+                                    <label class="mt-3">No. of Bedrooms <sup
+                                            class="text-danger fs-6 d-none">*</sup></label>
                                     <div class="mt-3">
                                         <ul class="flex flex-wrap gap-3">
                                             @for ($i = 1; $i < 5; $i++)
                                                 <li class="relative mb-1">
-                                                    <input  class="sr-only peer"
-                                                        @if ($i == 1) checked @endif type="radio"
+                                                    <input class="sr-only peer" form="propertyFrom"
+                                                        @if ($i == $unit->bed_rooms) checked @endif type="radio"
                                                         value="{{ $i }}" name="bed_rooms"
                                                         id="bed_room_{{ $i }}">
                                                     <label
@@ -55,6 +58,17 @@
                                                         for="bed_room_{{ $i }}">{{ $i }}</label>
                                                 </li>
                                             @endfor
+
+                                            @if ($unit->bed_rooms > 4)
+                                                <li class="relative mb-1">
+                                                    <input form="propertyFrom" class="sr-only peer" checked type="radio"
+                                                        value="{{ $unit->bed_rooms }}" name="bed_rooms"
+                                                        id="room_{{ $unit->bed_rooms }}">
+                                                    <label
+                                                        class="mx-1 px-3 py-1 bg-white border border-gray-300 rounded-5 cursor-pointer focus:outline-none hover:bg-gray-50 peer-checked:ring-green-500 peer-checked:ring-2 peer-checked:border-transparent"
+                                                        for="room_{{ $unit->bed_rooms }}">{{ $unit->bed_rooms }}</label>
+                                                </li>
+                                            @endif
 
                                             {{-- Add Other --}}
                                             <li class="relative mb-1">
@@ -73,8 +87,7 @@
 
                                                 <template x-if="showInput">
                                                     <div class="flex items-center gap-2">
-                                                        <input type="number"  x-model="newOption"
-                                                            placeholder="Enter value"
+                                                        <input type="number" x-model="newOption" placeholder="Enter value"
                                                             class="border border-gray-300 p-2 rounded-md w-20 text-sm focus:ring-blue-500 focus:border-blue-500">
                                                         <button @click="addOption"
                                                             class="px-3 py-1 bg-green-500 text-white text-sm rounded-md hover:bg-green-600">Done</button>
@@ -83,9 +96,9 @@
 
                                                 <template x-if="addedOption">
                                                     <div class="flex items-center gap-2 relative mb-1">
-                                                        <input  class="sr-only peer" type="radio"
-                                                            x-bind:value="addedOption" name="bed_rooms" id="bed_room_other"
-                                                            checked>
+                                                        <input class="sr-only peer" type="radio"
+                                                            x-bind:value="addedOption" name="bed_rooms"
+                                                            id="bed_room_other" checked>
                                                         <label x-text="addedOption"
                                                             class="mx-1 px-3 py-1 bg-white border border-gray-300 rounded-5 cursor-pointer hover:bg-gray-50 peer-checked:ring-green-500 peer-checked:ring-2 peer-checked:border-transparent"
                                                             for="bed_room_other"></label>
@@ -100,13 +113,14 @@
 
                                 {{-- === Bathrooms Section === --}}
                                 <div class="section col-lg-6 mb-2" x-data="createRoomOptionHandler('bath_rooms')">
-                                    <label class="mt-3">No. of Bathrooms <sup class="text-danger fs-6 d-none">*</sup></label>
+                                    <label class="mt-3">No. of Bathrooms <sup
+                                            class="text-danger fs-6 d-none">*</sup></label>
                                     <div class="mt-3">
                                         <ul class="flex flex-wrap gap-3">
                                             @for ($i = 1; $i < 5; $i++)
                                                 <li class="relative mb-1">
-                                                    <input  class="sr-only peer"
-                                                        @if ($i == 1) checked @endif type="radio"
+                                                    <input class="sr-only peer" form="propertyFrom"
+                                                        @if ($i == $unit->bath_rooms) checked @endif type="radio"
                                                         value="{{ $i }}" name="bath_rooms"
                                                         id="bath_rooms_{{ $i }}">
                                                     <label
@@ -114,6 +128,16 @@
                                                         for="bath_rooms_{{ $i }}">{{ $i }}</label>
                                                 </li>
                                             @endfor
+                                            @if ($property->bath_rooms > 4)
+                                                <li class="relative mb-1">
+                                                    <input form="propertyFrom" class="sr-only peer" checked
+                                                        type="radio" value="{{ $property->bath_rooms }}" name="bath_rooms"
+                                                        id="bath_rooms_{{ $property->bath_rooms }}">
+                                                    <label
+                                                        class="mx-1 px-3 py-1 bg-white border border-gray-300 rounded-5 cursor-pointer focus:outline-none hover:bg-gray-50 peer-checked:ring-green-500 peer-checked:ring-2 peer-checked:border-transparent"
+                                                        for="bath_rooms_{{ $property->bath_rooms }}">{{ $property->bath_rooms }}</label>
+                                                </li>
+                                            @endif
 
                                             <li class="relative mb-1">
                                                 <template x-if="!showInput && !addedOption">
@@ -131,7 +155,7 @@
 
                                                 <template x-if="showInput">
                                                     <div class="flex items-center gap-2">
-                                                        <input type="number"  x-model="newOption"
+                                                        <input type="number" x-model="newOption"
                                                             placeholder="Enter value"
                                                             class="border border-gray-300 p-2 rounded-md w-20 text-sm focus:ring-blue-500 focus:border-blue-500">
                                                         <button @click="addOption"
@@ -141,7 +165,7 @@
 
                                                 <template x-if="addedOption">
                                                     <div class="flex items-center gap-2 relative mb-1">
-                                                        <input  class="sr-only peer" type="radio"
+                                                        <input class="sr-only peer" type="radio"
                                                             x-bind:value="addedOption" name="bath_rooms"
                                                             id="bath_rooms_other" checked>
                                                         <label x-text="addedOption"
@@ -163,8 +187,8 @@
                                         <ul class="flex flex-wrap gap-3">
                                             @for ($i = 0; $i < 4; $i++)
                                                 <li class="relative mb-1">
-                                                    <input  class="sr-only peer"
-                                                        @if ($i == 0) checked @endif type="radio"
+                                                    <input class="sr-only peer" form="propertyFrom"
+                                                        @if ($i == $unit->balconies) checked @endif type="radio"
                                                         value="{{ $i }}" name="balconies"
                                                         id="balconies_{{ $i }}">
                                                     <label
@@ -172,6 +196,16 @@
                                                         for="balconies_{{ $i }}">{{ $i }}</label>
                                                 </li>
                                             @endfor
+                                            @if ($property->balconies > 4)
+                                                <li class="relative mb-1">
+                                                    <input form="propertyFrom" class="sr-only peer" checked
+                                                        type="radio" value="{{ $property->balconies }}" name="balconies"
+                                                        id="balconies_{{ $property->balconies }}">
+                                                    <label
+                                                        class="mx-1 px-3 py-1 bg-white border border-gray-300 rounded-5 cursor-pointer focus:outline-none hover:bg-gray-50 peer-checked:ring-green-500 peer-checked:ring-2 peer-checked:border-transparent"
+                                                        for="balconies_{{ $property->balconies }}">{{ $property->balconies }}</label>
+                                                </li>
+                                            @endif
 
                                             <li class="relative mb-1">
                                                 <template x-if="!showInput && !addedOption">
@@ -189,7 +223,7 @@
 
                                                 <template x-if="showInput">
                                                     <div class="flex items-center gap-2">
-                                                        <input type="number"  x-model="newOption"
+                                                        <input type="number" x-model="newOption"
                                                             placeholder="Enter value"
                                                             class="border border-gray-300 p-2 rounded-md w-20 text-sm focus:ring-blue-500 focus:border-blue-500">
                                                         <button @click="addOption"
@@ -199,9 +233,9 @@
 
                                                 <template x-if="addedOption">
                                                     <div class="flex items-center gap-2 relative mb-1">
-                                                        <input  class="sr-only peer" type="radio"
-                                                            x-bind:value="addedOption" name="balconies" id="balconies_other"
-                                                            checked>
+                                                        <input class="sr-only peer" type="radio"
+                                                            x-bind:value="addedOption" name="balconies"
+                                                            id="balconies_other" checked>
                                                         <label x-text="addedOption"
                                                             class="mx-1 px-3 py-1 bg-white border border-gray-300 rounded-5 cursor-pointer hover:bg-gray-50 peer-checked:ring-green-500 peer-checked:ring-2 peer-checked:border-transparent"
                                                             for="balconies_other"></label>
@@ -221,8 +255,8 @@
                                         <ul class="flex flex-wrap gap-3">
                                             @for ($i = 0; $i < 4; $i++)
                                                 <li class="relative mb-1">
-                                                    <input  class="sr-only peer"
-                                                        @if ($i == 0) checked @endif type="radio"
+                                                    <input class="sr-only peer" form="propertyFrom"
+                                                        @if ($i == $unit->kitchen) checked @endif type="radio"
                                                         value="{{ $i }}" name="kitchen"
                                                         id="kitchen_{{ $i }}">
                                                     <label
@@ -231,6 +265,16 @@
                                                 </li>
                                             @endfor
 
+                                            @if ($property->kitchen > 4)
+                                                <li class="relative mb-1">
+                                                    <input form="propertyFrom" class="sr-only peer" checked
+                                                        type="radio" value="{{ $property->kitchen }}" name="kitchen"
+                                                        id="kitchen_{{ $property->kitchen }}">
+                                                    <label
+                                                        class="mx-1 px-3 py-1 bg-white border border-gray-300 rounded-5 cursor-pointer focus:outline-none hover:bg-gray-50 peer-checked:ring-green-500 peer-checked:ring-2 peer-checked:border-transparent"
+                                                        for="kitchen_{{ $property->kitchen }}">{{ $property->kitchen }}</label>
+                                                </li>
+                                            @endif
                                             <li class="relative mb-1">
                                                 <template x-if="!showInput && !addedOption">
                                                     <label @click="showInput = true"
@@ -247,7 +291,7 @@
 
                                                 <template x-if="showInput">
                                                     <div class="flex items-center gap-2">
-                                                        <input type="number"  x-model="newOption"
+                                                        <input type="number" x-model="newOption"
                                                             placeholder="Enter value"
                                                             class="border border-gray-300 p-2 rounded-md w-20 text-sm focus:ring-blue-500 focus:border-blue-500">
                                                         <button @click="addOption"
@@ -257,7 +301,7 @@
 
                                                 <template x-if="addedOption">
                                                     <div class="flex items-center gap-2 relative mb-1">
-                                                        <input  class="sr-only peer" type="radio"
+                                                        <input class="sr-only peer" type="radio"
                                                             x-bind:value="addedOption" name="kitchen" id="kitchen_other"
                                                             checked>
                                                         <label x-text="addedOption"
@@ -272,7 +316,7 @@
                                     </div>
                                 </div>
 
-                        
+
 
                             </div>
                         </div>
@@ -282,7 +326,7 @@
                         <!-- Rent Type -->
                         <div class="form-group col-md-6">
                             <label for="rent_type">{{ __('Rent Type') }}</label>
-                            <select name="rent_type" class="form-control">
+                            <select name="rent_type" class="form-control" form="propertyFrom">
                                 <option value="">{{ __('Select Rent Type') }}</option>
                                 <option value="monthly"
                                     {{ old('rent_type', $unit->rent_type) == 'monthly' ? 'selected' : '' }}>Monthly
@@ -297,7 +341,7 @@
                         <!-- Deposit Type -->
                         <div class="form-group col-md-6">
                             <label for="deposite_type">{{ __('Deposit Type') }}</label>
-                            <select name="deposite_type" class="form-control">
+                            <select name="deposite_type" class="form-control" form="propertyFrom">
                                 <option value="">{{ __('Select Type') }}</option>
                                 <option value="fixed"
                                     {{ old('deposite_type', $unit->deposite_type) == 'fixed' ? 'selected' : '' }}>Fixed
@@ -311,14 +355,14 @@
                         <!-- Deposit Amount -->
                         <div class="form-group col-md-6">
                             <label for="deposite_amount">{{ __('Deposit Amount') }}</label>
-                            <input type="number" step="0.01"  autocomplete="off"  name="deposite_amount"
+                            <input type="number" step="0.01" form="propertyFrom" autocomplete="off" name="deposite_amount"
                                 value="{{ old('deposite_amount', $unit->deposite_amount) }}" class="form-control">
                         </div>
 
                         <!-- Late Fee Type -->
                         <div class="form-group col-md-6">
                             <label for="late_fee_type">{{ __('Late Fee Type') }}</label>
-                            <select name="late_fee_type" class="form-control">
+                            <select name="late_fee_type" class="form-control" form="propertyFrom">
                                 <option value="">{{ __('Select Type') }}</option>
                                 <option value="fixed"
                                     {{ old('late_fee_type', $unit->late_fee_type) == 'fixed' ? 'selected' : '' }}>Fixed
@@ -332,14 +376,14 @@
                         <!-- Late Fee Amount -->
                         <div class="form-group col-md-6">
                             <label for="late_fee_amount">{{ __('Late Fee Amount') }}</label>
-                            <input type="number"  autocomplete="off"  step="0.01" name="late_fee_amount"
+                            <input type="number" form="propertyFrom" autocomplete="off" step="0.01" name="late_fee_amount"
                                 value="{{ old('late_fee_amount', $unit->late_fee_amount) }}" class="form-control">
                         </div>
 
                         <!-- Incident Receipt -->
                         <div class="form-group col-md-6">
                             <label for="incident_reicept_amount">{{ __('Incident Receipt Amount') }}</label>
-                            <input type="number"  autocomplete="off"  step="0.01" name="incident_reicept_amount"
+                            <input type="number" form="propertyFrom" autocomplete="off" step="0.01" name="incident_reicept_amount"
                                 value="{{ old('incident_reicept_amount', $unit->incident_reicept_amount) }}"
                                 class="form-control">
                         </div>
@@ -347,14 +391,12 @@
                         <!-- Price -->
                         <div class="form-group col-md-6">
                             <label for="price">{{ __('Price') }}</label>
-                            <input type="number"  autocomplete="off"  name="price" step="0.01" oninput="convertToWords()"
-                                placeholder="Enter price" max="999999999" type="number" id="priceInput"
-                                value="{{ old('price', $unit->price) }}" class="form-control">
+                            <input type="number" form="propertyFrom" autocomplete="off" name="price" step="0.01"
+                                oninput="convertToWords()" placeholder="Enter price" max="999999999" type="number"
+                                id="priceInput" value="{{ old('price', $unit->price) }}" class="form-control">
                             <p class="mt-4 text-dark-700">Price in words: <span id="priceInWords"></span></p>
 
                         </div>
-
-
 
                         <div class="mb-5 ">
                             <div class="section">
@@ -388,9 +430,8 @@
                                                         </div>
                                                     </div>
                                                     <label class="flex items-center space-x-2 text-dark cursor-pointer ">
-                                                        <input type="radio" name="coverImage" 
-                                                            class="" :value="image.name"
-                                                            @change="setCoverImage(index)"
+                                                        <input type="radio" name="coverImage" class="" form="propertyFrom"
+                                                            :value="image.name" @change="setCoverImage(index)"
                                                             :checked="currentCover === index" />
                                                         <span>Make Cover Photo</span>
                                                     </label>
@@ -404,8 +445,8 @@
                                                 <div class="relative group border rounded-lg p-2 overflow-hidden"
                                                     @click="triggerFileInput()"
                                                     x-bind:class="{ 'border-blue-500': isDragging }">
-                                                    <input name="images[]"  type="file"
-                                                        accept="image/*" id="fileInput" class="hidden" multiple
+                                                    <input name="images[]" type="file" accept="image/*" form="propertyFrom"
+                                                        id="fileInput" class="hidden" multiple
                                                         @change="addImages($event)">
                                                     <p class="text-dark-600">
                                                         click to upload your images here.</p>
@@ -421,8 +462,8 @@
 
                             <div class="mt-3">
                                 <label for="images">{{ __('Description Notes') }}</label>
-                                <textarea  name="unique_info" rows="4" autocomplete="off"
-                                    class="block w-full mt-2 p-2 border rounded-lg" placeholder="Write your thoughts here..."></textarea>
+                                <textarea name="unique_info" form="propertyFrom" rows="4" autocomplete="off" class="block w-full mt-2 p-2 border rounded-lg"
+                                    placeholder="Write your thoughts here...">{{ $unit ? $unit->notes : '' }}</textarea>
                             </div>
 
 
@@ -583,6 +624,5 @@
                 },
             };
         }
-
     </script>
 @endpush

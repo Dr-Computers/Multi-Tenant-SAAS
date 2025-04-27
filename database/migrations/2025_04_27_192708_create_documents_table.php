@@ -11,10 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('media_folde', function (Blueprint $table) {
+        Schema::create('documents', function (Blueprint $table) {
             $table->id();
-            $table->integer('name')->nullable(); 
-            $table->string('company_id')->nullable();
+            $table->integer('company_id')->nullable();
+            $table->integer('user_id')->nullable();
+            $table->integer('file_id')->nullable();
+            $table->string('document_type')->nullable();
             $table->timestamps();
         });
     }
@@ -24,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('media_folde');
+        Schema::dropIfExists('documents');
     }
 };

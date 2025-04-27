@@ -128,36 +128,36 @@ function show_toastr(type, message) {
     $('#liveToast .toast-body').html(message);
 }
 
-// $(document).on('click', 'a[data-ajax-popup="true"], button[data-ajax-popup="true"], div[data-ajax-popup="true"]', function () {
+$(document).on('click', 'a[data-ajax-popup2="true"], button[data-ajax-popup2="true"], div[data-ajax-popup2="true"]', function () {
 
-//     var title1 = $(this).data("title");
-//     var title2 = $(this).data("bs-original-title");
-//     var title = (title1 != undefined) ? title1 : title2;
-//     var size = ($(this).data('size') == '') ? 'md' : $(this).data('size');
-//     var url = $(this).data('url');
-//     $("#commonModal .modal-title").html(title);
-//     $("#commonModal .modal-dialog").addClass('modal-' + size);
-//     $.ajax({
-//         url: url,
-//         success: function (data) {
-//             $('#commonModal .body').html(data);
-//             $("#commonModal").modal('show');
-//             // daterange_set();
-//             taskCheckbox();
-//             validation();
-//             common_bind("#commonModal");
-//             setTimeout(function () {
-//                 commonLoader();
-//             }, 600);
-//             select2();
-//         },
-//         error: function (data) {
-//             data = data.responseJSON;
-//             show_toastr('error', data.error, 'error')
-//         }
-//     });
+    var title1 = $(this).data("title");
+    var title2 = $(this).data("bs-original-title");
+    var title = (title1 != undefined) ? title1 : title2;
+    var size = ($(this).data('size') == '') ? 'md' : $(this).data('size');
+    var url = $(this).data('url');
+    $("#commonPopModal .modal-title").html(title);
+    $("#commonPopModal .modal-dialog").addClass('modal-' + size);
+    $.ajax({
+        url: url,
+        success: function (data) {
+            $('#commonPopModal .body').html(data);
+            $("#commonPopModal").modal('show');
+            // daterange_set();
+            taskCheckbox();
+            validation();
+            common_bind("#commonPopModal");
+            setTimeout(function () {
+                commonLoader();
+            }, 600);
+            select2();
+        },
+        error: function (data) {
+            data = data.responseJSON;
+            show_toastr('error', data.error, 'error')
+        }
+    });
 
-// });
+});
 $(document).on('click', 'a[data-ajax-popup="true"], button[data-ajax-popup="true"], div[data-ajax-popup="true"]', function () {
     var title1 = $(this).data("title");
     var title2 = $(this).data("bs-original-title");

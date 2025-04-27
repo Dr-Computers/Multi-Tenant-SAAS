@@ -30,11 +30,12 @@
         <div class="ms-auto">
             <ul class="list-unstyled">
                 @impersonating($guard = null)
-                <li class="dropdown dash-h-item drp-company">
-                    <a class="btn btn-danger btn-sm me-3" href="{{ route('admin.exit.company') }}"><i class="ti ti-ban"></i>
-                        {{ __('Exit Company Login') }}
-                    </a>
-                </li>
+                    <li class="dropdown dash-h-item drp-company">
+                        <a class="btn btn-danger btn-sm me-3" href="{{ route('admin.exit.company') }}"><i
+                                class="ti ti-ban"></i>
+                            {{ __('Exit Company Login') }}
+                        </a>
+                    </li>
                 @endImpersonating
                 <li class="dropdown dash-h-item drp-language">
                     {{-- <a class="dash-head-link dropdown-toggle arrow-none me-0" data-bs-toggle="dropdown"
@@ -91,55 +92,21 @@
                     <a class="dash-head-link dropdown-toggle arrow-none me-0" data-bs-toggle="dropdown" href="#"
                         role="button" aria-haspopup="false" aria-expanded="false">
                         <span class="theme-avtar">
-                            @if (\Auth::guard('customer')->check())
-                                <img src="{{ isset(\Auth::user()->avatar) && !empty(\Auth::user()->avatar) ? \App\Models\Utility::get_file('uploads/avatar/' . \Auth::user()->avatar) : 'logo-dark.png' }}"
+                           
+                                <img src="{{ !empty(\Auth::user()->avatar_url) ? \App\Models\Utility::get_file(\Auth::user()->avatar_url) : asset(Storage::url('uploads/avatar/avatar.png')) }}"
                                     class="img-fluid rounded-circle">
-                            @else
-                                <img src="{{ !empty(\Auth::user()->avatar) ? \App\Models\Utility::get_file(\Auth::user()->avatar) : asset(Storage::url('uploads/avatar/avatar.png')) }}"
-                                    class="img-fluid rounded-circle">
-                            @endif
+                            
                         </span>
                         <span class="hide-mob ms-2">{{ __('Hi, ') }}{{ \Auth::user()->name }}!</span>
                         <i class="ti ti-chevron-down drp-arrow nocolor hide-mob"></i>
                     </a>
                     <div class="dropdown-menu dash-h-dropdown">
 
-                        @if (\Auth::guard('customer')->check())
-                            <a href="{{ route('customer.profile') }}" class="dropdown-item">
-                                <i class="ti ti-user"></i> <span>{{ __('My Profile') }}</span>
-                            </a>
-                        @elseif(\Auth::guard('vender')->check())
-                            <a href="{{ route('vender.profile') }}" class="dropdown-item">
-                                <i class="ti ti-user"></i> <span>{{ __('My Profile') }}</span>
-                            </a>
-                        @else
-                            <a href="{{ route('profile') }}" class="dropdown-item">
-                                <i class="ti ti-user"></i> <span>{{ __('My Profile') }}</span>
-                            </a>
-                        @endif
+                        <a href="{{ route('company.profile') }}" class="dropdown-item">
+                            <i class="ti ti-user"></i> <span>{{ __('My Profile') }}</span>
+                        </a>
 
-                        @if (\Auth::guard('customer')->check())
-                            <a href="{{ route('customer.logout') }}"
-                                onclick="event.preventDefault(); document.getElementById('frm-logout').submit();"
-                                class="dropdown-item">
-                                <i class="ti ti-power"></i>
-                                <span>{{ __('Logout') }}</span>
-                            </a>
-                            <form id="frm-logout" action="{{ route('customer.logout') }}" method="POST"
-                                class="d-none">
-                                {{ csrf_field() }}
-                            </form>
-                        @elseif(\Auth::guard('vender')->check())
-                            <a href="{{ route('vender.logout') }}"
-                                onclick="event.preventDefault(); document.getElementById('frm-logout').submit();"
-                                class="dropdown-item">
-                                <i class="ti ti-power"></i>
-                                <span>{{ __('Logout') }}</span>
-                            </a>
-                            <form id="frm-logout" action="{{ route('vender.logout') }}" method="POST" class="d-none">
-                                {{ csrf_field() }}
-                            </form>
-                        @else
+                      
                             <a href="{{ route('logout') }}"
                                 onclick="event.preventDefault(); document.getElementById('frm-logout').submit();"
                                 class="dropdown-item">
@@ -149,7 +116,7 @@
                             <form id="frm-logout" action="{{ route('logout') }}" method="POST" class="d-none">
                                 {{ csrf_field() }}
                             </form>
-                        @endif
+                    
 
 
                     </div>

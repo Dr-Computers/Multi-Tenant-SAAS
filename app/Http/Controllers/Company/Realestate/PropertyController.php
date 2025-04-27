@@ -3,12 +3,15 @@
 namespace App\Http\Controllers\Company\Realestate;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\PropertyRequest;
+use App\Models\Owner;
 use App\Models\Property;
 use App\Models\PropertyLandmark;
 use App\Models\RealestateAmenity;
 use App\Models\RealestateCategory;
 use App\Models\RealestateFurnishing;
 use App\Models\RealestateLandmark;
+use App\Models\User;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -25,16 +28,18 @@ class PropertyController extends Controller
     }
     public function create()
     {
-        $is_rent   = RealestateCategory::where('is_rent', 1)->get();
-        $is_sell   = RealestateCategory::where('is_sell', 1)->get();
+        $is_rent     = RealestateCategory::where('is_rent', 1)->get();
+        $is_sell     = RealestateCategory::where('is_sell', 1)->get();
 
         $furnishings = RealestateFurnishing::where('status', '1')->get();
-        $landmarks  = RealestateLandmark::where('status', '1')->get();
+        $landmarks   = RealestateLandmark::where('status', '1')->get();
         $amenities   = RealestateAmenity::where('status', '1')->get();
 
-        return view('company.realestate.properties.create', compact('is_rent', 'is_sell', 'furnishings', 'landmarks', 'amenities'));
+        $owners      = User::where('type', 'owner')->where('parent', Auth::user()->creatorId())->get();
+
+        return view('company.realestate.properties.create', compact('is_rent', 'is_sell', 'furnishings', 'landmarks', 'amenities','owners'));
     }
-    public function store(Request $request)
+    public function store(PropertyRequest $request)
     {
     
         DB::beginTransaction();
@@ -64,22 +69,21 @@ class PropertyController extends Controller
                 $youtube_video = $this->getYouTubeVideoId($request->input('youtube_video'));
             }
 
-
             $property->company_id       = Auth::user()->creatorId();
-            $property->name             = $request->property_name;
-            $property->purpose_type     = $request->type;
-            $property->mode             = $request->mode;
-            $property->ownership        = $request->ownership;
-            $property->total_floor      = $request->total_floor;
-            $property->available_floor  = $request->available_floor;
-            $property->super_buit_up_area= $request->super_built_up_area;
-            $property->carpet_area      = $request->carpet_area;
-            $property->closed_parking   = $request->covered_parking;
-            $property->open_parking     = $request->open_parking;
-            $property->availability_status = $request->available_status;
-            $property->age_property       = $request->property_age;
+            $property->name             = $request->property_name ?? null;
+            $property->purpose_type     = $request->type ?? null;
+            $property->mode             = $request->mode ?? null;
+            $property->ownership        = $request->ownership ?? null;
+            $property->total_floor      = $request->total_floor ?? null;
+            $property->available_floor  = $request->available_floor ?? null;
+            $property->super_buit_up_area= $request->super_built_up_area ?? null;
+            $property->carpet_area      = $request->carpet_area ?? null;
+            $property->closed_parking   = $request->covered_parking ?? null;
+            $property->open_parking     = $request->open_parking ?? null;
+            $property->availability_status = $request->available_status ?? null;
+            $property->age_property       = $request->property_age ?? null;
             $property->thumbnail_image    =  isset($imagePath['coverImagePath']) ? $imagePath['coverImagePath'] : '';
-            $property->youtube_video      = $youtube_video;
+            $property->youtube_video      = $youtube_video ?? null;
             $property->maintatenance_type = '';
             $property->maintatenace_fee   = '';
             $property->overlooking        = '';
@@ -87,27 +91,28 @@ class PropertyController extends Controller
             $property->status_electricity = '';
             $property->authority_approvel = '';
             $property->authority_approvel_document_id = '';
-            $property->fire_safty_start_date = '';
-            $property->fire_safty_end_date = '';
-            $property->insurance_start_date = '';
-            $property->insurance_end_date = '';
-            $property->building_no        = '';
+            $property->fire_safty_start_date = $request->fire_safty_start_date ?? null;
+            $property->fire_safty_end_date = $request->fire_safty_end_date ?? null;
+            $property->insurance_start_date = $request->insurance_start_date ?? null;
+            $property->insurance_end_date = $request->insurance_end_date ?? null;
+            $property->building_no        = $request->building_no ?? null;
             $property->lifts              = '';
             $property->moderation_status = 'approved';
             $property->author_id        = auth()->user()->id;
-            $property->latitude         = $request->latitude;
-            $property->longitude        = $request->longitude;
-            $property->location         = $request->location_info;
-            $property->description      = $request->description;
-            $property->unique_id        = $request->account . date('maYdhis');
+            $property->latitude         = $request->latitude ?? null;
+            $property->longitude        = $request->longitude ?? null;
+            $property->location         = $request->location_info ?? null;
+            $property->description      = $request->description ?? null;
+            $property->unique_id        = Auth::user()->creatorId() . date('maYdhis');
             $property->views            = 0;
             $property->is_featured      = 0;
-            $property->city             = $request->city;
-            $property->locality         = $request->locality;
-            $property->sub_locality     = $request->sub_locality;
-            $property->plot_area        = $request->plot_area ?? '';
-            $property->open_sides       = $request->open_sides;
-            $property->plot_type        = $request->plot_type ?? '';
+            $property->city             = $request->city ?? null;
+            $property->locality         = $request->locality ?? null;
+            $property->sub_locality     = $request->sub_locality ?? null;
+            $property->plot_area        = $request->plot_area ?? null;
+            $property->open_sides       = $request->open_sides ?? null;
+            $property->plot_type        = $request->plot_type ?? null;
+            $property->owner_id         = $request->owner ?? null;
             $property->save();
 
 
@@ -119,9 +124,7 @@ class PropertyController extends Controller
 
             // $this->saveCustomFields($property, $request->input('custom_fields', [])); //moredetail
 
-            $this->landmarks($property, $request->input('facilities', []));
-
-         
+            $this->landmarks($property, $request->input('landmarks', []));
 
             DB::commit();
             Session::flash('success_msg', 'Successfully Created');
@@ -162,10 +165,11 @@ class PropertyController extends Controller
         $furnishings = RealestateFurnishing::where('status', '1')->get();
         $landmarks  = RealestateLandmark::where('status', '1')->get();
         $amenities   = RealestateAmenity::where('status', '1')->get();
+        $owners      = User::where('type', 'owner')->where('parent', Auth::user()->creatorId())->get();
 
         // $customFields = CustomField::get();
 
-        return view('company.realestate.properties.edit', compact('categories', 'is_rent', 'is_sell', 'furnishings', 'landmarks', 'amenities', 'property'));
+        return view('company.realestate.properties.edit', compact('categories', 'is_rent', 'is_sell', 'furnishings', 'landmarks', 'amenities', 'property','owners'));
     }
 
     public function update(
@@ -321,7 +325,7 @@ class PropertyController extends Controller
             $this->saveCustomFields($property, $request->input('custom_fields', [])); //moredetail
 
 
-            $this->saveFacilitiesService($property, $request->input('facilities', []));
+            $this->landmarks($property, $request->input('facilities', []));
 
             // $saveFacilitiesService->execute($property, $request->input('facilities', []));  // landmark
 
@@ -464,7 +468,7 @@ class PropertyController extends Controller
         $property->customFields()->saveMany($customFields);
     }
 
-    protected function saveFacilitiesService(Property $property, array $facilities = []): void
+    protected function landmarks(Property $property, array $facilities = []): void
     {
 
         PropertyLandmark::where('property_id', $property->id)->delete();
@@ -552,11 +556,6 @@ class PropertyController extends Controller
         }
     
         return false; // No valid video ID found
-    }
-
-
-    public function units(Request $request){
-
     }
     
 }

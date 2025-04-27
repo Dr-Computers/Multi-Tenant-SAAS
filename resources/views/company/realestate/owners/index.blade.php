@@ -27,6 +27,7 @@
                                     <th>{{ __('Name') }}</th>
                                     <th>{{ __('Email') }}</th>
                                     <th>{{ __('Mobile No') }}</th>
+                                    <th>{{ __('Properties') }}</th>
                                     <th>{{ __('Status') }}</th>
                                     <th>{{ __('Action') }}</th>
 
@@ -36,65 +37,74 @@
                                 @forelse ($owners ?? [] as $key => $owner)
                                     <tr>
                                         <td>{{ $key + 1 }}</td>
-                                        <td>{{ $owner->name }}</td>
-                                        <td>{{ $owner->email }}</td>
-                                        <td>{{ $owner->mobile }}</td>
                                         <td>
-                                            @if ($owner->is_enable_login == '1')
-                                                <i class="badge bg-success p-2 px-3 rounded"></i>
-                                                {{ ucfirst('Enabled') }}
+                                            <a href="{{ route('company.realestate.owners.show', $owner->id) }}">
+                                                <img src="{{ asset('storage/' . $owner->avatar_url) }}"
+                                                    class="h-10 w-auto border mb-1 rounded-circle">
+                                                <span class="mt-1 text-capitalize small">{{ $owner->name }}</span>
+                                            </a>
+                                        </td>
+                                        <td>
+                                            <a href="mailto:{{ $owner->email }}">{{ $owner->email }}</a>
+                                        </td>
+                                        <td>
+                                            <a href="tel:{{ $owner->mobile }}">{{ $owner->mobile }}</a>
+                                        </td>
+                                        <td>
+                                            0
+                                        </td>
+                                        <td>
+                                            @if ($owner->is_active == '1')
+                                                <span class="badge bg-success   py-1 px-2 rounded">
+                                                    {{ ucfirst('Enabled') }}</span>
                                             @else
-                                                <i class="badge bg-danger p-2 px-3 rounded"></i>
-                                                {{ ucfirst('Disabled') }}
+                                                <span class="badge bg-danger py-1 px-2 rounded">
+                                                    {{ ucfirst('Disabled') }}</span>
                                             @endif
                                         </td>
-
                                         <td>
-                                            <div class="action-btn me-2">
-                                                <a href="#"
-                                                    class="mx-3 btn btn-sm d-inline-flex align-items-center bg-dark"
-                                                    data-bs-toggle="tooltip" title="{{ __('Reset Password') }}"
-                                                    data-url="{{ route('company.realestate.owners.reset.form', $owner->id) }}"
-                                                    data-size="xl" data-ajax-popup="true"
-                                                    data-original-title="{{ __('Reset Password') }}">
-                                                    <span> <i class="ti ti-lock text-white"></i></span>
-                                                </a>
+                                            <div class="btn-group card-option">
+                                                <button type="button" class="btn dropdown-toggle"
+                                                    data-bs-toggle="dropdown">
+                                                    <i class="ti ti-dots-vertical"></i>
+                                                </button>
+                                                <div class="dropdown-menu dropdown-menu-end">
+                                                    <button href="#" class="dropdown-item" data-bs-toggle="tooltip"
+                                                        title="{{ __('Reset Password') }}"
+                                                        data-url="{{ route('company.realestate.owners.reset.form', $owner->id) }}"
+                                                        data-size="xl" data-ajax-popup="true"
+                                                        data-original-title="{{ __('Reset Password') }}">
+                                                        <span> <i class="ti ti-lock text-dark"></i>
+                                                            {{ __('Reset Password') }}</span>
+                                                    </button>
+                                                    <a href="{{ route('company.realestate.owners.show', $owner->id) }}"
+                                                        class="dropdown-item" data-bs-toggle="tooltip"
+                                                        title="{{ __('View') }}"
+                                                        data-original-title="{{ __('Show') }}">
+                                                        <span> <i class="ti ti-eye text-dark"></i>
+                                                            {{ __('Show') }}</span>
+                                                    </a>
+                                                    <button href="#" class="dropdown-item" data-bs-toggle="tooltip"
+                                                        title="{{ __('Edit') }}"
+                                                        data-url="{{ route('company.realestate.owners.edit', $owner->id) }}"
+                                                        data-size="xl" data-ajax-popup="true"
+                                                        data-original-title="{{ __('Edit') }}">
+                                                        <span> <i class="ti ti-pencil text-dark"></i>
+                                                            {{ __('Edit') }}</span>
+                                                    </button>
+                                                    {!! Form::open([
+                                                        'method' => 'DELETE',
+                                                        'route' => ['company.realestate.owners.destroy', $owner->id],
+                                                        'id' => 'delete-form-' . $owner->id,
+                                                    ]) !!}
+                                                    <a href="#" class="dropdown-item" data-bs-toggle="tooltip"
+                                                        title="{{ __('Delete') }}">
+                                                        <i class="ti ti-trash text-dark  "></i>
+                                                        {{ __('Delete') }}</a>
+
+                                                    {!! Form::close() !!}
+                                                </div>
                                             </div>
-                                            <div class="action-btn me-2">
-                                                <a href="{{ route('company.realestate.owners.show', $owner->id) }}"
-                                                    class="mx-3 btn btn-sm d-inline-flex align-items-center bg-info"
-                                                    data-bs-toggle="tooltip" title="{{ __('View') }}"
-                                                    data-original-title="{{ __('Edit') }}">
-                                                    <span> <i class="ti ti-eye text-white"></i></span>
-                                                </a>
-                                            </div>
-
-                                            <div class="action-btn me-2">
-                                                <a href="#"
-                                                    class="mx-3 btn btn-sm d-inline-flex align-items-center bg-warning"
-                                                    data-bs-toggle="tooltip" title="{{ __('Edit') }}"
-                                                    data-url="{{ route('company.realestate.owners.edit', $owner->id) }}"
-                                                    data-size="xl" data-ajax-popup="true"
-                                                    data-original-title="{{ __('Edit') }}">
-                                                    <span> <i class="ti ti-pencil text-white"></i></span>
-                                                </a>
-                                            </div>
-
-                                            <div class="action-btn">
-                                                {!! Form::open([
-                                                    'method' => 'DELETE',
-                                                    'route' => ['company.realestate.owners.destroy', $owner->id],
-                                                    'id' => 'delete-form-' . $owner->id,
-                                                ]) !!}
-                                                <a href="#"
-                                                    class="mx-4 btn btn-sm  align-items-center bs-pass-para bg-danger"
-                                                    data-bs-toggle="tooltip" title="{{ __('Delete') }}">
-                                                    <i class="ti ti-trash text-white text-white "></i></a>
-
-                                                {!! Form::close() !!}
-                                            </div>
-
-
                                         </td>
                                     </tr>
                                 @empty

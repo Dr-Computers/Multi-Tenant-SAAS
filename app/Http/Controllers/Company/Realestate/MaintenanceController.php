@@ -13,9 +13,11 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Spatie\Permission\Models\Role;
+use App\Traits\Media\HandlesMediaFolders;
 
 class MaintenanceController extends Controller
-{ 
+{
+    use HandlesMediaFolders;
     public function index()
     {
         $maintainers = User::where('type', 'maintainer')->where('parent', Auth::user()->creatorId())->get();
@@ -24,9 +26,9 @@ class MaintenanceController extends Controller
 
     public function create()
     {
-        
+
         $types = MaintenanceTypes::get();
-        return view('company.realestate.maintainers.form',compact('types'));
+        return view('company.realestate.maintainers.form', compact('types'));
     }
 
     public function store(Request $request)
@@ -37,11 +39,11 @@ class MaintenanceController extends Controller
             'mobile'   => 'required',
             'type'   => 'required',
             'password' => 'required|min:6',
-            'address'=> 'required',
-            'city'=> 'required',
-            'state'=> 'required',
-            'postal_code'=> 'required',
-            'country'=> 'required',
+            'address' => 'required',
+            'city' => 'required',
+            'state' => 'required',
+            'postal_code' => 'required',
+            'country' => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -57,7 +59,14 @@ class MaintenanceController extends Controller
         $user->created_by      = auth()->user()->id;
         $user->parent          = auth()->user()->creatorId();
         $user->password        = Hash::make($request->password);
+        $user->is_active = $request->has('is_active')  ? 1 : 0;
+        if ($request->hasFile('profile')) {
+            $file_id = $this->uploadAndSaveFile($request->profile, Auth::user()->creatorId(), 'avatar');
+            $user->avatar = $file_id;
+        }
+
         $user->save();
+
 
         $personal               = new PersonalDetail();
         $personal->user_id      = $user->id;
@@ -77,14 +86,14 @@ class MaintenanceController extends Controller
         $role_r = Role::findByName('maintainer-' . Auth::user()->creatorId());
         $user->assignRole($role_r);
 
-        return redirect()->route('company.realestate.maintainers.index')->with('success', 'Tenant created successfully.');
+        return redirect()->route('company.realestate.maintainers.index')->with('success', 'Maintainer created successfully.');
     }
 
     public function edit($id)
     {
         $user = User::with('personal')->where('parent', '=', Auth::user()->creatorId())->where('id', $id)->first() ?? abort(404);
         $types = MaintenanceTypes::get();
-        return view('company.realestate.maintainers.form', compact('user','types'));
+        return view('company.realestate.maintainers.form', compact('user', 'types'));
     }
 
     public function update(Request $request, User $maintainer)
@@ -93,12 +102,12 @@ class MaintenanceController extends Controller
             'name'   => 'required|max:100',
             'email'  => 'required|email|unique:users,email,' . $maintainer->id,
             'mobile' => 'required',
-            'address'=> 'required',
-            'city'=> 'required',
+            'address' => 'required',
+            'city' => 'required',
             'type'   => 'required',
-            'state'=> 'required',
-            'postal_code'=> 'required',
-            'country'=> 'required',
+            'state' => 'required',
+            'postal_code' => 'required',
+            'country' => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -108,9 +117,18 @@ class MaintenanceController extends Controller
         $maintainer->name            = $request->name;
         $maintainer->email           = $request->email;
         $maintainer->mobile          = $request->mobile;
-        $maintainer->is_enable_login = $request->has('password_switch');
+        // $maintainer->is_enable_login = $request->has('password_switch');
+        if ($request->hasFile('profile')) {
+            $file_id = $this->uploadAndSaveFile($request->profile, Auth::user()->creatorId(), 'avatar');
+            $maintainer->avatar = $file_id;
+        }
+        $maintainer->is_active = $request->has('is_active')  ? 1 : 0;
         $maintainer->save();
 
+        if ($maintainer->getRoleNames()->first() != 'maintainer') {
+            $role_r = Role::findByName('maintainer-' . Auth::user()->creatorId());
+            $maintainer->roles()->sync([$role_r->id]);
+        }
 
         $personal = PersonalDetail::where('user_id', $maintainer->id)->first();
         $personal->address        = $request->address;
@@ -127,12 +145,11 @@ class MaintenanceController extends Controller
         $jobType->type_id      = $request->type;
         $jobType->save();
 
-        return redirect()->route('company.realestate.maintainers.index')->with('success', 'Tenant updated successfully.');
+        return redirect()->route('company.realestate.maintainers.index')->with('success', 'Maintainer updated successfully.');
     }
 
     public function destroy(User $maintainer)
     {
-   
         MaintenanceJob::where('user_id', $maintainer->id)->delete();
         $maintainer->delete();
         return redirect()->back()->with('success', 'Maintainer deleted successfully.');

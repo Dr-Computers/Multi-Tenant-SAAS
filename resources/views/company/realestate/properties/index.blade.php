@@ -8,8 +8,8 @@
 @endsection
 @section('action-btn')
     <div class="d-flex">
-        <a href="{{ route('company.realestate.properties.create') }}"
-   title="{{ __('Create New Property') }}" class="btn btn-sm btn-primary me-2">
+        <a href="{{ route('company.realestate.properties.create') }}" title="{{ __('Create New Property') }}"
+            class="btn btn-sm btn-primary me-2">
             <i class="ti ti-plus"></i>
         </a>
     </div>
@@ -27,6 +27,7 @@
                                     <th>{{ __('Name') }}</th>
                                     <th>{{ __('Category') }}</th>
                                     <th>{{ __('Type') }}</th>
+                                    <th>{{ __('Units') }}</th>
                                     <th>{{ __('Status') }}</th>
                                     <th>{{ __('Action') }}</th>
                                 </tr>
@@ -37,14 +38,24 @@
                                         <td>{{ $key + 1 }}</td>
                                         <td>{{ $property->name }}</td>
                                         <td>{{ $property->categories->pluck('name')->first() }}</td>
-                                        <td>{{ $property->purpose_type }}</td>
+                                        <td>{{ $property->purpose_type }}<br>
+                                            <span class="badge text-capitalize bg-dark">
+                                                <i class="rounded"></i>
+                                                {{ $property->mode }}</span>
+                                        </td>
                                         <td>
-                                            @if ($property->is_enable_login == '1')
-                                                <i class="badge text-success p-2 px-3 rounded"></i>
-                                                {{ ucfirst('Enabled') }}
+
+                                            <a href="{{ route('company.realestate.property.units.index', $property->id) }}">
+                                                    {{ $property->units ? count($property->units) : 0 }}
+                                            </a>
+                                        </td>
+                                        <td>
+                                            @if ($property->moderation_status == '1')
+                                                <span class="badge bg-success p-1 px-3 rounded">
+                                                    {{ ucfirst('Enabled') }}</span>
                                             @else
-                                                <i class="badge text-danger p-2 px-3 rounded"></i>
-                                                {{ ucfirst('Disabled') }}
+                                                <span class="badge bg-danger p-1 px-3 rounded">
+                                                    {{ ucfirst('Disabled') }}</span>
                                             @endif
                                         </td>
 
@@ -58,34 +69,33 @@
 
                                                 <div class="dropdown-menu dropdown-menu-end">
                                                     <a class="dropdown-item"
-                                                        href="{{ route('company.realestate.property.units.index', $property->id) }}"
-                                                    >
-                                                        <span> <i class="ti ti-plus text-dark"></i> {{ __('Units') }}</span>
+                                                        href="{{ route('company.realestate.property.units.index', $property->id) }}">
+                                                        <span> <i class="ti ti-plus text-dark"></i>
+                                                            {{ __('Units') }}</span>
                                                     </a>
                                                     <a class="dropdown-item"
-                                                        href="{{ route('company.realestate.properties.show', $property->id) }}"
-                                                    >
-                                                        <span> <i class="ti ti-eye text-dark"></i> {{ __('View') }}</span>
+                                                        href="{{ route('company.realestate.properties.show', $property->id) }}">
+                                                        <span> <i class="ti ti-eye text-dark"></i>
+                                                            {{ __('View') }}</span>
                                                     </a>
                                                     <a class="dropdown-item"
-                                                        href="{{ route('company.realestate.properties.edit', $property->id) }}"
-                                                    >
-                                                        <span> <i class="ti ti-pencil text-dark"></i> {{ __('Edit') }}</span>
+                                                        href="{{ route('company.realestate.properties.edit', $property->id) }}">
+                                                        <span> <i class="ti ti-pencil text-dark"></i>
+                                                            {{ __('Edit') }}</span>
                                                     </a>
                                                     {!! Form::open([
                                                         'method' => 'DELETE',
                                                         'route' => ['company.realestate.properties.destroy', $property->id],
                                                         'id' => 'delete-form-' . $property->id,
                                                     ]) !!}
-                                                    <a href="#"
-                                                        class="dropdown-item bs-pass-para "
+                                                    <a href="#" class="dropdown-item bs-pass-para "
                                                         data-bs-toggle="tooltip" title="{{ __('Delete') }}">
                                                         <i class="ti ti-trash text-dark "></i> {{ __('Delete') }}</a>
-    
+
                                                     {!! Form::close() !!}
                                                 </div>
                                             </div>
-                                      
+
 
 
                                         </td>
@@ -105,30 +115,3 @@
         </div>
     </div>
 @endsection
-
-
-@push('script-page')
-    <script>
-        $(document).on('change', '#password_switch', function() {
-            if ($(this).is(':checked')) {
-                $('.ps_div').removeClass('d-none');
-                $('#password').attr("required", true);
-
-            } else {
-                $('.ps_div').addClass('d-none');
-                $('#password').val(null);
-                $('#password').removeAttr("required");
-            }
-        });
-        $(document).on('click', '.login_enable', function() {
-            setTimeout(function() {
-                $('.modal-body').append($('<input>', {
-                    type: 'hidden',
-                    val: 'true',
-                    name: 'login_enable'
-                }));
-            }, 2000);
-        });
-    </script>
-  
-@endpush

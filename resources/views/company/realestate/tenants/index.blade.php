@@ -27,6 +27,7 @@
                                     <th>{{ __('Name') }}</th>
                                     <th>{{ __('Email') }}</th>
                                     <th>{{ __('Mobile No') }}</th>
+                                    <th>{{ __('Properties/Units') }}</th>
                                     <th>{{ __('Status') }}</th>
                                     <th>{{ __('Action') }}</th>
 
@@ -36,48 +37,55 @@
                                 @forelse ($tenants ?? [] as $key => $user)
                                     <tr>
                                         <td>{{ $key + 1 }}</td>
-                                        <td>{{ $user->name }}</td>
-                                        <td>{{ $user->email }}</td>
-                                        <td>{{ $user->mobile }}</td>
                                         <td>
-                                            @if ($user->is_enable_login == '1')
-                                                <i class="badge bg-success p-2 px-3 rounded"></i>
-                                                {{ ucfirst('Enabled') }}
+                                            <a href="{{ route('company.realestate.tenants.show', $user->id) }}">
+                                                <img src="{{ asset('storage/' . $user->avatar_url) }}"
+                                                    class="h-10 w-auto border mb-1 rounded-circle">
+                                                <span class="mt-1 text-capitalize small">{{ $user->name }}</span>
+                                            </a>
+                                        </td>
+                                        <td><a href="mailto:{{ $user->email }}">{{ $user->email }}</a></td>
+                                        <td><a href="tel:{{ $user->mobile }}">{{ $user->mobile }}</a></td>
+                                        <td>0</td>
+                                        <td>
+                                            @if ($user->is_active == '1')
+                                                <span class="badge bg-success py-1 px-2 rounded">
+                                                    {{ ucfirst('Enabled') }}</span>
                                             @else
-                                                <i class="badge bg-danger p-2 px-3 rounded"></i>
-                                                {{ ucfirst('Disabled') }}
+                                                <span class="badge bg-danger py-1 px-2 rounded">
+                                                    {{ ucfirst('Disabled') }}</span>
                                             @endif
                                         </td>
 
                                         <td>
                                             <div class="action-btn me-2">
-                                                <a href="#"
+                                                <button href="#"
                                                     class="mx-3 btn btn-sm d-inline-flex align-items-center bg-dark"
                                                     data-bs-toggle="tooltip" title="{{ __('Reset Password') }}"
                                                     data-url="{{ route('company.realestate.tenants.reset.form', $user->id) }}"
                                                     data-size="xl" data-ajax-popup="true"
                                                     data-original-title="{{ __('Reset Password') }}">
                                                     <span> <i class="ti ti-lock text-white"></i></span>
-                                                </a>
+                                                </button>
                                             </div>
                                             <div class="action-btn me-2">
                                                 <a href="{{ route('company.realestate.tenants.show', $user->id) }}"
                                                     class="mx-3 btn btn-sm d-inline-flex align-items-center bg-info"
-                                                    data-bs-toggle="tooltip" title="{{ __('View') }}"
-                                                    data-original-title="{{ __('Edit') }}">
+                                                    data-bs-toggle="tooltip" title="{{ __('Show') }}"
+                                                    data-original-title="{{ __('Show') }}">
                                                     <span> <i class="ti ti-eye text-white"></i></span>
                                                 </a>
                                             </div>
 
                                             <div class="action-btn me-2">
-                                                <a href="#"
+                                                <button href="#"
                                                     class="mx-3 btn btn-sm d-inline-flex align-items-center bg-warning"
                                                     data-bs-toggle="tooltip" title="{{ __('Edit') }}"
                                                     data-url="{{ route('company.realestate.tenants.edit', $user->id) }}"
                                                     data-size="xl" data-ajax-popup="true"
                                                     data-original-title="{{ __('Edit') }}">
                                                     <span> <i class="ti ti-pencil text-white"></i></span>
-                                                </a>
+                                                </button>
                                             </div>
 
                                             <div class="action-btn">

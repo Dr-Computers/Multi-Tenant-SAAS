@@ -15,14 +15,11 @@
     </div>
 @endsection
 
-
 @section('content')
     <div class="row">
         <div class="col-sm-12">
             <div class="card">
                 <div class="card-body">
-                   
-
                     {{-- Tabs --}}
                     <ul class="nav nav-tabs" id="ownerTabs">
                         @php
