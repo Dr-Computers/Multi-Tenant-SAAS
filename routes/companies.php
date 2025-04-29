@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Company\Realestate\InvoiceController;
+use App\Http\Controllers\Company\Realestate\PropertyController;
 use Illuminate\Support\Facades\Route;
 
 Route::group(
@@ -31,12 +32,15 @@ Route::group(
             'as' => 'realestate.',
             'namespace' => 'Realestate',
         ], function () {
+          
             Route::resource('owners', 'OwnerController')->names('owners');
             Route::get('owners/{user}/reset-password', 'OwnerController@resetPasswordForm')->name('owners.reset.form');
             Route::post('owners/{user}/reset-password', 'OwnerController@resetPassword')->name('owners.reset.update');
+         
             Route::resource('properties', 'PropertyController')->names('properties');
-            Route::resource('property-units/{id}', 'PropertyUnitController')->names('property.units');
-          
+            // Route::resource('property-units/{id}', 'PropertyUnitController')->names('property.units');
+            Route::get('property/{pid}/unit', [PropertyController::class,'getPropertyUnit'])->name('property.unit');
+            Route::get('unit/{uid}/rent-type', [PropertyController::class,'getUnitRentType'])->name('unit.rent_type');
             Route::resource('tenants', 'TenantController')->names('tenants');
             Route::get('tenants/{user}/reset-password', 'TenantController@resetPasswordForm')->name('tenants.reset.form');
             Route::post('tenants/{user}/reset-password', 'TenantController@resetPassword')->name('tenants.reset.update');
@@ -50,6 +54,7 @@ Route::group(
             Route::resource('landmarks', 'LandmarkController')->names('landmarks');
 
             Route::resource('invoices',InvoiceController::class)->names('invoices');
+       
             
 
             

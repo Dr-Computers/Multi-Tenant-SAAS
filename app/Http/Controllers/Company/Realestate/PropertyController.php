@@ -5,9 +5,11 @@ namespace App\Http\Controllers\Company\Realestate;
 use App\Http\Controllers\Controller;
 use App\Models\Property;
 use App\Models\PropertyLandmark;
+use App\Models\PropertyUnit;
 use App\Models\RealestateAmenity;
 use App\Models\RealestateCategory;
 use App\Models\RealestateFurnishing;
+use App\Models\RealestateInvoice;
 use App\Models\RealestateLandmark;
 use Exception;
 use Illuminate\Http\Request;
@@ -558,6 +560,41 @@ class PropertyController extends Controller
 
     public function units(Request $request){
 
+    }
+
+
+    public function getPropertyUnit($property_id)
+    {
+        $units = PropertyUnit::where('property_id', $property_id)->get()->pluck('name', 'id');
+        $property = Property::find($property_id);
+        $invoiceNumber = $this->propertyInvoiceNumber($property_id);
+    
+        // Ensure invoicePrefix() returns a valid default
+        $prefix = invoicePrefix() ?? "#INVOICE"; 
+    
+        // Use database value for invoice prefix or default to "#INVOICE"
+        $invPrefix = $property && !empty($property->invoice_prefix) ? $property->invoice_prefix : $prefix;
+    
+        return response()->json([
+            'units' => $units,
+            'invoice_prefix' => $invPrefix,
+            'invoice_number' => $invoiceNumber,
+        ]);
+    }
+    
+    
+    private function propertyInvoiceNumber($property_id)
+    {
+        $latest = RealestateInvoice::where('property_id', $property_id)
+            ->orderBy('invoice_id', 'desc') // Ensure correct order
+            ->first();
+    
+        return $latest ? ($latest->invoice_id + 1) : 1; // Continue sequence
+    }
+    public function getUnitRentType($unitId)
+    {
+        $rentType = PropertyUnit::findOrFail($unitId)->rent_type;
+        return response()->json($rentType);
     }
     
 }

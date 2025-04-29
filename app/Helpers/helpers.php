@@ -3,6 +3,7 @@
 use App\Models\Currency;
 use Illuminate\Support\Facades\Storage;
 use App\Models\MediaFile;
+use Illuminate\Support\Facades\Auth;
 use Spatie\Image\Image;
 use Spatie\Image\Enums\AlignPosition;
 use Spatie\Image\Enums\Unit;
@@ -143,7 +144,7 @@ if (!function_exists('uploadFiletoMedia')) {
 if (!function_exists('creatorId')) {
     function creatorId()
     {
-       
+
         if (\Auth::user()->type == 'company' || \Auth::user()->type == 'super admin') {
             return \Auth::user()->id;
         } else {
@@ -422,8 +423,8 @@ if (!function_exists('permission_check')) {
 
     function permission_check($permission)
     {
-        $permissions_for_officeAdmin = ['Property Add','Property List', 'Property Show', 'Property Edit', 'Property Delete', 'Project List', 'Project Add', 'Project Edit', 'Project Delete', 'Builder List', 'Builder Add', 'Builder Edit', 'Builder Delete', 'Account List', 'Account Approvel', 'Leads Attend', 'Enquiry Attend', 'Setup Manage', 'Newsletters', 'Activity Logs', 'Blogs Manage'];
-        $permission_for_marketing = ['Property Add','Property List', 'Property Show', 'Property Edit', 'Project List', 'Project Add', 'Project Edit', 'Builder List', 'Builder Add', 'Builder Edit', 'Account Approvel', 'Leads Attend', 'Enquiry Attend'];
+        $permissions_for_officeAdmin = ['Property Add', 'Property List', 'Property Show', 'Property Edit', 'Property Delete', 'Project List', 'Project Add', 'Project Edit', 'Project Delete', 'Builder List', 'Builder Add', 'Builder Edit', 'Builder Delete', 'Account List', 'Account Approvel', 'Leads Attend', 'Enquiry Attend', 'Setup Manage', 'Newsletters', 'Activity Logs', 'Blogs Manage'];
+        $permission_for_marketing = ['Property Add', 'Property List', 'Property Show', 'Property Edit', 'Project List', 'Project Add', 'Project Edit', 'Builder List', 'Builder Add', 'Builder Edit', 'Account Approvel', 'Leads Attend', 'Enquiry Attend'];
         if (auth('web')->check()) {
             $account_type  = auth('web')->user()->acc_type;
             if ($account_type == 'marketing') {
@@ -454,13 +455,14 @@ if (!function_exists('dateTimeFormat')) {
 
     function dateTimeFormat($date)
     {
-        $date = date('d M,Y',strtotime($date));
-        $time = date('h:i a',strtotime($date));
-        return  $date . '<br>' . $time ;
+        $date = date('d M,Y', strtotime($date));
+        $time = date('h:i a', strtotime($date));
+        return  $date . '<br>' . $time;
     }
 }
 
-function indian_number_format($number) {
+function indian_number_format($number)
+{
     $decimal = ''; // To store decimal part if needed
     if (strpos($number, '.') !== false) {
         [$number, $decimal] = explode('.', $number); // Split integer and decimal parts
@@ -480,3 +482,23 @@ function indian_number_format($number) {
     // Reattach decimal part if present
     return $formatted . $decimal;
 }
+if (! function_exists('getCompanyDetails')) {
+    function getCompanyDetails()
+    {
+        $user = Auth::user();
+
+        if ($user && $user->company) {
+            return $user->company; // returns full company model
+        }
+
+        return null;
+    }
+}
+if (!function_exists('invoicePrefix')) {
+    function invoicePrefix()
+    {
+        $settings = getCompanyDetails();
+        return $settings?->invoice_prefix;
+    }
+}
+
