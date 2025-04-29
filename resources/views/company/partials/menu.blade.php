@@ -103,8 +103,8 @@
                         @endcan
                         @can('manage role')
                             <li
-                                class="dash-item {{ Request::route()->getName() == 'roles.index' || Request::route()->getName() == 'roles.create' || Request::route()->getName() == 'roles.edit' ? ' active' : '' }}">
-                                <a class="dash-link" href="#">{{ __('Maintaince Request') }}</a>
+                                class="dash-item {{ Request::route()->getName() == 'maintaince-requests.index' || Request::route()->getName() == 'maintaince-requests.create' || Request::route()->getName() == 'maintaince-requests.edit' ? ' active' : '' }}">
+                                <a class="dash-link" href="{{ route('company.realestate.maintaince-requests.index') }}">{{ __('Maintaince Request') }}</a>
                             </li>
                         @endcan
                         <li

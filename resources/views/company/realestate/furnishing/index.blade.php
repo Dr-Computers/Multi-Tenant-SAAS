@@ -42,7 +42,7 @@
                                 @empty
                                     <tr>
                                         <td colspan="7" class="text-center">
-                                            <h6>No owners found..!</h6>
+                                            <h6>No furnishings found..!</h6>
                                         </td>
                                     </tr>
                                 @endforelse
