@@ -141,7 +141,7 @@
                 formData.append('user_id', `{{ isset($user) ? $user->id : '0' }}` || 0);
                 formData.append('document_type',doc_typ)
 
-                fetch("{{ route('company.hrms.users.upload-documents',isset($user) ? $user->id : '0') }}", {
+                fetch("{{ route('company.realestate.tenants.upload-documents',isset($user) ? $user->id : '0') }}", {
                         method: "POST",
                         headers: {
                             'X-CSRF-TOKEN': '{{ csrf_token() }}'

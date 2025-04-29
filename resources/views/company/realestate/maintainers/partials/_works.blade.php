@@ -1,7 +1,7 @@
 <h5 class="mb-3">Requests for Approval</h5>
-@if($tenant->tenants)
+@if($maintainer->works)
     <ul class="list-group">
-        @foreach($tenant->tenants as $req)
+        @foreach($maintainer->works as $req)
             <li class="list-group-item">
                 <strong>{{ $req->name }}</strong> has requested approval for property: 
                 <em>{{ $req->property->title ?? 'N/A' }}</em>

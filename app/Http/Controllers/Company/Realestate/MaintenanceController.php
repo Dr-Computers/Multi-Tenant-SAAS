@@ -3,8 +3,11 @@
 namespace App\Http\Controllers\Company\Realestate;
 
 use App\Http\Controllers\Controller;
+use App\Models\Document;
 use App\Models\MaintenanceJob;
 use App\Models\MaintenanceTypes;
+use App\Models\MediaFile;
+use App\Models\MediaFolder;
 use App\Models\PersonalDetail;
 use App\Models\User;
 use Illuminate\Contracts\Foundation\MaintenanceMode;
@@ -14,6 +17,8 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Spatie\Permission\Models\Role;
 use App\Traits\Media\HandlesMediaFolders;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class MaintenanceController extends Controller
 {
@@ -176,4 +181,104 @@ class MaintenanceController extends Controller
 
         return redirect()->back()->with('success', 'Password reset successfully.');
     }
+
+
+    public function createDocuments($id)
+    {
+        $user = User::find($id);
+        return view('company.realestate.maintainers.form-documents', compact('user'));
+    }
+
+
+    public function uploadDocuments(Request $request, $user_id)
+    {
+
+        $request->validate([
+            'document_type' => 'required',
+            'documents.*' => 'required|file|max:51200', // 50MB max per file
+        ]);
+
+        $user = User::findOrFail($user_id);
+        $companyId = Auth::user()->creatorId();
+        $disk = env('FILESYSTEM_DISK', 'public');
+        $basePath = 'uploads/company_' . $companyId;
+
+        // Safe user folder name (slug it)
+        $userFolder = Str::slug($user->name) . '-' . $user->id;
+
+        // Make sure the full user folder exists
+
+        $userPath = $basePath . '/users';
+        $documentPath = $basePath . '/users/documents';
+        $fullPath = $basePath . '/users/documents' . '/' . $userFolder;
+
+        if (!Storage::disk($disk)->exists($userPath)) {
+            Storage::disk($disk)->makeDirectory($userPath);
+            $user = MediaFolder::create([
+                'company_id' => $companyId,
+                'parent_id' => NULL,
+                'name' => 'users',
+                'path' => $userPath,
+                'slug' => Str::slug('users'),
+            ]);
+        } else {
+            $user = MediaFolder::where('company_id', $companyId)->where('name', 'users')->first();
+        }
+
+
+
+        if (!Storage::disk($disk)->exists($documentPath)) {
+            Storage::disk($disk)->makeDirectory($documentPath);
+            $document = MediaFolder::create([
+                'company_id' => $companyId,
+                'parent_id' => $user->id,
+                'name' => 'documents',
+                'path' => $documentPath,
+                'slug' => Str::slug('documents'),
+            ]);
+        } else {
+            $document = MediaFolder::where('company_id', $companyId)->where('name', 'documents')->first();
+        }
+
+
+        if (!Storage::disk($disk)->exists($fullPath)) {
+            Storage::disk($disk)->makeDirectory($fullPath);
+            MediaFolder::create([
+                'company_id' => $companyId,
+                'parent_id' => $document->id,
+                'name' => $userFolder,
+                'path' => $fullPath,
+                'slug' => $userFolder,
+            ]);
+        }
+
+        foreach ($request->documents ?? [] as $file) {
+
+            // Upload and save the file inside the correct user folder
+            $file_id = $this->uploadAndSaveFile($file, $companyId, $userFolder);
+
+            $new_doc = new Document();
+            $new_doc->company_id = $companyId;
+            $new_doc->user_id = $user_id;
+            $new_doc->file_id = $file_id;
+            $new_doc->document_type = $request->document_type ?? 'unknown';
+            $new_doc->save();
+        }
+
+        return response()->json(['success' => true]);
+    }
+
+
+    public function deleteDocument(Document $document)
+    {
+
+        $file = MediaFile::findOrFail($document->file->id);
+        if ($file) {
+            $this->softDeleteFile($file);
+        }
+        $document->delete();
+        return redirect()->back();
+    }
+
+    
 }

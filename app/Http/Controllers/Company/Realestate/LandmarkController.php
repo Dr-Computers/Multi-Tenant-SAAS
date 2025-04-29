@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\RealestateAddonRequest;
 use App\Models\RealestateLandmark;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
 class  LandmarkController extends Controller
@@ -19,13 +20,14 @@ class  LandmarkController extends Controller
     public function create()
     {
 
-        return view('company.realestate.landmarks.form');
+        return view('company.realestate.landmarks.request-form');
     }
 
     public function store(Request $request){
         $landmark                   = new RealestateAddonRequest();
+        $landmark->company_id       = Auth::user()->creatorId();
         $landmark->requesting_type  = 'landmark';
-        $landmark->request_for      = $request->landmark;
+        $landmark->request_for      = $request->name;
         $landmark->verified_by      = null;
         $landmark->notes            = $request->notes;
         $landmark->status           = 0;
@@ -41,8 +43,16 @@ class  LandmarkController extends Controller
         return redirect()->back()->with('success', 'Landmark Request Deleted.');
     }
 
-    public function show(RealestateAddonRequest $landmark)
+    public function edit(RealestateAddonRequest $landmark)
     {
-        return view('company.realestate.landmarks.show', compact('landmark'));
+        return view('company.realestate.landmarks.request-show',compact('landmark'));
+    }
+
+
+    public function show()
+    {
+        $landmarks =  RealestateAddonRequest::where('requesting_type','landmark')->where('company_id',Auth::user()->creatorId())->get();
+
+        return view('company.realestate.landmarks.requests', compact('landmarks'));
     }
 }

@@ -4,7 +4,7 @@
 
 @section('breadcrumb')
     <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Dashboard</a></li>
-    <li class="breadcrumb-item"><a href="{{ route('company.realestate.maintainers.index') }}">Owners</a></li>
+    <li class="breadcrumb-item"><a href="{{ route('company.realestate.maintainers.index') }}">maintainers</a></li>
     <li class="breadcrumb-item active">{{ $maintainer->name }}</li>
 @endsection
 @section('action-btn')
@@ -15,14 +15,11 @@
     </div>
 @endsection
 
-
 @section('content')
     <div class="row">
         <div class="col-sm-12">
             <div class="card">
                 <div class="card-body">
-                   
-
                     {{-- Tabs --}}
                     <ul class="nav nav-tabs" id="maintainerTabs">
                         @php
@@ -37,13 +34,20 @@
                                 href="{{ route('company.realestate.maintainers.show', $maintainer->id) }}?tab=properties">Properties</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link {{ $tab == 'requests' ? 'active' : '' }}"
-                                href="{{ route('company.realestate.maintainers.show', $maintainer->id) }}?tab=requests">Requests for
-                                Approval</a>
+                            <a class="nav-link {{ $tab == 'documents' ? 'active' : '' }}"
+                                href="{{ route('company.realestate.maintainers.show', $maintainer->id) }}?tab=documents">Documents</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ $tab == 'works' ? 'active' : '' }}"
+                                href="{{ route('company.realestate.maintainers.show', $maintainer->id) }}?tab=works">Assigned Works</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link {{ $tab == 'settlements' ? 'active' : '' }}"
                                 href="{{ route('company.realestate.maintainers.show', $maintainer->id) }}?tab=settlements">Settlement</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ $tab == 'activity_logs' ? 'active' : '' }}"
+                                href="{{ route('company.realestate.maintainers.show', $maintainer->id) }}?tab=activity_logs">Activity Log</a>
                         </li>
                     </ul>
 
@@ -53,12 +57,16 @@
                             @include('company.realestate.maintainers.partials._overview', ['maintainer' => $maintainer])
                         @elseif($tab == 'properties')
                             @include('company.realestate.maintainers.partials._properties', ['maintainer' => $maintainer])
-                        @elseif($tab == 'requests')
-                            @include('company.realestate.maintainers.partials._requests', ['maintainer' => $maintainer])
+                        @elseif($tab == 'works')
+                            @include('company.realestate.maintainers.partials._works', ['maintainer' => $maintainer])
                         @elseif($tab == 'settlements')
                             @include('company.realestate.maintainers.partials._settlements', [
                                 'maintainer' => $maintainer,
                             ])
+                        @elseif($tab == 'documents')
+                            @include('company.realestate.maintainers.partials._documnets', ['maintainer' => $maintainer])
+                        @elseif($tab == 'activity_logs')
+                            @include('company.realestate.maintainers.partials._activity_logs', ['maintainer' => $maintainer])
                         @endif
                     </div>
                 </div>

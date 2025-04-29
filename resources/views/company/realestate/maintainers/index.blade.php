@@ -70,7 +70,7 @@
                                                 <a href="{{ route('company.realestate.maintainers.show', $user->id) }}"
                                                     class="mx-3 btn btn-sm d-inline-flex align-items-center bg-info"
                                                     data-bs-toggle="tooltip" title="{{ __('View') }}"
-                                                    data-original-title="{{ __('Edit') }}">
+                                                    data-original-title="{{ __('View') }}">
                                                     <span> <i class="ti ti-eye text-white"></i></span>
                                                 </a>
                                             </div>

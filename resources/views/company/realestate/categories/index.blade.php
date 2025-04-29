@@ -8,10 +8,16 @@
 @endsection
 @section('action-btn')
     <div class="d-flex">
-        <a href="#" data-size="md" data-url="{{ route('company.realestate.categories.create') }}" data-ajax-popup="true"
-            data-bs-toggle="tooltip" title="{{ __('Request for New category') }}" class="btn btn-sm btn-primary me-2">
-            <i class="ti ti-plus"></i>
-        </a>
+        <button href="#" data-size="md" data-url="{{ route('company.realestate.categories.show',auth()->user()->id) }}"
+            data-ajax-popup="true" data-bs-toggle="tooltip" title="{{ __('Requested categories list') }}"
+            class="btn btn-sm btn-secondary me-2">
+            <i class="ti ti-eye"></i> Requested categories
+        </button>
+        <button href="#" data-size="md" data-url="{{ route('company.realestate.categories.create') }}" data-ajax-popup="true"
+            data-bs-toggle="tooltip" title="{{ __('Request a new category') }}" class="btn btn-sm btn-primary me-2">
+            <i class="ti ti-plus"></i> Request a new category
+        </button>
+        
     </div>
 @endsection
 @section('content')

@@ -14,8 +14,8 @@ Route::group(
         Route::get('profile', 'DashboardController@profile')->name('profile');
         Route::post('profile', 'DashboardController@editprofile')->name('profile.update');
         Route::post('password', 'DashboardController@updatePassword')->name('profile.update.password');
-        
-        
+
+
         // HRMS
         Route::group([
             'prefix' => 'hrms',
@@ -25,9 +25,9 @@ Route::group(
             Route::resource('users', 'UserController')->names('users');
             Route::get('users/{user}/reset-password', 'UserController@resetPasswordForm')->name('users.reset.form');
             Route::post('users/{user}/reset-password', 'UserController@resetPassword')->name('users.reset.update');
-            Route::get('users/create/documents', 'UserController@createDocuments')->name('users.create-documents');
-            Route::post('users/create/documents', 'UserController@uploadDocuments')->name('users.upload-documents');
-
+            Route::get('users/create/documents/{user_id}', 'UserController@createDocuments')->name('users.create-documents');
+            Route::post('users/create/documents/{user_id}', 'UserController@uploadDocuments')->name('users.upload-documents');
+            Route::delete('users/documents/delete/{document}', 'UserController@deleteDocument')->name('users.documents.destroy');
             Route::resource('roles', 'RoleController')->names('roles');
         });
 
@@ -40,21 +40,34 @@ Route::group(
             Route::resource('owners', 'OwnerController')->names('owners');
             Route::get('owners/{user}/reset-password', 'OwnerController@resetPasswordForm')->name('owners.reset.form');
             Route::post('owners/{user}/reset-password', 'OwnerController@resetPassword')->name('owners.reset.update');
+            Route::get('owners/create/documents/{user_id}', 'OwnerController@createDocuments')->name('owners.create-documents');
+            Route::post('owners/create/documents/{user_id}', 'OwnerController@uploadDocuments')->name('owners.upload-documents');
+            Route::delete('owners/documents/delete/{document}', 'OwnerController@deleteDocument')->name('owners.documents.destroy');
+
             Route::resource('properties', 'PropertyController')->names('properties');
             Route::resource('property/{property_id}/units', 'PropertyUnitController')->names('property.units');
 
             Route::resource('tenants', 'TenantController')->names('tenants');
             Route::get('tenants/{user}/reset-password', 'TenantController@resetPasswordForm')->name('tenants.reset.form');
             Route::post('tenants/{user}/reset-password', 'TenantController@resetPassword')->name('tenants.reset.update');
+            Route::get('tenants/create/documents/{user_id}', 'TenantController@createDocuments')->name('tenants.create-documents');
+            Route::post('tenants/create/documents/{user_id}', 'TenantController@uploadDocuments')->name('tenants.upload-documents');
+            Route::delete('tenants/documents/delete/{document}', 'TenantController@deleteDocument')->name('tenants.documents.destroy');
+
             Route::resource('maintainers', 'MaintenanceController')->names('maintainers');
             Route::get('maintainers/{user}/reset-password', 'MaintenanceController@resetPasswordForm')->name('maintainers.reset.form');
             Route::post('maintainers/{user}/reset-password', 'MaintenanceController@resetPassword')->name('maintainers.reset.update');
+            Route::get('maintainers/create/documents/{user_id}', 'MaintenanceController@createDocuments')->name('maintainers.create-documents');
+            Route::post('maintainers/create/documents/{user_id}', 'MaintenanceController@uploadDocuments')->name('maintainers.upload-documents');
+            Route::delete('maintainers/documents/delete/{document}', 'MaintenanceController@deleteDocument')->name('maintainers.documents.destroy');
+
             Route::resource('maintaince-request', 'MaintainceRequestController')->names('maintaince-request');
             Route::resource('categories', 'CategoryController')->names('categories');
             Route::resource('furnishing', 'FurnishingController')->names('furnishing');
             Route::resource('amenities', 'AmenitiesController')->names('amenities');
             Route::resource('landmarks', 'LandmarkController')->names('landmarks');
         });
+
         Route::group([
             'prefix' => 'media',
             'as' => 'media.',
@@ -69,7 +82,7 @@ Route::group(
             Route::get('folder/{folder_id}', 'MediaController@subFolder')->name('folder.sub');
             Route::get('folder/{folder_id}/files/select/', 'MediaController@showFileUploadForm')->name('files.select');
             Route::delete('files/delete/{file_id}', 'MediaController@deleteFile')->name('files.delete');
-            
+
             Route::post('/upload', 'MediaController@uploadFiles')->name('file.upload');
         });
     }

@@ -8,10 +8,10 @@
 @endsection
 @section('action-btn')
     <div class="d-flex">
-        <a href="#" data-size="md" data-url="{{ route('company.hrms.users.create') }}" data-ajax-popup="true"
+        <button href="#" data-size="md" data-url="{{ route('company.hrms.users.create') }}" data-ajax-popup="true"
             data-bs-toggle="tooltip" title="{{ __('Create New User') }}" class="btn btn-sm btn-primary me-2">
             <i class="ti ti-plus"></i>
-        </a>
+        </button>
     </div>
 @endsection
 @section('content')

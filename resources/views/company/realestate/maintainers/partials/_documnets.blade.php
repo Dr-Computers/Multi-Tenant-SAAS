@@ -1,5 +1,5 @@
 <div class="my-2 text-end">
-    <button href="#" data-size="lg" data-url="{{ route('company.hrms.users.create-documents', $user->id) }}"
+    <button href="#" data-size="lg" data-url="{{ route('company.realestate.maintainers.create-documents', $maintainer->id) }}"
         data-ajax-popup2="true" data-bs-toggle="tooltip" title="{{ __('Upload new document') }}"
         class="btn btn-sm btn-primary me-2">
         <i class="ti ti-cloud-upload"></i> Upload new one
@@ -25,7 +25,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @forelse ($user->documents ??  [] as $key => $document)
+                            @forelse ($maintainer->documents ??  [] as $key => $document)
                                 <tr>
                                     <td>{{ $key + 1 }}</td>
                                     <td>
@@ -62,7 +62,7 @@
                                         <div class="action-btn">
                                             {!! Form::open([
                                                 'method' => 'DELETE',
-                                                'route' => ['company.hrms.users.documents.destroy', $document->id],
+                                                'route' => ['company.realestate.maintainers.documents.destroy', $document->id],
                                                 'id' => 'delete-form-' . $document->id,
                                             ]) !!}
                                             <a href="#"
