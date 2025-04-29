@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Company\Realestate\InvoiceController;
+use App\Http\Controllers\Company\Realestate\PropertyController;
 use Illuminate\Support\Facades\Route;
 
 Route::group(
@@ -37,6 +39,7 @@ Route::group(
             'as' => 'realestate.',
             'namespace' => 'Realestate',
         ], function () {
+          
             Route::resource('owners', 'OwnerController')->names('owners');
             Route::get('owners/{user}/reset-password', 'OwnerController@resetPasswordForm')->name('owners.reset.form');
             Route::post('owners/{user}/reset-password', 'OwnerController@resetPassword')->name('owners.reset.update');
@@ -45,8 +48,10 @@ Route::group(
             Route::delete('owners/documents/delete/{document}', 'OwnerController@deleteDocument')->name('owners.documents.destroy');
 
             Route::resource('properties', 'PropertyController')->names('properties');
+            // Route::resource('property-units/{id}', 'PropertyUnitController')->names('property.units');
+            Route::get('property/{pid}/unit', [PropertyController::class,'getPropertyUnit'])->name('property.unit');
             Route::resource('property/{property_id}/units', 'PropertyUnitController')->names('property.units');
-
+            Route::get('unit/{uid}/rent-type', [PropertyController::class,'getUnitRentType'])->name('unit.rent_type');
             Route::resource('tenants', 'TenantController')->names('tenants');
             Route::get('tenants/{user}/reset-password', 'TenantController@resetPasswordForm')->name('tenants.reset.form');
             Route::post('tenants/{user}/reset-password', 'TenantController@resetPassword')->name('tenants.reset.update');
@@ -66,6 +71,16 @@ Route::group(
             Route::resource('furnishing', 'FurnishingController')->names('furnishing');
             Route::resource('amenities', 'AmenitiesController')->names('amenities');
             Route::resource('landmarks', 'LandmarkController')->names('landmarks');
+
+            Route::resource('invoices',InvoiceController::class)->names('invoices');
+            Route::delete('invoice/type/destroy', [InvoiceController::class,'invoiceTypeDestroy'])->name('invoice.type.destroy');
+       
+            
+
+            
+
+     
+
         });
 
         Route::group([

@@ -3,6 +3,7 @@
 use App\Models\Currency;
 use Illuminate\Support\Facades\Storage;
 use App\Models\MediaFile;
+use Illuminate\Support\Facades\Auth;
 use Spatie\Image\Image;
 use Spatie\Image\Enums\AlignPosition;
 use Spatie\Image\Enums\Unit;
@@ -140,6 +141,17 @@ if (!function_exists('uploadFiletoMedia')) {
     }
 }
 
+if (!function_exists('creatorId')) {
+    function creatorId()
+    {
+
+        if (\Auth::user()->type == 'company' || \Auth::user()->type == 'super admin') {
+            return \Auth::user()->id;
+        } else {
+            return\Auth::user()->created_by;
+        }
+    }
+}
 
 // if (!function_exists('uploadFile')) {
 //     /**
@@ -339,6 +351,104 @@ if (! function_exists('format_price')) {
     }
 }
 
+if (! function_exists('human_price_text')) {
+    function human_price_text(float|null|string $price, Currency|null|string $currency, string|null $priceUnit = '', bool $fullNumber = false): string
+    {
+        $numberAfterDot = ($currency instanceof Currency) ? $currency->decimals : 0;
+
+        if (! $fullNumber) {
+            if ($price >= 1000000 && $price < 1000000000) {
+                $price = round($price / 1000000, 2) + 0;
+                $priceUnit = __('Million') . ' ' . $priceUnit;
+                $numberAfterDot = strlen(substr(strrchr((string)$price, '.'), 1));
+            } elseif ($price >= 1000000000) {
+                $price = round($price / 1000000000, 2) + 0;
+                $priceUnit = __('Billion') . ' ' . $priceUnit;
+                $numberAfterDot = strlen(substr(strrchr((string)$price, '.'), 1));
+            }
+        }
+
+        if (is_numeric($price)) {
+            $price = preg_replace('/[^0-9,.]/s', '', (string)$price);
+        }
+
+        $decimalSeparator = setting('real_estate_decimal_separator', '.');
+
+        if ($decimalSeparator == 'space') {
+            $decimalSeparator = ' ';
+        }
+
+        $thousandSeparator = setting('real_estate_thousands_separator', ',');
+
+        if ($thousandSeparator == 'space') {
+            $thousandSeparator = ' ';
+        }
+
+        $price = indian_number_format(
+            (float)$price,
+            (int)$numberAfterDot,
+            $decimalSeparator,
+            $thousandSeparator
+        );
+
+        $space = setting('real_estate_add_space_between_price_and_currency', 0) == 1 ? ' ' : null;
+
+        return $price . $space . ($priceUnit ?: '');
+    }
+}
+
+if (!function_exists('setting')) {
+    /**
+     * Retrieve application setting by key.
+     *
+     * @param string $key
+     * @param mixed $default
+     * @return mixed
+     */
+    function setting(string $key, $default = null)
+    {
+        // Example: Assume settings are stored in a cached configuration or database
+        $settings = [
+            'real_estate_decimal_separator' => '.',
+            'real_estate_thousands_separator' => ',',
+            'real_estate_add_space_between_price_and_currency' => 1,
+        ];
+
+        return $settings[$key] ?? $default;
+    }
+}
+
+
+if (!function_exists('permission_check')) {
+
+    function permission_check($permission)
+    {
+        $permissions_for_officeAdmin = ['Property Add', 'Property List', 'Property Show', 'Property Edit', 'Property Delete', 'Project List', 'Project Add', 'Project Edit', 'Project Delete', 'Builder List', 'Builder Add', 'Builder Edit', 'Builder Delete', 'Account List', 'Account Approvel', 'Leads Attend', 'Enquiry Attend', 'Setup Manage', 'Newsletters', 'Activity Logs', 'Blogs Manage'];
+        $permission_for_marketing = ['Property Add', 'Property List', 'Property Show', 'Property Edit', 'Project List', 'Project Add', 'Project Edit', 'Builder List', 'Builder Add', 'Builder Edit', 'Account Approvel', 'Leads Attend', 'Enquiry Attend'];
+        if (auth('web')->check()) {
+            $account_type  = auth('web')->user()->acc_type;
+            if ($account_type == 'marketing') {
+                if (in_array($permission, $permission_for_marketing)) {
+                    return true;
+                } else {
+                    return false;
+                }
+            } elseif ($account_type == 'office_admin') {
+                if (in_array($permission, $permissions_for_officeAdmin)) {
+                    return true;
+                } else {
+                    return false;
+                }
+            } elseif ($account_type == 'superadmin' || $account_type == 'developer') {
+                return true;
+            } else {
+                return true;;
+            }
+        } else {
+            return false;
+        }
+    }
+}
 
 
 if (!function_exists('dateTimeFormat')) {
@@ -351,7 +461,8 @@ if (!function_exists('dateTimeFormat')) {
     }
 }
 
-function indian_number_format($number) {
+function indian_number_format($number)
+{
     $decimal = ''; // To store decimal part if needed
     if (strpos($number, '.') !== false) {
         [$number, $decimal] = explode('.', $number); // Split integer and decimal parts
@@ -371,3 +482,54 @@ function indian_number_format($number) {
     // Reattach decimal part if present
     return $formatted . $decimal;
 }
+if (! function_exists('getCompanyDetails')) {
+    function getCompanyDetails()
+    {
+        $user = Auth::user();
+
+        if ($user && $user->company) {
+            return $user->company; // returns full company model
+        }
+
+        return null;
+    }
+}
+if (!function_exists('invoicePrefix')) {
+    function invoicePrefix()
+    {
+        $settings = getCompanyDetails();
+        return $settings?->invoice_prefix;
+    }
+}
+if (!function_exists('companytax')) {
+    function vat()
+    {
+        $settings = getCompanyDetails();
+        return $settings?->vat;
+    }
+}
+
+if (!function_exists('getCompanyAllDetails')) {
+    function getCompanyAllDetails($key = null)
+    {
+        static $company = null;
+        
+        // Cache the company details to avoid multiple queries
+        if ($company === null) {
+            $user = Auth::user();
+            $company = $user && $user->company ? $user->company : null;
+        }
+        
+        // If no key requested, return entire company object
+        if ($key === null) {
+            return $company;
+        }
+        
+        // Return specific property if requested
+        return $company?->{$key};
+    }
+}
+
+
+
+
