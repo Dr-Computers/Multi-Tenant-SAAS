@@ -32,7 +32,7 @@ Route::group(
             Route::delete('users/documents/delete/{document}', 'UserController@deleteDocument')->name('users.documents.destroy');
             Route::resource('roles', 'RoleController')->names('roles');
         });
-
+   
         // Realestate
         Route::group([
             'prefix' => 'realestate',
