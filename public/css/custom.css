@@ -295,9 +295,6 @@ a.b-brand {
     border: none !important;
 }
 
-.dashboard-card {
-    display: flex;
-}
 
 .dashboard-card .card {
     width: 100%;

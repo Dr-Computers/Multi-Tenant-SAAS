@@ -15,7 +15,8 @@ use Spatie\Permission\Traits\HasRoles;
 use Lab404\Impersonate\Models\Impersonate;
 use App\Models\ReferralTransactionOrder;
 use App\Models\ReferralTransaction;
-
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -45,6 +46,8 @@ class User extends Authenticatable implements MustVerifyEmail
         'trial_expire_date',
         'referral_code',
         'used_referral_code',
+        'is_active',
+        'is_disable'
     ];
 
     protected $hidden = [
@@ -77,7 +80,8 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->id;
     }
 
-    public function company(){
+    public function company()
+    {
         return $this->hasOne('App\Models\Company', 'user_id', 'id');
     }
 
@@ -90,16 +94,19 @@ class User extends Authenticatable implements MustVerifyEmail
         }
     }
 
-    public function owner(){
-        return $this->hasOne(Owner::class,'user_id','id');
+    public function owner()
+    {
+        return $this->hasOne(Owner::class, 'user_id', 'id');
     }
 
-    public function personal(){
-        return $this->hasOne(PersonalDetail::class,'user_id','id');
+    public function personal()
+    {
+        return $this->hasOne(PersonalDetail::class, 'user_id', 'id');
     }
 
-    public function maintainer(){
-        return $this->hasOne(MaintenanceJob::class,'user_id','id');
+    public function maintainer()
+    {
+        return $this->hasOne(MaintenanceJob::class, 'user_id', 'id');
     }
 
     public function creatorId1()
@@ -119,7 +126,7 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function priceFormat($price)
     {
-        
+
         $settings = Utility::settings();
 
         if ($settings['decimal_number'] != '') {
@@ -130,7 +137,7 @@ class User extends Authenticatable implements MustVerifyEmail
         // dd($settings, $price,  number_format($price, $settings['decimal_number']));
         // $price = floatval($price);
 
-        return (($settings['site_currency_symbol_position'] == "pre") ? $settings['site_currency_symbol'].' ' : '') . number_format($price, $settings['decimal_number']) . (($settings['site_currency_symbol_position'] == "post") ? $settings['site_currency_symbol'] : '');
+        return (($settings['site_currency_symbol_position'] == "pre") ? $settings['site_currency_symbol'] . ' ' : '') . number_format($price, $settings['decimal_number']) . (($settings['site_currency_symbol_position'] == "post") ? $settings['site_currency_symbol'] : '');
     }
 
 
@@ -146,7 +153,6 @@ class User extends Authenticatable implements MustVerifyEmail
         $settings = Utility::settings();
 
         return date($settings['site_date_format'], strtotime($date));
-
     }
 
     public function timeFormat($time)
@@ -165,12 +171,32 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function getProfileAttribute()
     {
-        if (!empty($this->avatar) && \Storage::exists($this->avatar)) {
-            return $this->attributes['avatar'] = asset(\Storage::url($this->avatar));
+        if (!empty($this->avatar) && Storage::exists($this->avatar)) {
+            return $this->attributes['avatar'] = asset(Storage::url($this->avatar));
         } else {
-            return $this->attributes['avatar'] = asset(\Storage::url('avatar.png'));
+            return $this->attributes['avatar'] = 'storage/uploads/avatar/avatar.png';
         }
     }
+
+    public function getAvatarUrlAttribute()
+    {
+
+        if (!empty($this->avatarImage) && $this->avatarImage->folder) {
+            $image =  $this->avatarImage->folder_id != 0
+                ? $this->avatarImage->folder->path . '/' . $this->avatarImage->url
+                : 'uploads/company_' . $this->company_id . '/' . $this->avatarImage->url;
+
+            return  Storage::exists($image) ? $image : 'uploads/avatar/avatar.png';
+        } else {
+            return $this->attributes['avatar'] = '/uploads/avatar/avatar.png';
+        }
+    }
+
+    public function avatarImage()
+    {
+        return $this->hasOne(MediaFile::class, 'id', 'avatar');
+    }
+
 
     public function proposalNumberFormat($number)
     {
@@ -222,7 +248,7 @@ class User extends Authenticatable implements MustVerifyEmail
             }
             $this->save();
 
-            $users     = User::where('created_by', '=', \Auth::user()->creatorId())->where('type', '!=', 'super admin')->where('type', '!=', 'company')->get();
+            $users     = User::where('created_by', '=', Auth::user()->creatorId())->where('type', '!=', 'super admin')->where('type', '!=', 'company')->get();
             $customers = Customer::where('created_by', '=', $this->id)->get();
             $venders   = Vender::where('created_by', '=', $this->id)->get();
 
@@ -376,7 +402,7 @@ class User extends Authenticatable implements MustVerifyEmail
                 0,
                 1,
             ]
-        )->where('created_by', '=', \Auth::user()->id)->count();
+        )->where('created_by', '=', Auth::user()->id)->count();
     }
 
     public function countCustomers()
@@ -401,8 +427,8 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function todayIncome()
     {
-        $revenue      = Revenue::where('created_by', '=', $this->creatorId())->whereRaw('Date(date) = CURDATE()')->where('created_by', \Auth::user()->creatorId())->sum('amount');
-        $invoices     = Invoice::select('*')->where('created_by', \Auth::user()->creatorId())->whereRAW('Date(send_date) = CURDATE()')->get();
+        $revenue      = Revenue::where('created_by', '=', $this->creatorId())->whereRaw('Date(date) = CURDATE()')->where('created_by', Auth::user()->creatorId())->sum('amount');
+        $invoices     = Invoice::select('*')->where('created_by', Auth::user()->creatorId())->whereRAW('Date(send_date) = CURDATE()')->get();
         $invoiceArray = array();
         foreach ($invoices as $invoice) {
             $invoiceArray[] = $invoice->getTotal();
@@ -414,9 +440,9 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function todayExpense()
     {
-        $payment = Payment::where('created_by', '=', $this->creatorId())->where('created_by', \Auth::user()->creatorId())->whereRaw('Date(date) = CURDATE()')->sum('amount');
+        $payment = Payment::where('created_by', '=', $this->creatorId())->where('created_by', Auth::user()->creatorId())->whereRaw('Date(date) = CURDATE()')->sum('amount');
 
-        $bills = Bill::select('*')->where('created_by', \Auth::user()->creatorId())->whereRAW('Date(send_date) = CURDATE()')->get();
+        $bills = Bill::select('*')->where('created_by', Auth::user()->creatorId())->whereRAW('Date(send_date) = CURDATE()')->get();
 
         $billArray = array();
         foreach ($bills as $bill) {
@@ -433,7 +459,7 @@ class User extends Authenticatable implements MustVerifyEmail
         $currentMonth = date('m');
         $revenue      = Revenue::where('created_by', '=', $this->creatorId())->whereRaw('MONTH(date) = ?', [$currentMonth])->sum('amount');
 
-        $invoices = Invoice::select('*')->where('created_by', \Auth::user()->creatorId())->whereRAW('MONTH(send_date) = ?', [$currentMonth])->get();
+        $invoices = Invoice::select('*')->where('created_by', Auth::user()->creatorId())->whereRAW('MONTH(send_date) = ?', [$currentMonth])->get();
 
         $invoiceArray = array();
         foreach ($invoices as $invoice) {
@@ -450,7 +476,7 @@ class User extends Authenticatable implements MustVerifyEmail
 
         $payment = Payment::where('created_by', '=', $this->creatorId())->whereRaw('MONTH(date) = ?', [$currentMonth])->sum('amount');
 
-        $bills     = Bill::select('*')->where('created_by', \Auth::user()->creatorId())->whereRAW('MONTH(send_date) = ?', [$currentMonth])->get();
+        $bills     = Bill::select('*')->where('created_by', Auth::user()->creatorId())->whereRAW('MONTH(send_date) = ?', [$currentMonth])->get();
         $billArray = array();
         foreach ($bills as $bill) {
             $billArray[] = $bill->getTotal();
@@ -475,12 +501,12 @@ class User extends Authenticatable implements MustVerifyEmail
         $month[]          = __('October');
         $month[]          = __('November');
         $month[]          = __('December');
-    $dataArr['month'] = $month;
+        $dataArr['month'] = $month;
 
 
         for ($i = 1; $i <= 12; $i++) {
             $monthlyIncome = Revenue::selectRaw('sum(amount) amount')->where('created_by', '=', $this->creatorId())->whereRaw('year(`date`) = ?', array(date('Y')))->whereRaw('month(`date`) = ?', $i)->first();
-            $invoices      = Invoice::select('*')->where('created_by', \Auth::user()->creatorId())->whereRaw('year(`send_date`) = ?', array(date('Y')))->whereRaw('month(`send_date`) = ?', $i)->get();
+            $invoices      = Invoice::select('*')->where('created_by', Auth::user()->creatorId())->whereRaw('year(`send_date`) = ?', array(date('Y')))->whereRaw('month(`send_date`) = ?', $i)->get();
 
             $invoiceArray = array();
             foreach ($invoices as $invoice) {
@@ -492,7 +518,7 @@ class User extends Authenticatable implements MustVerifyEmail
             $incomeArr[] = !empty($totalIncome) ? number_format($totalIncome, 2) : 0;
 
             $monthlyExpense = Payment::selectRaw('sum(amount) amount')->where('created_by', '=', $this->creatorId())->whereRaw('year(`date`) = ?', array(date('Y')))->whereRaw('month(`date`) = ?', $i)->first();
-            $bills          = Bill::select('*')->where('created_by', \Auth::user()->creatorId())->whereRaw('year(`send_date`) = ?', array(date('Y')))->whereRaw('month(`send_date`) = ?', $i)->get();
+            $bills          = Bill::select('*')->where('created_by', Auth::user()->creatorId())->whereRaw('year(`send_date`) = ?', array(date('Y')))->whereRaw('month(`send_date`) = ?', $i)->get();
             $billArray      = array();
             foreach ($bills as $bill) {
                 $billArray[] = $bill->getTotal();
@@ -527,7 +553,7 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function getIncExpLineChartDate()
     {
-        $usr           = \Auth::user();
+        $usr           = Auth::user();
         $m             = date("m");
         $de            = date("d");
         $y             = date("Y");
@@ -544,9 +570,9 @@ class User extends Authenticatable implements MustVerifyEmail
         }
         $dataArr['day'] = $arrDateFormat;
         for ($i = 0; $i < count($arrDate); $i++) {
-            $dayIncome = Revenue::selectRaw('sum(amount) amount')->where('created_by', \Auth::user()->creatorId())->whereRaw('date = ?', $arrDate[$i])->first();
+            $dayIncome = Revenue::selectRaw('sum(amount) amount')->where('created_by', Auth::user()->creatorId())->whereRaw('date = ?', $arrDate[$i])->first();
 
-            $invoices     = Invoice::select('*')->where('created_by', \Auth::user()->creatorId())->whereRAW('send_date = ?', $arrDate[$i])->get();
+            $invoices     = Invoice::select('*')->where('created_by', Auth::user()->creatorId())->whereRAW('send_date = ?', $arrDate[$i])->get();
             $invoiceArray = array();
             foreach ($invoices as $invoice) {
                 $invoiceArray[] = $invoice->getTotal();
@@ -555,9 +581,9 @@ class User extends Authenticatable implements MustVerifyEmail
             $incomeAmount = (!empty($dayIncome->amount) ? $dayIncome->amount : 0) + (!empty($invoiceArray) ? array_sum($invoiceArray) : 0);
             $incomeArr[]  = str_replace(",", "", number_format($incomeAmount, 2));
 
-            $dayExpense = Payment::selectRaw('sum(amount) amount')->where('created_by', \Auth::user()->creatorId())->whereRaw('date = ?', $arrDate[$i])->first();
+            $dayExpense = Payment::selectRaw('sum(amount) amount')->where('created_by', Auth::user()->creatorId())->whereRaw('date = ?', $arrDate[$i])->first();
 
-            $bills     = Bill::select('*')->where('created_by', \Auth::user()->creatorId())->whereRAW('send_date = ?', $arrDate[$i])->get();
+            $bills     = Bill::select('*')->where('created_by', Auth::user()->creatorId())->whereRAW('send_date = ?', $arrDate[$i])->get();
             $billArray = array();
             foreach ($bills as $bill) {
                 $billArray[] = $bill->getTotal();
@@ -589,7 +615,7 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function planPrice()
     {
-        $user = \Auth::user();
+        $user = Auth::user();
         if ($user->type == 'super admin') {
             $userId = $user->id;
         } else {
@@ -608,7 +634,7 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         $staticstart  = date('Y-m-d', strtotime('last Week'));
         $currentDate  = date('Y-m-d');
-        $invoices     = Invoice::select('*')->where('created_by', \Auth::user()->creatorId())->where('issue_date', '>=', $staticstart)->where('issue_date', '<=', $currentDate)->get();
+        $invoices     = Invoice::select('*')->where('created_by', Auth::user()->creatorId())->where('issue_date', '>=', $staticstart)->where('issue_date', '<=', $currentDate)->get();
         $invoiceTotal = 0;
         $invoicePaid  = 0;
         $invoiceDue   = 0;
@@ -629,7 +655,7 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         $staticstart  = date('Y-m-d', strtotime('last Month'));
         $currentDate  = date('Y-m-d');
-        $invoices     = Invoice::select('*')->where('created_by', \Auth::user()->creatorId())->where('issue_date', '>=', $staticstart)->where('issue_date', '<=', $currentDate)->get();
+        $invoices     = Invoice::select('*')->where('created_by', Auth::user()->creatorId())->where('issue_date', '>=', $staticstart)->where('issue_date', '<=', $currentDate)->get();
         $invoiceTotal = 0;
         $invoicePaid  = 0;
         $invoiceDue   = 0;
@@ -650,7 +676,7 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         $staticstart = date('Y-m-d', strtotime('last Week'));
         $currentDate = date('Y-m-d');
-        $bills       = Bill::select('*')->where('created_by', \Auth::user()->creatorId())->where('bill_date', '>=', $staticstart)->where('bill_date', '<=', $currentDate)->get();
+        $bills       = Bill::select('*')->where('created_by', Auth::user()->creatorId())->where('bill_date', '>=', $staticstart)->where('bill_date', '<=', $currentDate)->get();
         $billTotal   = 0;
         $billPaid    = 0;
         $billDue     = 0;
@@ -671,7 +697,7 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         $staticstart = date('Y-m-d', strtotime('last Month'));
         $currentDate = date('Y-m-d');
-        $bills       = Bill::select('*')->where('created_by', \Auth::user()->creatorId())->where('bill_date', '>=', $staticstart)->where('bill_date', '<=', $currentDate)->get();
+        $bills       = Bill::select('*')->where('created_by', Auth::user()->creatorId())->where('bill_date', '>=', $staticstart)->where('bill_date', '<=', $currentDate)->get();
         $billTotal   = 0;
         $billPaid    = 0;
         $billDue     = 0;
@@ -2622,15 +2648,14 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function commissionAmount()
     {
-        $transactionsOrder  = ReferralTransactionOrder::where('req_user_id',$this->id)->get();
-        $paidAmount         = $transactionsOrder->where('status' , 2)->sum('req_amount');
+        $transactionsOrder  = ReferralTransactionOrder::where('req_user_id', $this->id)->get();
+        $paidAmount         = $transactionsOrder->where('status', 2)->sum('req_amount');
 
         $ReferralTransaction = ReferralTransaction::where('referral_code', $this->referral_code)->get()
-                                    ->map(function($trans){
-                                        return $trans->plan_price * $trans->commission / 100;
-                                    })->sum();
+            ->map(function ($trans) {
+                return $trans->plan_price * $trans->commission / 100;
+            })->sum();
 
         return $ReferralTransaction - $paidAmount;
     }
-
 }

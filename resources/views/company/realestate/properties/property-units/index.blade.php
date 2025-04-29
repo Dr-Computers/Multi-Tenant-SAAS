@@ -23,28 +23,50 @@
                             <thead>
                                 <tr>
                                     <th>#</th>
-                                    <th>Name</th>
-                                    <th>Kitchen</th>
-                                    <th>Bath Rooms</th>
-                                    <th>Status</th>
-                                    <th>Action</th>
+                                    <th class="text-start">Name</th>
+                                    <th class="text-start">Rent Type</th>
+                                    <th class="text-start">Price</th>
+                                    <th class="text-center">Rooms</th>
+                                    <th class="text-center">Status</th>
+                                    <th class="text-end">Action</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @foreach ($units as $key => $unit)
                                     <tr>
                                         <td>{{ $key + 1 }}</td>
-                                        <td>{{ $unit->name }}</td>
-                                        <td>{{ $unit->kitchen }}</td>
-                                        <td>{{ $unit->bath_rooms }}</td>
-                                        <td>{{ $unit->status ? 'Active' : 'Inactive' }}</td>
-                                        <td>
+                                        <td class="text-start text-capitalize">
+                                            <a title="{{ $unit->name }}" href="{{ route('company.realestate.property.units.show', [$property->id, $unit->id]) }}">
+                                                {{ $unit->name }}
+                                            </a>
+                                        </td>
+                                        <td class="text-start text-capitalize">{{ $unit->rent_type }}</td>
+                                        <td class="text-start">{{ $unit->price }}</td>
+                                        <td class="text-center">
+                                            <span class="badge bg-dark p-1 px-3 rounded">Bedrooms : {{ $unit->bed_rooms }}</span>
+                                            <span class="badge bg-dark p-1 px-3 rounded">Bathrooms : {{ $unit->bath_rooms }}</span><br>
+                                            <span class="badge bg-dark p-1 px-3 rounded">Kitchen : {{ $unit->kitchen }}</span>
+                                        </td>
+                                        <td class="text-center">
+                                            @if ($unit->status == '1')
+                                                <span class="badge bg-success p-1 px-3 rounded">
+                                                    {{ ucfirst('Leased') }}</span>
+                                            @else
+                                                <span class="badge bg-danger p-1 px-3 rounded">
+                                                    {{ ucfirst('Unleased') }}</span>
+                                            @endif
+                                        </td>
+                                        <td class="text-end">
                                             <div class="btn-group card-option">
                                                 <button type="button" class="btn dropdown-toggle"
                                                     data-bs-toggle="dropdown">
                                                     <i class="ti ti-dots-vertical"></i>
                                                 </button>
                                                 <div class="dropdown-menu dropdown-menu-end">
+                                                    <a href="{{ route('company.realestate.property.units.show', [$property->id, $unit->id]) }}"
+                                                        class="dropdown-item">
+                                                        <i class="ti ti-eye text-dark"></i> {{ __('Show') }}
+                                                    </a>
                                                     <a href="{{ route('company.realestate.property.units.edit', [$property->id, $unit->id]) }}"
                                                         class="dropdown-item">
                                                         <i class="ti ti-pencil text-dark"></i> {{ __('Edit') }}

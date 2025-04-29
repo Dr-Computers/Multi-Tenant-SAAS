@@ -28,7 +28,7 @@ class Property extends Model
 
     public function landmarks(): BelongsToMany
     {
-        return $this->morphToMany(RealestateLandmark::class, 'property_landmarks')->withPivot('landmark_value');
+        return $this->belongsToMany(RealestateLandmark::class, 'property_landmarks', 'property_id','landmark_id',);
     }
 
     public function furnishing(): BelongsToMany
@@ -38,6 +38,19 @@ class Property extends Model
     public function categories(): BelongsToMany
     {
         return $this->belongsToMany(RealestateCategory::class, 'property_categories', 'property_id', 'category_id');
+    }
+    protected function category(): Attribute
+    {
+        return Attribute::make(
+            get: function () {
+                return $this->categories->first() ?: new Category();
+            },
+        );
+    }
+
+    public function units(){
+        return $this->hasMany(PropertyUnit::class, 'property_id', 'id');
+
     }
 
 }

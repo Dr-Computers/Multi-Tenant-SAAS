@@ -10,9 +10,12 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Spatie\Permission\Models\Role;
+use App\Traits\Media\HandlesMediaFolders;
 
 class TenantController extends Controller
 {
+    use HandlesMediaFolders;
+    
     public function index()
     {
         $tenants = User::where('type', 'tenant')->where('parent', Auth::user()->creatorId())->get();
@@ -52,6 +55,12 @@ class TenantController extends Controller
         $user->created_by      = auth()->user()->id;
         $user->parent          = auth()->user()->creatorId();
         $user->password        = Hash::make($request->password);
+        $user->is_active = $request->has('is_active')  ? 1 : 0;
+        if ($request->hasFile('profile')) {
+            $file_id = $this->uploadAndSaveFile($request->profile, Auth::user()->creatorId(), 'avatar');
+            $user->avatar = $file_id;
+        }
+
         $user->save();
 
         $personal               = new PersonalDetail();
@@ -97,9 +106,20 @@ class TenantController extends Controller
         $tenant->name            = $request->name;
         $tenant->email           = $request->email;
         $tenant->mobile          = $request->mobile;
-        $tenant->is_enable_login = $request->has('password_switch');
+        // $tenant->is_enable_login = $request->has('password_switch');
+        $tenant->is_active = $request->has('is_active')  ? 1 : 0;
+        if ($request->hasFile('profile')) {
+            $file_id = $this->uploadAndSaveFile($request->profile, Auth::user()->creatorId(), 'avatar');
+            $tenant->avatar = $file_id;
+        }
+
         $tenant->save();
 
+        if($tenant->getRoleNames()->first() != 'tenant'){
+            $role_r = Role::findByName('tenant-' . Auth::user()->creatorId());
+            $tenant->roles()->sync([$role_r->id]);
+        }
+        
 
         $personal = PersonalDetail::where('user_id', $tenant->id)->first();
         $personal->address        = $request->address;

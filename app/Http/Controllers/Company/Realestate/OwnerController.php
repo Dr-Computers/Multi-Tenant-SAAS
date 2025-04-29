@@ -10,9 +10,11 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Spatie\Permission\Models\Role;
+use App\Traits\Media\HandlesMediaFolders;
 
 class OwnerController extends Controller
 {
+    use HandlesMediaFolders;
     public function index()
     {
         $owners = User::where('type', 'owner')->where('parent', Auth::user()->creatorId())->get();
@@ -47,6 +49,13 @@ class OwnerController extends Controller
         $user->created_by      = auth()->user()->id;
         $user->parent          = auth()->user()->creatorId();
         $user->password        = Hash::make($request->password);
+        $user->is_active       = $request->has('is_active') ? 1 : 0;
+
+        if ($request->hasFile('profile')) {
+            $file_id = $this->uploadAndSaveFile($request->profile, Auth::user()->creatorId(), 'avatar');
+            $user->avatar = $file_id;
+        }
+
         $user->save();
 
         $owner = new Owner();
@@ -82,7 +91,14 @@ class OwnerController extends Controller
         $owner->name            = $request->name;
         $owner->email           = $request->email;
         $owner->mobile          = $request->mobile;
-        $owner->is_enable_login = $request->has('password_switch');
+        // $owner->is_enable_login = $request->has('password_switch');
+        $owner->is_active       = $request->has('is_active') ? 1 : 0;
+
+        if ($request->hasFile('profile')) {
+            $file_id = $this->uploadAndSaveFile($request->profile, Auth::user()->creatorId(), 'avatar');
+            $owner->avatar = $file_id;
+        }
+
         $owner->save();
 
 
@@ -90,6 +106,10 @@ class OwnerController extends Controller
         $personal->is_tenants_approval = $request->has('is_tenants_approval');
         $personal->save();
 
+        if ($owner->getRoleNames()->first() != 'owner') {
+            $role_r = Role::findByName('owner-' . Auth::user()->creatorId());
+            $owner->roles()->sync([$role_r->id]);
+        }
 
         return redirect()->route('company.realestate.owners.index')->with('success', 'Owner updated successfully.');
     }

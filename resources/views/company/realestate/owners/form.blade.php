@@ -1,11 +1,26 @@
-<form action="{{ isset($user) ? route('company.realestate.owners.update', $user->id) : route('company.realestate.owners.store') }}"
-    method="post" class="needs-validation" novalidate>
+<form
+    action="{{ isset($user) ? route('company.realestate.owners.update', $user->id) : route('company.realestate.owners.store') }}"
+    method="post" class="needs-validation" novalidate  enctype="multipart/form-data">
     @csrf
-    @if(isset($user)) @method('PUT') @endif
+    @if (isset($user))
+        @method('PUT')
+    @endif
     <div class="modal-body">
         <div class="row">
-            <h6 class="text-md fw-bold text-secondary text-sm">Owner Details</h6>
-
+            {{-- <h6 class="text-md fw-bold text-secondary text-sm">Owner Details</h6> --}}
+            <div class="col-lg-12 mb-3">
+                <div class="form-group">
+                    <img src="{{ isset($user) ? asset('storage/' . $user->avatar_url) : asset('storage/uploads/avatar/avatar.png') }}"
+                        id="myAvatar" alt="user-image" class="img-thumbnail w-auto" style="height:100px">
+                    <div class="choose-files mt-3">
+                        <label for="avatar">
+                            <div class=" bg-primary "> <i class="ti ti-upload px-1"></i>Choose file here</div>
+                            <input type="file" accept="image/png, image/gif, image/jpeg,  image/jpg"
+                                class="form-control d-none" name="profile" id="avatar" data-filename="avatar-logo">
+                        </label>
+                    </div>
+                </div>
+            </div>
             <div class="col-md-12">
                 <div class="form-group">
                     <label for="name" class="form-label">Name</label><x-required></x-required>
@@ -31,8 +46,9 @@
             <div class="col-md-12 mb-3 mt-4">
                 <label for="tenants_approval">Tenants Approval Needed</label>
                 <div class="form-check form-switch float-end">
-                    <input type="checkbox" {{ isset($user) && $user->owner && $user->owner->is_tenants_approval == '1' ? 'checked' : 'false'  }} name="is_tenants_approval" class="form-check-input" value="on"
-                        id="tenants_approval">
+                    <input type="checkbox"
+                        {{ isset($user) && $user->owner && $user->owner->is_tenants_approval == '1' ? 'checked' : 'false' }}
+                        name="is_tenants_approval" class="form-check-input" value="on" id="tenants_approval">
                     <label class="form-check-label" for="tenants_approval"></label>
                 </div>
             </div>
@@ -68,6 +84,14 @@
                     @error('mobile')
                         <small class="text-danger">{{ $message }}</small>
                     @enderror
+                </div>
+            </div>
+            <div class="col-md-12 mb-3 mt-4">
+                <label for="is_active">Active</label>
+                <div class="form-check form-switch float-end">
+                    <input type="checkbox" {{ isset($user) && $user->is_active == 1 ? 'checked' : '' }} name="is_active" class="form-check-input" value="on"
+                        id="is_active">
+                    <label class="form-check-label" for="is_active"></label>
                 </div>
             </div>
 

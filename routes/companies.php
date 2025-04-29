@@ -13,7 +13,11 @@ Route::group(
     ],
     function () {
         Route::get('/', 'DashboardController@index')->name('dashboard');
-
+        Route::get('profile', 'DashboardController@profile')->name('profile');
+        Route::post('profile', 'DashboardController@editprofile')->name('profile.update');
+        Route::post('password', 'DashboardController@updatePassword')->name('profile.update.password');
+        
+        
         // HRMS
         Route::group([
             'prefix' => 'hrms',
@@ -23,6 +27,9 @@ Route::group(
             Route::resource('users', 'UserController')->names('users');
             Route::get('users/{user}/reset-password', 'UserController@resetPasswordForm')->name('users.reset.form');
             Route::post('users/{user}/reset-password', 'UserController@resetPassword')->name('users.reset.update');
+            Route::get('users/create/documents', 'UserController@createDocuments')->name('users.create-documents');
+            Route::post('users/create/documents', 'UserController@uploadDocuments')->name('users.upload-documents');
+
             Route::resource('roles', 'RoleController')->names('roles');
         });
 
@@ -61,6 +68,23 @@ Route::group(
 
      
 
+        });
+        Route::group([
+            'prefix' => 'media',
+            'as' => 'media.',
+        ], function () {
+            Route::get('/', 'MediaController@index')->name('index');
+
+            Route::post('/folder', 'MediaController@storeFolder')->name('folder.store');
+            Route::get('/folder/create', 'MediaController@createFolder')->name('folder.create');
+            Route::get('/folder/rename/{folder_id}', 'MediaController@renameFolder')->name('folder.rename');
+            Route::put('/folder/rename/{folder_id}', 'MediaController@updateFolder')->name('folder.rename.update');
+            Route::delete('/folder/delete/{folder_id}', 'MediaController@deleteFolder')->name('folder.delete');
+            Route::get('folder/{folder_id}', 'MediaController@subFolder')->name('folder.sub');
+            Route::get('folder/{folder_id}/files/select/', 'MediaController@showFileUploadForm')->name('files.select');
+            Route::delete('files/delete/{file_id}', 'MediaController@deleteFile')->name('files.delete');
+            
+            Route::post('/upload', 'MediaController@uploadFiles')->name('file.upload');
         });
     }
 );

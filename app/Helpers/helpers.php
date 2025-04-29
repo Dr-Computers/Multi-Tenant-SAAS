@@ -455,9 +455,9 @@ if (!function_exists('dateTimeFormat')) {
 
     function dateTimeFormat($date)
     {
-        $date = date('d M,Y', strtotime($date));
-        $time = date('h:i a', strtotime($date));
-        return  $date . '<br>' . $time;
+        $date = date('d M,Y',strtotime($date));
+        $time = date('h:i a',strtotime($date));
+        return  $date . ',' . $time ;
     }
 }
 

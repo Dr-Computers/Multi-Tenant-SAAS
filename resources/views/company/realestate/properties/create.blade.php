@@ -1,8 +1,5 @@
 @extends('layouts.company')
 @push('header')
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.js"></script>
-
     <style>
         .loader-overlay {
             position: fixed;
@@ -116,7 +113,6 @@
             height: 36px !important;
         }
     </style>
-
     <link media="all" type="text/css" rel="stylesheet" href="/assets/css/core.css">
 @endpush
 @section('page-title')
@@ -124,16 +120,10 @@
 @endsection
 @section('breadcrumb')
     <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">{{ __('Dashboard') }}</a></li>
-    <li class="breadcrumb-item">{{ __('Properties') }}</li>
+    <li class="breadcrumb-item"><a href="{{ route('company.realestate.properties.index') }}">{{ __('Properties') }}</a></li>
+    <li class="breadcrumb-item">{{ __('Property Create') }}</li>
 @endsection
-@section('action-btn')
-    <div class="d-flex">
-        <a href="{{ route('company.realestate.properties.create') }}" title="{{ __('Create New Property') }}"
-            class="btn btn-sm btn-primary me-2">
-            <i class="ti ti-plus"></i>
-        </a>
-    </div>
-@endsection
+
 @section('content')
     <div x-data="stepper()" class="container bg-white rounded-lg shadow-lg p-lg-6 p-2.5 mt-5">
         <div class="pb-1" x-data="formHandler()">
@@ -273,7 +263,7 @@
                                 </ul>
                             </div>
 
-       
+
 
                         </div>
                     </div>
@@ -426,63 +416,103 @@
                                                         <input form="propertyFrom" name="property_name" type="text"
                                                             autocomplete="off" id="name"
                                                             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 "
-                                                            placeholder=" "
-                                                            placeholder="Like Example: 2BHK for remt or 3 BHK for sale ,...." />
-                                                        <label for="unit-info" id="property_heighlight_name"
+                                                            placeholder=" " />
+                                                        <label for="name" id="property_heighlight_name"
                                                             class="absolute fs-3 text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-gray-900 px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto start-1">
                                                             Property heighlight name</label>
                                                     </div>
                                                 </div>
 
-                                                <div class="col-lg-6 HideUnwantedSectionsInPlot HideUnwantedSectionsInPg">
+                                                <div class="col-lg-6 HideUnwantedSectionsInPlot ">
                                                     <div class="relative z-0 w-full mb-3 group ">
-                                                        <input form="propertyFrom" name="unit_info" type="text"
-                                                            autocomplete="off" id="unit-info"
+                                                        <input form="propertyFrom" name="building_no" type="text"
+                                                            autocomplete="off" id="building_no"
                                                             class="block px-2.5 w-full text-sm text-gray-900 bg-transparent rounded-lg border-1 pt-3 pb-2 appearance-none dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer" />
-                                                        <label for="unit-info"
+                                                        <label for="building_no"
                                                             class="absolute fs-3 text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-gray-900 px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto start-1">
                                                             Flat/Villa/Building No</label>
                                                     </div>
                                                 </div>
 
                                             </div>
-                                       
-                                            <div id="floor-section"
-                                                class="HideUnwantedSectionsInPlot HideUnwantedSectionsInPg ">
-                                                <div class="section">
-                                                    <h5 class="mt-3 mb-3 fs-3 text-black font-bold">Floor Details</h5>
-                                                    <h6 class="mb-3 font-medium">Total no of floors and your floor
-                                                        details </h6>
+                                            <div class="row">
+                                                <div class="col-lg-6 mb-3 HideUnwantedSectionsInPlot">
+                                                    <!-- Property Name -->
+                                                    <div class="relative z-0 w-full mb-3 group">
 
-                                                    <div class="grid grid-cols-1 md:grid-cols-5 lg:grid-cols-2 gap-2">
+                                                        <input form="propertyFrom" name="fire_safty_start_date"
+                                                            type="date" autocomplete="off" id="fire_safty_start_date"
+                                                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 "
+                                                            placeholder="" />
+                                                        <label for="fire_safty_start_date"
+                                                            class="absolute fs-3 text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-gray-900 px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto start-1">
+                                                            Fire safty start date</label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-6 mb-3 HideUnwantedSectionsInPlot">
+                                                    <!-- Property Name -->
+                                                    <div class="relative z-0 w-full mb-3 group">
 
-                                                        <!-- Total Floor -->
-                                                        <div class="mb-2">
-                                                            <div class="relative flex">
-                                                                <input form="propertyFrom" name="total_floor"
-                                                                    type="number" autocomplete="off" id="total_floor"
-                                                                    oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*?)\..*/g, '$1');"
-                                                                    class="bg-gray-50 text-dark border border-gray-300 text-sm rounded-s-md focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 peer"
-                                                                    placeholder=" " />
-                                                                <label for="total_floor"
-                                                                    class="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-gray-900 px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto start-1">Total
-                                                                    Floor</label>
+                                                        <input form="propertyFrom" name="fire_safty_end_date"
+                                                            type="date" autocomplete="off" id="fire_safty_end_date"
+                                                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 "
+                                                            placeholder=" " />
+                                                        <label for="fire_safty_end_date"
+                                                            class="absolute fs-3 text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-gray-900 px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto start-1">
+                                                            Fire safty end date</label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-6 mb-3">
+                                                    <!-- Property Name -->
+                                                    <div class="relative z-0 w-full mb-3 group">
 
-                                                            </div>
-                                                        </div>
+                                                        <input form="propertyFrom" name="insurance_start_date"
+                                                            type="date" autocomplete="off" id="insurance_start_date"
+                                                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 "
+                                                            placeholder="" />
+                                                        <label for="insurance_start_date" id="insurance_start_date"
+                                                            class="absolute fs-3 text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-gray-900 px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto start-1">
+                                                            Insurance start date</label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-6 mb-3">
+                                                    <!-- Property Name -->
+                                                    <div class="relative z-0 w-full mb-3 group">
 
-                                                       
+                                                        <input form="propertyFrom" name="insurance_end_date"
+                                                            type="date" autocomplete="off" id="insurance_end_date"
+                                                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 "
+                                                            placeholder=" " />
+                                                        <label for="insurance_end_date"
+                                                            class="absolute fs-3 text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-gray-900 px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto start-1">
+                                                            Insurance end date</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="grid grid-cols-1 md:grid-cols-5 lg:grid-cols-2 gap-2 HideUnwantedSectionsInPlot">
+
+                                                <!-- Total Floor -->
+                                                <div class="mb-2">
+                                                    <div class="relative flex">
+                                                        <input form="propertyFrom" name="total_floor" type="number"
+                                                            autocomplete="off" id="total_floor"
+                                                            oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*?)\..*/g, '$1');"
+                                                            class="bg-gray-50 text-dark border border-gray-300 text-sm rounded-s-md focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 peer"
+                                                            placeholder=" " />
+                                                        <label for="total_floor"
+                                                            class="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-gray-900 px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto start-1">Total
+                                                            Floor</label>
 
                                                     </div>
                                                 </div>
                                             </div>
                                             <div id="property-area-section ">
                                                 <div class="section">
-                                                    <h5 class="mt-3 fs-3 text-black fw-bold HideUnwantedSectionsInPg">
+                                                    <h5 class="mt-3 fs-3 text-black fw-bold ">
                                                         Area Details
                                                     </h5>
                                                     <div class="mt-3">
-                                                        <div class="ShowWantedSectionsInPlot HideUnwantedSectionsInPg"
+                                                        <div class="ShowWantedSectionsInPlot "
                                                             style="display: none">
                                                             <div class="row">
                                                                 <!-- Plot Area Input -->
@@ -585,7 +615,7 @@
 
                                                         </div>
                                                         <div
-                                                            class="col-lg-12 HideUnwantedSectionsInPlot HideUnwantedSectionsInPg">
+                                                            class="col-lg-12 HideUnwantedSectionsInPlot ">
                                                             <div class="row">
                                                                 <!-- Carpet Area Input -->
                                                                 <div class="mb-2 col-lg-6">
@@ -653,7 +683,7 @@
                                                     <div id="parking" class="mt-3 ">
 
                                                         <div
-                                                            class="col-lg-12 HideUnwantedSectionsInPlot HideUnwantedSectionsInPg">
+                                                            class="col-lg-12 HideUnwantedSectionsInPlot ">
                                                             <h5 class="mt-3 fs-3 text-black font-bold">Reserved Parking
                                                             </h5>
                                                             <div class="row1">
@@ -718,14 +748,10 @@
                                                                     </div>
                                                                 </div>
                                                             </div>
-
                                                         </div>
                                                     </div>
-
-                                                    
                                                 </div>
                                             </div>
-
                                         </div>
                                     </div>
                                     <div class=" col-lg-12">
@@ -734,7 +760,7 @@
                                                 <div class="section">
 
                                                     {{-- <div id="MoreaboutDetails"
-                                                        class="HideUnwantedSectionsInPlot HideUnwantedSectionsInPg">
+                                                        class="HideUnwantedSectionsInPlot ">
                                                         <h5 class="mt-3 font-bold text-black fs-3">More about details
                                                             <small>(optional)</small>
                                                         </h5>
@@ -949,29 +975,28 @@
 
                     <div x-show="currentStep === 3" class="space-y-4 mt-2">
                         <div class="mb-5 mx-2">
-                           
-                          
+
+
                             <div class="section">
                                 <h5 class="mt-3 font-bold text-black fs-3">Add Documents of your property</h5>
-                                
+
 
                                 <div class="mt-3 border-dashed border-2 border-gray-300 rounded-lg p-3  bg-gray-100">
-                                    <div x-data="imageUploader()" class="mx-auto bg-white shadow rounded-lg space-y-6">
-                                        <!-- Image Preview Grid -->
+                                    <div x-data="documentUploader()" class="mx-auto bg-white shadow rounded-lg space-y-6">
+                                        <!-- Document Preview Grid -->
                                         <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
-                                            <!-- Existing Images -->
-                                            <template x-for="(image, index) in images" :key="index">
+                                            <!-- Existing Documents -->
+                                            <template x-for="(document, index) in documents" :key="index">
                                                 <div class="flex flex-col relative">
                                                     <div class="relative group border rounded-lg overflow-hidden">
-                                                        <!-- Image -->
-                                                        <img :src="image.url" style="height: 100px;"
-                                                            alt="Uploaded Image" class="w-30 h-30 object-cover">
-
+                                                        <!-- Document -->
+                                                        <img :src="document.url" style="height: 100px;"
+                                                            alt="Uploaded Document" class="w-30 h-30 object-cover">
                                                         <!-- Overlay with Cover Option -->
                                                         <div
                                                             class="absolute flex flex-col inset-0 group-hover:opacity-100 space-y-2 transition">
-                                                            <!-- Remove Image -->
-                                                            <button @click="removeImage(index)"
+                                                            <!-- Remove Document -->
+                                                            <button @click="removeDocument(index)"
                                                                 class="absolute bg-white p-1 right-0 rounded-full top-0">
                                                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4"
                                                                     viewBox="0 0 20 20" fill="red">
@@ -982,30 +1007,20 @@
                                                             </button>
                                                         </div>
                                                     </div>
-                                                    <label class="flex items-center space-x-2 text-dark cursor-pointer ">
-                                                        <input type="radio" name="coverImage" form="propertyFrom"
-                                                            class="" :value="image.name"
-                                                            @change="setCoverImage(index)"
-                                                            :checked="currentCover === index" />
-                                                        <span>Make Cover Photo</span>
-                                                    </label>
-                                                    <span x-show="currentCover === index"
-                                                        class="absolute top-0 left-0 p-2 text-white bg-black opacity-50">Cover</span>
                                                 </div>
                                             </template>
 
-                                            <!-- Upload New Images -->
+                                            <!-- Upload New Documents -->
                                             <div class="flex flex-col col-auto text-center">
                                                 <div class="relative group border rounded-lg p-2 overflow-hidden"
                                                     @click="triggerFileInput()"
                                                     x-bind:class="{ 'border-blue-500': isDragging }">
-                                                    <input name="images[]" form="propertyFrom" type="file"
-                                                        accept="image/*" id="fileInput" class="hidden" multiple
-                                                        @change="addImages($event)">
+                                                    <img src="/assets/icons/upload-icon.png" class="w-50 mx-auto">
+                                                    <input name="documents[]" form="propertyFrom" type="file"
+                                                        accept=".pdf,.docx,image/*" id="fileDocInput" class="hidden"
+                                                        multiple @change="addDocuments($event)">
                                                     <p class="text-gray-600">
-                                                        click to upload your images here.</p>
-                                                    <p class="text-sm text-blue-500 font-medium hidden">Upload up to 30
-                                                        images</p>
+                                                        click to upload your documents here.</p>
                                                 </div>
                                             </div>
                                         </div>
@@ -1014,9 +1029,9 @@
                                 </div>
                             </div>
 
-                            <div class="section">
+                            <div class="section mb-4">
                                 <h5 class="mt-3 font-bold text-black fs-3">Add photos of your property</h5>
-                                
+
 
                                 <div class="mt-3 border-dashed border-2 border-gray-300 rounded-lg p-3  bg-gray-100">
                                     <div x-data="imageUploader()" class="mx-auto bg-white shadow rounded-lg space-y-6">
@@ -1062,6 +1077,7 @@
                                                 <div class="relative group border rounded-lg p-2 overflow-hidden"
                                                     @click="triggerFileInput()"
                                                     x-bind:class="{ 'border-blue-500': isDragging }">
+                                                    <img src="/assets/icons/upload-icon.png" class="w-50 mx-auto">
                                                     <input name="images[]" form="propertyFrom" type="file"
                                                         accept="image/*" id="fileInput" class="hidden" multiple
                                                         @change="addImages($event)">
@@ -1077,9 +1093,23 @@
                                 </div>
                             </div>
 
+
+
+                            <div class="mt-2">
+                                <h6 class="my-3 font-bold text-black fs-3">Property Owner </h6>
+                                <select form="propertyFrom" name="owner" id="owners"
+                                    class="bg-gray-50 border border-gray-300 text-dark-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 ">
+                                    <option value="" selected>None of the below
+                                    </option>
+                                    @foreach ($owners ?? [] as $owner)
+                                        <option value="{{ $owner->id }}">
+                                            {{ $owner->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
                             <div class="mt-5">
-                                <h6 class="mt-3 font-bold text-black fs-3">Ownership<sup
-                                        class="text-danger fs-4">*</sup></h6>
+                                <h6 class="mt-3 font-bold text-black fs-3">Ownership</h6>
                                 <ul class="flex gap-5 mt-3 flex-wrap">
                                     <li class="relative">
                                         <input form="propertyFrom" class="sr-only peer" checked type="radio"
@@ -1107,28 +1137,11 @@
                                     </li>
                                 </ul>
                             </div>
-                            `fire_safty_start_date`, 
-                            `fire_safty_end_date`, 
-                            `insurance_start_date`, 
-                            `insurance_end_date`,
-
-
                             <div class="mt-5">
                                 <h6 class="mt-3 font-bold text-black fs-3">What makes your property unique?</h6>
                                 <textarea form="propertyFrom" name="unique_info" rows="4" autocomplete="off"
                                     class="block w-full mt-2 p-2 border rounded-lg" placeholder="Write your thoughts here..."></textarea>
                             </div>
-
-                            <div class="mt-5">
-                                <div class="mt-3 font-bold text-black fs-3">
-                                    <label class="font-bold text-black dark:text-white mb-2"> Keywords <span
-                                            class="small text-[#637381]">(if you have multiple words use ' , '
-                                            comma)</span> </label>
-                                    <textarea form="propertyFrom" rows="4" autocomplete="off" class="block w-full mt-2 p-2 border rounded-lg"
-                                        cols="3" placeholder="bangalore central,bengaluru central,..." name="keywords">{{ isset($property) ? $property->keywords : '' }}</textarea>
-                                </div>
-                            </div>
-
 
                             <div class="mt-5">
                                 <h6 class="mt-3 font-bold text-black fs-3">Mark as moderation status <sup
@@ -1144,8 +1157,8 @@
                                         </label>
                                     </li>
                                     <li class="relative">
-                                        <input form="propertyFrom" class="sr-only peer" type="radio"
-                                            value="pending" name="moderation_status" id="pending">
+                                        <input form="propertyFrom" class="sr-only peer" type="radio" value="pending"
+                                            name="moderation_status" id="pending">
                                         <label for="pending"
                                             class="mx-1 px-3 py-1 bg-white border rounded-lg cursor-pointer peer-checked:ring-2 peer-checked:ring-green-500">
                                             Submit for review
@@ -1153,7 +1166,6 @@
                                     </li>
                                 </ul>
                             </div>
-
                         </div>
                     </div>
                 </div>
@@ -1161,8 +1173,7 @@
                 <!-- Navigation Buttons -->
                 <div class="flex justify-end mt-2">
                     <button type="button" @click="prevStep"
-                        class="px-6 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400"
-                        x-show="currentStep > 0">
+                        class="px-6 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400" x-show="currentStep > 0">
                         Back
                     </button>
                     <button type="button" @click="nextStep"
@@ -1178,747 +1189,802 @@
             </div>
 
         </div>
-    @endsection
+    </div>
+@endsection
 
-    @push('footer')
-        <script>
-            function stepper() {
-                return {
-                    currentStep: 0,
-                    steps: [{
-                            title: "Basic Details",
-                        },
-                        {
-                            title: "Location Details",
-                        },
-                        {
-                            title: "More details",
-                        },
-                        {
-                            title: "Media",
-                        },
-                    ],
-                    nextStep() {
-                        if (this.currentStep < 3) {
-                            this.currentStep++;
-                        }
-                        if (this.currentStep === 1) {
-                            document.getElementById("pageTitleDescription").style.display = 'none';
-                        }
-                        window.scrollTo({
-                            top: 0,
-                            behavior: 'smooth'
-                        })
+@push('footer')
+    <script>
+        function stepper() {
+            return {
+                currentStep: 0,
+                steps: [{
+                        title: "Basic Details",
                     },
-                    prevStep() {
-                        if (this.currentStep > 0) {
-                            this.currentStep--;
-                        }
-                        if (this.currentStep === 0) {
-                            document.getElementById("pageTitleDescription").style.display = 'block';
-                        }
-                        window.scrollTo({
-                            top: 0,
-                            behavior: 'smooth'
-                        })
+                    {
+                        title: "Location Details",
                     },
-                    jumpToStep(index) {
-                        this.currentStep = index;
-                        if (this.currentStep === 1) {
-                            document.getElementById("pageTitleDescription").style.display = 'none';
-                        } else {
-                            document.getElementById("pageTitleDescription").style.display = 'block';
-                        }
-                        window.scrollTo({
-                            top: 0,
-                            behavior: 'smooth'
-                        })
+                    {
+                        title: "More details",
                     },
-                    get progressBarWidth() {
-                        return (this.currentStep / 2) * 100; // 2 is the total number of steps - 1
+                    {
+                        title: "Media",
                     },
+                ],
+                nextStep() {
+                    if (this.currentStep < 3) {
+                        this.currentStep++;
+                    }
+                    if (this.currentStep === 1) {
+                        document.getElementById("pageTitleDescription").style.display = 'none';
+                    }
+                    window.scrollTo({
+                        top: 0,
+                        behavior: 'smooth'
+                    })
+                },
+                prevStep() {
+                    if (this.currentStep > 0) {
+                        this.currentStep--;
+                    }
+                    if (this.currentStep === 0) {
+                        document.getElementById("pageTitleDescription").style.display = 'block';
+                    }
+                    window.scrollTo({
+                        top: 0,
+                        behavior: 'smooth'
+                    })
+                },
+                jumpToStep(index) {
+                    this.currentStep = index;
+                    if (this.currentStep === 1) {
+                        document.getElementById("pageTitleDescription").style.display = 'none';
+                    } else {
+                        document.getElementById("pageTitleDescription").style.display = 'block';
+                    }
+                    window.scrollTo({
+                        top: 0,
+                        behavior: 'smooth'
+                    })
+                },
+                get progressBarWidth() {
+                    return (this.currentStep / 2) * 100; // 2 is the total number of steps - 1
+                },
 
+            }
+        }
+    </script>
+
+    {{-- bedroom number other --}}
+    <script>
+        function addOtherBedrooms() {
+            return {
+                showInput: false,
+                newOption: null,
+                addedOption: null,
+                isEditing: false,
+                addOption() {
+                    if (this.newOption) {
+                        this.addedOption = this.newOption;
+                        this.newOption = null;
+                        this.showInput = false;
+                    }
+                },
+                editOption() {
+                    this.showInput = true;
+                    this.newOption = this.addedOption;
+                    this.addedOption = null;
+                },
+                saveEdit() {
+                    this.isEditing = false;
                 }
-            }
-        </script>
+            };
+        }
 
-        {{-- bedroom number other --}}
-        <script>
-            function addOtherBedrooms() {
-                return {
-                    showInput: false,
-                    newOption: null,
-                    addedOption: null,
-                    isEditing: false,
-                    addOption() {
-                        if (this.newOption) {
-                            this.addedOption = this.newOption;
-                            this.newOption = null;
-                            this.showInput = false;
-                        }
-                    },
-                    editOption() {
-                        this.showInput = true;
-                        this.newOption = this.addedOption;
-                        this.addedOption = null;
-                    },
-                    saveEdit() {
-                        this.isEditing = false;
+        function addOtherBathrooms() {
+            return {
+                showInput: false,
+                newOption: null,
+                addedOption: null,
+                isEditing: false,
+                addOption() {
+                    if (this.newOption) {
+                        this.addedOption = this.newOption;
+                        this.newOption = null;
+                        this.showInput = false;
                     }
-                };
-            }
+                },
+                editOption() {
+                    this.showInput = true;
+                    this.newOption = this.addedOption;
+                    this.addedOption = null;
+                },
+                saveEdit() {
+                    this.isEditing = false;
+                }
+            };
+        }
 
-            function addOtherBathrooms() {
-                return {
-                    showInput: false,
-                    newOption: null,
-                    addedOption: null,
-                    isEditing: false,
-                    addOption() {
-                        if (this.newOption) {
-                            this.addedOption = this.newOption;
-                            this.newOption = null;
-                            this.showInput = false;
-                        }
-                    },
-                    editOption() {
-                        this.showInput = true;
-                        this.newOption = this.addedOption;
-                        this.addedOption = null;
-                    },
-                    saveEdit() {
-                        this.isEditing = false;
+        function addOtherBalconies() {
+            return {
+                showInput: false,
+                newOption: null,
+                addedOption: null,
+                isEditing: false,
+                addOption() {
+                    if (this.newOption) {
+                        this.addedOption = this.newOption;
+                        this.newOption = null;
+                        this.showInput = false;
                     }
-                };
-            }
+                },
+                editOption() {
+                    this.showInput = true;
+                    this.newOption = this.addedOption;
+                    this.addedOption = null;
+                },
+                saveEdit() {
+                    this.isEditing = false;
+                }
+            };
+        }
+    </script>
 
-            function addOtherBalconies() {
-                return {
-                    showInput: false,
-                    newOption: null,
-                    addedOption: null,
-                    isEditing: false,
-                    addOption() {
-                        if (this.newOption) {
-                            this.addedOption = this.newOption;
-                            this.newOption = null;
-                            this.showInput = false;
-                        }
-                    },
-                    editOption() {
-                        this.showInput = true;
-                        this.newOption = this.addedOption;
-                        this.addedOption = null;
-                    },
-                    saveEdit() {
-                        this.isEditing = false;
-                    }
-                };
-            }
-        </script>
+    <script>
+        function imageUploader() {
+            return {
+                isDragging: false,
+                images: [],
+                currentCover: null,
+                files: [],
 
-        <script>
-            function imageUploader() {
-                return {
-                    isDragging: false,
-                    images: [],
-                    currentCover: null,
-                    files: [],
+                // Trigger the hidden file input when the user clicks the drop area
+                triggerFileInput() {
+                    document.getElementById('fileInput').click();
+                },
 
-                    // Trigger the hidden file input when the user clicks the drop area
-                    triggerFileInput() {
-                        document.getElementById('fileInput').click();
-                    },
-
-                    // Add images when they are selected from the file input or dropped
-                    addImages(event) {
-                        const files = event.target.files || event.dataTransfer.files;
-                        Array.from(files).forEach(file => {
-                            if (file.size <= 2 * 1024 * 1024 && file.type.startsWith('image/')) {
-                                const fileObject = {
-                                    url: URL.createObjectURL(file), // Blob URL for preview
-                                    file: file, // The actual file object for uploading
-                                    name: file.name // Original file name
-                                };
-                                this.images.push(fileObject);
-                                this.files.push(file); // Store the file object for uploading
-                            } else {
-                                alert('Image not allowed to be more than 2 MB');
-                            }
-                        });
-                    },
-
-                    // Remove an image from the list and reset the cover if needed
-                    removeImage(index) {
-                        // Check if the removed image was the cover photo
-                        if (this.currentCover === index) {
-                            this.currentCover = null; // Reset the cover image if it was removed
-                        }
-                        this.images.splice(index, 1);
-                        this.files.splice(index, 1); // Remove the file object as well
-                    },
-
-                    // Set the selected image as the cover photo and store the original filename
-                    setCoverImage(index) {
-                        this.currentCover = index;
-                        // Access the original file name here
-                        const coverImageName = this.images[index].name;
-                        console.log('Cover Image Name:', coverImageName); // Use this value to send to your server
-                    },
-
-                    // Handle the drop event for drag-and-drop
-                    handleDrop(event) {
-                        this.isDragging = false;
-                        this.addImages(event);
-                    },
-
-                    // Visual feedback for drag-and-drop area
-                    toggleDragging(state) {
-                        this.isDragging = state;
-                    },
-                };
-            }
-
-
-            function videoUploader() {
-                return {
-                    videos: [], // Store videos for preview
-                    files: [], // Store actual file objects
-                    isDragging: false, // Track the drag-and-drop state
-                    errorMessage: '', // Store error message for invalid files
-
-                    // Trigger the hidden file input when the user clicks the drop area
-                    triggerFileInputVideo() {
-                        document.getElementById('fileInputVideo').click();
-                    },
-
-                    // Add videos when they are selected from the file input or dropped
-                    addVideos(event) {
-                        const files = event.target.files || event.dataTransfer.files;
-                        Array.from(files).forEach(file => {
-                            // Check if the file is a valid video type and under 50MB
-                            if (file.size <= 50 * 1024 * 1024 && file.type.startsWith('video/')) {
-                                const videoObject = {
-                                    url: URL.createObjectURL(file), // Blob URL for preview
-                                    file: file, // The actual file object for uploading
-                                    name: file.name // Original file name
-                                };
-                                this.videos.push(videoObject);
-                                this.files.push(file); // Store the file object for uploading
-                            } else {
-                                // Show error message if the file is invalid
-                                this.errorMessage = 'Invalid file type or file size exceeds 50MB.';
-                                setTimeout(() => this.errorMessage = '', 3000); // Clear error after 3 seconds
-                            }
-                        });
-                    },
-
-                    // Remove a video from the list
-                    removeVideo(index) {
-                        this.videos.splice(index, 1);
-                        this.files.splice(index, 1); // Remove the file object as well
-                    },
-
-                    // Handle the drop event for drag-and-drop
-                    handleDrop(event) {
-                        this.isDragging = false;
-                        this.addVideos(event);
-                    },
-
-                    // Visual feedback for drag-and-drop area
-                    toggleDragging(state) {
-                        this.isDragging = state;
-                    }
-                };
-            }
-        </script>
-
-
-        {{-- property form --}}
-        <script>
-            function propertyForm() {
-                return {
-                    // Backend data
-                    modes: {
-                        sell: @json($is_sell ?? []),
-                        rent: @json($is_rent ?? [])
-                    },
-                    types: [], // Available types based on mode
-                    categories: [], // Available categories based on mode and type
-                    currentMode: 'sell', // Default mode
-                    currentType: 'Residential', // Default type
-                    currentCategory: null, // Default category
-
-                    // Initialize on page load
-                    init() {
-                        this.updateMode(this.currentMode); // Initialize with default mode
-                    },
-
-                    // Update mode and filter types & categories
-                    updateMode(mode) {
-                        this.currentMode = mode;
-                        this.types = [];
-                        this.categories = [];
-                        this.currentType = 'Residential';
-
-                        // Set types for Sell and Rent modes
-                        if (mode === 'sell' || mode === 'rent') {
-                            // Commercial
-                            this.types = ['Residential', 'Commercial'];
-                            this.toggleSections('more-details', 'none');
-                            if (mode === 'sell') {
-                                this.toggleSections('ShowWantedSectionInSell', 'block');
-                            } else if (mode === 'rent') {
-                                this.toggleSections('ShowWantedSectionInRent', 'block');
-                            }
-
-                        }
-
-                        // Set categories based on the default type
-                        this.updateCategories();
-                    },
-
-                    // Update categories based on the type
-                    updateCategories() {
-                        const modeData = this.modes[this.currentMode];
-                        this.categories = modeData.filter(category =>
-                            (this.currentType === 'Residential' && category.is_residential) ||
-                            (this.currentType === 'Commercial' && category.is_commercial)
-                        );
-
-                        // Set the first category as selected by default
-                        if (this.categories.length > 0) {
-                            this.currentCategory = this.categories[0].id;
-                            this.selectedCategory(this.categories[0].name);
+                // Add images when they are selected from the file input or dropped
+                addImages(event) {
+                    const files = event.target.files || event.dataTransfer.files;
+                    Array.from(files).forEach(file => {
+                        if (file.size <= 2 * 1024 * 1024 && file.type.startsWith('image/')) {
+                            const fileObject = {
+                                url: URL.createObjectURL(file), // Blob URL for preview
+                                file: file, // The actual file object for uploading
+                                name: file.name // Original file name
+                            };
+                            this.images.push(fileObject);
+                            this.files.push(file); // Store the file object for uploading
                         } else {
-                            this.currentCategory = null;
+                            alert('Image not allowed to be more than 2 MB');
                         }
+                    });
+                },
+
+                // Remove an image from the list and reset the cover if needed
+                removeImage(index) {
+                    // Check if the removed image was the cover photo
+                    if (this.currentCover === index) {
+                        this.currentCover = null; // Reset the cover image if it was removed
+                    }
+                    this.images.splice(index, 1);
+                    this.files.splice(index, 1); // Remove the file object as well
+                },
+
+                // Set the selected image as the cover photo and store the original filename
+                setCoverImage(index) {
+                    this.currentCover = index;
+                    // Access the original file name here
+                    const coverImageName = this.images[index].name;
+                    console.log('Cover Image Name:', coverImageName); // Use this value to send to your server
+                },
+
+                // Handle the drop event for drag-and-drop
+                handleDrop(event) {
+                    this.isDragging = false;
+                    this.addImages(event);
+                },
+
+                // Visual feedback for drag-and-drop area
+                toggleDragging(state) {
+                    this.isDragging = state;
+                },
+            };
+        }
 
 
-                    },
-                    // Utility function to toggle visibility of sections
-                    toggleSections(className, displayStyle) {
-                        console.log(className, displayStyle)
-                        const elements = document.querySelectorAll(`.${className}`);
-                        for (const el of elements) {
-                            el.style.display = displayStyle;
-                        }
-                    },
+        function documentUploader() {
+            return {
+                isDragging: false,
+                documents: [],
+                currentCover: null,
+                files: [],
 
+                triggerFileInput() {
+                    document.getElementById('fileDocInput').click();
+                },
 
-                    // Handle category selection
-                    selectedCategory(categoryName) {
+                addDocuments(event) {
+                    const files = event.target.files || event.dataTransfer.files;
+                    Array.from(files).forEach(file => {
+                        const isAllowedImage = file.type.startsWith('image/');
+                        const isAllowedPdf = file.type === 'application/pdf';
+                        const isAllowedDocx = file.type ===
+                            'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
 
-                        // Perform actions based on category
-                        if (categoryName === 'Plot and Land') {
+                        if (file.size <= 2 * 1024 * 1024 && (isAllowedImage || isAllowedPdf || isAllowedDocx)) {
+                            let previewUrl = isAllowedImage ?
+                                URL.createObjectURL(file) :
+                                isAllowedPdf ?
+                                '/assets/icons/pdf-icon.png' :
+                                '/assets/icons/docx-icon.png';
 
-                            if (this.currentType === 'Residential') {
-                                this.toggleSections('ResidentialAllowed', 'block');
-                                this.toggleSections('CommercialAllowed', 'none');
-                            } else {
-                                this.toggleSections('ResidentialAllowed', 'none');
-                                this.toggleSections('CommercialAllowed', 'block');
-                            }
-
-                            HideUnwantedSectionsInPlot();
+                            const fileObject = {
+                                url: previewUrl,
+                                file: file,
+                                name: file.name,
+                                type: file.type
+                            };
+                            this.documents.push(fileObject);
+                            this.files.push(file);
                         } else {
-                            ShowHiddenSections();
-
-                            if (this.currentType === 'Residential' && categoryName != 'Plot and Land') {
-                                this.toggleSections('ShowWantedSectionsInCommercial', 'none');
-                                this.toggleSections('HideUnwantedSectionsInCommercial', 'block');
-
-
-                            } else if (this.currentType === 'Commercial' && categoryName != 'Plot and Land') {
-
-                                this.toggleSections('HideUnwantedSectionsInCommercial', 'none');
-                                this.toggleSections('ShowWantedSectionsInCommercial', 'block');
-
-                            }
-
-                            if (this.currentType === 'Commercial' && this.currentMode === 'rent') {
-                                this.toggleSections('ShowWantedSectionsInCommercialRent', 'block');
-                            } else {
-                                this.toggleSections('ShowWantedSectionsInCommercialRent', 'none');
-                            }
-
+                            alert('Only image, PDF, and DOCX files under 2 MB are allowed.');
                         }
+                    });
+                },
 
-                        if (this.currentType === 'Commercial' && categoryName != 'Plot and Land') {
+                removeDocument(index) {
+                    if (this.currentCover === index) {
+                        this.currentCover = null;
+                    }
+                    this.documents.splice(index, 1);
+                    this.files.splice(index, 1);
+                },
 
-                            document.getElementById('property_heighlight_name').textContent = 'Building Name';
+                handleDrop(event) {
+                    event.preventDefault();
+                    this.isDragging = false;
+                    this.addDocuments(event);
+                },
+
+                toggleDragging(state) {
+                    this.isDragging = state;
+                },
+            };
+        }
+
+
+
+
+        function videoUploader() {
+            return {
+                videos: [], // Store videos for preview
+                files: [], // Store actual file objects
+                isDragging: false, // Track the drag-and-drop state
+                errorMessage: '', // Store error message for invalid files
+
+                // Trigger the hidden file input when the user clicks the drop area
+                triggerFileInputVideo() {
+                    document.getElementById('fileInputVideo').click();
+                },
+
+                // Add videos when they are selected from the file input or dropped
+                addVideos(event) {
+                    const files = event.target.files || event.dataTransfer.files;
+                    Array.from(files).forEach(file => {
+                        // Check if the file is a valid video type and under 50MB
+                        if (file.size <= 50 * 1024 * 1024 && file.type.startsWith('video/')) {
+                            const videoObject = {
+                                url: URL.createObjectURL(file), // Blob URL for preview
+                                file: file, // The actual file object for uploading
+                                name: file.name // Original file name
+                            };
+                            this.videos.push(videoObject);
+                            this.files.push(file); // Store the file object for uploading
                         } else {
-
-                            document.getElementById('property_heighlight_name').textContent = 'Property Heighlight Name';
+                            // Show error message if the file is invalid
+                            this.errorMessage = 'Invalid file type or file size exceeds 50MB.';
+                            setTimeout(() => this.errorMessage = '', 3000); // Clear error after 3 seconds
                         }
-                    },
-                };
-            }
+                    });
+                },
 
-            // Utility functions to show/hide sections
-            function HideUnwantedSectionsInPlot() {
-                for (let el of document.querySelectorAll('.HideUnwantedSectionsInPlot')) el.style.display = 'none';
-                for (let el2 of document.querySelectorAll('.ShowWantedSectionsInPlot')) el2.style.display = 'block';
-            }
+                // Remove a video from the list
+                removeVideo(index) {
+                    this.videos.splice(index, 1);
+                    this.files.splice(index, 1); // Remove the file object as well
+                },
 
-            function ShowHiddenSections() {
+                // Handle the drop event for drag-and-drop
+                handleDrop(event) {
+                    this.isDragging = false;
+                    this.addVideos(event);
+                },
 
-                for (let el of document.querySelectorAll('.HideUnwantedSectionsInPlot')) el.style.display = 'block';
-                for (let el2 of document.querySelectorAll('.ShowWantedSectionsInPlot')) el2.style.display = 'none';
-            }
-        </script>
+                // Visual feedback for drag-and-drop area
+                toggleDragging(state) {
+                    this.isDragging = state;
+                }
+            };
+        }
+    </script>
 
-        {{-- location form --}}
-        <script>
-            localStorage.clear();
 
-            function locationForm() {
-                return {
-                    recentLocations: [{
-                            id: 1,
-                            city: 'New York',
-                            locality: 'Manhattan',
-                            sub_locality: 'Brooklyn',
-                            appartment: '5A',
-                            landmark: 'Near Central Park',
-                            latitude: '',
-                            longitude: ''
-                        },
-                        {
-                            id: 2,
-                            city: 'Los Angeles',
-                            locality: 'Downtown',
-                            sub_locality: 'Hollywood',
-                            appartment: '10B',
-                            landmark: 'Near Hollywood Sign',
-                            latitude: '',
-                            longitude: ''
-                        },
-                    ],
-                    form: {
-                        city: '',
-                        location_info: '',
-                        locality: '',
-                        sub_locality: '',
-                        appartment: '',
-                        landmark: '',
+    {{-- property form --}}
+    <script>
+        function propertyForm() {
+            return {
+                // Backend data
+                modes: {
+                    sell: @json($is_sell ?? []),
+                    rent: @json($is_rent ?? [])
+                },
+                types: [], // Available types based on mode
+                categories: [], // Available categories based on mode and type
+                currentMode: 'sell', // Default mode
+                currentType: 'Residential', // Default type
+                currentCategory: null, // Default category
+
+                // Initialize on page load
+                init() {
+                    this.updateMode(this.currentMode); // Initialize with default mode
+                },
+
+                // Update mode and filter types & categories
+                updateMode(mode) {
+                    this.currentMode = mode;
+                    this.types = [];
+                    this.categories = [];
+                    this.currentType = 'Residential';
+
+                    // Set types for Sell and Rent modes
+                    if (mode === 'sell' || mode === 'rent') {
+                        // Commercial
+                        this.types = ['Residential', 'Commercial'];
+                        this.toggleSections('more-details', 'none');
+                        if (mode === 'sell') {
+                            this.toggleSections('ShowWantedSectionInSell', 'block');
+                        } else if (mode === 'rent') {
+                            this.toggleSections('ShowWantedSectionInRent', 'block');
+                        }
+
+                    }
+
+                    // Set categories based on the default type
+                    this.updateCategories();
+                },
+
+                // Update categories based on the type
+                updateCategories() {
+                    const modeData = this.modes[this.currentMode];
+                    this.categories = modeData.filter(category =>
+                        (this.currentType === 'Residential' && category.is_residential) ||
+                        (this.currentType === 'Commercial' && category.is_commercial)
+                    );
+
+                    // Set the first category as selected by default
+                    if (this.categories.length > 0) {
+                        this.currentCategory = this.categories[0].id;
+                        this.selectedCategory(this.categories[0].name);
+                    } else {
+                        this.currentCategory = null;
+                    }
+
+
+                },
+                // Utility function to toggle visibility of sections
+                toggleSections(className, displayStyle) {
+                    console.log(className, displayStyle)
+                    const elements = document.querySelectorAll(`.${className}`);
+                    for (const el of elements) {
+                        el.style.display = displayStyle;
+                    }
+                },
+
+
+                // Handle category selection
+                selectedCategory(categoryName) {
+
+                    // Perform actions based on category
+                    if (categoryName === 'Plot and Land') {
+
+                        if (this.currentType === 'Residential') {
+                            this.toggleSections('ResidentialAllowed', 'block');
+                            this.toggleSections('CommercialAllowed', 'none');
+                        } else {
+                            this.toggleSections('ResidentialAllowed', 'none');
+                            this.toggleSections('CommercialAllowed', 'block');
+                        }
+
+                        HideUnwantedSectionsInPlot();
+                    } else {
+                        ShowHiddenSections();
+
+                        if (this.currentType === 'Residential' && categoryName != 'Plot and Land') {
+                            this.toggleSections('ShowWantedSectionsInCommercial', 'none');
+                            this.toggleSections('HideUnwantedSectionsInCommercial', 'block');
+
+
+                        } else if (this.currentType === 'Commercial' && categoryName != 'Plot and Land') {
+
+                            this.toggleSections('HideUnwantedSectionsInCommercial', 'none');
+                            this.toggleSections('ShowWantedSectionsInCommercial', 'block');
+
+                        }
+
+                        if (this.currentType === 'Commercial' && this.currentMode === 'rent') {
+                            this.toggleSections('ShowWantedSectionsInCommercialRent', 'block');
+                        } else {
+                            this.toggleSections('ShowWantedSectionsInCommercialRent', 'none');
+                        }
+
+                    }
+
+                    if (this.currentType === 'Commercial' && categoryName != 'Plot and Land') {
+
+                        document.getElementById('property_heighlight_name').textContent = 'Building Name';
+                    } else {
+
+                        document.getElementById('property_heighlight_name').textContent = 'Property Heighlight Name';
+                    }
+                },
+            };
+        }
+
+        // Utility functions to show/hide sections
+        function HideUnwantedSectionsInPlot() {
+            for (let el of document.querySelectorAll('.HideUnwantedSectionsInPlot')) el.style.display = 'none';
+            for (let el2 of document.querySelectorAll('.ShowWantedSectionsInPlot')) el2.style.display = 'block';
+        }
+
+        function ShowHiddenSections() {
+
+            for (let el of document.querySelectorAll('.HideUnwantedSectionsInPlot')) el.style.display = 'block';
+            for (let el2 of document.querySelectorAll('.ShowWantedSectionsInPlot')) el2.style.display = 'none';
+        }
+    </script>
+
+    {{-- location form --}}
+    <script>
+        localStorage.clear();
+
+        function locationForm() {
+            return {
+                recentLocations: [{
+                        id: 1,
+                        city: 'New York',
+                        locality: 'Manhattan',
+                        sub_locality: 'Brooklyn',
+                        appartment: '5A',
+                        landmark: 'Near Central Park',
                         latitude: '',
-                        longitude: '',
+                        longitude: ''
                     },
-                    locationSelected: false,
-                    formFilled: false,
-                    fillForm(location) {
-                        this.form = {
-                            ...location
-                        };
-                        this.locationSelected = true;
-                        this.formFilled = true;
-                        // Store selected location in localStorage
-                        // localStorage.setItem('selectedLocation', JSON.stringify(this.form));
+                    {
+                        id: 2,
+                        city: 'Los Angeles',
+                        locality: 'Downtown',
+                        sub_locality: 'Hollywood',
+                        appartment: '10B',
+                        landmark: 'Near Hollywood Sign',
+                        latitude: '',
+                        longitude: ''
                     },
-                    checkForm() {
-                        this.formFilled = this.form.city && this.form.locality && this.form.sub_locality;
-                    },
-                    // Retrieve location from localStorage if exists
-                    init2() {
+                ],
+                form: {
+                    city: '',
+                    location_info: '',
+                    locality: '',
+                    sub_locality: '',
+                    appartment: '',
+                    landmark: '',
+                    latitude: '',
+                    longitude: '',
+                },
+                locationSelected: false,
+                formFilled: false,
+                fillForm(location) {
+                    this.form = {
+                        ...location
+                    };
+                    this.locationSelected = true;
+                    this.formFilled = true;
+                    // Store selected location in localStorage
+                    // localStorage.setItem('selectedLocation', JSON.stringify(this.form));
+                },
+                checkForm() {
+                    this.formFilled = this.form.city && this.form.locality && this.form.sub_locality;
+                },
+                // Retrieve location from localStorage if exists
+                init2() {
 
-                        // const storedLocation = localStorage.getItem('selectedLocation');
-                        // if (storedLocation) {
-                        //     this.form = JSON.parse(storedLocation);
-                        //     this.formFilled = true;
-                        //     this.locationSelected = true;
-                        // }
-                    }
-                };
-            }
-        </script>
-
-        {{-- convert price to words --}}
-
-        <script>
-            // Function to convert number to words
-            function convertToWords() {
-                const num = document.getElementById('priceInput').value;
-
-                // Ensure the input is within the maximum allowed value (AED 100 Crore)
-                if (num > 999999999) {
-                    alert('Price cannot exceed AED 99.9 Crore');
-                    document.getElementById('priceInput').value = 999999999; // Set to the maximum value
-                    return;
+                    // const storedLocation = localStorage.getItem('selectedLocation');
+                    // if (storedLocation) {
+                    //     this.form = JSON.parse(storedLocation);
+                    //     this.formFilled = true;
+                    //     this.locationSelected = true;
+                    // }
                 }
+            };
+        }
+    </script>
 
-                // Convert the number to words
-                const words = numberToWords(parseInt(num));
-                document.getElementById('priceInWords').textContent = 'AED ' + (words || 'Zero');
+    {{-- convert price to words --}}
+
+    <script>
+        // Function to convert number to words
+        function convertToWords() {
+            const num = document.getElementById('priceInput').value;
+
+            // Ensure the input is within the maximum allowed value (AED 100 Crore)
+            if (num > 999999999) {
+                alert('Price cannot exceed AED 99.9 Crore');
+                document.getElementById('priceInput').value = 999999999; // Set to the maximum value
+                return;
             }
 
-            function numberToWords(num) {
-                if (isNaN(num) || num === 0) return 'Zero';
+            // Convert the number to words
+            const words = numberToWords(parseInt(num));
+            document.getElementById('priceInWords').textContent = 'AED ' + (words || 'Zero');
+        }
 
-                const a = [
-                    '', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine',
-                    'Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen',
-                    'Seventeen', 'Eighteen', 'Nineteen'
-                ];
-                const b = [
-                    '', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'
-                ];
-                const c = ['Crore', 'Lakh', 'Thousand', 'Hundred', ''];
+        function numberToWords(num) {
+            if (isNaN(num) || num === 0) return 'Zero';
 
-                // Define how to split numbers in the Indian system
-                const divisors = [10000000, 100000, 1000, 100, 1];
-                let words = [];
+            const a = [
+                '', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine',
+                'Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen',
+                'Seventeen', 'Eighteen', 'Nineteen'
+            ];
+            const b = [
+                '', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'
+            ];
+            const c = ['Crore', 'Lakh', 'Thousand', 'Hundred', ''];
 
-                for (let i = 0; i < divisors.length; i++) {
-                    const divisor = divisors[i];
-                    const quotient = Math.floor(num / divisor);
-                    if (quotient > 0) {
-                        if (i === 3 && quotient < 10 && words.length > 0) {
-                            // Special handling for numbers below 10 in the "Hundred" place
-                            words.push('and');
-                        }
-                        if (quotient < 20) {
-                            words.push(a[quotient]);
-                        } else {
-                            words.push(b[Math.floor(quotient / 10)] + (quotient % 10 > 0 ? ' ' + a[quotient % 10] : ''));
-                        }
-                        if (c[i]) words.push(c[i]); // Add the place (Crore, Lakh, etc.)
-                        num %= divisor; // Update the remainder
+            // Define how to split numbers in the Indian system
+            const divisors = [10000000, 100000, 1000, 100, 1];
+            let words = [];
+
+            for (let i = 0; i < divisors.length; i++) {
+                const divisor = divisors[i];
+                const quotient = Math.floor(num / divisor);
+                if (quotient > 0) {
+                    if (i === 3 && quotient < 10 && words.length > 0) {
+                        // Special handling for numbers below 10 in the "Hundred" place
+                        words.push('and');
                     }
+                    if (quotient < 20) {
+                        words.push(a[quotient]);
+                    } else {
+                        words.push(b[Math.floor(quotient / 10)] + (quotient % 10 > 0 ? ' ' + a[quotient % 10] : ''));
+                    }
+                    if (c[i]) words.push(c[i]); // Add the place (Crore, Lakh, etc.)
+                    num %= divisor; // Update the remainder
                 }
-
-                return words.join(' ').trim();
             }
-        </script>
 
-        <script>
-            function formHandler() {
-                return {
-                    formData: {}, // Object to hold form data
-                    responseMessage: '', // Success message
-                    errorMessage: '', // Error message
-                    validationErrors: [], // Array to store validation errors
-                    showToast: false, // Controls visibility of the toast
-                    toastMessage: '', // Message for the toast
-                    toastType: '', // Type of toast (success/error)
+            return words.join(' ').trim();
+        }
+    </script>
 
-                    async submitForm() {
-                        // Show loader
-                        this.toggleLoader(true);
+    <script>
+        function formHandler() {
+            return {
+                formData: {}, // Object to hold form data
+                responseMessage: '', // Success message
+                errorMessage: '', // Error message
+                validationErrors: [], // Array to store validation errors
+                showToast: false, // Controls visibility of the toast
+                toastMessage: '', // Message for the toast
+                toastType: '', // Type of toast (success/error)
 
-                        // Reset validation errors before submitting
-                        this.validationErrors = [];
-                        this.errorMessage = '';
-                        this.responseMessage = '';
+                async submitForm() {
+                    // Show loader
+                    this.toggleLoader(true);
 
-                        // Reference the form element
-                        const formElement = document.getElementById('propertyFrom');
-                        const formData = new FormData(formElement);
+                    // Reset validation errors before submitting
+                    this.validationErrors = [];
+                    this.errorMessage = '';
+                    this.responseMessage = '';
 
-                        try {
-                            const response = await fetch(`{{ route('company.realestate.properties.store') }}`, {
-                                method: 'POST',
-                                headers: {
-                                    'X-CSRF-TOKEN': '{{ csrf_token() }}' // Include Laravel CSRF token
-                                },
-                                body: formData // Use FormData as request body
-                            });
+                    // Reference the form element
+                    const formElement = document.getElementById('propertyFrom');
+                    const formData = new FormData(formElement);
 
-                            // Handle validation errors (422)
-                            if (!response.ok) {
-                                const errorData = await response.json();
-                                this.validationErrors = errorData.errors || [];
-                                this.showToastMessage('Validation failed.', 'error');
-                                return; // Stop further execution if validation fails
-                            }
+                    try {
+                        const response = await fetch(`{{ route('company.realestate.properties.store') }}`, {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}' // Include Laravel CSRF token
+                            },
+                            body: formData // Use FormData as request body
+                        });
 
-                            // Handle successful response
-                            const data = await response.json();
-                            this.responseMessage = data.message || 'Form submitted successfully!';
-                            this.validationErrors = []; // Clear validation errors
-                            this.showToastMessage(this.responseMessage, 'success');
-                            window.location = data.redirect;
-                        } catch (error) {
-                            // Catch unexpected errors (e.g., network issues)
-                            this.errorMessage = error.message || 'An error occurred during form submission';
-                            this.responseMessage = ''; // Clear success messages
-                            this.showToastMessage(this.errorMessage, 'error');
-                        } finally {
-                            // Hide loader
-                            this.toggleLoader(false);
+                        // Handle validation errors (422)
+                        if (!response.ok) {
+                            const errorData = await response.json();
+                            this.validationErrors = errorData.errors || [];
+                            this.showToastMessage('Validation failed.', 'error');
+                            return; // Stop further execution if validation fails
                         }
-                    },
-                    toggleLoader(show) {
-                        const loader = document.getElementById('loader');
-                        if (show) {
-                            loader.classList.remove('hidden');
-                        } else {
-                            loader.classList.add('hidden');
-                        }
-                    },
 
-                    showToastMessage(message, type) {
-                        this.toastType = type;
+                        // Handle successful response
+                        const data = await response.json();
+                        this.responseMessage = data.message || 'Form submitted successfully!';
+                        this.validationErrors = []; // Clear validation errors
+                        this.showToastMessage(this.responseMessage, 'success');
+                        window.location = data.redirect;
+                    } catch (error) {
+                        // Catch unexpected errors (e.g., network issues)
+                        this.errorMessage = error.message || 'An error occurred during form submission';
+                        this.responseMessage = ''; // Clear success messages
+                        this.showToastMessage(this.errorMessage, 'error');
+                    } finally {
+                        // Hide loader
+                        this.toggleLoader(false);
+                    }
+                },
+                toggleLoader(show) {
+                    const loader = document.getElementById('loader');
+                    if (show) {
+                        loader.classList.remove('hidden');
+                    } else {
+                        loader.classList.add('hidden');
+                    }
+                },
 
-                        if (type === 'error' && this.validationErrors.length > 0) {
-                            // Construct an unordered list of errors
-                            this.toastMessage = `
+                showToastMessage(message, type) {
+                    this.toastType = type;
+
+                    if (type === 'error' && this.validationErrors.length > 0) {
+                        // Construct an unordered list of errors
+                        this.toastMessage = `
                                 <strong>${message}</strong>
                                 <ul>
                                     ${this.validationErrors.map(error => `<li>${error}</li>`).join('')}
                                 </ul>
                             `;
-                        } else {
-                            this.toastMessage = message + ':(';
-                        }
-
-                        this.showToast = true;
-                        setTimeout(() => {
-                            this.showToast = false; // Hide toast after 3 seconds
-                        }, 3000);
+                    } else {
+                        this.toastMessage = message + ':(';
                     }
-                };
-            }
-        </script>
 
-        <script
-            src="https://maps.googleapis.com/maps/api/js?key={{ env('GOOGLE_MAP_KEY') }}&callback=initAutocomplete&libraries=places,geometry&v=weekly"
-            defer loading=async></script>
-        <script>
-            function initAutocomplete() {
-                const input = document.getElementById("location");
-
-                // const options = {
-                //     strictBounds: false,
-                //     types: ['address'],
-                //     componentRestrictions: {
-                //         country: 'IN', // Restrict to India
-                //     }
-                // };
-
-                // Coordinates for Bangalore center
-                const center = {
-                    lat: 12.9716,
-                    lng: 77.5946
-                };
-
-                // Expanded bounding box to cover the full area of Bangalore
-                // const defaultBounds = {
-                //     north: 13.3000, // Expanded to cover the northernmost part of the city
-                //     south: 12.7000, // Expanded to cover the southernmost part
-                //     east: 77.7500, // Extended to the easternmost part
-                //     west: 77.3500 // Extended to the westernmost part
-                // };
-
-                const options = {
-                    // bounds: defaultBounds, // Restrict to Bangalore's bounding box
-                    strictBounds: true, // Enforce the bounding box strictly
-                    types: ['establishment'],
-                    componentRestrictions: {
-                        country: 'AE', // Restrict to India
-                    }
-                };
-
-                const autocomplete = new google.maps.places.Autocomplete(input, options);
-
-                autocomplete.addListener("place_changed", () => {
-
-                    const place = autocomplete.getPlace();
-
-                    if (!place.geometry || !place.geometry.location) {
-
-                        window.alert("No details available for input: '" + place.name + "'");
-                        return;
-                    }
-                    // Get city, postal code, and country from the place details
-                    // Variables to store details
-                    let city = '';
-                    let locality = '';
-                    let subLocality = '';
-                    let landmark = '';
-                    let latitude = '';
-                    let longitude = '';
-
-                    // Extract latitude and longitude
-                    latitude = place.geometry.location.lat();
-                    longitude = place.geometry.location.lng();
-
-                    // Loop through address components
-                    place.address_components.forEach(component => {
-                        const componentType = component.types[0];
-
-                        // Fetch city
-                        if (componentType === 'locality') {
-                            city = component.long_name;
-                        }
-
-                        // Fetch locality (level 2 or 3)
-                        if (componentType === 'sublocality_level_1') {
-                            locality = component.long_name;
-                        }
-
-                        // Fetch sub-locality (level 2 or deeper)
-                        if (componentType === 'sublocality_level_2' || componentType === 'sublocality') {
-                            subLocality = component.long_name;
-                        }
-
-                        // Fetch landmark (route or point of interest)
-                        if (componentType === 'route') {
-                            landmark = component.long_name;
-                        }
-                    });
-
-                    // Log the extracted values
-                    console.log({
-                        city,
-                        locality,
-                        subLocality,
-                        landmark,
-                        latitude,
-                        longitude
-                    });
-
-                    // Set values in respective fields if needed
-                    document.getElementById('auto_city').value = city;
-                    document.getElementById('auto_locality').value = locality;
-                    document.getElementById('auto_subLocality').value = subLocality;
-                    document.getElementById('auto_landmark').value = landmark;
-                    document.getElementById('auto_latitude').value = latitude;
-                    document.getElementById('auto_longitude').value = longitude;
-                });
-            }
-
-            // Initialize Google Maps Autocomplete
-            document.addEventListener("DOMContentLoaded", () => {
-                if (typeof google !== "undefined") {
-                    initAutocomplete();
+                    this.showToast = true;
+                    setTimeout(() => {
+                        this.showToast = false; // Hide toast after 3 seconds
+                    }, 3000);
                 }
-            });
-        </script>
+            };
+        }
+    </script>
 
-        <script src="https://code.jquery.com/jquery-3.7.1.min.js"
-            integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
-        <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-        <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-        <script>
-            jQuery(document).ready(function($) {
-                $('#projects').select2({
-                    placeholder: "Select a project",
-                    allowClear: true,
-                    width: 'resolve'
-                });
-            });
-        </script>
+    <script
+        src="https://maps.googleapis.com/maps/api/js?key={{ env('GOOGLE_MAP_KEY') }}&callback=initAutocomplete&libraries=places,geometry&v=weekly"
+        defer loading=async></script>
+    <script>
+        function initAutocomplete() {
+            const input = document.getElementById("location");
 
-        <script>
-            function selectAllFurnishingItems(value = 'unfurnished') {
-                if (value === 'furnished') {
-                    // Check all checkboxes
-                    $('input[name="furnishing[]"]').prop('checked', true);
-                } else {
-                    // Uncheck all checkboxes
-                    $('input[name="furnishing[]"]').prop('checked', false);
+            // const options = {
+            //     strictBounds: false,
+            //     types: ['address'],
+            //     componentRestrictions: {
+            //         country: 'IN', // Restrict to India
+            //     }
+            // };
+
+            // Coordinates for Bangalore center
+            const center = {
+                lat: 12.9716,
+                lng: 77.5946
+            };
+
+            // Expanded bounding box to cover the full area of Bangalore
+            // const defaultBounds = {
+            //     north: 13.3000, // Expanded to cover the northernmost part of the city
+            //     south: 12.7000, // Expanded to cover the southernmost part
+            //     east: 77.7500, // Extended to the easternmost part
+            //     west: 77.3500 // Extended to the westernmost part
+            // };
+
+            const options = {
+                // bounds: defaultBounds, // Restrict to Bangalore's bounding box
+                strictBounds: true, // Enforce the bounding box strictly
+                types: ['establishment'],
+                componentRestrictions: {
+                    country: 'AE', // Restrict to India
                 }
+            };
+
+            const autocomplete = new google.maps.places.Autocomplete(input, options);
+
+            autocomplete.addListener("place_changed", () => {
+
+                const place = autocomplete.getPlace();
+
+                if (!place.geometry || !place.geometry.location) {
+
+                    window.alert("No details available for input: '" + place.name + "'");
+                    return;
+                }
+                // Get city, postal code, and country from the place details
+                // Variables to store details
+                let city = '';
+                let locality = '';
+                let subLocality = '';
+                let landmark = '';
+                let latitude = '';
+                let longitude = '';
+
+                // Extract latitude and longitude
+                latitude = place.geometry.location.lat();
+                longitude = place.geometry.location.lng();
+
+                // Loop through address components
+                place.address_components.forEach(component => {
+                    const componentType = component.types[0];
+
+                    // Fetch city
+                    if (componentType === 'locality') {
+                        city = component.long_name;
+                    }
+
+                    // Fetch locality (level 2 or 3)
+                    if (componentType === 'sublocality_level_1') {
+                        locality = component.long_name;
+                    }
+
+                    // Fetch sub-locality (level 2 or deeper)
+                    if (componentType === 'sublocality_level_2' || componentType === 'sublocality') {
+                        subLocality = component.long_name;
+                    }
+
+                    // Fetch landmark (route or point of interest)
+                    if (componentType === 'route') {
+                        landmark = component.long_name;
+                    }
+                });
+
+                // Log the extracted values
+                console.log({
+                    city,
+                    locality,
+                    subLocality,
+                    landmark,
+                    latitude,
+                    longitude
+                });
+
+                // Set values in respective fields if needed
+                document.getElementById('auto_city').value = city;
+                document.getElementById('auto_locality').value = locality;
+                document.getElementById('auto_subLocality').value = subLocality;
+                document.getElementById('auto_landmark').value = landmark;
+                document.getElementById('auto_latitude').value = latitude;
+                document.getElementById('auto_longitude').value = longitude;
+            });
+        }
+
+        // Initialize Google Maps Autocomplete
+        document.addEventListener("DOMContentLoaded", () => {
+            if (typeof google !== "undefined") {
+                initAutocomplete();
             }
-        </script>
-    @endpush
+        });
+    </script>
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+        integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+    <script>
+        function selectAllFurnishingItems(value = 'unfurnished') {
+            if (value === 'furnished') {
+                // Check all checkboxes
+                $('input[name="furnishing[]"]').prop('checked', true);
+            } else {
+                // Uncheck all checkboxes
+                $('input[name="furnishing[]"]').prop('checked', false);
+            }
+        }
+    </script>
+@endpush

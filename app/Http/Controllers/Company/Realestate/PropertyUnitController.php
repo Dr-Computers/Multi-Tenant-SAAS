@@ -19,7 +19,7 @@ class PropertyUnitController extends Controller
 
     public function create(Property $property, $id)
     {
-        $property = Property::where('id', $id)->first() ?? abort(404);
+        // $property = Property::where('id', $id)->first() ?? abort(404);
         return view('company.realestate.properties.property-units.form', ['unit' => new PropertyUnit(), 'property' => $property]);
     }
 
@@ -72,10 +72,16 @@ class PropertyUnitController extends Controller
         return redirect()->route('company.realestate.property.units.index',$id)->with('success', 'Property unit created successfully.');
     }
 
-    public function edit(PropertyUnit $property_unit,$id)
+    public function show($property_id,PropertyUnit $unit){
+
+    }
+
+
+    public function edit($property_id,PropertyUnit $unit)
     {
-        $property = Property::where('id', $id)->first() ?? abort(404);
-        return view('property-units.form', compact('property_unit','property'));
+        $property = Property::where('id', $property_id)->first() ?? abort(404);
+        return view('company.realestate.properties.property-units.form', ['unit' => $unit, 'property' => $property]);
+  
     }
 
     public function update(Request $request, PropertyUnit $property_unit)

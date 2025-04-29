@@ -183,7 +183,7 @@
                 </li>
 
                 <li class="dash-item ">
-                    <a href="{{ route('dashboard') }}"
+                    <a href="{{ route('company.media.index') }}"
                         class="dash-link {{ Request::route()->getName() == 'media' ? ' active' : '' }}">
                         <span class="dash-micon"><i class="ti ti-cloud-download"></i></span>
                         <span class="dash-mtext">{{ __('Media') }}</span>

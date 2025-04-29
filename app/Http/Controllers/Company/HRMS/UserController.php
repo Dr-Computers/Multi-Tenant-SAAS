@@ -12,11 +12,13 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Spatie\Permission\Models\Role;
-
+use App\Traits\Media\HandlesMediaFolders;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx\Rels;
 
 class UserController extends Controller
 {
-
+    use HandlesMediaFolders;
+    
     public function __construct()
     {
         $this->middleware('auth'); // Ensure user is authenticated
@@ -29,7 +31,7 @@ class UserController extends Controller
 
     public function index()
     {
-        $users = User::where('parent', Auth::user()->creatorId())->get();
+        $users = User::where('parent', Auth::user()->creatorId())->where('type','company-staff')->get();
         return view('company.hrms.user.index')->with('users', $users);
     }
 
@@ -75,6 +77,14 @@ class UserController extends Controller
             }
         }
 
+
+        if ($request->hasFile('profile')) {
+            $file_id = $this->uploadAndSaveFile($request->profile, Auth::user()->creatorId(), 'avatar');
+        } else {
+            $file_id = NULL;
+        }
+
+
         $user               = new User();
         $user['name']       = $request->name;
         $user['email']      = $request->email;
@@ -86,7 +96,10 @@ class UserController extends Controller
         $user['lang']       = !empty($default_language) ? $default_language->value : '';
         $user['created_by'] = Auth::user()->id;
         $user['is_enable_login'] = $enableLogin;
+        $user['is_active'] = $request->has('is_active') ? 1 : 0;
+        $user['avatar']     = $file_id;
         $user['parent']     = Auth::user()->creatorId();
+        
         $user->save();
 
         $role_r = Role::findById($request->role);
@@ -162,11 +175,17 @@ class UserController extends Controller
         $input = $request->all();
         $user->fill($input)->save();
 
+        if ($request->hasFile('profile')) {
+            $file_id = $this->uploadAndSaveFile($request->profile, Auth::user()->creatorId(), 'avatar');
+            $user->avatar = $file_id;
+        }
 
+        $user->is_active = $request->has('is_active')  ? 1 : 0;
+        $user->save();
         // $role_r = Role::findById($request->role);
         // $user->assignRole($role_r);
         $user->roles()->sync([$request->input('role')]);
-
+     
         CustomField::saveData($user, $request->customField);
 
         return redirect()->route('company.hrms.users.index')->with(
@@ -200,5 +219,15 @@ class UserController extends Controller
         } else {
             return redirect()->back();
         }
+    }
+
+
+    public function createDocuments(){
+        return view('company.hrms.user.form-documents');
+    }
+
+
+    public function uploadDocuments(Request $request){
+
     }
 }
