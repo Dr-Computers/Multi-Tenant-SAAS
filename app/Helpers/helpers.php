@@ -501,4 +501,35 @@ if (!function_exists('invoicePrefix')) {
         return $settings?->invoice_prefix;
     }
 }
+if (!function_exists('companytax')) {
+    function vat()
+    {
+        $settings = getCompanyDetails();
+        return $settings?->vat;
+    }
+}
+
+if (!function_exists('getCompanyAllDetails')) {
+    function getCompanyAllDetails($key = null)
+    {
+        static $company = null;
+        
+        // Cache the company details to avoid multiple queries
+        if ($company === null) {
+            $user = Auth::user();
+            $company = $user && $user->company ? $user->company : null;
+        }
+        
+        // If no key requested, return entire company object
+        if ($key === null) {
+            return $company;
+        }
+        
+        // Return specific property if requested
+        return $company?->{$key};
+    }
+}
+
+
+
 

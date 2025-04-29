@@ -47,6 +47,7 @@ Route::group(
             Route::resource('properties', 'PropertyController')->names('properties');
             // Route::resource('property-units/{id}', 'PropertyUnitController')->names('property.units');
             Route::get('property/{pid}/unit', [PropertyController::class,'getPropertyUnit'])->name('property.unit');
+            Route::resource('property/{property_id}/units', 'PropertyUnitController')->names('property.units');
             Route::get('unit/{uid}/rent-type', [PropertyController::class,'getUnitRentType'])->name('unit.rent_type');
             Route::resource('tenants', 'TenantController')->names('tenants');
             Route::get('tenants/{user}/reset-password', 'TenantController@resetPasswordForm')->name('tenants.reset.form');
@@ -61,6 +62,7 @@ Route::group(
             Route::resource('landmarks', 'LandmarkController')->names('landmarks');
 
             Route::resource('invoices',InvoiceController::class)->names('invoices');
+            Route::delete('invoice/type/destroy', [InvoiceController::class,'invoiceTypeDestroy'])->name('invoice.type.destroy');
        
             
 
