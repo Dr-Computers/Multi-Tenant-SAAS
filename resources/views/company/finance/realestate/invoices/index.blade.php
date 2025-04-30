@@ -8,12 +8,43 @@
 @endsection
 @section('action-btn')
     <div class="d-flex">
-        <a href="{{ route('company.realestate.invoices.create', 0) }}" class="btn btn-sm btn-primary" data-bs-toggle="tooltip"
+        <a href="{{ route('company.finance.realestate.invoices.create', 0) }}" class="btn btn-sm btn-primary" data-bs-toggle="tooltip"
             title="{{ __('Create') }}">
             <i class="ti ti-plus"></i>
         </a>
     </div>
 @endsection
+
+
+<style>
+ /* Force badge styles (add to your CSS file) */
+/* ----- Custom Badge Styles (Replace Bootstrap) ----- */
+.statusbadge {
+    display: inline-block;
+    padding: 0.35em 0.65em;
+    font-size: 0.75em;
+    font-weight: 700;
+    line-height: 1;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    border-radius: 0.25rem;
+    color: #fff !important; /* White text */
+}
+
+/* Color Variants */
+.statusbadge-primary {
+    background-color: #0d6efd ; /* Blue */
+}
+.statusbadge-success {
+    background-color: #198754; /* Green */
+}
+.statusbadge-warning {
+    background-color: #ffc107; /* Yellow */
+    color: #000 !important; /* Black text for better contrast */
+}
+</style>
+
 @section('content')
     <div class="row">
         <div class="col-sm-12">
@@ -65,78 +96,55 @@
                                         <td>{{ $invoice->getInvoiceDueAmount() }} </td>
 
                                         <td>
+                                           
                                             @if ($invoice->status == 'open')
                                                 <span
-                                                    class="badge badge-primary">{{ \App\Models\RealestateInvoice::$status[$invoice->status] }}</span>
+                                                    class="statusbadge statusbadge-primary">{{\App\Models\RealestateInvoice::$status[$invoice->status] }}</span>
                                             @elseif($invoice->status == 'paid')
                                                 <span
-                                                    class="badge badge-success">{{ \App\Models\RealestateInvoice::$status[$invoice->status] }}</span>
+                                                    class="statusbadge statusbadge-success">{{ \App\Models\RealestateInvoice::$status[$invoice->status] }}</span>
                                             @elseif($invoice->status == 'partial_paid')
                                                 <span
-                                                    class="badge badge-warning">{{ \App\Models\RealestateInvoice::$status[$invoice->status] }}</span>
+                                                    class="statusbadge statusbadge-warning">{{ \App\Models\RealestateInvoice::$status[$invoice->status] }}</span>
                                             @endif
                                         </td>
-                                        {{-- @if (Gate::check('edit invoice') || Gate::check('delete invoice') || Gate::check('show invoice'))
-                                       <td class="text-right">
-                                           <div class="cart-action">
-                                               {!! Form::open(['method' => 'DELETE', 'route' => ['invoice.destroy', $invoice->id]]) !!}
-                                               @can('show invoice')
-                                                   <a class="text-warning" href="{{ route('invoice.show',$invoice->id) }}"
-                                                      data-bs-toggle="tooltip"
-                                                      data-bs-original-title="{{__('View')}}"> <i
-                                                           data-feather="eye"></i></a>
-                                               @endcan
-                                               @can('edit invoice')
-                                                   <a class="text-success" href="{{ route('invoice.edit',$invoice->id) }}"
-                                                      data-bs-toggle="tooltip"
-                                                      data-bs-original-title="{{__('Edit')}}"> <i data-feather="edit"></i></a>
-                                               @endcan
-                                               @can('delete invoice')
-                                                   <a class=" text-danger confirm_dialog" data-bs-toggle="tooltip"
-                                                      data-bs-original-title="{{__('Detete')}}" href="#"> <i
-                                                           data-feather="trash-2"></i></a>
-                                               @endcan
-                                               {!! Form::close() !!}
-                                           </div>
-                                       </td>
-                                   @endif --}}
-                                   @if (Gate::check('edit invoice') || Gate::check('delete invoice') || Gate::check('show invoice'))
+                                     
+                                 
                                    <td>
                                        <div class="action-btn me-2">
-                                           @can('show invoice')
-                                               <a href="{{ route('company.realestate.invoices.show', $invoice->id) }}"
+                                         
+                                               <a href="{{ route('company.finance.realestate.invoices.show', $invoice->id) }}"
                                                   class="mx-3 btn btn-sm d-inline-flex align-items-center bg-info"
                                                   data-bs-toggle="tooltip" title="{{ __('View') }}"
                                                   data-original-title="{{ __('View') }}">
                                                    <span><i class="ti ti-eye text-white"></i></span>
                                                </a>
-                                           @endcan
                                        </div>
                                
                                        <div class="action-btn me-2">
-                                           @can('edit invoice')
-                                               <a href="{{ route('company.realestate.invoices.edit', $invoice->id) }}"
+                                          
+                                               <a href="{{ route('company.finance.realestate.invoices.edit', $invoice->id) }}"
                                                   class="mx-3 btn btn-sm d-inline-flex align-items-center bg-warning"
                                                   data-bs-toggle="tooltip" title="{{ __('Edit') }}"
                                                   data-original-title="{{ __('Edit') }}">
                                                    <span><i class="ti ti-pencil text-white"></i></span>
                                                </a>
-                                           @endcan
+                                         
                                        </div>
                                
                                        <div class="action-btn">
-                                           @can('delete invoice')
-                                               {!! Form::open(['method' => 'DELETE', 'route' => ['company.realestate.invoices.destroy', $invoice->id], 'id' => 'delete-form-' . $invoice->id]) !!}
+                                         
+                                               {!! Form::open(['method' => 'DELETE', 'route' => ['company.finance.realestate.invoices.destroy', $invoice->id], 'id' => 'delete-form-' . $invoice->id]) !!}
                                                <a href="#"
                                                   class="mx-4 btn btn-sm align-items-center bs-pass-para bg-danger"
                                                   data-bs-toggle="tooltip" title="{{ __('Delete') }}">
                                                    <i class="ti ti-trash text-white"></i>
                                                </a>
                                                {!! Form::close() !!}
-                                           @endcan
+                                         
                                        </div>
                                    </td>
-                               @endif
+                            
                                         {{-- @if (Gate::check('edit invoice') || Gate::check('delete invoice') || Gate::check('show invoice'))
                                             <td class="text-end">
                                                 <div class="d-flex justify-content-end">

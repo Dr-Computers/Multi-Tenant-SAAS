@@ -10,12 +10,19 @@ class BankAccount extends Model
         'holder_name',
         'bank_name',
         'account_number',
+        'account_type',
         'chart_account_id',
         'opening_balance',
+        'closing_balance',
         'contact_number',
+        'phone',
+        'email',
         'bank_address',
+        'bank_branch',
         'created_by',
+        'company_id'
     ];
+    
 
     public function chartAccount()
     {

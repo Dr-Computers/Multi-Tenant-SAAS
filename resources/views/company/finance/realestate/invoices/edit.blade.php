@@ -9,18 +9,11 @@
     <li class="breadcrumb-item">{{ __('Invoices') }}</li>
 @endsection
 
-@section('action-btn')
-    <div class="d-flex">
-        <a href="#" data-size="md" data-url="{{ route('company.realestate.invoices.create') }}" data-ajax-popup="true"
-            data-bs-toggle="tooltip" title="{{ __('Create New Invoice') }}" class="btn btn-sm btn-primary me-2">
-            <i class="ti ti-plus"></i>
-        </a>
-    </div>
-@endsection
+
 
 @section('content')
     <div class="row">
-        <form action="{{ route('company.realestate.invoices.update', $invoice->id) }}" method="post"
+        <form action="{{ route('company.finance.realestate.invoices.update', $invoice->id) }}" method="post"
             class="needs-validation" novalidate enctype="multipart/form-data">
             @csrf
             @method('PUT') <!-- Important for update -->
@@ -277,7 +270,7 @@
                     </div>
 
                     <div class="modal-footer m-5">
-                        <a href="{{ route('company.realestate.invoices.index') }}" class="btn btn-light">Cancel</a>
+                        <a href="{{ route('company.finance.realestate.invoices.index') }}" class="btn btn-light">Cancel</a>
                         <button type="submit" class="btn btn-primary">Update Invoice</button>
                     </div>
                 </div>
@@ -459,7 +452,7 @@
                         var el = $(this).parent().parent();
                         var id = $(el.find('.type_id')).val();
                         $.ajax({
-                            url: '{{ route('company.realestate.invoice.type.destroy') }}',
+                            url: '{{ route('company.finance.realestate.invoice.type.destroy') }}',
                             type: 'DELETE',
                             headers: {
                                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')

@@ -8,6 +8,7 @@ use App\Models\PropertyUnit;
 use App\Models\RealestateInvoice;
 use App\Models\RealestateInvoiceItem;
 use App\Models\RealestateLease;
+use App\Models\RealestateType;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -18,6 +19,18 @@ class InvoiceController extends Controller
     /**
      * Display a listing of the resource.
      */
+
+
+    public function chooseInvoice()
+    {
+        // if (\Auth::user()->can('create invoice')) {
+
+
+        return view('company.finance.realestate.invoices.choose');
+        // } else {
+        //     return redirect()->back()->with('error', __('Permission Denied!'));
+        // }
+    }
     public function index(Request $request)
     {
         if (\Auth::user()->can('manage invoice')) {
@@ -77,7 +90,7 @@ class InvoiceController extends Controller
             // $filterProperty = Property::select('id', 'name')->orderBy('name', 'asc')->get();
             // $filterUnit = PropertyUnit::select('id', 'name')->orderBy('name', 'asc')->get();
 
-            return view('company.realestate.invoices.index', compact('invoices'));
+            return view('company.finance.realestate.invoices.index', compact('invoices'));
         } else {
             return redirect()->back()->with('error', __('Permission Denied!'));
         }
@@ -91,17 +104,10 @@ class InvoiceController extends Controller
 
         $property = Property::where('company_id', Auth::user()->creatorId())->get()->pluck('name', 'id');
         $property->prepend(__('Select Property'), '');
-        // $types = Type::where('parent_id', parentId())->where('type', 'invoice')->get()->pluck('title', 'id');
 
-        //$types->prepend(__('Select Type'), '');
-        $types = [
-            1 => 'Monthly Rent',
-            2 => 'Electricity Bill',
-            3 => 'Water Charges',
-        ];
 
-        // Convert to collection before using prepend
-        $types = collect($types)->prepend(__('Select Type'), '');
+        $types = RealestateType::where('parent_id', creatorId())->where('type', 'invoice')->get()->pluck('title', 'id');
+        $types->prepend(__('Select Type'), '');
         $invoicePeriods = [
             '1' => '1 Year',
             '2' => '2 Years',
@@ -116,7 +122,7 @@ class InvoiceController extends Controller
             // Add other periods as needed
         ];
         $invoiceNumber = $this->invoiceNumber();
-        return view('company.realestate.invoices.form', compact('types', 'property', 'invoiceNumber', 'invoicePeriods'));
+        return view('company.finance.realestate.invoices.form', compact('types', 'property', 'invoiceNumber', 'invoicePeriods'));
     }
     public function invoiceNumber()
     {
@@ -274,7 +280,7 @@ class InvoiceController extends Controller
                 $invoiceItem->description = $description;
                 $invoiceItem->save();
             }
-            return redirect()->route('company.realestate.invoices.index')->with('success', __('Invoice successfully created.'));
+            return redirect()->route('company.finance.realestate.invoices.index')->with('success', __('Invoice successfully created.'));
         }
     }
 
@@ -322,9 +328,9 @@ class InvoiceController extends Controller
             '10' => '10 Years',
             // Add other periods as needed
         ];
-      
-        return view('company.realestate.invoices.edit', compact('types', 'property', 'invoiceNumber', 'invoice', 'invoicePeriods'));
-       
+
+        return view('company.finance.realestate.invoices.edit', compact('types', 'property', 'invoiceNumber', 'invoice', 'invoicePeriods'));
+
         // } else {
         //     return redirect()->back()->with('error', __('Permission Denied!'));
         // }
@@ -334,132 +340,132 @@ class InvoiceController extends Controller
      * Update the specified resource in storage.
      */
     public function update(Request $request, $id)
-    {  
+    {
         $invoice = RealestateInvoice::findOrFail($id);
 
         // if (\Auth::user()->can('edit invoice')) {
-            $validator = \Validator::make(
-                $request->all(),
-                [
-                    'property_id' => 'required',
-                    'unit_id' => 'required',
-                    'invoice_month' => 'required',
-                    'end_date' => 'required',
-                    'types.*.amount' => 'required|numeric|min:0', // Amount for each type
-                    'types.*.grand_amount' => 'required|numeric|min:0', // Grand amount for each type
-                    'types.*.vat_amount' => 'nullable|numeric|min:0', // VAT amount for each type
-                    'types.*.vat_inclusion' => 'required|in:included,excluded', // VAT inclusion status
+        $validator = \Validator::make(
+            $request->all(),
+            [
+                'property_id' => 'required',
+                'unit_id' => 'required',
+                'invoice_month' => 'required',
+                'end_date' => 'required',
+                'types.*.amount' => 'required|numeric|min:0', // Amount for each type
+                'types.*.grand_amount' => 'required|numeric|min:0', // Grand amount for each type
+                'types.*.vat_amount' => 'nullable|numeric|min:0', // VAT amount for each type
+                'types.*.vat_inclusion' => 'required|in:included,excluded', // VAT inclusion status
 
-                ],
-                ['end_date' => 'The date field is required.',]
-            );
+            ],
+            ['end_date' => 'The date field is required.',]
+        );
 
-            if ($validator->fails()) {
-                $messages = $validator->getMessageBag();
-                return redirect()->back()->with('error', $messages->first());
-            }
-           
-            $lease = RealestateLease::where('property_id', $request->property_id)
-                ->where('unit_id', $request->unit_id) ->whereDate('lease_end_date', '>=', now())
-                ->first();
+        if ($validator->fails()) {
+            $messages = $validator->getMessageBag();
+            return redirect()->back()->with('error', $messages->first());
+        }
 
-            if (!$lease) {
-                return redirect()->back()->with('error', __('No active lease found for the selected tenant, property, and unit.'))->withInput();
-            }
+        $lease = RealestateLease::where('property_id', $request->property_id)
+            ->where('unit_id', $request->unit_id)->whereDate('lease_end_date', '>=', now())
+            ->first();
 
-            // Fetch the last invoice for this unit
-            $lastInvoice = RealestateInvoice::where('unit_id', $request->unit_id)
-                ->where('id', '!=', $invoice->id) // Exclude the current invoice
-                ->orderBy('invoice_period_end_date', 'desc')
-                ->first();
+        if (!$lease) {
+            return redirect()->back()->with('error', __('No active lease found for the selected tenant, property, and unit.'))->withInput();
+        }
 
-            // Determine the start date
-            $startDate = $lastInvoice
-                ? Carbon::parse($lastInvoice->invoice_period_end_date)->addDay()
-                : Carbon::parse($lease->lease_start_date);
+        // Fetch the last invoice for this unit
+        $lastInvoice = RealestateInvoice::where('unit_id', $request->unit_id)
+            ->where('id', '!=', $invoice->id) // Exclude the current invoice
+            ->orderBy('invoice_period_end_date', 'desc')
+            ->first();
 
-
-            // Initialize the invoice period end date
-            $invoicePeriodEndDate = null;
-
-            // Handle different invoice periods
-            switch ($request->invoice_period) {
-                case '1':
-                    $invoicePeriodEndDate = $startDate->copy()->addYear(); // 1 Year
-                    break;
-                case '2':
-                    $invoicePeriodEndDate = $startDate->copy()->addYears(2); // 2 Years
-                    break;
-                case '3':
-                    $invoicePeriodEndDate = $startDate->copy()->addYears(3); // 3 Years
-                    break;
-                case '4':
-                    $invoicePeriodEndDate = $startDate->copy()->addYears(4); // 4 Years
-                    break;
-                case '5':
-                    $invoicePeriodEndDate = $startDate->copy()->addYears(5); // 5 Years
-                    break;
-                case '6':
-                    $invoicePeriodEndDate = $startDate->copy()->addYears(6); // 6 Years
-                    break;
-                case '7':
-                    $invoicePeriodEndDate = $startDate->copy()->addYears(7); // 7 Years
-                    break;
-                case '8':
-                    $invoicePeriodEndDate = $startDate->copy()->addYears(8); // 8 Years
-                    break;
-                case '9':
-                    $invoicePeriodEndDate = $startDate->copy()->addYears(9); // 9 Years
-                    break;
-                case '10':
-                    $invoicePeriodEndDate = $startDate->copy()->addYears(10); // 10 Years
-                    break;
-                default:
-                    return redirect()->back()->with('error', __('Invalid invoice period selected.'));
-            }
-
-            // Update invoice fields
-            $invoice->property_id = $request->property_id;
-            $invoice->invoice_period = $request->invoice_period;
-            $invoice->invoice_period_end_date = $invoicePeriodEndDate;
-            $invoice->unit_id = $request->unit_id;
-            $invoice->invoice_month = $request->invoice_month . '-01';
-            $invoice->end_date = $request->end_date;
-            $invoice->notes = $request->notes;
-            $invoice->tax_type = $request->tax_type;
+        // Determine the start date
+        $startDate = $lastInvoice
+            ? Carbon::parse($lastInvoice->invoice_period_end_date)->addDay()
+            : Carbon::parse($lease->lease_start_date);
 
 
-            $invoice->save();
+        // Initialize the invoice period end date
+        $invoicePeriodEndDate = null;
 
-            $types = $request->types;
-            for ($i = 0; $i < count($types); $i++) {
-                // Check if the invoice item exists based on the ID passed in the request
-                $invoiceItem = RealestateInvoiceItem::find($types[$i]['id']);
+        // Handle different invoice periods
+        switch ($request->invoice_period) {
+            case '1':
+                $invoicePeriodEndDate = $startDate->copy()->addYear(); // 1 Year
+                break;
+            case '2':
+                $invoicePeriodEndDate = $startDate->copy()->addYears(2); // 2 Years
+                break;
+            case '3':
+                $invoicePeriodEndDate = $startDate->copy()->addYears(3); // 3 Years
+                break;
+            case '4':
+                $invoicePeriodEndDate = $startDate->copy()->addYears(4); // 4 Years
+                break;
+            case '5':
+                $invoicePeriodEndDate = $startDate->copy()->addYears(5); // 5 Years
+                break;
+            case '6':
+                $invoicePeriodEndDate = $startDate->copy()->addYears(6); // 6 Years
+                break;
+            case '7':
+                $invoicePeriodEndDate = $startDate->copy()->addYears(7); // 7 Years
+                break;
+            case '8':
+                $invoicePeriodEndDate = $startDate->copy()->addYears(8); // 8 Years
+                break;
+            case '9':
+                $invoicePeriodEndDate = $startDate->copy()->addYears(9); // 9 Years
+                break;
+            case '10':
+                $invoicePeriodEndDate = $startDate->copy()->addYears(10); // 10 Years
+                break;
+            default:
+                return redirect()->back()->with('error', __('Invalid invoice period selected.'));
+        }
 
-                if ($invoiceItem == null) {
-                    // If it doesn't exist, create a new InvoiceItem
-                    $invoiceItem = new RealestateInvoiceItem();
-                    $invoiceItem->invoice_id = $invoice->id; // Assign the invoice ID
-                }
-
-                // Set the values from the request
-                $invoiceItem->invoice_type = $types[$i]['invoice_type'];
-                $invoiceItem->amount = $types[$i]['amount'];
-                $invoiceItem->tax_amount = $types[$i]['tax_amount'];
-                $invoiceItem->grand_amount = $types[$i]['grand_amount'];
-                $invoiceItem->vat_inclusion = $types[$i]['vat_inclusion'];
-
-                $invoiceItem->description = $types[$i]['description'];
+        // Update invoice fields
+        $invoice->property_id = $request->property_id;
+        $invoice->invoice_period = $request->invoice_period;
+        $invoice->invoice_period_end_date = $invoicePeriodEndDate;
+        $invoice->unit_id = $request->unit_id;
+        $invoice->invoice_month = $request->invoice_month . '-01';
+        $invoice->end_date = $request->end_date;
+        $invoice->notes = $request->notes;
+        $invoice->tax_type = $request->tax_type;
 
 
+        $invoice->save();
 
-                // Save the invoice item
-                $invoiceItem->save();
+        $types = $request->types;
+        for ($i = 0; $i < count($types); $i++) {
+            // Check if the invoice item exists based on the ID passed in the request
+            $invoiceItem = RealestateInvoiceItem::find($types[$i]['id']);
+
+            if ($invoiceItem == null) {
+                // If it doesn't exist, create a new InvoiceItem
+                $invoiceItem = new RealestateInvoiceItem();
+                $invoiceItem->invoice_id = $invoice->id; // Assign the invoice ID
             }
 
+            // Set the values from the request
+            $invoiceItem->invoice_type = $types[$i]['invoice_type'];
+            $invoiceItem->amount = $types[$i]['amount'];
+            $invoiceItem->tax_amount = $types[$i]['tax_amount'];
+            $invoiceItem->grand_amount = $types[$i]['grand_amount'];
+            $invoiceItem->vat_inclusion = $types[$i]['vat_inclusion'];
+
+            $invoiceItem->description = $types[$i]['description'];
 
 
-            return redirect()->route('company.realestate.invoices.index')->with('success', __('Invoice successfully updated.'));
+
+            // Save the invoice item
+            $invoiceItem->save();
+        }
+
+
+
+        return redirect()->route('company.finance.realestate.invoices.index')->with('success', __('Invoice successfully updated.'));
         // } else {
         //     return redirect()->back()->with('error', __('Permission Denied!'));
         // }
@@ -468,22 +474,56 @@ class InvoiceController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy($id)
     {
-        //
+        // if (\Auth::user()->can('delete invoice')) {
+        $invoice = RealestateInvoice::find($id);
+        RealestateInvoiceItem::where('invoice_id', $invoice->id)->delete();
+        // InvoicePayment::where('invoice_id', $invoice->id)->delete();
+        $invoice->delete();
+        return redirect()->route('company.finance.realestate.invoices.index')->with('success', __('Invoice successfully deleted.'));
+        // } else {
+        //     return redirect()->back()->with('error', __('Permission Denied!'));
+        // }
     }
     public function invoiceTypeDestroy(Request $request)
     {
         // if (\Auth::user()->can('delete invoice type')) {
-            $invoiceType = RealestateInvoiceItem::find($request->id);
-            $invoiceType->delete();
+        $invoiceType = RealestateInvoiceItem::find($request->id);
+        $invoiceType->delete();
 
-            return response()->json([
-                'status' => 'success',
-                'msg' => __('Property successfully updated.'),
-            ]);
+        return response()->json([
+            'status' => 'success',
+            'msg' => __('Property successfully updated.'),
+        ]);
         // } else {
         //     return redirect()->back()->with('error', __('Permission Denied!'));
         // }
+    }
+    public function getUnitinvoice($id)
+    {
+        // Find the unit
+        $unit = PropertyUnit::find($id);
+        
+    
+        // Get the related property
+        $property = $unit ? $unit->properties : null;
+    
+        // Determine the invoice prefix (use database value or fallback to default)
+        $prefix= invoicePrefix();
+        
+        $invoicePrefix = $property && $property->invoice_prefix ? $property->invoice_prefix : $prefix;
+       
+        // Fetch invoices for the given unit ID and filter by due amount
+        $invoices = RealestateInvoice::where('unit_id', $id)
+            ->get()
+            ->filter(function ($invoice) {
+                return $invoice->getInvoiceDueAmount() > 0; // Only include invoices with pending amounts
+            })
+            ->pluck('invoice_id', 'id'); // Pluck the necessary columns for response
+        return response()->json([
+            'invoice_prefix' => $invoicePrefix, // Include the invoice prefix
+            'invoices' => $invoices, // Invoice data
+        ]);
     }
 }
