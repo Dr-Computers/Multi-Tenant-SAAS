@@ -1,5 +1,5 @@
 @php
-    use \App\Models\Utility;
+    use App\Models\Utility;
     $users = \Auth::user();
     $profile = asset(Storage::url('uploads/avatar/'));
     $currantLang = $users->currentLanguage();
@@ -23,7 +23,7 @@
                     </a>
                 </li>
 
-              
+
 
                 @if (Gate::check('create product & service') ||
                         Gate::check('create customer') ||
@@ -47,13 +47,15 @@
                                             class="ti ti-shopping-cart"></i>{{ __('Create New Product') }}</a>
                                 @endif
                                 @if (Gate::check('create customer'))
-                                    <a class="dropdown-item" href="#"  data-size="lg" data-url="{{ route('customer.create') }}"
-                                        data-ajax-popup="true" data-title="{{ __('Create New Customer') }}"><i
+                                    <a class="dropdown-item" href="#" data-size="lg"
+                                        data-url="{{ route('customer.create') }}" data-ajax-popup="true"
+                                        data-title="{{ __('Create New Customer') }}"><i
                                             class="ti ti-user"></i>{{ __('Create New Customer') }}</a>
                                 @endif
                                 @if (Gate::check('create vender'))
-                                    <a class="dropdown-item" href="#"  data-size="lg" data-url="{{ route('vender.create') }}"
-                                        data-ajax-popup="true" data-title="{{ __('Create New Vendor') }}"><i
+                                    <a class="dropdown-item" href="#" data-size="lg"
+                                        data-url="{{ route('vender.create') }}" data-ajax-popup="true"
+                                        data-title="{{ __('Create New Vendor') }}"><i
                                             class="ti ti-note"></i>{{ __('Create New Vendor') }}</a>
                                 @endif
                                 @if (Gate::check('create proposal'))
@@ -144,65 +146,25 @@
                     <a class="dash-head-link dropdown-toggle arrow-none me-0" data-bs-toggle="dropdown" href="#"
                         role="button" aria-haspopup="false" aria-expanded="false">
                         <span class="theme-avtar">
-                            @if (\Auth::guard('customer')->check())
-                                <img src="{{  (isset(\Auth::user()->avatar) && !empty(\Auth::user()->avatar) ? \App\Models\Utility::get_file('uploads/avatar/'.\Auth::user()->avatar) : 'logo-dark.png') }}"
-                                    class="img-fluid rounded-circle">
-                            @else
-                                <img src="{{ !empty(\Auth::user()->avatar) ? \App\Models\Utility::get_file(\Auth::user()->avatar) : asset(Storage::url('uploads/avatar/avatar.png')) }}"
-                                    class="img-fluid rounded-circle">
-                            @endif
+                            <img src="{{ !empty(\Auth::user()->avatar_url) ? \App\Models\Utility::get_file(\Auth::user()->avatar_url) : asset(Storage::url('uploads/avatar/avatar.png')) }}"
+                                class="img-fluid rounded-circle">
                         </span>
                         <span class="hide-mob ms-2">{{ __('Hi, ') }}{{ \Auth::user()->name }}!</span>
                         <i class="ti ti-chevron-down drp-arrow nocolor hide-mob"></i>
                     </a>
                     <div class="dropdown-menu dash-h-dropdown">
-
-                        @if (\Auth::guard('customer')->check())
-                            <a href="{{ route('customer.profile') }}" class="dropdown-item">
-                                <i class="ti ti-user"></i> <span>{{ __('My Profile') }}</span>
-                            </a>
-                        @elseif(\Auth::guard('vender')->check())
-                            <a href="{{ route('vender.profile') }}" class="dropdown-item">
-                                <i class="ti ti-user"></i> <span>{{ __('My Profile') }}</span>
-                            </a>
-                        @else
-                            <a href="{{ route('profile') }}" class="dropdown-item">
-                                <i class="ti ti-user"></i> <span>{{ __('My Profile') }}</span>
-                            </a>
-                        @endif
-
-                        @if (\Auth::guard('customer')->check())
-                            <a href="{{ route('customer.logout') }}"
-                                onclick="event.preventDefault(); document.getElementById('frm-logout').submit();"
-                                class="dropdown-item">
-                                <i class="ti ti-power"></i>
-                                <span>{{ __('Logout') }}</span>
-                            </a>
-                            <form id="frm-logout" action="{{ route('customer.logout') }}" method="POST"
-                                class="d-none">
-                                {{ csrf_field() }}
-                            </form>
-                        @elseif(\Auth::guard('vender')->check())
-                            <a href="{{ route('vender.logout') }}"
-                                onclick="event.preventDefault(); document.getElementById('frm-logout').submit();"
-                                class="dropdown-item">
-                                <i class="ti ti-power"></i>
-                                <span>{{ __('Logout') }}</span>
-                            </a>
-                            <form id="frm-logout" action="{{ route('vender.logout') }}" method="POST" class="d-none">
-                                {{ csrf_field() }}
-                            </form>
-                        @else
-                            <a href="{{ route('logout') }}"
-                                onclick="event.preventDefault(); document.getElementById('frm-logout').submit();"
-                                class="dropdown-item">
-                                <i class="ti ti-power"></i>
-                                <span>{{ __('Logout') }}</span>
-                            </a>
-                            <form id="frm-logout" action="{{ route('logout') }}" method="POST" class="d-none">
-                                {{ csrf_field() }}
-                            </form>
-                        @endif
+                        <a href="{{ route('admin.profile') }}" class="dropdown-item">
+                            <i class="ti ti-user"></i> <span>{{ __('My Profile') }}</span>
+                        </a>
+                        <a href="{{ route('logout') }}"
+                            onclick="event.preventDefault(); document.getElementById('frm-logout').submit();"
+                            class="dropdown-item">
+                            <i class="ti ti-power"></i>
+                            <span>{{ __('Logout') }}</span>
+                        </a>
+                        <form id="frm-logout" action="{{ route('logout') }}" method="POST" class="d-none">
+                            {{ csrf_field() }}
+                        </form>
 
 
                     </div>

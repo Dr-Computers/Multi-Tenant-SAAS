@@ -24,11 +24,12 @@ use Illuminate\Support\Facades\Validator;
 use Session;
 use Spatie\Permission\Models\Role;
 use Lab404\Impersonate\Impersonate;
-
+use App\Traits\Media\HandlesMediaFolders;
 
 class  CompanyController extends Controller
 {
 
+    use HandlesMediaFolders;
     public function __construct()
     {
         $this->middleware('auth'); // Ensure user is authenticated
@@ -111,6 +112,13 @@ class  CompanyController extends Controller
         $user['plan']       = $plan->id;
         $user['is_enable_login'] = $enableLogin;
         $user['referral_code'] = Utility::generateReferralCode();
+        $user['is_active']  = 1;
+        $user->save();
+
+        if ($request->hasFile('profile')) {
+            $file_id = $this->uploadAndSaveFile($request->profile, $user->id, 'avatar');
+            $user->avatar = $file_id;
+        }
         $user->save();
 
         $company                = new Company();
@@ -131,7 +139,7 @@ class  CompanyController extends Controller
         $user->assignRole($role_r);
 
 
-        Company::planOrderStore($plan,$company->id);
+        Company::planOrderStore($plan, $company->id);
 
 
         $user->userDefaultDataRegister($user->id);
@@ -181,48 +189,53 @@ class  CompanyController extends Controller
 
     public function update(Request $request, $id)
     {
-            $user = User::findOrFail($id);
+        $user = User::findOrFail($id);
 
-            $validator = \Validator::make(
-                $request->all(),
-                [
-                    'name' => 'required|max:120',
-                    'email' => 'required|email|unique:users,email,' . $id,
-                    'bussiness_type' => 'required|max:120',
-                    'address' => 'required|max:250',
-                    'landmark' => 'required|max:250',
-                    'postalcode' => 'required|max:250',
-                    'city' => 'required|max:250',
-                    'identify_code' => 'required|max:10',
-                ]
-            );
-            if ($validator->fails()) {
-                $messages = $validator->getMessageBag();
+        $validator = \Validator::make(
+            $request->all(),
+            [
+                'name' => 'required|max:120',
+                'email' => 'required|email|unique:users,email,' . $id,
+                'bussiness_type' => 'required|max:120',
+                'address' => 'required|max:250',
+                'landmark' => 'required|max:250',
+                'postalcode' => 'required|max:250',
+                'city' => 'required|max:250',
+                'identify_code' => 'required|max:10',
+            ]
+        );
+        if ($validator->fails()) {
+            $messages = $validator->getMessageBag();
 
-                return redirect()->back()->with('error', $messages->first());
-            }
+            return redirect()->back()->with('error', $messages->first());
+        }
 
-            $input = $request->all();
-            $user->fill($input)->save();
+        $input = $request->all();
+        $user->fill($input)->save();
 
-            $company                = Company::where('user_id', $user->id)->first();
-            $company->bussiness_name = $request->name ?? '';
-            $company->bussiness_type = $request->bussiness_type ?? '';
-            $company->address       = $request->address;
-            $company->landmark      = $request->landmark;
-            $company->postalcode    = $request->postalcode;
-            $company->city          = $request->city;
-            $company->identify_code =  $request->identify_code;
-            $company->save();
+        if ($request->hasFile('profile')) {
+            $file_id = $this->uploadAndSaveFile($request->profile, $user->id, 'avatar');
+            $user->avatar = $file_id;
+        }
 
-            CustomField::saveData($user, $request->customField);
+        $user->save();
 
-            return redirect()->route('users.index')->with(
-                'success',
-                'User successfully updated.'
-            );
-        
-     
+        $company                = Company::where('user_id', $user->id)->first();
+        $company->bussiness_name = $request->name ?? '';
+        $company->bussiness_type = $request->bussiness_type ?? '';
+        $company->address       = $request->address;
+        $company->landmark      = $request->landmark;
+        $company->postalcode    = $request->postalcode;
+        $company->city          = $request->city;
+        $company->identify_code =  $request->identify_code;
+        $company->save();
+
+        CustomField::saveData($user, $request->customField);
+
+        return redirect()->route('admin.company.index')->with(
+            'success',
+            'User successfully updated.'
+        );
     }
 
 
@@ -232,21 +245,21 @@ class  CompanyController extends Controller
         $user = User::find($id);
 
         if ($user) {
-           
 
-                User::where('type', '=', 'company')->delete();
-                $user->delete();
-                return redirect()->back()->with('success', __('Company Successfully deleted'));
 
-                // if ($user->delete_status == 0) {
-                //     $user->delete_status = 1;
-                // } else {
-                //     $user->delete_status = 0;
-                // }
-                // $user->save();
-         
+            User::where('type', '=', 'company')->delete();
+            $user->delete();
+            return redirect()->back()->with('success', __('Company Successfully deleted'));
 
-            return redirect()->route('users.index')->with('success', __('User successfully deleted .'));
+            // if ($user->delete_status == 0) {
+            //     $user->delete_status = 1;
+            // } else {
+            //     $user->delete_status = 0;
+            // }
+            // $user->save();
+
+
+            return redirect()->route('admin.company.index')->with('success', __('User successfully deleted .'));
         } else {
             return redirect()->back();
         }

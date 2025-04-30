@@ -145,7 +145,7 @@
 
                             <div class="card-body full-card">
                                 <div class="img-fluid rounded-circle card-avatar">
-                                    <img src="{{ !empty($user->avatar) ? asset(Storage::url('uploads/avatar/' . $user->avatar)) : asset(Storage::url('uploads/avatar/avatar.png')) }}"
+                                    <img src="{{ !empty($user->avatar_url) ? asset('storage/' . $user->avatar_url) : asset(Storage::url('uploads/avatar/avatar.png')) }}"
                                         class="img-fluid rounded border-2 border border-primary" width="120px"
                                         height="120px">
                                 </div>

@@ -122,22 +122,22 @@ Route::get('/password/resets/{lang?}', [AuthenticatedSessionController::class, '
 Route::get('/', [Controller::class, 'dashboard'])->name('dashboard')->middleware(['XSS', 'revalidate']);
 
 
-Route::get('/dashboard', [Controller::class, 'dashboard'])->name('dashboard')->middleware(['auth', 'XSS', 'revalidate']);
+// Route::get('/dashboard', [Controller::class, 'dashboard'])->name('dashboard')->middleware(['auth', 'XSS', 'revalidate']);
 
 
-Route::get('/bill/pay/{bill}', [BillController::class, 'paybill'])->name('pay.billpay');
-Route::get('/proposal/pay/{proposal}', [ProposalController::class, 'payproposal'])->name('pay.proposalpay');
-Route::get('/retainer/pay/{retainer}', [RetainerController::class, 'payretainer'])->name('pay.retainerpay');
-Route::get('/invoice/pay/{invoice}', [InvoiceController::class, 'payinvoice'])->name('pay.invoice');
-Route::get('bill/pdf/{id}', [BillController::class, 'bill'])->name('bill.pdf')->middleware(['XSS', 'revalidate']);
-Route::get('proposal/pdf/{id}', [ProposalController::class, 'proposal'])->name('proposal.pdf')->middleware(['XSS', 'revalidate']);
-Route::get('retainer/pdf/{id}', [RetainerController::class, 'retainer'])->name('retainer.pdf')->middleware(['XSS', 'revalidate',]);
-Route::get('invoice/pdf/{id}', [InvoiceController::class, 'invoice'])->name('invoice.pdf')->middleware(['XSS', 'revalidate']);
+// Route::get('/bill/pay/{bill}', [BillController::class, 'paybill'])->name('pay.billpay');
+// Route::get('/proposal/pay/{proposal}', [ProposalController::class, 'payproposal'])->name('pay.proposalpay');
+// Route::get('/retainer/pay/{retainer}', [RetainerController::class, 'payretainer'])->name('pay.retainerpay');
+// Route::get('/invoice/pay/{invoice}', [InvoiceController::class, 'payinvoice'])->name('pay.invoice');
+// Route::get('bill/pdf/{id}', [BillController::class, 'bill'])->name('bill.pdf')->middleware(['XSS', 'revalidate']);
+// Route::get('proposal/pdf/{id}', [ProposalController::class, 'proposal'])->name('proposal.pdf')->middleware(['XSS', 'revalidate']);
+// Route::get('retainer/pdf/{id}', [RetainerController::class, 'retainer'])->name('retainer.pdf')->middleware(['XSS', 'revalidate',]);
+// Route::get('invoice/pdf/{id}', [InvoiceController::class, 'invoice'])->name('invoice.pdf')->middleware(['XSS', 'revalidate']);
 
-Route::get('export/Proposal', [ProposalController::class, 'export'])->name('proposal.export');
-Route::get('export/invoice', [InvoiceController::class, 'export'])->name('invoice.export');
-Route::get('export/Bill', [BillController::class, 'export'])->name('Bill.export');
-Route::get('export/retainer', [RetainerController::class, 'export'])->name('retainer.export');
+// Route::get('export/Proposal', [ProposalController::class, 'export'])->name('proposal.export');
+// Route::get('export/invoice', [InvoiceController::class, 'export'])->name('invoice.export');
+// Route::get('export/Bill', [BillController::class, 'export'])->name('Bill.export');
+// Route::get('export/retainer', [RetainerController::class, 'export'])->name('retainer.export');
 
 
 
@@ -261,17 +261,17 @@ Route::group(['middleware' => ['verified']], function () {
 
     //================================= Email Templates  ====================================//
 
-    Route::get('profile', [UserController::class, 'profile'])->name('profile')->middleware(['XSS', 'revalidate']);
-    Route::post('edit-profile', [UserController::class, 'editprofile'])->name('update.account')->middleware(['XSS', 'revalidate']);
+    // Route::get('profile', [UserController::class, 'profile'])->name('profile')->middleware(['XSS', 'revalidate']);
+    // Route::post('edit-profile', [UserController::class, 'editprofile'])->name('update.account')->middleware(['XSS', 'revalidate']);
 
 
 
-    Route::post('change-password', [UserController::class, 'updatePassword'])->name('update.password');
-    Route::get('change-language/{lang}', [UserController::class, 'changeMode'])->name('change.mode');
+    // Route::post('change-password', [UserController::class, 'updatePassword'])->name('update.password');
+    // Route::get('change-language/{lang}', [UserController::class, 'changeMode'])->name('change.mode');
 
 
    
-    Route::resource('permissions', PermissionController::class)->middleware(['auth', 'XSS', 'revalidate']);
+    // Route::resource('permissions', PermissionController::class)->middleware(['auth', 'XSS', 'revalidate']);
 
 
     Route::group(

@@ -263,19 +263,19 @@
         </div>
     </div>
 
-    {{-- <div class="modal fade" id="commonModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    <div class="modal fade" id="commonPopModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
         aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel"></h5>
+                    <h5 class="modal-title" id="examplePopModalLabel"></h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="body">
                 </div>
             </div>
         </div>
-    </div> --}}
+    </div>
     <div class="modal fade" id="commonModalOver" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
         aria-hidden="true">
         <div class="modal-dialog" role="document">
@@ -289,6 +289,7 @@
             </div>
         </div>
     </div>
+
 
 
     <div class="position-fixed top-0 end-0 p-3" style="z-index: 99999">
@@ -306,6 +307,19 @@
 @if ($set_cookie['enable_cookie'] == 'on')
     @include('layouts.cookie_consent')
 @endif
+
+<script type="text/javascript">
+    $('body').on('change', '#avatar', function() {
+
+        let reader = new FileReader();
+        reader.onload = (e) => {
+            $('#myAvatar').attr('src', e.target.result);
+        }
+        reader.readAsDataURL(this.files[0]);
+
+    });
+</script>
+
 @stack('footer')
 
 </html>

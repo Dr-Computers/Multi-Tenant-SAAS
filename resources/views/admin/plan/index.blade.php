@@ -17,7 +17,7 @@
 @section('action-btn')
     <div class="float-end">
         @can('create plan')
-            <a href="#" data-url="{{ route('admin.plans.create') }}" data-ajax-popup="true" data-bs-toggle="tooltip"
+            <a href="#" data-url="{{ route('admin.plans.create') }}" data-ajax-popup2="true" data-bs-toggle="tooltip"
                 title="{{ __('Create') }}" data-title="{{ __('Create New Plan') }}" class="btn btn-sm btn-primary"
                 data-size="lg">
                 <i class="ti ti-plus"></i>

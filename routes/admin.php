@@ -19,7 +19,11 @@ Route::group(
     function () {
 
         Route::get('/', 'DashboardController@index')->name('dashboard')->middleware(['XSS', 'revalidate']);
+        Route::get('profile', 'DashboardController@profile')->name('profile');
+        Route::post('profile', 'DashboardController@editprofile')->name('profile.update');
+        Route::post('password', 'DashboardController@updatePassword')->name('profile.update.password');
 
+        
         Route::resource('users', 'UserController')->names('users');
         Route::resource('roles', 'RoleController')->names('roles');
         Route::any('company-reset-password/{id}', 'CompanyController@userPassword')->name('company.reset');
@@ -51,9 +55,6 @@ Route::group(
         Route::post('company-payment-setting', 'SystemController@saveCompanyPaymentSettings')->name('company.payment.settings');
 
    
-
-
-
         Route::post('cookie-setting', 'SystemController@saveCookieSettings')->name('cookie.setting');
         Route::post('chatgptkey', 'SystemController@chatgptkey')->name('settings.chatgptkey');
         Route::post('reset-permissions', 'SystemController@resetPermissions')->name('settings.reset-permissions');
@@ -82,10 +83,10 @@ Route::group(
         Route::post('plan-disable', 'PlanController@planDisable')->name('plan.disable');
         Route::get('plan_request', 'PlanRequestController@index')->name('plan_request.index');
 
-        Route::get('order', 'StripePaymentController@index')->name('order.index');
-        Route::get('/refund/{id}/{user_id}', 'StripePaymentController@refund')->name('order.refund');
-        Route::get('/stripe/{code}', 'StripePaymentController@stripe')->name('stripe');
-        Route::post('/stripe', 'StripePaymentController@stripePost')->name('stripe.post');
+        Route::get('order', 'OrderController@index')->name('order.index');
+        Route::get('/refund/{id}/{user_id}', 'OrderController@refund')->name('order.refund');
+        Route::get('/stripe/{code}', 'OrderController@stripe')->name('stripe');
+        Route::post('/stripe', 'OrderController@stripePost')->name('stripe.post');
 
         // Plan Request Module
         Route::get('request_frequency/{id}', 'PlanRequestController@requestView')->name('request.view');

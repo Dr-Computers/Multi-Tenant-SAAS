@@ -19,11 +19,13 @@ use Illuminate\Support\Facades\Validator;
 use Session;
 use Spatie\Permission\Models\Role;
 use Lab404\Impersonate\Impersonate;
+use App\Traits\Media\HandlesMediaFolders;
 
 
 class UserController extends Controller
 {
 
+    use HandlesMediaFolders;
     public function __construct()
     {
         $this->middleware('auth'); // Ensure user is authenticated
@@ -45,8 +47,8 @@ class UserController extends Controller
     {
         $customFields = CustomField::where('created_by', '=', Auth::user()->creatorId())->where('module', '=', 'user')->get();
         $user         = Auth::user();
-        $roles  = Role::where('created_by',Auth::user()->creatorId())->get();
-    
+        $roles  = Role::where('created_by', Auth::user()->creatorId())->get();
+
         return view('admin.user.form', compact('customFields', 'roles'));
     }
 
@@ -93,6 +95,14 @@ class UserController extends Controller
         $user['lang']       = !empty($default_language) ? $default_language->value : '';
         $user['created_by'] = Auth::user()->creatorId();
         $user['is_enable_login'] = $enableLogin;
+        $user['is_active']  = 1;
+
+        $user->save();
+
+        if ($request->hasFile('profile')) {
+            $file_id = $this->uploadAndSaveFile($request->profile, Auth::user()->creatorId(), 'avatar');
+            $user->avatar = $file_id;
+        }
         $user->save();
 
         $role_r = Role::findById($request->role);
@@ -118,7 +128,7 @@ class UserController extends Controller
         $user  = Auth::user();
         $user              = User::findOrFail($id);
         $user->customField = CustomField::getData($user, 'user');
-        $roles  = Role::where('created_by',Auth::user()->creatorId())->get();
+        $roles  = Role::where('created_by', Auth::user()->creatorId())->get();
         $customFields      = CustomField::where('created_by', '=', Auth::user()->creatorId())->where('module', '=', 'user')->get();
 
         return view('admin.user.form', compact('user', 'customFields', 'roles'));
@@ -127,39 +137,42 @@ class UserController extends Controller
 
     public function update(Request $request, $id)
     {
-            $user = User::findOrFail($id);
+        $user = User::findOrFail($id);
 
-            $validator = \Validator::make(
-                $request->all(),
-                [
-                    'name' => 'required|max:120',
-                    'email' => 'required|email|unique:users,email,' . $id,
-                    'mobile' => 'required|max:120',   
-                    'role'   => 'required',
-                ]
-            );
-            if ($validator->fails()) {
-                $messages = $validator->getMessageBag();
+        $validator = \Validator::make(
+            $request->all(),
+            [
+                'name' => 'required|max:120',
+                'email' => 'required|email|unique:users,email,' . $id,
+                'mobile' => 'required|max:120',
+                'role'   => 'required',
+            ]
+        );
+        if ($validator->fails()) {
+            $messages = $validator->getMessageBag();
 
-                return redirect()->back()->with('error', $messages->first());
-            }
+            return redirect()->back()->with('error', $messages->first());
+        }
 
-            $input = $request->all();
-            $user->fill($input)->save();
+        $input = $request->all();
+        $user->fill($input)->save();
 
+        if ($request->hasFile('profile')) {
+            $file_id = $this->uploadAndSaveFile($request->profile, Auth::user()->creatorId(), 'avatar');
+            $user->avatar = $file_id;
+        }
+        $user->save();
 
-            // $role_r = Role::findById($request->role);
-            // $user->assignRole($role_r);
-            $user->roles()->sync([$request->input('role')]);
+        // $role_r = Role::findById($request->role);
+        // $user->assignRole($role_r);
+        $user->roles()->sync([$request->input('role')]);
 
-            CustomField::saveData($user, $request->customField);
+        CustomField::saveData($user, $request->customField);
 
-            return redirect()->route('admin.users.index')->with(
-                'success',
-                'User successfully updated.'
-            );
-        
-     
+        return redirect()->route('admin.users.index')->with(
+            'success',
+            'User successfully updated.'
+        );
     }
 
 
@@ -169,19 +182,19 @@ class UserController extends Controller
         $user = User::find($id);
 
         if ($user) {
-           
 
-                User::where('type', '=', 'company')->delete();
-                $user->delete();
-                return redirect()->back()->with('success', __('Company Successfully deleted'));
 
-                // if ($user->delete_status == 0) {
-                //     $user->delete_status = 1;
-                // } else {
-                //     $user->delete_status = 0;
-                // }
-                // $user->save();
-         
+            User::where('type', '=', 'company')->delete();
+            $user->delete();
+            return redirect()->back()->with('success', __('Company Successfully deleted'));
+
+            // if ($user->delete_status == 0) {
+            //     $user->delete_status = 1;
+            // } else {
+            //     $user->delete_status = 0;
+            // }
+            // $user->save();
+
 
             return redirect()->route('users.index')->with('success', __('User successfully deleted .'));
         } else {
