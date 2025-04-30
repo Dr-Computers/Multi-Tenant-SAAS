@@ -348,18 +348,18 @@ Route::group(['middleware' => ['verified']], function () {
         }
     );
 
-    Route::group(
-        [
-            'middleware' => [
-                'auth',
-                'XSS', 'revalidate',
-            ],
-        ],
-        function () {
+    // Route::group(
+    //     [
+    //         'middleware' => [
+    //             'auth',
+    //             'XSS', 'revalidate',
+    //         ],
+    //     ],
+    //     function () {
 
-            Route::resource('bank-account', BankAccountController::class);
-        }
-    );
+    //         Route::resource('bank-account', BankAccountController::class);
+    //     }
+    // );
     Route::group(
         [
             'middleware' => [

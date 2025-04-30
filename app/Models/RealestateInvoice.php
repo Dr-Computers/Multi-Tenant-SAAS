@@ -36,7 +36,7 @@ class RealestateInvoice extends Model
     }
     public function tenant()
     {
-        return $this->hasOne('App\Models\Tenant', 'id', 'tenant_id');
+        return $this->hasOne('App\Models\user', 'id', 'tenant_id');
     }
 
     public function units()

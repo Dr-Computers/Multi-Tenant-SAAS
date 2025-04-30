@@ -1,7 +1,10 @@
 <?php
 
+
 use App\Http\Controllers\Company\Realestate\InvoiceController;
+use App\Http\Controllers\Company\Realestate\OtherInvoiceController;
 use App\Http\Controllers\Company\Realestate\PropertyController;
+use App\Http\Controllers\Company\BankAccountController;
 use Illuminate\Support\Facades\Route;
 
 Route::group(
@@ -16,8 +19,8 @@ Route::group(
         Route::get('profile', 'DashboardController@profile')->name('profile');
         Route::post('profile', 'DashboardController@editprofile')->name('profile.update');
         Route::post('password', 'DashboardController@updatePassword')->name('profile.update.password');
-        
-        
+
+
         // HRMS
         Route::group([
             'prefix' => 'hrms',
@@ -39,16 +42,16 @@ Route::group(
             'as' => 'realestate.',
             'namespace' => 'Realestate',
         ], function () {
-          
+
             Route::resource('owners', 'OwnerController')->names('owners');
             Route::get('owners/{user}/reset-password', 'OwnerController@resetPasswordForm')->name('owners.reset.form');
             Route::post('owners/{user}/reset-password', 'OwnerController@resetPassword')->name('owners.reset.update');
-         
+
             Route::resource('properties', 'PropertyController')->names('properties');
             // Route::resource('property-units/{id}', 'PropertyUnitController')->names('property.units');
-            Route::get('property/{pid}/unit', [PropertyController::class,'getPropertyUnit'])->name('property.unit');
+            Route::get('property/{pid}/unit', [PropertyController::class, 'getPropertyUnit'])->name('property.unit');
             Route::resource('property/{property_id}/units', 'PropertyUnitController')->names('property.units');
-            Route::get('unit/{uid}/rent-type', [PropertyController::class,'getUnitRentType'])->name('unit.rent_type');
+            Route::get('unit/{uid}/rent-type', [PropertyController::class, 'getUnitRentType'])->name('unit.rent_type');
             Route::resource('tenants', 'TenantController')->names('tenants');
             Route::get('tenants/{user}/reset-password', 'TenantController@resetPasswordForm')->name('tenants.reset.form');
             Route::post('tenants/{user}/reset-password', 'TenantController@resetPassword')->name('tenants.reset.update');
@@ -61,16 +64,32 @@ Route::group(
             Route::resource('amenities', 'AmenitiesController')->names('amenities');
             Route::resource('landmarks', 'LandmarkController')->names('landmarks');
 
-            Route::resource('invoices',InvoiceController::class)->names('invoices');
-            Route::delete('invoice/type/destroy', [InvoiceController::class,'invoiceTypeDestroy'])->name('invoice.type.destroy');
-       
-            
-
-            
-
-     
-
         });
+
+
+        // Finance Group
+        
+        
+        Route::group([
+            'prefix' => 'finance',
+            'as' => 'finance.',
+        ], function () {
+        
+            // Realestate Finance
+            Route::group([
+                'prefix' => 'realestate',
+                'as' => 'realestate.',
+            ], function () {
+                Route::get('/invoice/choose', [InvoiceController::class, 'chooseInvoice'])->name('invoice.choose');
+                Route::resource('invoices', InvoiceController::class)->names('invoices');
+                Route::delete('invoice/type/destroy', [InvoiceController::class, 'invoiceTypeDestroy'])->name('invoice.type.destroy');
+                Route::resource('invoice-other', OtherInvoiceController::class);
+            });
+        
+            // Bank Accounts
+            Route::resource('bank-accounts', BankAccountController::class);
+        });
+        
         Route::group([
             'prefix' => 'media',
             'as' => 'media.',
@@ -85,7 +104,7 @@ Route::group(
             Route::get('folder/{folder_id}', 'MediaController@subFolder')->name('folder.sub');
             Route::get('folder/{folder_id}/files/select/', 'MediaController@showFileUploadForm')->name('files.select');
             Route::delete('files/delete/{file_id}', 'MediaController@deleteFile')->name('files.delete');
-            
+
             Route::post('/upload', 'MediaController@uploadFiles')->name('file.upload');
         });
     }

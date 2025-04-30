@@ -11,8 +11,9 @@
 
 @section('action-btn')
     <div class="d-flex">
-        <a href="#" data-size="md" data-url="{{ route('company.realestate.invoices.create') }}" data-ajax-popup="true"
-            data-bs-toggle="tooltip" title="{{ __('Create New Invoice') }}" class="btn btn-sm btn-primary me-2">
+        <a href="#" data-size="md" data-url="{{ route('company.finance.realestate.invoices.create') }}"
+            data-ajax-popup="true" data-bs-toggle="tooltip" title="{{ __('Create New Invoice') }}"
+            class="btn btn-sm btn-primary me-2">
             <i class="ti ti-plus"></i>
         </a>
     </div>
@@ -20,8 +21,8 @@
 
 @section('content')
     <div class="row">
-        <form action="{{ route('company.realestate.invoices.store') }}" method="post" class="needs-validation" novalidate
-            enctype="multipart/form-data">
+        <form action="{{ route('company.finance.realestate.invoices.store') }}" method="post" class="needs-validation"
+            novalidate enctype="multipart/form-data">
             @csrf
             <div class="col-12">
                 <div class="card">
@@ -151,10 +152,10 @@
                                     <div class="d-flex justify-content-between align-items-center mb-3">
                                         <h5 class="mb-0">Invoice Types</h5>
                                         <button type="button" class="btn btn-primary btn-sm" data-repeater-create>
-                                            <i class="ti-plus me-1"></i> Add Type
+                                            <i class="ti ti-plus me-1"></i> Add Type
                                         </button>
                                     </div>
-                            
+
                                     <table class="table" data-repeater-list="types">
                                         <thead>
                                             <tr>
@@ -169,10 +170,11 @@
                                         </thead>
                                         <tbody>
                                             <tr data-repeater-item>
-                                                <td>
+                                                <td width="20%">
                                                     <select name="invoice_type" class="form-control hidesearch">
                                                         @foreach ($types as $key => $value)
-                                                            <option value="{{ $key }}">{{ $value }}</option>
+                                                            <option value="{{ $key }}">{{ $value }}
+                                                            </option>
                                                         @endforeach
                                                     </select>
                                                 </td>
@@ -195,17 +197,20 @@
                                                     </div>
                                                 </td>
                                                 <td>
-                                                    <input type="text" name="vat_amount" class="form-control" readonly>
+                                                    <input type="text" name="vat_amount" class="form-control"
+                                                        readonly>
                                                 </td>
                                                 <td>
-                                                    <input type="number" name="grand_amount" class="form-control" step="0.01" readonly>
+                                                    <input type="number" name="grand_amount" class="form-control"
+                                                        step="0.01" readonly>
                                                 </td>
                                                 <td>
                                                     <textarea name="description" class="form-control" rows="1"></textarea>
                                                 </td>
                                                 <td>
-                                                    <button type="button" class="btn btn-danger btn-sm" data-repeater-delete>
-                                                        <i class="ti-trash"></i>
+                                                    <button type="button" class="btn btn-danger btn-sm"
+                                                        data-repeater-delete>
+                                                        <i class="ti ti-trash"></i>
                                                     </button>
                                                 </td>
                                             </tr>
@@ -213,7 +218,7 @@
                                     </table>
                                 </div>
                             </div>
-                            
+
                         </div>
                     </div>
 
@@ -246,29 +251,28 @@
         });
 
         function calculateVAT(element) {
-    console.log("called");
+            console.log("called");
 
-    const row = $(element).closest('tr');
-    const amount = parseFloat(row.find('[name$="[amount]"]').val()) || 0;
-    const vatIncluded = row.find('[name$="[vat_inclusion]"][value="included"]').is(':checked');
+            const row = $(element).closest('tr');
+            const amount = parseFloat(row.find('[name$="[amount]"]').val()) || 0;
+            const vatIncluded = row.find('[name$="[vat_inclusion]"][value="included"]').is(':checked');
 
-    const vatRate = 0.05; // 5% VAT
-    let vatAmount, grandAmount;
+            const vatRate = 0.05; // 5% VAT
+            let vatAmount, grandAmount;
 
-    if (vatIncluded) {
-        console.log("inc");
-        vatAmount = amount * vatRate;
-        grandAmount = amount;
-    } else {
-        console.log("exc");
-        vatAmount = amount * vatRate;
-        grandAmount = amount + vatAmount;
-    }
+            if (vatIncluded) {
+                console.log("inc");
+                vatAmount = amount * vatRate;
+                grandAmount = amount;
+            } else {
+                console.log("exc");
+                vatAmount = amount * vatRate;
+                grandAmount = amount + vatAmount;
+            }
 
-    row.find('[name$="[vat_amount]"]').val(vatAmount.toFixed(2));
-    row.find('[name$="[grand_amount]"]').val(grandAmount.toFixed(2));
-}
-
+            row.find('[name$="[vat_amount]"]').val(vatAmount.toFixed(2));
+            row.find('[name$="[grand_amount]"]').val(grandAmount.toFixed(2));
+        }
     </script>
     <script>
         $(document).ready(function() {

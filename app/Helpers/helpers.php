@@ -501,11 +501,22 @@ if (!function_exists('invoicePrefix')) {
         return $settings?->invoice_prefix;
     }
 }
-if (!function_exists('companytax')) {
-    function vat()
+if (!function_exists('companyTaxRate')) {
+    /**
+     * Get the company's tax rate with fallback to 0
+     * @return float
+     */
+    function companyTaxRate(): float
     {
         $settings = getCompanyDetails();
-        return $settings?->vat;
+        return (float) ($settings?->vat ?? 0); // Ensures float type, defaults to 0
+    }
+}
+if (!function_exists('invoicePrefixOther')) {
+    function invoicePrefixOther()
+    {
+        $settings = getCompanyDetails();
+        return '#OINV';
     }
 }
 

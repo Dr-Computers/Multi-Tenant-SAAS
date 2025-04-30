@@ -146,39 +146,51 @@
                         </li>
                     </ul>
                 </li>
-                <li
-                    class="dash-item dash-hasmenu {{ Request::segment(1) == 'realestate' ? ' active dash-trigger' : '' }}">
+
+                <li class="dash-item dash-hasmenu {{ Request::segment(2) == 'finance' ? 'active dash-trigger' : '' }}">
                     <a href="#!" class="dash-link">
                         <span class="dash-micon"><i class="ti ti-coin"></i></span>
                         <span class="dash-mtext">{{ __('Finance') }}</span>
                         <span class="dash-arrow"><i data-feather="chevron-right"></i></span>
                     </a>
 
-                    <ul
-                        class="dash-submenu {{ Request::segment(1) == 'realestate' || Request::segment(1) == 'roles' || Request::segment(1) == 'permissions' ? 'show' : '' }}">
+                    <ul class="dash-submenu {{ Request::segment(2) == 'finance' ? 'show' : '' }}">
                         @can('manage user')
                             <li
-                                class="dash-item dash-hasmenu {{ Request::segment(1) == 'realestate' ? 'active dash-trigger' : '' }}">
+                                class="dash-item dash-hasmenu {{ Request::segment(3) == 'realestate' ? 'active dash-trigger' : '' }}">
                                 <a href="#!" class="dash-link">
                                     {{ __('Real Estate') }}
                                     <span class="dash-arrow"><i data-feather="chevron-right"></i></span>
                                 </a>
 
-                                <ul class="dash-submenu {{ Request::segment(2) == 'invoices' ? 'show' : '' }}">
+                                <ul
+                                    class="dash-submenu {{ Request::routeIs(
+                                        'company.finance.realestate.invoice.choose',
+                                        'company.finance.realestate.invoices.*',
+                                        'company.finance.realestate.invoice-other.*',
+                                    )
+                                        ? 'show'
+                                        : '' }}">
                                     <li
-                                        class="dash-item {{ Request::routeIs('company.realestate.invoices.index') ? 'active' : '' }}">
-                                        <a href="{{ route('company.realestate.invoices.index') }}"
+                                        class="dash-item {{ Request::routeIs(
+                                            'company.finance.realestate.invoice.choose',
+                                            'company.finance.realestate.invoices.*',
+                                            'company.finance.realestate.invoice-other.*',
+                                        )
+                                            ? 'active'
+                                            : '' }}">
+                                        <a href="{{ route('company.finance.realestate.invoice.choose') }}"
                                             class="dash-link">{{ __('Invoices') }}</a>
                                     </li>
                                 </ul>
                             </li>
-                        @endcan
 
-                        {{-- @can('manage role')
-                        <li class="dash-item {{ Request::routeIs('roles.index', 'roles.create', 'roles.edit') ? 'active' : '' }}">
-                            <a class="dash-link" href="#">{{ __('Role and Permissions') }}</a>
-                        </li>
-                        @endcan --}}
+                            <li
+                                class="dash-item {{ Request::routeIs('company.finance.bank-accounts.*') ? 'active' : '' }}">
+                                <a href="{{ route('company.finance.bank-accounts.index') }}"
+                                    class="dash-link">{{ __('Bank Accounts') }}</a>
+                            </li>
+                        @endcan
                     </ul>
                 </li>
 
