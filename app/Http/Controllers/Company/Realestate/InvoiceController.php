@@ -500,4 +500,30 @@ class InvoiceController extends Controller
         //     return redirect()->back()->with('error', __('Permission Denied!'));
         // }
     }
+    public function getUnitinvoice($id)
+    {
+        // Find the unit
+        $unit = PropertyUnit::find($id);
+        
+    
+        // Get the related property
+        $property = $unit ? $unit->properties : null;
+    
+        // Determine the invoice prefix (use database value or fallback to default)
+        $prefix= invoicePrefix();
+        
+        $invoicePrefix = $property && $property->invoice_prefix ? $property->invoice_prefix : $prefix;
+       
+        // Fetch invoices for the given unit ID and filter by due amount
+        $invoices = RealestateInvoice::where('unit_id', $id)
+            ->get()
+            ->filter(function ($invoice) {
+                return $invoice->getInvoiceDueAmount() > 0; // Only include invoices with pending amounts
+            })
+            ->pluck('invoice_id', 'id'); // Pluck the necessary columns for response
+        return response()->json([
+            'invoice_prefix' => $invoicePrefix, // Include the invoice prefix
+            'invoices' => $invoices, // Invoice data
+        ]);
+    }
 }

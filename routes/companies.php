@@ -5,6 +5,7 @@ use App\Http\Controllers\Company\Realestate\InvoiceController;
 use App\Http\Controllers\Company\Realestate\OtherInvoiceController;
 use App\Http\Controllers\Company\Realestate\PropertyController;
 use App\Http\Controllers\Company\BankAccountController;
+use App\Http\Controllers\Company\Realestate\PaymentController;
 use Illuminate\Support\Facades\Route;
 
 Route::group(
@@ -37,7 +38,7 @@ Route::group(
             Route::delete('users/documents/delete/{document}', 'UserController@deleteDocument')->name('users.documents.destroy');
             Route::resource('roles', 'RoleController')->names('roles');
         });
-   
+
         // Realestate
         Route::group([
             'prefix' => 'realestate',
@@ -70,27 +71,26 @@ Route::group(
             Route::get('maintainers/create/documents/{user_id}', 'MaintenanceController@createDocuments')->name('maintainers.create-documents');
             Route::post('maintainers/create/documents/{user_id}', 'MaintenanceController@uploadDocuments')->name('maintainers.upload-documents');
             Route::delete('maintainers/documents/delete/{document}', 'MaintenanceController@deleteDocument')->name('maintainers.documents.destroy');
-            
+
             Route::get('maintenance-requests/units/{id}', 'MaintenanceRequestController@getUnits')->name('maintenance-requests.units');
 
             Route::resource('maintenance-requests', 'MaintenanceRequestController')->names('maintenance-requests');
-            
+
             Route::resource('categories', 'CategoryController')->names('categories');
             Route::resource('furnishing', 'FurnishingController')->names('furnishing');
             Route::resource('amenities', 'AmenitiesController')->names('amenities');
             Route::resource('landmarks', 'LandmarkController')->names('landmarks');
-
         });
 
 
         // Finance Group
-        
-        
+
+
         Route::group([
             'prefix' => 'finance',
             'as' => 'finance.',
         ], function () {
-        
+
             // Realestate Finance
             Route::group([
                 'prefix' => 'realestate',
@@ -100,12 +100,28 @@ Route::group(
                 Route::resource('invoices', InvoiceController::class)->names('invoices');
                 Route::delete('invoice/type/destroy', [InvoiceController::class, 'invoiceTypeDestroy'])->name('invoice.type.destroy');
                 Route::resource('invoice-other', OtherInvoiceController::class);
+                Route::get('/invoice-payments', [PaymentController::class, 'index'])->name('invoice.payments.index');
+                Route::get('/payments/choose', [PaymentController::class, 'choosePayment'])->name('payments.choose');
+                Route::get('/invoice-payments/create', [PaymentController::class, 'create'])->name('invoice.payments.create');
+                Route::get('unit/{pid}/invoice', [InvoiceController::class, 'getUnitinvoice'])->name('unit.invoice');
+                Route::get('/payment/{id}/cheque', [PaymentController::class, 'getChequeDetails'])->name('payments.cheque');
+                Route::post('invoice/due-amount', [PaymentController::class, 'getDueAmount'])->name('invoice.due.amount');
+               
+                // Route::get('payment/tenant/{pid}/invoice', [InvoicePaymentController::class, 'getInvoices'])->name('tenant.invoices');
+                // Route::get('/payable', [PayableController::class, 'index'])->name('payable.index');
+                // Route::get('/payable/create', [PayableController::class, 'create'])->name('payable.create');
+                // Route::get('/payable/edit/{id}', [PayableController::class, 'edit'])->name('payable.edit');
+                // Route::post('/payable/store', [PayableController::class, 'store'])->name('payable.store');
+                // Route::put('/payable/{payable}', [PayableController::class, 'update'])->name('payable.update');
+                // Route::delete('payable/{payable}/destroy', [PayableController::class, 'destroy'])->name('payable.destroy');
+                // Route::get('payable/{payable}/download', [PayableController::class, 'download'])->name('payable.download');
             });
-        
+
             // Bank Accounts
+            Route::get('/bank-account/details', [BankAccountController::class, 'getAccountDetails'])->name('bank-account.fetchdetails');
             Route::resource('bank-accounts', BankAccountController::class);
         });
-        
+
 
         Route::group([
             'prefix' => 'media',

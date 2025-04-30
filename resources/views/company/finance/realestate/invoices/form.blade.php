@@ -62,17 +62,7 @@
                                 </div>
                             </div>
 
-                            <!-- Invoice Number -->
-                            {{-- <div class="col-md-6 col-lg-4">
-                                <div class="form-group">
-                                    <label class="form-label">Invoice Number <x-required /></label>
-                                    <div class="input-group">
-                                        <span class="input-group-text" id="invoice_prefix"></span>
-                                        <input type="text" name="invoice_id" class="form-control" placeholder="Enter Invoice Number" required>
-                                    </div>
-                                    @error('invoice_id') <small class="text-danger">{{ $message }}</small> @enderror
-                                </div>
-                            </div> --}}
+
                             <div class="form-group col-md-6 col-lg-4">
                                 <div class="form-group">
                                     <label for="invoice_id" class="form-label">

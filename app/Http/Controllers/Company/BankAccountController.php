@@ -173,4 +173,18 @@ class BankAccountController extends Controller
         $bankAccount->delete();
         return redirect()->back()->with('success', 'Bank Account successfully deleted.');
     }
+    public function getAccountDetails()
+    {
+        // Assuming you have a bank account model and you're fetching the name by some identifier
+      
+        $accounts = BankAccount::where('company_id',creatorId())
+        ->get(['id', 'holder_name', 'account_type', 'account_number']);
+    
+    
+        if ($accounts->isNotEmpty()) {
+            return response()->json(['accounts' => $accounts], 200);
+        } else {
+            return response()->json(['error' => 'No bank accounts found'], 404);
+        }
+    }
 }

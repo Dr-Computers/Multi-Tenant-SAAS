@@ -182,6 +182,11 @@
                                         <a href="{{ route('company.finance.realestate.invoice.choose') }}"
                                             class="dash-link">{{ __('Invoices') }}</a>
                                     </li>
+                                    <li class="dash-item {{ Request::routeIs('company.finance.realestate.payments.*') ? 'active' : '' }}">
+                                        <a href="{{ route('company.finance.realestate.payments.choose') }}" class="dash-link">
+                                            {{ __('Payments') }}
+                                        </a>
+                                    </li>
                                 </ul>
                             </li>
 
