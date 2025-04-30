@@ -122,7 +122,7 @@ Route::get('/password/resets/{lang?}', [AuthenticatedSessionController::class, '
 Route::get('/', [Controller::class, 'dashboard'])->name('dashboard')->middleware(['XSS', 'revalidate']);
 
 
-// Route::get('/dashboard', [Controller::class, 'dashboard'])->name('dashboard')->middleware(['auth', 'XSS', 'revalidate']);
+Route::get('/dashboard', [Controller::class, 'dashboard'])->name('dashboard')->middleware(['auth', 'XSS', 'revalidate']);
 
 
 // Route::get('/bill/pay/{bill}', [BillController::class, 'paybill'])->name('pay.billpay');
@@ -294,59 +294,59 @@ Route::group(['middleware' => ['verified']], function () {
     );
 
 
-    Route::get('productservice/index', [ProductServiceController::class, 'index'])->name('productservice.index')->middleware(['auth', 'XSS']);
-    Route::get('export/productservice', [ProductServiceController::class, 'export'])->name('productservice.export');
-    Route::get('import/productservice/file', [ProductServiceController::class, 'importFile'])->name('productservice.file.import');
-    Route::resource('productservice', ProductServiceController::class)->except('index')->middleware(['auth', 'XSS', 'revalidate']);
+    // Route::get('productservice/index', [ProductServiceController::class, 'index'])->name('productservice.index')->middleware(['auth', 'XSS']);
+    // Route::get('export/productservice', [ProductServiceController::class, 'export'])->name('productservice.export');
+    // Route::get('import/productservice/file', [ProductServiceController::class, 'importFile'])->name('productservice.file.import');
+    // Route::resource('productservice', ProductServiceController::class)->except('index')->middleware(['auth', 'XSS', 'revalidate']);
 
 
 
 
     //Product Stock
-    Route::resource('productstock', ProductStockController::class)->middleware(['auth', 'XSS', 'revalidate',]);
+    // Route::resource('productstock', ProductStockController::class)->middleware(['auth', 'XSS', 'revalidate',]);
 
 
 
-    Route::group(
-        [
-            'middleware' => [
-                'auth',
-                'XSS', 'revalidate',
-            ],
-        ],
-        function () {
+    // Route::group(
+    //     [
+    //         'middleware' => [
+    //             'auth',
+    //             'XSS', 'revalidate',
+    //         ],
+    //     ],
+    //     function () {
 
-            Route::get('customer/{id}/show', [CustomerController::class, 'show'])->name('customer.show');
-            Route::ANY('customer/{id}/statement', [CustomerController::class, 'statement'])->name('customer.statement');
-
-
-
-            Route::any('customer-reset-password/{id}', [CustomerController::class, 'customerPassword'])->name('customer.reset');
-            Route::post('customer-reset-password/{id}', [CustomerController::class, 'customerPasswordReset'])->name('customer.password.update');
+    //         Route::get('customer/{id}/show', [CustomerController::class, 'show'])->name('customer.show');
+    //         Route::ANY('customer/{id}/statement', [CustomerController::class, 'statement'])->name('customer.statement');
 
 
 
-            Route::resource('customer', CustomerController::class)->except('show');
-        }
-    );
-    Route::group(
-        [
-            'middleware' => [
-                'auth',
-                'XSS', 'revalidate',
-            ],
-        ],
-        function () {
+    //         Route::any('customer-reset-password/{id}', [CustomerController::class, 'customerPassword'])->name('customer.reset');
+    //         Route::post('customer-reset-password/{id}', [CustomerController::class, 'customerPasswordReset'])->name('customer.password.update');
 
-            Route::get('vender/{id}/show', [VenderController::class, 'show'])->name('vender.show');
-            Route::ANY('vender/{id}/statement', [VenderController::class, 'statement'])->name('vender.statement');
 
-            Route::any('vender-reset-password/{id}', [VenderController::class, 'venderPassword'])->name('vender.reset');
-            Route::post('vender-reset-password/{id}', [VenderController::class, 'vendorPasswordReset'])->name('vender.password.update');
 
-            Route::resource('vender', VenderController::class)->except('show');
-        }
-    );
+    //         Route::resource('customer', CustomerController::class)->except('show');
+    //     }
+    // );
+    // Route::group(
+    //     [
+    //         'middleware' => [
+    //             'auth',
+    //             'XSS', 'revalidate',
+    //         ],
+    //     ],
+    //     function () {
+
+    //         Route::get('vender/{id}/show', [VenderController::class, 'show'])->name('vender.show');
+    //         Route::ANY('vender/{id}/statement', [VenderController::class, 'statement'])->name('vender.statement');
+
+    //         Route::any('vender-reset-password/{id}', [VenderController::class, 'venderPassword'])->name('vender.reset');
+    //         Route::post('vender-reset-password/{id}', [VenderController::class, 'vendorPasswordReset'])->name('vender.password.update');
+
+    //         Route::resource('vender', VenderController::class)->except('show');
+    //     }
+    // );
 
     // Route::group(
     //     [
@@ -360,33 +360,33 @@ Route::group(['middleware' => ['verified']], function () {
     //         Route::resource('bank-account', BankAccountController::class);
     //     }
     // );
-    Route::group(
-        [
-            'middleware' => [
-                'auth',
-                'XSS', 'revalidate',
-            ],
-        ],
-        function () {
+    // Route::group(
+    //     [
+    //         'middleware' => [
+    //             'auth',
+    //             'XSS', 'revalidate',
+    //         ],
+    //     ],
+    //     function () {
 
-            Route::get('transfer/index', [TransferController::class, 'index'])->name('transfer.index');
+    //         Route::get('transfer/index', [TransferController::class, 'index'])->name('transfer.index');
 
-            Route::resource('transfer', TransferController::class)->except('index');
-        }
-    );
-
-
+    //         Route::resource('transfer', TransferController::class)->except('index');
+    //     }
+    // );
 
 
 
-    Route::resource('product-category', ProductServiceCategoryController::class)->middleware(['auth', 'XSS', 'revalidate']);
-
-    Route::post('product-category/getaccount', [ProductServiceCategoryController::class, 'getAccount'])->name('productServiceCategory.getaccount')->middleware(['auth', 'XSS', 'revalidate']);
 
 
-    Route::resource('taxes', TaxController::class)->middleware(['auth', 'XSS', 'revalidate']);
+    // Route::resource('product-category', ProductServiceCategoryController::class)->middleware(['auth', 'XSS', 'revalidate']);
 
-    Route::resource('product-unit', ProductServiceUnitController::class)->middleware(['auth', 'XSS', 'revalidate']);
+    // Route::post('product-category/getaccount', [ProductServiceCategoryController::class, 'getAccount'])->name('productServiceCategory.getaccount')->middleware(['auth', 'XSS', 'revalidate']);
+
+
+    // Route::resource('taxes', TaxController::class)->middleware(['auth', 'XSS', 'revalidate']);
+
+    // Route::resource('product-unit', ProductServiceUnitController::class)->middleware(['auth', 'XSS', 'revalidate']);
 
 
     Route::group(

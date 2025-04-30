@@ -122,6 +122,14 @@ Route::group(
             Route::resource('bank-accounts', BankAccountController::class);
         });
 
+                        
+        Route::resource('tickets','SupportTicketController');
+        Route::get('tickets/view/{id}/{no}','SupportTicketController@view');
+        Route::post('tickets/edit/{id}','SupportTicketController@update');
+        Route::get('tickets/reply/{id}','SupportTicketController@reply');
+        Route::post('tickets/reply','SupportTicketController@sendreply');
+        
+
 
         Route::group([
             'prefix' => 'media',

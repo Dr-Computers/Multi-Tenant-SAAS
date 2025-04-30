@@ -23,7 +23,7 @@ Route::group(
         Route::post('profile', 'DashboardController@editprofile')->name('profile.update');
         Route::post('password', 'DashboardController@updatePassword')->name('profile.update.password');
 
-        
+
         Route::resource('users', 'UserController')->names('users');
         Route::resource('roles', 'RoleController')->names('roles');
         Route::any('company-reset-password/{id}', 'CompanyController@userPassword')->name('company.reset');
@@ -117,5 +117,16 @@ Route::group(
             Route::resource('furnishings', 'FurnishingController')->names('furnishings');
             Route::resource('landmarks', 'LandmarkController')->names('landmarks');
         });
+
+
+          /*Support Ticket*/
+          Route::resource('tickets','SupportTicketController');
+          Route::get('tickets/view/{id}/{no}','SupportTicketController@view');
+          Route::post('tickets/edit/{id}','SupportTicketController@update');
+          Route::get('tickets/reply/{id}','SupportTicketController@reply');
+          Route::post('tickets/reply','SupportTicketController@sendreply');
+          Route::get('tickets/closed/{no}','SupportTicketController@closedTicket');
+          
+          Route::get('ticket/asigned-staff','SupportTicketController@assigned_staff');
     }
 );
