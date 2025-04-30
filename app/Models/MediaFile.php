@@ -24,7 +24,7 @@ class MediaFile extends Model
     {
         return Attribute::make(
             
-            get: fn($value) =>  $this->folder_id != 0
+            get: fn($value) =>  $this->folder_id != 0 && $this->folder
                 ? $this->folder->path . '/' . $this->url
                 : 'uploads/company_' . $this->company_id . '/' . $this->url
         );

@@ -1,6 +1,16 @@
 <div class="modal-body">
     <div class="row" x-data="documentUploader()">
         <div class="col-md-12">
+            <div class="form-group">
+                <label for="doc_typ" class="form-label">Document Type</label><x-required></x-required>
+                <input type="text" name="document_type" value="{{ old('document_type', $user->document_type ?? '') }}" class="form-control"
+                    placeholder="Enter Document Type" id="document_type" autocomplete="off" required>
+                @error('document_type')
+                    <small class="text-danger">{{ $message }}</small>
+                @enderror
+            </div>
+        </div>
+        <div class="col-md-12">
 
             <div class="mt-3 border-dashed border-2 border-gray-300 rounded-lg p-3  bg-gray-100">
                 <div class="mx-auto p-2 bg-white shadow rounded-lg space-y-6">
@@ -36,8 +46,9 @@
                             <div class="relative group border rounded-lg p-2 overflow-hidden"
                                 @click="triggerFileInput()" x-bind:class="{ 'border-blue-500': isDragging }">
                                 <img src="/assets/icons/upload-icon.png" class="w-50 mx-auto">
-                                <input name="documents[]" form="propertyFrom" type="file" accept=".pdf,.docx,image/*,.webp,.csv,.excel"
-                                    id="fileDocInput" class="hidden" multiple @change="addDocuments($event)">
+                                <input name="documents[]" form="propertyFrom" type="file"
+                                    accept=".pdf,.docx,image/*,.webp,.csv,.excel" id="fileDocInput" class="hidden"
+                                    multiple @change="addDocuments($event)">
                                 <p class="text-gray-600">
                                     click to upload your files here.</p>
                             </div>
@@ -75,12 +86,12 @@
                     const isAllowedPdf = file.type === 'application/pdf';
                     const isAllowedDocx = file.type ===
                         'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
-
-                    if (file.size <= 2 * 1024 * 1024 && (isAllowedImage || isAllowedPdf || isAllowedDocx)) {
+// file.size <= 2 * 1024 * 1024 && 
+                    if ((isAllowedImage || isAllowedPdf || isAllowedDocx)) {
                         let previewUrl = isAllowedImage ?
                             URL.createObjectURL(file) :
                             isAllowedPdf ?
-                            '/assets/icons/pdf-icon.png':
+                            '/assets/icons/pdf-icon.png' :
                             '/assets/icons/docx-icon.png';
 
                         const fileObject = {
@@ -92,7 +103,7 @@
                         this.documents.push(fileObject);
                         this.files.push(file);
                     } else {
-                        alert('Only image, PDF, and DOCX files under 2 MB are allowed.');
+                        alert('Only image, PDF, and DOCX files');
                     }
                 });
             },
@@ -122,14 +133,15 @@
                 }
 
                 const formData = new FormData();
-
+                var doc_typ = document.getElementById('document_type').value;
                 this.files.forEach(file => {
                     formData.append('documents[]', file);
                 });
 
-                formData.append('folder_id', `{{ isset($folder) ? $folder->id : '0' }}` || 0);
+                formData.append('user_id', `{{ isset($user) ? $user->id : '0' }}` || 0);
+                formData.append('document_type',doc_typ)
 
-                fetch("{{ route('company.media.file.upload') }}", {
+                fetch("{{ route('company.hrms.users.upload-documents',isset($user) ? $user->id : '0') }}", {
                         method: "POST",
                         headers: {
                             'X-CSRF-TOKEN': '{{ csrf_token() }}'

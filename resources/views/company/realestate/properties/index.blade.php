@@ -25,6 +25,7 @@
                                 <tr>
                                     <th>{{ __('#') }}</th>
                                     <th>{{ __('Name') }}</th>
+                                    <th>{{ __('Owner') }}</th>
                                     <th>{{ __('Category') }}</th>
                                     <th>{{ __('Type') }}</th>
                                     <th>{{ __('Units') }}</th>
@@ -37,6 +38,7 @@
                                     <tr>
                                         <td>{{ $key + 1 }}</td>
                                         <td>{{ $property->name }}</td>
+                                        <td>{{ $property->owner->name }}</td>
                                         <td>{{ $property->categories->pluck('name')->first() }}</td>
                                         <td>{{ $property->purpose_type }}<br>
                                             <span class="badge text-capitalize bg-dark">
@@ -45,8 +47,9 @@
                                         </td>
                                         <td>
 
-                                            <a href="{{ route('company.realestate.property.units.index', $property->id) }}">
-                                                    {{ $property->units ? count($property->units) : 0 }}
+                                            <a
+                                                href="{{ route('company.realestate.property.units.index', $property->id) }}">
+                                                {{ $property->units ? count($property->units) : 0 }}
                                             </a>
                                         </td>
                                         <td>
@@ -95,15 +98,12 @@
                                                     {!! Form::close() !!}
                                                 </div>
                                             </div>
-
-
-
                                         </td>
                                     </tr>
                                 @empty
                                     <tr>
                                         <td colspan="7" class="text-center">
-                                            <h6>No maintainers found..!</h6>
+                                            <h6>No properties found..!</h6>
                                         </td>
                                     </tr>
                                 @endforelse

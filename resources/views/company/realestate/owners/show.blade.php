@@ -34,6 +34,10 @@
                                 href="{{ route('company.realestate.owners.show', $owner->id) }}?tab=properties">Properties</a>
                         </li>
                         <li class="nav-item">
+                            <a class="nav-link {{ $tab == 'documents' ? 'active' : '' }}"
+                                href="{{ route('company.realestate.owners.show', $owner->id) }}?tab=documents">Documents</a>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link {{ $tab == 'requests' ? 'active' : '' }}"
                                 href="{{ route('company.realestate.owners.show', $owner->id) }}?tab=requests">Requests for
                                 Approval</a>
@@ -41,6 +45,10 @@
                         <li class="nav-item">
                             <a class="nav-link {{ $tab == 'settlements' ? 'active' : '' }}"
                                 href="{{ route('company.realestate.owners.show', $owner->id) }}?tab=settlements">Settlement</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ $tab == 'activity_logs' ? 'active' : '' }}"
+                                href="{{ route('company.realestate.owners.show', $owner->id) }}?tab=activity_logs">Activity Log</a>
                         </li>
                     </ul>
 
@@ -56,6 +64,10 @@
                             @include('company.realestate.owners.partials._settlements', [
                                 'owner' => $owner,
                             ])
+                        @elseif($tab == 'documents')
+                            @include('company.realestate.owners.partials._documnets', ['owner' => $owner])
+                        @elseif($tab == 'activity_logs')
+                            @include('company.realestate.owners.partials._activity_logs', ['owner' => $owner])
                         @endif
                     </div>
                 </div>

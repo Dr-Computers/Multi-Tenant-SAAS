@@ -1,8 +1,9 @@
 <div class="my-2 text-end">
-    <a href="#" data-size="lg" data-url="{{ route('company.hrms.users.create-documents') }}" data-ajax-popup2="true"
-        data-bs-toggle="tooltip" title="{{ __('Upload new document') }}" class="btn btn-sm btn-primary me-2">
+    <button href="#" data-size="lg" data-url="{{ route('company.hrms.users.create-documents', $user->id) }}"
+        data-ajax-popup2="true" data-bs-toggle="tooltip" title="{{ __('Upload new document') }}"
+        class="btn btn-sm btn-primary me-2">
         <i class="ti ti-cloud-upload"></i> Upload new one
-    </a>
+    </button>
 </div>
 
 <div class="row">
@@ -18,73 +19,50 @@
                                 <th>{{ __('File Name') }}</th>
                                 <th>{{ __('File Format') }}</th>
                                 <th class="text-center">{{ __('Size') }}</th>
-                                <th>{{ __('Created at') }}</th>
+                                <th class="text-center">{{ __('Created at') }}</th>
                                 <th>{{ __('Action') }}</th>
 
                             </tr>
                         </thead>
                         <tbody>
-                            @forelse ($documents ??  [] as $key => $document)
+                            @forelse ($user->documents ??  [] as $key => $document)
                                 <tr>
                                     <td>{{ $key + 1 }}</td>
                                     <td>
-                                        <a href="{{ route('company.hrms.documents.show', $document->id) }}">
-                                            <img src="{{ asset('storage/' . $document->avatar_url) }}"
-                                                class="h-10 w-auto border mb-1 img-fluid rounded-circle">
-                                            <span class="mt-1 text-capitalize small text-dark fw-bold truncate"
-                                                title="{{ $document->name }}">{{ $document->name }}</span>
+                                        <a href="{{ asset('storage/'.$document->file->file_url) }}" target="_blank">
+                                            <span class="fw-bold text-dark">{{ $document->document_type }}</span>
                                         </a>
                                     </td>
-                                    <td><a class="text-dark truncate" title="{{ $document->email }}"
-                                            href="mailto:{{ $document->email }}"> {{ $document->email }}</a></td>
-                                    <td><a class="text-dark truncate" title="{{ $document->mobile }}"
-                                            href="tel:{{ $document->mobile }}">{{ $document->mobile }}</a< /td>
+                                    <td>
+                                        <a href="{{ asset('storage/'.$document->file->file_url) }}" target="_blank" <span
+                                            class="text-dark truncate" title="{{ $document->file->name }}">
+                                            {{ $document->file->name }}</span>
+                                        </a>
+                                    </td>
+                                    <td><span class="text-dark truncate"
+                                            title="{{ $document->file->mime_type }}">{{ $document->file->mime_type }}
+                                        </span> </td>
+                                    <td><span class="text-dark truncate"
+                                            title="{{ $document->file->size }}">{{ $document->file->size }}
+                                            KB</span> </td>
                                     <td class="text-center">
                                         <span
-                                            class="fw-bold text-primary">{{ $document->getRoleNames()->first() }}</span>
-                                    </td>
-                                    <td>
-                                        @if ($document->is_active == 1)
-                                            <span class="badge bg-success   p-1 px-2 rounded">
-                                                {{ ucfirst('Enabled') }}</span>
-                                        @else
-                                            <span class="badge bg-danger p-1 px-2 rounded">
-                                                {{ ucfirst('Disabled') }}</span>
-                                        @endif
+                                            class="fw-bold text-primary">{{ dateTimeFormat($document->created_at) }}</span>
                                     </td>
 
+
                                     <td>
-                                        <div class="action-btn me-2">
-                                            <button href="#"
-                                                class="mx-3 btn btn-sm d-inline-flex align-items-center bg-dark"
-                                                data-bs-toggle="tooltip" title="{{ __('Reset Password') }}"
-                                                data-url="{{ route('company.hrms.documents.reset.form', $document->id) }}"
-                                                data-size="xl" data-ajax-popup="true"
-                                                data-original-title="{{ __('Reset Password') }}">
-                                                <span> <i class="ti ti-lock text-white"></i></span>
-                                            </button>
-                                        </div>
+
                                         <div class="action-btn me-2">
                                             <a class="mx-3 btn btn-sm d-inline-flex align-items-center bg-info"
-                                                href="{{ route('company.hrms.documents.show', $document->id) }}">
+                                                href="{{ asset('storage/'.$document->file->file_url) }}" target="_blank">
                                                 <span> <i class="ti ti-eye text-white"></i></span>
                                             </a>
                                         </div>
-                                        <div class="action-btn me-2">
-                                            <button href="#"
-                                                class="mx-3 btn btn-sm d-inline-flex align-items-center bg-warning"
-                                                data-bs-toggle="tooltip" title="{{ __('Edit') }}"
-                                                data-url="{{ route('company.hrms.documents.edit', $document->id) }}"
-                                                data-size="xl" data-ajax-popup="true"
-                                                data-original-title="{{ __('Edit') }}">
-                                                <span> <i class="ti ti-pencil text-white"></i></span>
-                                            </button>
-                                        </div>
-
                                         <div class="action-btn">
                                             {!! Form::open([
                                                 'method' => 'DELETE',
-                                                'route' => ['company.hrms.documents.destroy', $document->id],
+                                                'route' => ['company.hrms.users.documents.destroy', $document->id],
                                                 'id' => 'delete-form-' . $document->id,
                                             ]) !!}
                                             <a href="#"

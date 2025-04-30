@@ -6,9 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Models\RealestateAddonRequest;
 use App\Models\RealestateAmenity;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
-class AmenityController extends Controller
+class AmenitiesController extends Controller
 {
     public function index()
     {
@@ -19,19 +20,25 @@ class AmenityController extends Controller
     public function create()
     {
 
-        return view('company.realestate.amenities.form');
+        return view('company.realestate.amenities.request-form');
     }
 
     public function store(Request $request){
         $amenity                   = new RealestateAddonRequest();
+        $amenity->company_id       = Auth::user()->creatorId();
         $amenity->requesting_type  = 'amenity';
-        $amenity->request_for      = $request->category;
+        $amenity->request_for      = $request->name;
         $amenity->verified_by      = null;
         $amenity->notes            = $request->notes;
         $amenity->status           = 0;
         $amenity->save();
         return redirect()->back()->with('success', 'New Amenity request submited.');
 
+    }
+
+    public function edit(RealestateAddonRequest $amenity)
+    {
+        return view('company.realestate.amenities.request-show',compact('amenity'));
     }
 
 
@@ -41,8 +48,9 @@ class AmenityController extends Controller
         return redirect()->back()->with('success', 'Amenity request deleted.');
     }
 
-    public function show(RealestateAddonRequest $amenity)
+    public function show()
     {
-        return view('company.realestate.amenities.show', compact('amenity'));
+        $amenities =  RealestateAddonRequest::where('requesting_type','amenity')->where('company_id',Auth::user()->creatorId())->get();
+        return view('company.realestate.amenities.requests', compact('amenities'));
     }
 }

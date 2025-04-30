@@ -8,10 +8,16 @@
 @endsection
 @section('action-btn')
     <div class="d-flex">
-        <a href="#" data-size="md" data-url="{{ route('company.realestate.landmarks.create') }}" data-ajax-popup="true"
-            data-bs-toggle="tooltip" title="{{ __('Request for New Landmark') }}" class="btn btn-sm btn-primary me-2">
-            <i class="ti ti-plus"></i>
-        </a>
+        <button href="#" data-size="md" data-url="{{ route('company.realestate.landmarks.show', auth()->user()->id) }}"
+            data-ajax-popup="true" data-bs-toggle="tooltip" title="{{ __('Requested landmarks list') }}"
+            class="btn btn-sm btn-secondary me-2">
+            <i class="ti ti-eye"></i> Requested landmarks
+        </button>
+        <button href="#" data-size="md" data-url="{{ route('company.realestate.landmarks.create') }}"
+            data-ajax-popup="true" data-bs-toggle="tooltip" title="{{ __('Request a new landmark') }}"
+            class="btn btn-sm btn-primary me-2">
+            <i class="ti ti-plus"></i> Request a new landmark
+        </button>
     </div>
 @endsection
 @section('content')

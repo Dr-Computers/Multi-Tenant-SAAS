@@ -58,7 +58,9 @@ trait HandlesMediaFolders
         ]);
 
         // Optionally move file to trash folder in storage
-        Storage::disk($storageDisk)->move($file->folder->path . '/' . $file->url, 'trash/' . $file->url);
+        if ($file->folder && Storage::disk($storageDisk)->exists($file->folder->path . '/' . $file->url)) {
+            Storage::disk($storageDisk)->move($file->folder->path . '/' . $file->url, 'trash/' . $file->url);
+        }
 
         $file->delete();
     }
@@ -162,10 +164,9 @@ trait HandlesMediaFolders
 
         $folder = MediaFolder::where('name', $folder_name)->where('company_id', $companyId)->first();
 
+        
         $disk = env('FILESYSTEM_DISK', 'public');
         $base_path = 'uploads/company_' . $companyId;
-
-
 
         // Make sure base path exists
         if (!Storage::disk($disk)->directoryExists($base_path)) {

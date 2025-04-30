@@ -171,10 +171,11 @@
             <div class="row my-4">
                 <div class="col-md-12">
                     <label class="mb-2"><b>Personal Details</b></label>
-                    <h6 class="mb-2">Address: rtgsdf, dfgfd, dfgh, BC, AZ</h6>
-                    <h6 class="mb-2">City: 8075261300</h6>
-                    <h6 class="mb-2">Postal code: http://shefii.com</h6>
-                    <h6 class="mb-2">County: http://shefii.com</h6>
+                    <h6 class="mb-2">Address: {{ $user->personal ? $user->personal->address  : '---' }}</h6>
+                    <h6 class="mb-2">City: {{ $user->personal ?  $user->personal->city : '---'  }}</h6>
+                    <h6 class="mb-2">State: {{ $user->personal ?  $user->personal->state : '---'   }}</h6>
+                    <h6 class="mb-2">Postal code: {{ $user->personal ?  $user->personal->postal_code : '---'  }}</h6>
+                    <h6 class="mb-2">County: {{ $user->personal ?  $user->personal->country : '---'  }}</h6>
                 </div>
             </div>
             <div class="row ">
