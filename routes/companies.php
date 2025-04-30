@@ -66,9 +66,9 @@ Route::group(
             Route::post('maintainers/create/documents/{user_id}', 'MaintenanceController@uploadDocuments')->name('maintainers.upload-documents');
             Route::delete('maintainers/documents/delete/{document}', 'MaintenanceController@deleteDocument')->name('maintainers.documents.destroy');
             
-            Route::get('maintaince-requests/units/{id}', 'MaintainceRequestController@getUnits')->name('maintaince-requests.units');
+            Route::get('maintenance-requests/units/{id}', 'MaintenanceRequestController@getUnits')->name('maintenance-requests.units');
 
-            Route::resource('maintaince-requests', 'MaintainceRequestController')->names('maintaince-requests');
+            Route::resource('maintenance-requests', 'MaintenanceRequestController')->names('maintenance-requests');
             
             Route::resource('categories', 'CategoryController')->names('categories');
             Route::resource('furnishing', 'FurnishingController')->names('furnishing');

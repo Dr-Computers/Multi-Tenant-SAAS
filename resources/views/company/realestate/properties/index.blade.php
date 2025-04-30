@@ -47,8 +47,9 @@
                                         </td>
                                         <td>
 
-                                            <a href="{{ route('company.realestate.property.units.index', $property->id) }}">
-                                                    {{ $property->units ? count($property->units) : 0 }}
+                                            <a
+                                                href="{{ route('company.realestate.property.units.index', $property->id) }}">
+                                                {{ $property->units ? count($property->units) : 0 }}
                                             </a>
                                         </td>
                                         <td>
@@ -97,9 +98,6 @@
                                                     {!! Form::close() !!}
                                                 </div>
                                             </div>
-
-
-
                                         </td>
                                     </tr>
                                 @empty

@@ -7,4 +7,19 @@ use Illuminate\Database\Eloquent\Model;
 class PropertyMaintenanceRequest extends Model
 {
 
+    public function property(){
+        return $this->hasOne(Property::class,'id','property_id');
+    }
+
+    public function unit(){
+        return $this->hasOne(PropertyUnit::class,'id','property_id');
+    }
+
+    public function issue(){
+        return $this->hasOne(MaintenanceTypes::class,'id','issue_type');
+    }
+
+    public function maintainer(){
+        return $this->hasOne(User::class,'id','maintainer_id');
+    }
 }

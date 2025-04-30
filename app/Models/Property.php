@@ -52,6 +52,8 @@ class Property extends Model
         return $this->hasMany(PropertyUnit::class, 'property_id', 'id');
     }
 
+    
+
     public function owner(){
         return $this->hasOne(User::class, 'id', 'owner_id');
     }

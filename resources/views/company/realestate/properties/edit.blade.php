@@ -1,4 +1,5 @@
 @extends('layouts.company')
+
 @push('header')
     <style>
         .loader-overlay {
@@ -115,9 +116,11 @@
     </style>
     <link media="all" type="text/css" rel="stylesheet" href="/assets/css/core.css">
 @endpush
+
 @section('page-title')
     {{ __('Properties') }}
 @endsection
+
 @section('breadcrumb')
     <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">{{ __('Dashboard') }}</a></li>
     <li class="breadcrumb-item">{{ __('Properties') }}</li>
@@ -131,7 +134,6 @@
                 action="{{ route('company.realestate.properties.store') }}" enctype="multipart/form-data">
                 @csrf
             </form>
-
 
             <div x-show="showToast" x-transition
                 :class="toastType === 'success' ? 'bg-success text-light' : 'bg-danger text-light'"

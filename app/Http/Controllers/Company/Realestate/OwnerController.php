@@ -182,7 +182,7 @@ class OwnerController extends Controller
         ]);
 
         $user = User::findOrFail($user_id);
-        $companyId = Auth::user()->creatorId(); 
+        $companyId = Auth::user()->creatorId();
         $disk = env('FILESYSTEM_DISK', 'public');
         $basePath = 'uploads/company_' . $companyId;
 
@@ -254,7 +254,6 @@ class OwnerController extends Controller
 
     public function deleteDocument(Document $document)
     {
-
         $file = MediaFile::findOrFail($document->file->id);
         if ($file) {
             $this->softDeleteFile($file);
