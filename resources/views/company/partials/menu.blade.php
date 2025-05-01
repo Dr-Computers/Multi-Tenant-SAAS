@@ -231,6 +231,13 @@
                     </ul>
                 </li>
                 <li class="dash-item ">
+                    <a href="{{ route('company.tickets.index') }}"
+                        class="dash-link {{ Request::route()->getName() == 'tickets' ? ' active' : '' }}">
+                        <span class="dash-micon"><i class="ti ti-headset"></i></span>
+                        <span class="dash-mtext">{{ __('Support Tickets') }}</span>
+                    </a>
+                </li>
+                <li class="dash-item ">
 
                     <a href="{{ route('dashboard') }}"
                         class="dash-link {{ Request::route()->getName() == 'dashboard' ? ' active' : '' }}">

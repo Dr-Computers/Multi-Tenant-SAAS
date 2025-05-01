@@ -106,7 +106,7 @@ Route::group(
                 Route::get('unit/{pid}/invoice', [InvoiceController::class, 'getUnitinvoice'])->name('unit.invoice');
                 Route::get('/payment/{id}/cheque', [PaymentController::class, 'getChequeDetails'])->name('payments.cheque');
                 Route::post('invoice/due-amount', [PaymentController::class, 'getDueAmount'])->name('invoice.due.amount');
-               
+
                 // Route::get('payment/tenant/{pid}/invoice', [InvoicePaymentController::class, 'getInvoices'])->name('tenant.invoices');
                 // Route::get('/payable', [PayableController::class, 'index'])->name('payable.index');
                 // Route::get('/payable/create', [PayableController::class, 'create'])->name('payable.create');
@@ -122,14 +122,17 @@ Route::group(
             Route::resource('bank-accounts', BankAccountController::class);
         });
 
-                        
-        Route::resource('tickets','SupportTicketController');
-        Route::get('tickets/view/{id}/{no}','SupportTicketController@view');
-        Route::post('tickets/edit/{id}','SupportTicketController@update');
-        Route::get('tickets/reply/{id}','SupportTicketController@reply');
-        Route::post('tickets/reply','SupportTicketController@sendreply');
+        Route::group([
+            'prefix' => 'tickets',
+            'as' => 'tickets.',
+        ], function () {
+            Route::resource('/', 'SupportTicketController');
+            Route::get('view/{company_id}/{ticket_no}', 'SupportTicketController@view')->name('view');
+            Route::post('reply/{ticket_no}', 'SupportTicketController@sendreply')->name('reply');
+        });
         
-
+       
+        
 
         Route::group([
             'prefix' => 'media',

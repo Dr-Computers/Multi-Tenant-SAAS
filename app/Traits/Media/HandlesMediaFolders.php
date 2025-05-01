@@ -11,16 +11,108 @@ use Illuminate\Support\Facades\Storage;
 
 trait HandlesMediaFolders
 {
+    // public function CreateFolder($companyId, $FolderName = null)
+    // {
+    //     $storageDisk = config('filesystems.default');
+    //     // Step 1: Ensure company root folder exists
+    //     $rootFolder = MediaFolder::firstOrCreate([
+    //         'company_id' => $companyId,
+    //         'parent_id' => null,
+    //         'slug' => 'root-' . $companyId,
+    //     ], [
+    //         'name' => 'Company_' . $companyId,
+    //     ]);
+    //     if (!Storage::disk($storageDisk)->directoryExists('uploads/company_' . $companyId)) {
+    //         Storage::disk($storageDisk)->makeDirectory('uploads/company_' . $companyId);
+    //     }
+
+    //     // Step 2: Locate requested folder or create unknown folder
+    //     $targetFolder = null;
+
+    //     if ($FolderName) {
+    //         $targetFolder = MediaFolder::where('company_id', $companyId)
+    //             ->where('parent_id', $rootFolder->id)
+    //             ->where('name', $FolderName)
+    //             ->first();
+    //     }
+
+    //     if (!$targetFolder) {
+    //         $randomName = $FolderName . '_' . Str::random(6);
+    //         $targetFolder = MediaFolder::create([
+    //             'company_id' => $companyId,
+    //             'parent_id' => $rootFolder->id,
+    //             'name' => $FolderName,
+    //             'path'      => 'uploads/company_' . $companyId . '/' . $randomName,
+    //             'slug' => $randomName,
+    //         ]);
+
+    //         if (!Storage::disk($storageDisk)->directoryExists('uploads/company_' . $companyId . '/' . $randomName)) {
+    //             Storage::disk($storageDisk)->makeDirectory('uploads/company_' . $companyId . '/' . $randomName);
+    //         }
+    //     }
+
+    //     return $targetFolder;
+    // }
+    public function CreateFolder($companyId, $FolderName = null)
+    {
+        $disk = env('FILESYSTEM_DISK', 'public');
+
+        // Step 1: Ensure company root folder exists
+        $rootFolder = MediaFolder::firstOrCreate([
+            'company_id' => $companyId,
+            'parent_id'  => null,
+            'slug'       => 'Company_' . $companyId,
+        ], [
+            'name' => 'Company_' . $companyId,
+        ]);
+
+        if (!Storage::disk($disk)->directoryExists('uploads/company_' . $companyId)) {
+            Storage::disk($disk)->makeDirectory('uploads/company_' . $companyId);
+        }
+
+        // Step 2: Find or create target folder
+        $targetFolder = null;
+
+        if ($FolderName) {
+            $targetFolder = MediaFolder::where('company_id', $companyId)
+                ->where('parent_id', $rootFolder->id)
+                ->where('name', $FolderName)
+                ->first();
+        }
+
+        if (!$targetFolder) {
+            $randomName = $FolderName . '_' . Str::random(6);
+            $targetFolder = MediaFolder::create([
+                'company_id' => $companyId,
+                'parent_id'  => $rootFolder->id,
+                'name'       => $FolderName,
+                'path'       => 'uploads/company_' . $companyId . '/' . $randomName,
+                'slug'       => $randomName,
+            ]);
+
+            if (!Storage::disk($disk)->directoryExists('uploads/company_' . $companyId . '/' . $randomName)) {
+                Storage::disk($disk)->makeDirectory('uploads/company_' . $companyId . '/' . $randomName);
+            }
+        }
+
+        return $targetFolder;
+    }
+
     public function resolveOrCreateFolder($companyId, $requestedFolderId = null)
     {
+        $storageDisk = config('filesystems.default');
         // Step 1: Ensure company root folder exists
         $rootFolder = MediaFolder::firstOrCreate([
             'company_id' => $companyId,
             'parent_id' => null,
-            'slug' => 'root-' . $companyId,
+            'slug' => 'Company_' . $companyId,
         ], [
             'name' => 'Company_' . $companyId,
         ]);
+
+        if (!Storage::disk($storageDisk)->directoryExists('uploads/company_' . $companyId)) {
+            Storage::disk($storageDisk)->makeDirectory('uploads/company_' . $companyId);
+        }
 
         // Step 2: Locate requested folder or create unknown folder
         $targetFolder = null;
@@ -37,9 +129,13 @@ trait HandlesMediaFolders
             $targetFolder = MediaFolder::create([
                 'company_id' => $companyId,
                 'parent_id' => $rootFolder->id,
+                'path'      => 'uploads/company_' . $companyId . '/' . $randomName,
                 'name' => $randomName,
-                'slug' => Str::slug($randomName),
+                'slug' => $randomName,
             ]);
+            if (!Storage::disk($storageDisk)->directoryExists('uploads/company_' . $companyId . '/' . $randomName)) {
+                Storage::disk($storageDisk)->makeDirectory('uploads/company_' . $companyId . '/' . $randomName);
+            }
         }
 
         return $targetFolder;
@@ -159,54 +255,103 @@ trait HandlesMediaFolders
     }
 
 
+    // public function uploadAndSaveFile($file, $companyId, $folder_name)
+    // {
+
+    //     $folder = MediaFolder::where('name', $folder_name)->where('company_id', $companyId)->first();
+
+
+    //     $disk = env('FILESYSTEM_DISK', 'public');
+    //     $base_path = 'uploads/company_' . $companyId;
+
+    //     // Make sure base path exists
+    //     if (!Storage::disk($disk)->directoryExists($base_path)) {
+    //         Storage::disk($disk)->makeDirectory($base_path);
+    //     }
+
+    //     $storageDisk = config('filesystems.default'); // 'local', 's3', etc.
+
+
+    //     if ($folder) {
+    //         $filePath = $folder->path;
+    //     } else {
+    //         $slug = Str::slug($folder_name) . '-' . uniqid();
+    //         $filePath = $base_path . '/' . $slug;
+    //         $folder = MediaFolder::create([
+    //             'company_id' => $companyId,
+    //             'name' => $folder_name,
+    //             'slug' => $slug,
+    //             'path' => $filePath,
+    //             'parent_id' => NULL
+    //         ]);
+    //         if (!Storage::disk($disk)->directoryExists($filePath)) {
+    //             Storage::disk($disk)->makeDirectory($filePath);
+    //         }
+    //     }
+
+    //     // Store the file
+    //     $storedPath = $file->store($filePath, $disk);
+
+    //     $mediaFile = MediaFile::create([
+    //         'company_id' => $companyId,
+    //         'folder_id' => $folder ? $folder->id : 0,
+    //         'name' => $file->getClientOriginalName(),
+    //         'alt' => '',
+    //         'mime_type' => $file->getMimeType(),
+    //         'size' => $file->getSize(),
+    //         'url' => str_replace($filePath . '/', '', $storedPath),
+    //         'options' => json_encode([])
+    //     ]);
+
+    //     return  $mediaFile->id;
+    // }
+
     public function uploadAndSaveFile($file, $companyId, $folder_name)
     {
-
-        $folder = MediaFolder::where('name', $folder_name)->where('company_id', $companyId)->first();
-
-        
         $disk = env('FILESYSTEM_DISK', 'public');
         $base_path = 'uploads/company_' . $companyId;
 
-        // Make sure base path exists
+        // Ensure base path exists
         if (!Storage::disk($disk)->directoryExists($base_path)) {
             Storage::disk($disk)->makeDirectory($base_path);
         }
 
-        $storageDisk = config('filesystems.default'); // 'local', 's3', etc.
-
+        // Find or create folder
+        $folder = MediaFolder::where('name', $folder_name)->where('company_id', $companyId)->first();
 
         if ($folder) {
             $filePath = $folder->path;
         } else {
             $slug = Str::slug($folder_name) . '-' . uniqid();
             $filePath = $base_path . '/' . $slug;
+
             $folder = MediaFolder::create([
                 'company_id' => $companyId,
-                'name' => $folder_name,
-                'slug' => $slug,
-                'path' => $filePath,
-                'parent_id' => NULL
+                'name'       => $folder_name,
+                'slug'       => $slug,
+                'path'       => $filePath,
+                'parent_id'  => NULL
             ]);
+
             if (!Storage::disk($disk)->directoryExists($filePath)) {
                 Storage::disk($disk)->makeDirectory($filePath);
             }
         }
 
         // Store the file
-        $storedPath = $file->store($filePath, $storageDisk);
+        $storedPath = $file->store($filePath, $disk);
 
         $mediaFile = MediaFile::create([
             'company_id' => $companyId,
-            'folder_id' => $folder ? $folder->id : 0,
-            'name' => $file->getClientOriginalName(),
-            'alt' => '',
-            'mime_type' => $file->getMimeType(),
-            'size' => $file->getSize(),
-            'url' => str_replace($filePath . '/', '', $storedPath),
-            'options' => json_encode([])
+            'folder_id'  => $folder ? $folder->id : 0,
+            'name'       => $file->getClientOriginalName(),
+            'alt'        => '',
+            'mime_type'  => $file->getMimeType(),
+            'size'       => $file->getSize(),
+            'url'        => str_replace($filePath . '/', '', $storedPath),
+            'options'    => json_encode([])
         ]);
 
-        return  $mediaFile->id;
+        return $mediaFile->id;
     }
 }

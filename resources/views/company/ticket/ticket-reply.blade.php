@@ -1,33 +1,25 @@
-@extends('layouts.client')
-@section('content')
-    <div class="row wrapper border-bottom white-bg page-heading">
-        <div class="col-xs-6">
-            
-                <ul class="breadcrumb">
-                    <li><a href="{{leadgen_admin('/')}}">Home</a></li>
-                    <li><a href="{{leadgen_admin('tickets')}}">Tickets</a></li>
-                    <li class="active"></li>
-                </ul>                    
-           
-        </div>
-        @can('Ticket Listing')
-        <div class="col-xs-6 text-right">
-            <a class="btn btn-default" href="{{leadgen_manage('tickets')}}"><i class="fa fa-arrow-left"></i> Back to Tickets</a>
-        </div>
-        @endcan
+@extends('layouts.company')
+@section('page-title')
+    {{ __('Users') }}
+@endsection
+@section('breadcrumb')
+    <li class="breadcrumb-item">
+        <a href="{{ route('dashboard') }}">{{ __('Dashboard') }}</a>
+    </li>
+    <li class="breadcrumb-item">{{ __('Support Ticket') }}</li>
+@endsection
+@section('action-btn')
+    <div class="d-flex">
+        <button href="#" data-size="lg" data-url="{{ route('company.tickets.create') }}" data-ajax-popup="true"
+            data-bs-toggle="tooltip" title="{{ __('Create New Ticket') }}" class="btn btn-sm btn-primary me-2">
+            <i class="ti ti-plus"></i> Create New Ticket
+        </button>
     </div>
-    <div class="wrapper wrapper-content animated fadeInRight">
-        <div class="row">
-            <div class="col-lg-12">
-                @if($errors->count())
-                    <div class="alert alert-danger">Your submission contains errors! Please review and submit again!</div>
-                @endif
-                @if(session()->has('message'))
-                <div class="alert alert-success">
-                    {{ session()->get('message') }}
-                </div>
-                @endif
-                
+@endsection
+@section('content')
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card">
                 <div class="ibox float-e-margins">
                   
                     <div class="ibox-content">
@@ -42,7 +34,7 @@
                                                 </div>
                                             </div> 
                                             </section>
-                                             <form class="" action="{{leadgen_manage('tickets/reply')}}"  method="post" enctype="multipart/form-data">
+                                             <form class="" action="{{route('company.tickets.reply',$ticket->id)}}"  method="post" enctype="multipart/form-data">
                                              {{ csrf_field() }}
                                             <section>
                                             <div class="row">
@@ -55,7 +47,7 @@
                                                 </div>
                                                 <input type="hidden" value="{{$ticket->ticket_no}}" name="ticketno">
                                                 <input type="hidden" value="{{$ticket->id}}">
-                                                <input type="hidden" value="{{$ticket->client_id}}" name="clientid">
+                                                <input type="hidden" value="{{$ticket->company_id}}" name="companyid">
                                             </div> 
                                             
                                             
@@ -75,6 +67,4 @@
             </div>
         </div>
     </div>
-@endsection
-@section('scripts')
 @endsection

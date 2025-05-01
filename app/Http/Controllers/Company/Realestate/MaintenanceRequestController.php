@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Company\Realestate;
 
 use App\Http\Controllers\Controller;
+use App\Models\MaintenanceRequestAttachment;
 use App\Models\MaintenanceTypes;
 use App\Models\Property;
 use App\Models\PropertyMaintenanceRequest;
@@ -58,8 +59,9 @@ class MaintenanceRequestController extends Controller
         if ($validator->fails()) {
             return redirect()->back()->with('error', $validator->errors()->first());
         }
+        $companyId              = Auth::user()->creatorId();
         $new                    = new PropertyMaintenanceRequest();
-        $new->company_id        = Auth::user()->creatorId();
+        $new->company_id        = $companyId;
         $new->property_id        = $request->property;
         $new->unit_id            = $request->unit;
         $new->issue_type        = $request->issue;
@@ -68,6 +70,15 @@ class MaintenanceRequestController extends Controller
         $new->notes                = $request->notes;
         $new->status            = $request->status;
         $new->save();
+
+            $files                  = $request->file('documents', []);
+        foreach ($files ?? [] as $file) {
+            $fileId                 = $this->uploadAndSaveFile($file, $companyId, $folder->name ?? null);
+            $attachment 		    = new MaintenanceRequestAttachment();
+            $attachment->file_id    = $fileId;
+            $attachment->request_id = $new->id;
+            $attachment->save();
+        }
 
         Session::flash('success_msg', 'New request created.');
 

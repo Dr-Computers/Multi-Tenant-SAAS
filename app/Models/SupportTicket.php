@@ -12,4 +12,9 @@ class SupportTicket extends Model
     public function users(){ 
     	return $this->belongsTo(User::class,'user_id');
     }
+
+    public function attachments(){ 
+    	return $this->hasMany(SupportTicketAttachment::class,'ticket_id');
+    }
+    
 }
