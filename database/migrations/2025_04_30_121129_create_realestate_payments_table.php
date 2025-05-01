@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('property_id')->nullable();
             $table->string('type')->nullable();
-            $table->integer('invoice_id')->default(0);
+            $table->integer('invoice_id')->nullable();
             $table->string('transaction_id')->nullable();
             $table->string('payment_type')->nullable();
             $table->string('payment_for')->nullable();

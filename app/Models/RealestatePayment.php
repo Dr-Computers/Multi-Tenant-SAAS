@@ -27,20 +27,24 @@ class RealestatePayment extends Model
         'type',
     ];
     public function invoice()
-{
-    return $this->belongsTo(RealestateInvoice::class, 'invoice_id'); // Assuming 'invoice_id' is the foreign key
-}
-public function account()
-{
-    return $this->belongsTo(BankAccount::class,'bank_account_id');
-}
-public function unit()
-{
-    return $this->belongsTo(PropertyUnit::class, 'unit_id');
-}
+    {
+        return $this->belongsTo(RealestateInvoice::class, 'invoice_id'); // Assuming 'invoice_id' is the foreign key
+    }
+    public function account()
+    {
+        return $this->belongsTo(BankAccount::class, 'bank_account_id');
+    }
+    public function unit()
+    {
+        return $this->belongsTo(PropertyUnit::class, 'unit_id');
+    }
 
-public function property()
-{
-    return $this->belongsTo(Property::class, 'property_id');
-}
+    public function property()
+    {
+        return $this->belongsTo(Property::class, 'property_id');
+    }
+    public function paymentFor()
+    {
+        return $this->belongsTo(RealEstateType::class, 'payment_for');
+    }
 }

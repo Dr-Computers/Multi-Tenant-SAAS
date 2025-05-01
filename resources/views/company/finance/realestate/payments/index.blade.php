@@ -70,36 +70,45 @@
                                     <th>{{ __('Unit') }}</th>
                                     <th>{{ __('Tenant') }}</th>
                                     <th>{{ __('Note') }}</th>
-                                    @if (Gate::check('edit invoice payment') || Gate::check('delete invoice payment') || Gate::check('show invoice payment'))
-                                        <th class="text-right">{{ __('Action') }}</th>
-                                    @endif
+
+                                    <th class="text-right">{{ __('Action') }}</th>
+
                                 </tr>
                             </thead>
                             <tbody>
                                 @foreach ($payments as $payment)
                                     <tr role="row">
                                         <td>{{ \Carbon\Carbon::parse($payment->payment_date)->format('Y-m-d') }}</td>
-                                        <td>{{ ucwords(str_replace('-', ' ', $payment->payment_for)) }}</td>
-                                        <td>{{ priceFormat($payment->amount) }}</td>
+                                        <td>{{ ucwords(str_replace('_', ' ', $payment->payment_for)) }}</td>
+                                        <td>{{ $payment->amount }}</td>
+
                                         <td>
                                             @if ($payment->payment_type == 'cash')
-                                                <span class="badge badge-success">Cash ({{ str_replace('_', ' ', $payment->payment_for) }})</span>
+                                                <span class="badge bg-success">Cash
+                                                    ({{ str_replace('_', ' ', $payment->payment_for) }})</span>
                                             @elseif($payment->payment_type == 'cheque')
-                                                <span class="badge badge-info">Cheque ({{ str_replace('_', ' ', $payment->payment_for) }})</span>
+                                                <span class="badge bg-info">Cheque
+                                                    ({{ str_replace('_', ' ', $payment->payment_for) }})</span>
                                             @elseif($payment->payment_type == 'bank_transfer')
-                                                <span class="badge badge-secondary">Bank Transfer ({{ str_replace('_', ' ', $payment->payment_for) }})</span>
+                                                <span class="badge bg-secondary">Bank Transfer
+                                                    ({{ str_replace('_', ' ', $payment->payment_for) }})</span>
                                             @else
-                                                <span class="badge badge-light text-dark">{{ $payment->payment_type ?? 'N/A' }}</span>
+                                                <span
+                                                    class="badge bg-light text-dark">{{ $payment->payment_type ?? 'N/A' }}</span>
                                             @endif
                                         </td>
+
                                         <td>{{ optional(optional($payment->invoice)->properties)->name ?? 'N/A' }}</td>
-                                        <td>{{ $payment->invoice_id ? invoicePrefix() . $payment->invoice->invoice_id : 'N/A' }}</td>
+                                        <td>{{ $payment->invoice_id ? invoicePrefix() . $payment->invoice->invoice_id : 'N/A' }}
+                                        </td>
                                         <td>{{ optional(optional($payment->invoice)->units)->name ?? 'N/A' }}</td>
-                                        <td>{{ optional(optional(optional($payment->invoice)->units)->tenants())->user->first_name ?? 'N/A' }}</td>
+                                        
+                                        <td>{{ optional(optional(optional($payment->invoice)->units)->tenants())->name ?? 'N/A' }}
+                                        </td>
                                         <td>{{ $payment->notes ?? 'N/A' }}</td>
-                        
-                                        @if (Gate::check('edit invoice') || Gate::check('delete invoice payment') || Gate::check('show invoice'))
-                                            <td class="text-right">
+
+
+                                        {{-- <td class="text-right">
                                                 <div class="cart-action">
                                                     {!! Form::open([
                                                         'method' => 'DELETE',
@@ -107,30 +116,68 @@
                                                             ? ['invoice.payment.destroy', $payment->id, $payment->invoice_id]
                                                             : ['invoice.payment.destroy', $payment->id, 0],
                                                     ]) !!}
-                                                    @can('edit invoice')
+                                                   
                                                         <a class="text-success" href="{{ route('payment.edit', $payment->id) }}" data-bs-toggle="tooltip" data-bs-original-title="{{ __('Edit') }}">
                                                             <i data-feather="edit"></i>
                                                         </a>
-                                                    @endcan
-                                                    @can('delete invoice payment')
+                                                   
+                                                   
                                                         <a class="text-danger confirm_dialog" data-bs-toggle="tooltip" data-bs-original-title="{{ __('Delete') }}" href="#">
                                                             <i data-feather="trash-2"></i>
                                                         </a>
-                                                    @endcan
-                                                    @can('edit invoice')
-                                                        <a class="text-primary" href="{{ route('payment.download', $payment->id) }}" data-bs-toggle="tooltip" data-bs-original-title="{{ __('Download Receipt') }}">
+                                                   
+                                                   
+                                                        <a class="text-primary" href="" data-bs-toggle="tooltip" data-bs-original-title="{{ __('Download Receipt') }}">
                                                             <i data-feather="download"></i>
                                                         </a>
-                                                    @endcan
+                                                  
                                                     {!! Form::close() !!}
                                                 </div>
-                                            </td>
-                                        @endif
+                                            </td> --}}
+                                        <td>
+                                            <div class="action-btn me-2">
+
+                                                <a href="{{ route('company.finance.realestate.invoices.show', $payment->id) }}"
+                                                    class="mx-3 btn btn-sm d-inline-flex align-items-center bg-info"
+                                                    data-bs-toggle="tooltip" title="{{ __('View') }}"
+                                                    data-original-title="{{ __('Download') }}">
+                                                    <span><i class="ti ti-download text-white"></i></span>
+                                                </a>
+                                            </div>
+
+                                            <div class="action-btn me-2">
+
+                                                <a href="{{ route('company.finance.realestate.invoice.payments.edit', $payment->id) }}"
+                                                    class="mx-3 btn btn-sm d-inline-flex align-items-center bg-warning"
+                                                    data-bs-toggle="tooltip" title="{{ __('Edit') }}"
+                                                    data-original-title="{{ __('Edit') }}">
+                                                    <span><i class="ti ti-pencil text-white"></i></span>
+                                                </a>
+
+                                            </div>
+
+                                            <div class="action-btn">
+
+                                                {!! Form::open([
+                                                    'method' => 'DELETE',
+                                                    'route' => ['company.finance.realestate.invoices.destroy', $payment->id],
+                                                    'id' => 'delete-form-' . $payment->id,
+                                                ]) !!}
+                                                <a href="#"
+                                                    class="mx-4 btn btn-sm align-items-center bs-pass-para bg-danger"
+                                                    data-bs-toggle="tooltip" title="{{ __('Delete') }}">
+                                                    <i class="ti ti-trash text-white"></i>
+                                                </a>
+                                                {!! Form::close() !!}
+
+                                            </div>
+                                        </td>
+
                                     </tr>
                                 @endforeach
                             </tbody>
                         </table>
-                        
+
                     </div>
                 </div>
             </div>

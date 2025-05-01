@@ -1,12 +1,12 @@
 @extends('layouts.company')
 
 @section('page-title')
-    {{ __('Invoices') }}
+    {{ __('Invoice Payments') }}
 @endsection
 
 @section('breadcrumb')
     <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">{{ __('Dashboard') }}</a></li>
-    <li class="breadcrumb-item">{{ __('Invoices') }}</li>
+    <li class="breadcrumb-item">{{ __('Invoice Payments') }}</li>
 @endsection
 
 @section('action-btn')
@@ -20,8 +20,41 @@
 @endsection
 
 @section('content')
-    <div class="row">
-        {{ Form::open(['url' => route('payment.store'), 'method' => 'post', 'id' => 'invoice_form', 'enctype' => 'multipart/form-data', 'files' => true]) }}
+    
+<div class="row justify-content-center" style="margin-top: 10px; margin-bottom: 10px;">
+    <!-- Invoice Payments Button -->
+    <div class="col-md-5 mb-2">
+        <a href="{{ route('company.finance.realestate.invoice.payments.index') }}" class="payment-option" id="invoice-payments-btn"
+            data-bs-toggle="tooltip" title="Go to Invoice Payments">
+            <div class="card payment-card shadow-sm border-0 text-center" style="padding: 5px;">
+                <div class="card-body p-2">
+                    <div class="icon-box text-primary" style="font-size: 14px;">
+                        <i class="ti ti-file" style="font-size: 16px;"></i>
+                    </div>
+                    <h6 class="card-title mt-1 mb-0 fw-bold" style="font-size: 10px;">{{ __('Invoice Payments') }}</h6>
+                </div>
+            </div>
+        </a>
+    </div>
+    
+    <div class="col-md-5 mb-2">
+        <a href="#" class="payment-option" id="other-payments-btn"
+            data-bs-toggle="tooltip" title="Go to Other Payments">
+            <div class="card payment-card shadow-sm border-0 text-center" style="padding: 5px;">
+                <div class="card-body p-2">
+                    <div class="icon-box text-danger" style="font-size: 14px;">
+                        <i class="ti ti-credit-card" style="font-size: 16px;"></i>
+                    </div>
+                    <h6 class="card-title mt-1 mb-0 fw-bold" style="font-size: 10px;">{{ __('Other Payments') }}</h6>
+                </div>
+            </div>
+        </a>
+    </div>
+</div>
+<div class="row">
+
+        
+        {{ Form::open(['url' => route('company.finance.realestate.invoice.payments.store'), 'method' => 'post', 'id' => 'invoice_form', 'enctype' => 'multipart/form-data', 'files' => true]) }}
         <div class="row">
             <div class="col-lg-12">
                 <div class="card">
@@ -142,7 +175,7 @@
 @endsection
 
 
-@push('script-page')
+
     <!-- Include repeater.js and other necessary scripts -->
     @push('script-page')
         <script src="{{ asset('js/jquery-ui.min.js') }}"></script>
@@ -166,9 +199,7 @@
                             $('.unit').append('<option value="' + key + '">' + value + '</option>');
                         });
 
-                        $('.hidesearch').select2({
-                            minimumResultsForSearch: -1
-                        });
+                      
                     },
                 });
             });
@@ -205,9 +236,7 @@
                                 formattedInvoiceId + '</option>');
                         });
 
-                        $('.hidesearch').select2({
-                            minimumResultsForSearch: -1
-                        });
+                        
                     }
                 });
             });
@@ -254,9 +283,7 @@
                                 // $('.invoice').append('<option value="' + key + '">' + value +'</option>');
                             });
 
-                            $('.hidesearch').select2({
-                                minimumResultsForSearch: -1
-                            });
+                            
                         },
                     });
 
@@ -308,9 +335,7 @@
 
                                 // $('.unit').append('<option value="' + key + '">' + value +'</option>');
                             });
-                            $('.hidesearch').select2({
-                                minimumResultsForSearch: -1
-                            });
+                          
                         },
 
                     });
@@ -354,6 +379,7 @@
                     var invoiceId = $(this).val();
 
 
+
                     getChequeDetails(invoiceId);
 
 
@@ -372,7 +398,7 @@
                         },
                         type: 'GET',
                         success: function(data) {
-                            console.log(data);
+                            console.log("detaisl"+ data);
 
                             // $('.cheque').empty().append(
                             //     '<option value="">{{ __('Select Cheque') }}</option>');
@@ -398,7 +424,7 @@
                                 $.each(data, function(index, cheque) {
                                     $('.cheque').append('<option value="' + cheque.id +
                                         '" data-amount="' + cheque.amount + '">' + cheque
-                                        .check_number + '</option>');
+                                        .cheque_number + '</option>');
                                 });
                             } else {
                                 // If there are no cheques, show a message
@@ -408,9 +434,7 @@
 
                             }
 
-                            $('.hidesearch').select2({
-                                minimumResultsForSearch: -1
-                            });
+                            
                         },
 
                     });
@@ -455,9 +479,7 @@
                                 .holder_name + '</option>');
                         });
 
-                        $('.hidesearch').select2({
-                            minimumResultsForSearch: -1
-                        });
+                      
                     },
                     error: function(xhr, status, error) {
                         console.error("AJAX Error: ", status, error); // Log any error
@@ -481,9 +503,7 @@
                         'status': 1
                     },
                     show: function() {
-                        $('.hidesearch').select2({
-                            minimumResultsForSearch: -1
-                        });
+                      
                         $(this).slideDown();
 
                     },
@@ -520,6 +540,9 @@
                         },
                         success: function(response) {
                             // Store the due amount for further validation
+                            console.log("due", response); // comma, not +
+
+                            
                             $('#due_amount').val(response.due_amount);
                         },
                         error: function(xhr) {
@@ -577,4 +600,4 @@
             });
         </script>
     @endpush
-@endpush
+

@@ -33,7 +33,7 @@ class InvoiceController extends Controller
     }
     public function index(Request $request)
     {
-        if (\Auth::user()->can('manage invoice')) {
+    
             if (\Auth::user()->type == 'tenant') {
 
                 $tenant = User::where('type', 'tenant')->where('id', Auth::user()->id)->first();
@@ -91,9 +91,7 @@ class InvoiceController extends Controller
             // $filterUnit = PropertyUnit::select('id', 'name')->orderBy('name', 'asc')->get();
 
             return view('company.finance.realestate.invoices.index', compact('invoices'));
-        } else {
-            return redirect()->back()->with('error', __('Permission Denied!'));
-        }
+       
     }
 
     /**
@@ -102,9 +100,9 @@ class InvoiceController extends Controller
     public function create()
     {
 
-        $property = Property::where('company_id', Auth::user()->creatorId())->get()->pluck('name', 'id');
+        $property = Property::where('company_id',creatorId())->get()->pluck('name', 'id');
         $property->prepend(__('Select Property'), '');
-
+       
 
         $types = RealestateType::where('parent_id', creatorId())->where('type', 'invoice')->get()->pluck('title', 'id');
         $types->prepend(__('Select Type'), '');

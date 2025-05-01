@@ -129,72 +129,7 @@
                                 </div>
                             </div>
 
-                            <!-- Invoice Items Repeater -->
-                            {{-- <div class="col-md-12 mt-4">
-                                <h6 class="text-md fw-bold text-secondary text-sm">Invoice Items</h6>
-                                <div class="repeater">
-                                    <div class="d-flex justify-content-between align-items-center mb-3">
-                                        <h5 class="mb-0">Invoice Types</h5>
-                                        <button type="button" class="btn btn-primary btn-sm" data-repeater-create>
-                                            <i class="ti-plus me-1"></i> Add Type
-                                        </button>
-                                    </div>
-
-                                    <table class="table" data-repeater-list="types">
-                                        <thead>
-                                            <tr>
-                                                <th>{{ __('Type') }}</th>
-                                                <th>{{ __('Amount') }}</th>
-                                                <th>{{ __('VAT Inclusion') }}</th>
-                                                <th class="vat-column">{{ __('VAT Amount') }}</th>
-                                                <th>{{ __('Total Amount') }}</th>
-                                                <th>{{ __('Description') }}</th>
-                                                <th>#</th>
-                                            </tr>
-
-                                        </thead>
-                                        <tbody data-repeater-list="types">
-                                            @foreach ($invoice->types as $type)
-                                                <tr data-repeater-item>
-                                                    {{ Form::hidden('id', $type->id, ['class' => 'form-control type_id']) }}
-                                                    <td width="30%">
-                                                        {{ Form::select('invoice_type', $types, $type->invoice_type, ['class' => 'form-control hidesearch']) }}
-                                                    </td>
-                                                    <td>
-                                                        {{ Form::number('amount', $type->amount, ['class' => 'form-control', 'step' => '0.01', 'oninput' => 'calculateVAT(this)', 'id' => 'total_amount']) }}
-                                                    </td>
-                                                    <td>
-                                                        <input type="radio" name="vat_inclusion" value="included"
-                                                            {{ $type->vat_inclusion == 'included' ? 'checked' : '' }}
-                                                            onchange="calculateVAT(this.closest('tr'))"> Included
-                                                        <input type="radio" name="vat_inclusion" value="excluded"
-                                                            {{ $type->vat_inclusion == 'excluded' ? 'checked' : '' }}
-                                                            onchange="calculateVAT(this.closest('tr'))"> Excluded
-                                                    </td>
-                                                    <td class="vat-column">
-                                                        <input type="text" name="tax_amount" class="form-control"
-                                                            value="{{ $type->tax_amount }}" readonly />
-                                                    </td>
-                                                    <td>
-                                                        {{ Form::number('grand_amount', $type->grand_amount, ['class' => 'form-control', 'step' => '0.01', 'id' => 'grand_amount']) }}
-                                                    </td>
-                                                    <td>
-                                                        {{ Form::textarea('description', $type->description, ['class' => 'form-control', 'rows' => 1]) }}
-                                                    </td>
-                                                    <td>
-                                                        <a class="text-danger" data-repeater-delete data-bs-toggle="tooltip" title="Delete" href="#">
-                                                             Delete
-                                                        </a>
-                                                    </td>
-                                                    
-                                                </tr>
-                                            @endforeach
-                                        </tbody>
-                                        
-
-                                    </table>
-                                </div>
-                            </div> --}}
+                        
                             <div class="col-md-12 mt-4">
                                 <h6 class="text-md fw-bold text-secondary text-sm">Invoice Items</h6>
                             <div class="repeater" data-value='{!! json_encode($invoice->types) !!}'>

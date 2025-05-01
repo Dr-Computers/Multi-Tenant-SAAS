@@ -37,5 +37,9 @@ class RealestateLease extends Model
         'new_managemenmt_contract_fees',
         'renewal_status',
     ];
-    
+
+    public function tenant()
+    {
+        return $this->belongsTo(User::class,'tenant_id');
+    }
 }

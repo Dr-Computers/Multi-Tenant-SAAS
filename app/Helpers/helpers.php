@@ -3,6 +3,7 @@
 use App\Models\Currency;
 use Illuminate\Support\Facades\Storage;
 use App\Models\MediaFile;
+use App\Models\Property;
 use Illuminate\Support\Facades\Auth;
 use Spatie\Image\Image;
 use Spatie\Image\Enums\AlignPosition;
@@ -538,6 +539,12 @@ if (!function_exists('getCompanyAllDetails')) {
         
         // Return specific property if requested
         return $company?->{$key};
+    }
+    if (!function_exists('getOwnerPropertyIds')) {
+        function getOwnerPropertyIds()
+        {
+            return Property::where('owner_id', \Auth::id())->pluck('id')->toArray();
+        }
     }
 }
 

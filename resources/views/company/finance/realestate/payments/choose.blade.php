@@ -103,7 +103,7 @@
 
     <!-- Manage Other Invoices -->
     <div class="col-md-5">
-        <a href="{{ route('company.finance.realestate.invoice-other.index') }}" class="invoice-option">
+        <a href="{{ route('company.finance.realestate.other.payments.index') }}" class="invoice-option">
             <div class="card invoice-card shadow-none border-0">
                 <div class="card-body text-center">
                     <div class="icon-box bg-success text-white">

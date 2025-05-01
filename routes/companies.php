@@ -100,21 +100,26 @@ Route::group(
                 Route::resource('invoices', InvoiceController::class)->names('invoices');
                 Route::delete('invoice/type/destroy', [InvoiceController::class, 'invoiceTypeDestroy'])->name('invoice.type.destroy');
                 Route::resource('invoice-other', OtherInvoiceController::class);
-                Route::get('/invoice-payments', [PaymentController::class, 'index'])->name('invoice.payments.index');
-                Route::get('/payments/choose', [PaymentController::class, 'choosePayment'])->name('payments.choose');
-                Route::get('/invoice-payments/create', [PaymentController::class, 'create'])->name('invoice.payments.create');
                 Route::get('unit/{pid}/invoice', [InvoiceController::class, 'getUnitinvoice'])->name('unit.invoice');
+                //payment
+                Route::get('/payments/choose', [PaymentController::class, 'choosePayment'])->name('payments.choose');
+
+                //invoice Payments
+                Route::get('/invoice-payments', [PaymentController::class, 'index'])->name('invoice.payments.index');
+                Route::get('/invoice-payments/create', [PaymentController::class, 'create'])->name('invoice.payments.create');
+                Route::post('/invoice-payments', [PaymentController::class, 'store'])->name('invoice.payments.store');
+                Route::get('/invoice-payments/{payment}/edit', [PaymentController::class, 'edit'])->name('invoice.payments.edit');
+                Route::put('/invoice-payments/{payment}', [PaymentController::class, 'update'])->name('invoice.payments.update');
+                Route::delete('/invoice-payments/{payment}', [PaymentController::class, 'destroy'])->name('invoice.payments.destroy');
                 Route::get('/payment/{id}/cheque', [PaymentController::class, 'getChequeDetails'])->name('payments.cheque');
                 Route::post('invoice/due-amount', [PaymentController::class, 'getDueAmount'])->name('invoice.due.amount');
-               
-                // Route::get('payment/tenant/{pid}/invoice', [InvoicePaymentController::class, 'getInvoices'])->name('tenant.invoices');
-                // Route::get('/payable', [PayableController::class, 'index'])->name('payable.index');
-                // Route::get('/payable/create', [PayableController::class, 'create'])->name('payable.create');
-                // Route::get('/payable/edit/{id}', [PayableController::class, 'edit'])->name('payable.edit');
-                // Route::post('/payable/store', [PayableController::class, 'store'])->name('payable.store');
-                // Route::put('/payable/{payable}', [PayableController::class, 'update'])->name('payable.update');
-                // Route::delete('payable/{payable}/destroy', [PayableController::class, 'destroy'])->name('payable.destroy');
-                // Route::get('payable/{payable}/download', [PayableController::class, 'download'])->name('payable.download');
+
+                //Other payments
+                Route::get('/other-payments', [PaymentController::class, 'otherIndex'])->name('other.payments.index');
+                Route::get('/other-payments/create', [PaymentController::class, 'otherCreate'])->name('other.payments.create');
+                Route::get('/other-payments/{payment}/edit', [PaymentController::class, 'otherEdit'])->name('other.payments.edit');
+                Route::delete('/other-payments/{payment}', [PaymentController::class, 'otherDestroy'])->name('other.payments.destroy');
+                Route::get('other-payments/tenant/{pid}/invoice', [PaymentController::class,'getInvoices'])->name('tenant.invoices');
             });
 
             // Bank Accounts

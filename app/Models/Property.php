@@ -28,7 +28,7 @@ class Property extends Model
 
     public function landmarks(): BelongsToMany
     {
-        return $this->belongsToMany(RealestateLandmark::class, 'property_landmarks', 'property_id','landmark_id',);
+        return $this->belongsToMany(RealestateLandmark::class, 'property_landmarks', 'property_id', 'landmark_id',);
     }
 
     public function furnishing(): BelongsToMany
@@ -48,14 +48,19 @@ class Property extends Model
         );
     }
 
-    public function units(){
+    public function units()
+    {
         return $this->hasMany(PropertyUnit::class, 'property_id', 'id');
     }
 
-    
 
-    public function owner(){
+
+    public function owner()
+    {
         return $this->hasOne(User::class, 'id', 'owner_id');
     }
-
+    public function leases()
+    {
+        return $this->hasMany(RealestateLease::class, 'property_id');
+    }
 }
