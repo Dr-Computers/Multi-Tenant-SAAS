@@ -106,6 +106,8 @@ class SupportTicketController extends Controller
 		$ticket->body      	= $request->body;
 		$ticket->user_id   	= Auth::user()->id;
 		$ticket->company_id = $companyId;
+		$ticket->type       = $parent_ticket->type;
+		$ticket->priority   = $parent_ticket->priority;
 		$ticket->to        	= 'admin';
 		try {
 			$ticket->save();

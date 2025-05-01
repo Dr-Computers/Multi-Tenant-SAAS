@@ -8,9 +8,12 @@ use Illuminate\Database\Eloquent\Model;
 class SupportTicket extends Model
 {
     use HasFactory;
-    
+      
     public function users(){ 
-    	return $this->belongsTo(User::class,'user_id');
+    	return $this->hasOne(User::class,'id','user_id');
+    }
+    public function company(){ 
+    	return $this->hasOne(User::class,'id','company_id');
     }
 
     public function attachments(){ 

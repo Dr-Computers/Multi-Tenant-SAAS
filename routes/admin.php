@@ -54,7 +54,7 @@ Route::group(
         Route::any('twilio-settings', 'SystemController@saveTwilioSettings')->name('twilio.settings');
         Route::post('company-payment-setting', 'SystemController@saveCompanyPaymentSettings')->name('company.payment.settings');
 
-   
+
         Route::post('cookie-setting', 'SystemController@saveCookieSettings')->name('cookie.setting');
         Route::post('chatgptkey', 'SystemController@chatgptkey')->name('settings.chatgptkey');
         Route::post('reset-permissions', 'SystemController@resetPermissions')->name('settings.reset-permissions');
@@ -119,14 +119,16 @@ Route::group(
         });
 
 
-          /*Support Ticket*/
-          Route::resource('tickets','SupportTicketController');
-          Route::get('tickets/view/{id}/{no}','SupportTicketController@view');
-          Route::post('tickets/edit/{id}','SupportTicketController@update');
-          Route::get('tickets/reply/{id}','SupportTicketController@reply');
-          Route::post('tickets/reply','SupportTicketController@sendreply');
-          Route::get('tickets/closed/{no}','SupportTicketController@closedTicket');
-          
-          Route::get('ticket/asigned-staff','SupportTicketController@assigned_staff');
+        /*Support Ticket*/
+        Route::group([
+            'prefix' => 'tickets',
+            'as' => 'tickets.',
+        ], function () {
+            Route::resource('/', 'SupportTicketController');
+            Route::get('view/{company_id}/{ticket_no}', 'SupportTicketController@view')->name('view');
+            Route::post('reply/{ticket_no}', 'SupportTicketController@sendreply')->name('reply');
+            Route::post('tickets/closed/{ticket_no}', 'SupportTicketController@closedTicket')->name('closed_ticket');
+            Route::get('ticket/assigned-staff', 'SupportTicketController@assigned_staff')->name('assigned_staff');
+        });
     }
 );

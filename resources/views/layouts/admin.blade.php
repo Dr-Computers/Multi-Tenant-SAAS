@@ -99,6 +99,9 @@
         <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}" id="style">
     @endif
 
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.js"></script>
+    
     <link rel="stylesheet" href="{{ asset('assets/css/plugins/dropzone.min.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/customizer.css') }}">
 

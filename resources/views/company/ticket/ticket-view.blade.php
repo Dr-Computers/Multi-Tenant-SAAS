@@ -258,7 +258,7 @@
                     this.responseMessage = data.message || 'Form submitted successfully!';
                     this.validationErrors = []; // Clear validation errors
                     this.showToastMessage(this.responseMessage, 'success');
-                    window.location = `{{ route('company.tickets.index') }}`;
+                    window.location = '';
                 } catch (error) {
                     // Catch unexpected errors (e.g., network issues)
                     this.errorMessage = error.message || 'An error occurred during form submission';
