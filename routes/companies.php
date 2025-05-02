@@ -125,6 +125,8 @@ Route::group(
                 //Payments Payable
                 Route::resource('/payments/payable', PaymentPayableController::class)->names('payments.payables');
                 Route::get('user/{tid}/type', [PaymentPayableController::class,'fetchUsersByType'])->name('user.type');
+
+
             });
 
             // Bank Accounts
@@ -132,6 +134,17 @@ Route::group(
             Route::resource('bank-accounts', BankAccountController::class);
         });
 
+        Route::group([
+            'prefix' => 'tickets',
+            'as' => 'tickets.',
+        ], function () {
+            Route::resource('/', 'SupportTicketController');
+            Route::get('view/{company_id}/{ticket_no}', 'SupportTicketController@view')->name('view');
+            Route::post('reply/{ticket_no}', 'SupportTicketController@sendreply')->name('reply');
+        });
+        
+       
+        
 
         Route::group([
             'prefix' => 'media',

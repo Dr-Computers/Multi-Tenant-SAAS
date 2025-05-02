@@ -314,7 +314,7 @@
     @include('layouts.cookie_consent')
 @endif
 <script type="text/javascript">
-    $('body').on('change','#avatar',function() {
+    $('body').on('change', '#avatar', function() {
 
         let reader = new FileReader();
         reader.onload = (e) => {
@@ -323,7 +323,6 @@
         reader.readAsDataURL(this.files[0]);
 
     });
-    
 </script>
 
 

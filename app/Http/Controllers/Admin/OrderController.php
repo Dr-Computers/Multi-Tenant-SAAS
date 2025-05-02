@@ -1,6 +1,7 @@
 <?php
 
-namespace App\Http\Controller\Admin;
+namespace App\Http\Controllers\Admin;
+
 use App\Http\Controllers\Controller;
 use App\Models\Coupon;
 use App\Models\Customer;
@@ -21,7 +22,7 @@ use Illuminate\Support\Facades\DB;
 use Session;
 use Stripe;
 
-class StripePaymentController extends Controller
+class OrderController extends Controller
 {
     public $stripe_secret;
     public $settings;

@@ -10,10 +10,12 @@
 
 @section('action-btn')
     <div class="float-end">
-
+        <a href="{{ route('admin.realestate.furnishings.create') }}" class="btn btn-sm btn-dark">
+            <i class="ti ti-help"></i> Requests From Company
+        </a>
         <a href="#" data-size="xl" data-url="{{ route('admin.realestate.furnishings.create') }}" data-ajax-popup="true"
             data-bs-toggle="tooltip" title="{{ __('Create') }}" class="btn btn-sm btn-primary">
-            <i class="ti ti-plus"></i>
+            <i class="ti ti-plus"></i> Create Furnishings
         </a>
 
     </div>

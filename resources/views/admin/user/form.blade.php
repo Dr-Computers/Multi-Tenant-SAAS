@@ -1,10 +1,22 @@
-<form action="{{ isset($user) ? route('admin.users.update',$user->id) : route('admin.users.store') }}" method="post" class="needs-validation" novalidate>
+<form action="{{ isset($user) ? route('admin.users.update',$user->id) : route('admin.users.store') }}" method="post" class="needs-validation" novalidate enctype="multipart/form-data">
     @csrf
     @if(isset($user)) @method('PUT') @endif
     <div class="modal-body">
         <div class="row">
-            <h6 class="text-md fw-bold text-secondary text-sm">User Details</h6>
-
+            {{-- <h6 class="text-md fw-bold text-secondary text-sm">User Details</h6> --}}
+            <div class="col-lg-12 mb-3">
+                <div class="form-group">
+                    <img src="{{ isset($user) ? asset('storage/' . $user->avatar_url) : asset('storage/uploads/avatar/avatar.png') }}"
+                        id="myAvatar" alt="user-image" class="img-thumbnail w-auto" style="height:100px">
+                    <div class="choose-files mt-3">
+                        <label for="avatar">
+                            <div class=" bg-primary "> <i class="ti ti-upload px-1"></i>Choose file here</div>
+                            <input type="file" accept="image/png, image/gif, image/jpeg,  image/jpg"
+                                class="form-control d-none" name="profile" id="avatar" data-filename="avatar-logo">
+                        </label>
+                    </div>
+                </div>
+            </div>
             <div class="col-md-12">
                 <div class="form-group">
                     <label for="name" class="form-label">Name</label><x-required></x-required>
