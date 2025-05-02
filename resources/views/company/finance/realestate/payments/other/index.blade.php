@@ -98,37 +98,24 @@
                                         <td style="width: 30%;">{{ $payment->notes ?? 'N/A' }}</td>
 
 
-                                        <td class="text-center">
-                                            <div class="cart-action">
+                                        <td>
 
+
+                                            <div class="action-btn">
                                                 {!! Form::open([
                                                     'method' => 'DELETE',
                                                     'route' => $payment->invoice_id
-                                                        ? ['invoice.payment.destroy', $payment->id, $payment->invoice_id]
-                                                        : ['invoice.payment.destroy', $payment->id, 0], // Pass both parameters for payment.destroy
+                                                        ? ['company.finance.realestate.other.payments.destroy', $payment->id, $payment->invoice_id]
+                                                        : ['company.finance.realestate.other.payments.destroy', $payment->id, 0], // Pass both parameters for payment.destroy
                                                 ]) !!}
 
-
-                                                @can('edit invoice')
-                                                    <a class="text-success" href="{{ route('payment.edit', $payment->id) }}"
-                                                        data-bs-toggle="tooltip" data-bs-original-title="{{ __('Edit') }}">
-                                                        <i data-feather="edit"></i></a>
-                                                @endcan
-                                                @can('delete invoice payment')
-                                                    <a class=" text-danger confirm_dialog" data-bs-toggle="tooltip"
-                                                        data-bs-original-title="{{ __('Detete') }}" href="#"> <i
-                                                            data-feather="trash-2"></i></a>
-                                                @endcan
-                                                {{-- @can('edit invoice')
-                                                        <a class="text-primary"
-                                                            href="{{ route('payment.receivable.download', $payment->id) }}"
-                                                            data-bs-toggle="tooltip"
-                                                            data-bs-original-title="{{ __('Download Receipt') }}">
-                                                            <i data-feather="download"></i>
-                                                        </a>
-                                                    @endcan --}}
-
+                                                <a href="#"
+                                                    class="mx-4 btn btn-sm align-items-center bs-pass-para bg-danger"
+                                                    data-bs-toggle="tooltip" title="{{ __('Delete') }}">
+                                                    <i class="ti ti-trash text-white"></i>
+                                                </a>
                                                 {!! Form::close() !!}
+
                                             </div>
                                         </td>
 

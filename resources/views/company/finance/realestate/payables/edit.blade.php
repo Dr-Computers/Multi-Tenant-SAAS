@@ -30,61 +30,71 @@
                     <div class="card-body">
                         <div class="info-group">
                             <div class="row">
+                                <input type="hidden" name='choose_type' value="property" id='choose_type'>
+                                <div class="form-group col-md-6 col-lg-4">
+                                    {{ Form::label('property_id', __('Property'), ['class' => 'form-label']) }}
 
-                                <input type="hidden" name='choose_type' id="choose_type" value="other">
-                                <!-- Property, Unit, Invoice, Payment Date, Payment Method and Cheque fields -->
+                                    {{ Form::text('property_id', $payment->invoice->properties->name ?? null, ['class' => 'form-control readonly-field', 'readonly' => true]) }}
+                                </div>
+                                <div class="form-group col-md-6 col-lg-4">
+                                    {{ Form::label('unit_id', __('Unit'), ['class' => 'form-label']) }}
 
+                                    {{-- <input type="hidden" id="edit_unit" value="{{ $payment->invoice->units->id }}"> --}}
+                                    {{ Form::text('unit_id', $payment->invoice->units->name ?? null, ['class' => 'form-control readonly-field', 'readonly' => true]) }}
+                                </div>
+                                <div class="form-group col-md-6 col-lg-4">
+                                    {{ Form::label('invoice_id', __('Invoice'), ['class' => 'form-label']) }}
+                                    <input type="hidden" id="edit_invoice" name="invoice_id"
+                                        value="{{ $payment->invoice->id }}">
 
+                                    {{ Form::text('invoice', invoicePrefix() . $payment->invoice->invoice_id ?? null, ['class' => 'form-control readonly-field', 'readonly' => true]) }}
+                                </div>
 
-                                <div class="form-group col-md-6 col-lg-4" id="payment_date_div">
+                                <div class="form-group col-md-6 col-lg-4">
                                     {{ Form::label('payment_date', __('Payment Date'), ['class' => 'form-label']) }}
                                     {{ Form::date('payment_date', $payment->payment_date ?? null, ['class' => 'form-control']) }}
                                 </div>
-
-
-
-
-
-                                <!-- Remaining fields -->
-                                <div class="form-group col-md-6 col-lg-4" id="payment_for_div">
+                                <div class="form-group col-md-6 col-lg-4">
+                                    {{ Form::label('payment_type', __('Payment Method'), ['class' => 'form-label']) }}
+                                    {{ Form::text('payment_type', $payment->invoice->payment_type ?? null, ['class' => 'form-control readonly-field', 'readonly' => true]) }}
+                                </div>
+                                <div class="form-group col-md-6 col-lg-4">
                                     {{ Form::label('payment_for', __('Payment For'), ['class' => 'form-label']) }}
-                                    {{ Form::text('payment_for', $payment->payment_for ?? null, ['class' => 'form-control readonly-field', 'readonly' => true]) }}
+                                    {{ Form::text('payment_for', str_replace('_', ' ', $payment->payment_for) ?? null, ['class' => 'form-control readonly-field', 'readonly' => true]) }}
+
+
+                                </div>
+
+                                <div class="form-group col-md-6 col-lg-4" id="cheque_selection" style="display: none;">
+                                    {{ Form::label('cheque_id', __('Select Cheque'), ['class' => 'form-label']) }}
+                                    <input type="hidden" id="check_id" name="check_id"
+                                        value="{{ $payment->invoice->cheque_id }}">
+
+                                    {{ Form::text('cheque_id', $payment->invoice->chequeDetails->first()->cheque_number ?? null, ['class' => 'form-control readonly-field', 'readonly' => true]) }}
                                 </div>
 
                                 <div class="form-group col-md-6 col-lg-4" id="account_selection">
                                     {{ Form::label('account_id', __('Select Bank Account'), ['class' => 'form-label']) }}
-
                                     <input type="hidden" id="account_id" name="account_id"
                                         value="{{ $payment->account->id ?? '' }}">
 
-                                    {{ Form::text('account', $payment->account->holder_name ?? null, ['class' => 'form-control readonly-field', 'readonly' => true]) }}
+                                    {{ Form::text('cheque_id', $payment->account->holder_name ?? null, ['class' => 'form-control readonly-field', 'readonly' => true]) }}
                                 </div>
-                                <div class="form-group col-md-6 col-lg-4" id="tenant_div">
-                                    {{ Form::label('tenant', __('Tenant'), ['class' => 'form-label']) }}
-                                    {{ Form::select('tenant', $tenants, $payment->tenant_id ?? null, ['class' => 'form-control hidesearch', 'id' => 'tenant']) }}
+                                <div class="form-group col-md-6 col-lg-4" id="reference_selection">
+                                    {{ Form::label('reference_no', __('Reference Number'), ['class' => 'form-label']) }}
+                                    {{ Form::text('reference_no', $payment->reference_no ?? null, ['class' => 'form-control ']) }}
+                                </div>
+
+
+                                <div class="form-group col-md-6 col-lg-4">
+                                    {{ Form::label('amount', __('Amount'), ['class' => 'form-label']) }}
+                                    {{ Form::number('amount', $payment->amount ?? null, ['class' => 'form-control readonly-field', 'id' => 'amount', 'step' => '0.01', 'placeholder' => __('Enter Amount'), 'readonly' => true]) }}
                                 </div>
 
                                 <div class="form-group col-md-6 col-lg-4">
-                                    {{ Form::label('invoice_id', __('Invoice'), ['class' => 'form-label']) }}
-                                    <input type="hidden" id="edit_invoice" name="invoice_id"
-                                        value="{{ optional($payment->invoice)->id }}">
-                                    {{ Form::text('invoice', invoicePrefix() . optional($payment->invoice)->invoice_id, ['class' => 'form-control readonly-field', 'readonly' => true]) }}
-
-                                </div>
-                                <div class="form-group col-md-6 col-lg-4" id="ref_div">
-                                    {{ Form::label('reference_no', __('Reference Number'), ['class' => 'form-label']) }}
-                                    {{ Form::text('reference_no', $payment->reference_no, ['class' => 'form-control', 'placeholder' => __('Enter Reference Number')]) }}
-                                </div>
-
-                                <div class="form-group col-md-6 col-lg-4" id="amount_div">
-                                    {{ Form::label('amount', __('Amount'), ['class' => 'form-label']) }}
-                                    {{ Form::number('amount', $payment->amount ?? null, ['class' => 'form-control', 'id' => 'amount', 'step' => '0.01', 'placeholder' => __('Enter Amount'), 'readonly' => true]) }}
-
-                                </div>
-
-                                <div class="form-group col-md-6 col-lg-4" id="notes_div">
                                     {{ Form::label('notes', __('Notes'), ['class' => 'form-label']) }}
                                     {{ Form::textarea('notes', old('notes', $payment->notes ?? null), ['class' => 'form-control', 'rows' => 2, 'placeholder' => __('Enter Notes')]) }}
+
                                 </div>
                             </div>
 
@@ -93,7 +103,7 @@
                 </div>
 
             </div>
-            <div id="hidden-check-details"></div>
+
             <div class="col-lg-12">
                 <div class="group-button text-end">
                     {{ Form::submit(__('Update'), ['class' => 'btn btn-primary btn-rounded', 'id' => 'invoice-submit']) }}

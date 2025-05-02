@@ -456,7 +456,7 @@ class PaymentController extends Controller
         }
     }
 
-   //other Payments
+    //other Payments
     public function otherIndex(Request $request)
     {
         // Fetch all payments with related invoices, properties, and tenants
@@ -473,50 +473,51 @@ class PaymentController extends Controller
             })
             ->paginate(20);
 
-         
+
         return view('company.finance.realestate.payments.other.index', compact('payments'));
     }
     public function otherCreate()
     {
-    
-        $types = [
-                '' => __('Choose Type'),
-                'type_invoice' => 'Invoice',
-                'type_property' => 'Property',
-                'type_other' => 'Other',
-            ];
-            // $paymentFor = PaymentFor::pluck('title', 'slug');
-            $paymentFor = RealestateType::where('parent_id', creatorId())->where('type', 'payment')->get()->pluck('title', 'id');
-            $paymentFor->prepend(__('Select Type'), '');
-         
-            $tenants = user::where('parent', creatorId())->where('type','tenant')
-                ->get()
-                ->mapWithKeys(function ($tenant) {
-                    return [
-                        $tenant->id => $tenant->name
-                    ];
-                })
-                ->toArray();
 
-            return view('company.finance.realestate.payments.other.create', compact( 'types', 'paymentFor', 'tenants'));
-      
+        $types = [
+            '' => __('Choose Type'),
+            'type_invoice' => 'Invoice',
+            'type_property' => 'Property',
+            'type_other' => 'Other',
+        ];
+        // $paymentFor = PaymentFor::pluck('title', 'slug');
+        $paymentFor = RealestateType::where('parent_id', creatorId())->where('type', 'payment')->get()->pluck('title', 'id');
+        $paymentFor->prepend(__('Select Type'), '');
+
+        $tenants = User::where('parent', creatorId())->where('type', 'tenant')
+            ->get()
+            ->mapWithKeys(function ($tenant) {
+                return [
+                    $tenant->id => $tenant->name
+                ];
+            })
+            ->toArray();
+
+        return view('company.finance.realestate.payments.other.create', compact('types', 'paymentFor', 'tenants'));
     }
-    // public function receivableEdit($id)
-    // {
-    //         $payment = InvoicePayment::with('account')->where('id', $id)->first();
-    //         $paymentFor = PaymentFor::pluck('title', 'slug');
-    //         $tenants = Tenant::with('user')
-    //             ->where('parent_id', parentId())
-    //             ->get()
-    //             ->mapWithKeys(function ($tenant) {
-    //                 return [
-    //                     $tenant->id => $tenant->user->first_name . ' ' . $tenant->user->last_name
-    //                 ];
-    //             })
-    //             ->toArray();
-    //         return view('payment.receivable.edit', compact('payment', 'paymentFor', 'tenants'));
-      
-    // }
+    public function otherEdit($id)
+    {
+        $payment = RealestatePayment::with('account')->where('id', $id)->first();
+        $paymentFor = RealestateType::where('parent_id', creatorId())->where('type', 'payment')->get()->pluck('title', 'id');
+        $paymentFor->prepend(__('Select Type'), '');
+
+
+        $tenants = User::where('parent', creatorId())->where('type', 'tenant')
+            ->get()
+            ->mapWithKeys(function ($tenant) {
+                return [
+                    $tenant->id => $tenant->name
+                ];
+            })
+            ->toArray();
+
+        return view('company.finance.realestate.payments.other.edit', compact('payment', 'paymentFor', 'tenants'));
+    }
     public function getInvoices($id)
     {
         $invoices = RealestateInvoice::where('tenant_id', $id)
@@ -529,55 +530,51 @@ class PaymentController extends Controller
 
         return response()->json($invoices);
     }
-    public function invoicePaymentDestroy($id, $invoice_id = null)
+
+
+    public function otherDestroy($id, $invoice_id = null)
     {
-        if (\Auth::user()->can('delete invoice payment')) {
-    
-            $payment = InvoicePayment::find($id);
-            if (!$payment) {
-                return redirect()->back()->with('error', __('Payment not found!'));
-            }
-    
-            if ($invoice_id) {
-                $invoice = Invoice::find($invoice_id);
-    
-                // Check if payment was made via cheque and update cheque status
-                if (!empty($payment->payment_type) && $payment->payment_type == 'cheque') {
-                    CheckDetail::where('id', $payment->cheque_id)
-                        ->update(['status' => 'unpaid']);
-                }
-    
-                // Update bank account balance before deleting the payment
-                $this->updateBankAccountBalance($payment->bank_account_id, $payment->amount, 'withdrawal', $invoice_id);
-                $this->removeFromCOA($payment->payment_for, $payment->amount);
-    
-                // **Delete the payment first**
-                $payment->delete();
-    
-                // **Now update invoice status after deletion**
-                if ($invoice->getInvoiceDueAmount() <= 0) {
-                    $status = 'paid';
-                } elseif ($invoice->getInvoiceDueAmount() == $invoice->getInvoiceSubTotalAmount()) {
-                    $status = 'open';
-                } else {
-                    $status = 'partial_paid';
-                }
-    
-                Invoice::statusChange($invoice->id, $status);
-    
-            } else {
-                // Update bank balance for non-invoice payments
-                $this->updateBankAccountBalance($payment->bank_account_id, $payment->amount, 'withdrawal', 'others');
-                $this->removeFromCOA($payment->payment_for, $payment->amount);
-    
-                // **Delete the payment**
-                $payment->delete();
-            }
-    
-            return redirect()->back()->with('success', __('Invoice payment successfully deleted.'));
-        } else {
-            return redirect()->back()->with('error', __('Permission Denied!'));
+
+
+        $payment = RealestatePayment::find($id);
+        if (!$payment) {
+            return redirect()->back()->with('error', __('Payment not found!'));
         }
+
+        if ($invoice_id) {
+            $invoice = RealestateInvoice::find($invoice_id);
+
+            // Check if payment was made via cheque and update cheque status
+            if (!empty($payment->payment_type) && $payment->payment_type == 'cheque') {
+                RealestateChequeDetail::where('id', $payment->cheque_id)
+                    ->update(['status' => 'unpaid']);
+            }
+
+            // Update bank account balance before deleting the payment
+            $this->updateBankAccountBalance($payment->bank_account_id, $payment->amount, 'withdrawal', $invoice_id);
+
+
+            // **Delete the payment first**
+            $payment->delete();
+
+            // **Now update invoice status after deletion**
+            if ($invoice->getInvoiceDueAmount() <= 0) {
+                $status = 'paid';
+            } elseif ($invoice->getInvoiceDueAmount() == $invoice->getInvoiceSubTotalAmount()) {
+                $status = 'open';
+            } else {
+                $status = 'partial_paid';
+            }
+
+            RealestateInvoice::statusChange($invoice->id, $status);
+        } else {
+            // Update bank balance for non-invoice payments
+            $this->updateBankAccountBalance($payment->bank_account_id, $payment->amount, 'withdrawal', 'others');
+
+            // **Delete the payment**
+            $payment->delete();
+        }
+
+        return redirect()->back()->with('success', __('Invoice payment successfully deleted.'));
     }
-    
 }

@@ -182,13 +182,13 @@
                                         <a href="{{ route('company.finance.realestate.invoice.choose') }}"
                                             class="dash-link">{{ __('Invoices') }}</a>
                                     </li>
-                                    <li class="dash-item {{ Request::routeIs('company.finance.realestate.invoice.payments.*') ? 'active' : '' }}">
+                                    <li class="dash-item {{ Request::routeIs('company.finance.realestate.invoice.payments.*','company.finance.realestate.other.payments.*') ? 'active' : '' }}">
                                         <a href="{{ route('company.finance.realestate.payments.choose') }}" class="dash-link">
                                             {{ __('Payments Receivable') }}
                                         </a>
                                     </li>
-                                    <li class="dash-item {{ Request::routeIs('company.finance.realestate.invoice.payments.*') ? 'active' : '' }}">
-                                        <a href="{{ route('company.finance.realestate.payments.choose') }}" class="dash-link">
+                                    <li class="dash-item {{ Request::routeIs('company.finance.realestate.payments.payables.*') ? 'active' : '' }}">
+                                        <a href="{{ route('company.finance.realestate.payments.payables.index') }}" class="dash-link">
                                             {{ __('Payments Payables') }}
                                         </a>
                                     </li>

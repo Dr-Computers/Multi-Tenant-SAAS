@@ -319,26 +319,26 @@
                 });
             });
             $('#invoice_list').on('change', function() {
-            var invoiceId = $(this).val(); // Get the selected invoice ID
+                var invoiceId = $(this).val(); // Get the selected invoice ID
 
-            if (invoiceId) {
-                $.ajax({
-                    url: '{{ route('company.finance.realestate.invoice.due.amount') }}',
-                    method: 'POST',
-                    data: {
-                        invoice_id: invoiceId,
-                        _token: '{{ csrf_token() }}' // Include CSRF token
-                    },
-                    success: function(response) {
-                        // Store the due amount for further validation
-                        $('#amount').val(response.due_amount);
-                    },
-                    error: function(xhr) {
-                        console.error(xhr.responseText);
-                    }
-                });
-            }
-        });
+                if (invoiceId) {
+                    $.ajax({
+                        url: '{{ route('company.finance.realestate.invoice.due.amount') }}',
+                        method: 'POST',
+                        data: {
+                            invoice_id: invoiceId,
+                            _token: '{{ csrf_token() }}' // Include CSRF token
+                        },
+                        success: function(response) {
+                            // Store the due amount for further validation
+                            $('#amount').val(response.due_amount);
+                        },
+                        error: function(xhr) {
+                            console.error(xhr.responseText);
+                        }
+                    });
+                }
+            });
         });
     </script>
 @endpush

@@ -17,7 +17,7 @@ class Payment extends Model
         'reference',
         'created_by',
     ];
-
+   
     public function category()
     {
         return $this->hasOne('App\Models\ProductServiceCategory', 'id', 'category_id');

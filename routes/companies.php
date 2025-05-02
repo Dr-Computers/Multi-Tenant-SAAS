@@ -6,6 +6,7 @@ use App\Http\Controllers\Company\Realestate\OtherInvoiceController;
 use App\Http\Controllers\Company\Realestate\PropertyController;
 use App\Http\Controllers\Company\BankAccountController;
 use App\Http\Controllers\Company\Realestate\PaymentController;
+use App\Http\Controllers\Company\Realestate\PaymentPayableController;
 use Illuminate\Support\Facades\Route;
 
 Route::group(
@@ -120,6 +121,10 @@ Route::group(
                 Route::get('/other-payments/{payment}/edit', [PaymentController::class, 'otherEdit'])->name('other.payments.edit');
                 Route::delete('/other-payments/{payment}', [PaymentController::class, 'otherDestroy'])->name('other.payments.destroy');
                 Route::get('other-payments/tenant/{pid}/invoice', [PaymentController::class,'getInvoices'])->name('tenant.invoices');
+         
+                //Payments Payable
+                Route::resource('/payments/payable', PaymentPayableController::class)->names('payments.payables');
+                Route::get('user/{tid}/type', [PaymentPayableController::class,'fetchUsersByType'])->name('user.type');
             });
 
             // Bank Accounts

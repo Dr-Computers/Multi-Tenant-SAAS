@@ -129,17 +129,17 @@
                                 </div>
                             </div>
 
-                        
+
                             <div class="col-md-12 mt-4">
                                 <h6 class="text-md fw-bold text-secondary text-sm">Invoice Items</h6>
-                            <div class="repeater" data-value='{!! json_encode($invoice->types) !!}'>
-                                <div class="d-flex justify-content-between align-items-center mb-3">
-                                    <h5 class="mb-0">Invoice Types</h5>
-                                    <button type="button" class="btn btn-primary btn-sm" data-repeater-create>
-                                        <i class="ti-plus me-1"></i> Add Type
-                                    </button>
-                                </div>
-                              
+                                <div class="repeater" data-value='{!! json_encode($invoice->types) !!}'>
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <h5 class="mb-0">Invoice Types</h5>
+                                        <button type="button" class="btn btn-primary btn-sm" data-repeater-create>
+                                            <i class="ti-plus me-1"></i> Add Type
+                                        </button>
+                                    </div>
+
 
                                     <input type="hidden" name="tax_type" id="tax_type" value="included">
 
@@ -197,15 +197,16 @@
                                         </tbody>
 
                                     </table>
-                               
+
+                                </div>
                             </div>
-                        </div>
 
                         </div>
                     </div>
 
                     <div class="modal-footer m-5">
-                        <a href="{{ route('company.finance.realestate.invoices.index') }}" class="btn btn-light">Cancel</a>
+                        <a href="{{ route('company.finance.realestate.invoices.index') }}"
+                            class="btn btn-light">Cancel</a>
                         <button type="submit" class="btn btn-primary">Update Invoice</button>
                     </div>
                 </div>
