@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('invoice_settings', function (Blueprint $table) {
             $table->id();
+            $table->integer('user_id')->nullable();
             $table->string('prefix')->nullable();
             $table->integer('template')->nullable();
             $table->string('due_after')->nullable();

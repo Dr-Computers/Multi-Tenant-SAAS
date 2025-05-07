@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('letter_pad_settings', function (Blueprint $table) {
             $table->id();
-            $table->string('prefix')->nullable();
+            $table->integer('user_id')->nullable();
             $table->integer('template')->nullable();
             $table->mediumText('terms')->nullable();
             $table->timestamps();
