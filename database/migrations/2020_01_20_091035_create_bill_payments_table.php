@@ -15,7 +15,7 @@ class CreateBillPaymentsTable extends Migration
     {
         Schema::create('bill_payments', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->integer('bill_id');
+            $table->foreignId('bill_id')->constrained('bills')->onDelete('cascade');
             $table->date('date')->nullable();
             $table->decimal('amount', 15, 2)->default('0.0');
             $table->integer('account_id')->nullable();

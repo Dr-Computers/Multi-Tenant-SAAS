@@ -34,18 +34,13 @@ class User extends Authenticatable implements MustVerifyEmail
         'avatar',
         'lang',
         'delete_status',
-        'plan',
-        'plan_expire_date',
-        'storage_limit',
-        'requested_plan',
+        'parent',
         'last_login_at',
         'created_by',
         'is_disable',
         'is_enable_login',
         'trial_plan',
         'trial_expire_date',
-        'referral_code',
-        'used_referral_code',
         'is_active',
         'is_disable'
     ];
@@ -406,13 +401,7 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function countPaidCompany()
     {
-        return User::where('type', '=', 'company')->whereNotIn(
-            'plan',
-            [
-                0,
-                1,
-            ]
-        )->where('created_by', '=', Auth::user()->id)->count();
+        return User::where('type', '=', 'company')->where('created_by', '=', Auth::user()->id)->count();
     }
 
     public function countCustomers()
@@ -637,7 +626,7 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function currentPlan()
     {
-        return $this->hasOne('App\Models\Plan', 'id', 'plan');
+        return $this->hasOne(SubscriptionOrder::class, 'company_id', 'id')->where('status',1);
     }
 
     public function weeklyInvoice()

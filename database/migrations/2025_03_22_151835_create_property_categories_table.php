@@ -12,10 +12,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('property_categories', function (Blueprint $table) {
-            $table->id();
-            $table->integer('company_id')->nullable();          
+            $table->id();        
             $table->integer('category_id')->nullable(); 
-            $table->integer('property_id')->nullable(); 
+            $table->foreignId('company_id')->constrained('users')->onDelete('cascade');
+            $table->foreignId('property_id')->constrained('properties')->onDelete('cascade');  
             $table->timestamps();
         });
     }

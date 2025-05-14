@@ -1,5 +1,3 @@
-
-
 @extends('layouts.admin')
 @section('page-title')
     {{ __('Users') }}
@@ -52,13 +50,15 @@
                                             </div>
                                             @if ($ticketFirst && $ticketFirst->status == 1)
                                                 <div class="col-md-2 text-end">
-                                                    <form
-                                                        action="{{ route('admin.tickets.closed_ticket', $ticketFirst->ticket_no) }}"
-                                                        method="POST">
-                                                        @csrf
-                                                        <button type="submit" name="submit" class="btn btn-danger">Close
-                                                            Ticket</button>
-                                                    </form>
+                                                    @can('close ticket')
+                                                        <form
+                                                            action="{{ route('admin.tickets.closed_ticket', $ticketFirst->ticket_no) }}"
+                                                            method="POST">
+                                                            @csrf
+                                                            <button type="submit" name="submit" class="btn btn-danger">Close
+                                                                Ticket</button>
+                                                        </form>
+                                                    @endcan
                                                 </div>
                                             @endif
                                         </div>
@@ -162,8 +162,10 @@
                                                     </div>
                                                 </div>
                                                 <div class="col-lg-12 text-end mt-4">
-                                                    <button type="submit" name="submit"
-                                                        class="btn btn-primary">Reply</button>
+                                                    @can('reply ticket')
+                                                        <button type="submit" name="submit"
+                                                            class="btn btn-primary">Reply</button>
+                                                    @endcan
                                                 </div>
                                             </form>
                                         </div>

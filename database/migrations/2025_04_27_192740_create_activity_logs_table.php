@@ -18,8 +18,8 @@ return new class extends Migration
             $table->text('reference_url')->nullable();
             $table->text('reference_name')->nullable();
             $table->string('ip_address')->nullable();
-            $table->integer('company_id')->nullable();
-            $table->integer('user_id')->nullable();
+            $table->foreignId('company_id')->constrained('users')->onDelete('cascade');
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->mediumText('notes')->nullable();
             $table->timestamps();
         });

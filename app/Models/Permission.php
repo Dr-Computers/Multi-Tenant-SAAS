@@ -25,6 +25,8 @@ class Permission extends Model implements PermissionContract
 
     protected $guarded = [];
 
+    protected $fillable = ['section','name','guard_name','is_admin','is_company','is_owner','is_customer','is_tenant','is_agent','created_at','updated_at'];
+
     public function __construct(array $attributes = [])
     {
         $attributes['guard_name'] = $attributes['guard_name'] ?? config('auth.defaults.guard');

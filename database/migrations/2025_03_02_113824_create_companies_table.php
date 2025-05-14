@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('companies', function (Blueprint $table) {
             $table->id();
-            $table->string('user_id')->nullable();
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->string('bussiness_name')->nullable();
             $table->string('bussiness_type')->nullable();
             $table->string('address')->nullable();
@@ -27,7 +27,6 @@ return new class extends Migration
             $table->string('identify_code')->nullable();
             $table->string('plan_order_id')->nullable();
             $table->timestamps();
-            $table->string('deleted_at')->nullable();
         });
     }
 

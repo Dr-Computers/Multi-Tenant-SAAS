@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('owners', function (Blueprint $table) {
             $table->id();
-            $table->integer('user_id');
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->integer('is_tenants_approval');
             $table->timestamps();
         });

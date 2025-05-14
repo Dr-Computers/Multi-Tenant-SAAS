@@ -15,6 +15,7 @@ class CreateProductServicesTable extends Migration
     {
         Schema::create('product_services', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->foreignId('company_id')->constrained('users')->onDelete('cascade');
             $table->string('name');
             $table->string('sku');
             $table->decimal('sale_price',15, 2)->default('0.0');

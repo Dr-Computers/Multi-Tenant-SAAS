@@ -25,7 +25,7 @@
 
 
 
-                @if (Gate::check('create product & service') ||
+                {{-- @if (Gate::check('create product & service') ||
                         Gate::check('create customer') ||
                         Gate::check('create vender') ||
                         Gate::check('create proposal') ||
@@ -84,7 +84,7 @@
                             </div>
                         </div>
                     </li>
-                @endif
+                @endif --}}
             </ul>
 
         </div>

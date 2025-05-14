@@ -24,6 +24,7 @@
 @endsection
 
 @section('content')
+@can('profile manage')
     <div class="row">
         <div class="col-xl-3">
             <div class="card sticky-top" style="top:30px">
@@ -174,3 +175,4 @@
             margin-left: 0 !important
         }
     </style>
+    @endcan

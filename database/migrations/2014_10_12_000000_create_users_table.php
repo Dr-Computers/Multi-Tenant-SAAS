@@ -27,15 +27,13 @@ class CreateUsersTable extends Migration
                 $table->string('lang', 100);
                 $table->string('mode', 10)->default('light');
                 $table->integer('created_by')->default(0);
-                $table->integer('plan')->nullable();
-                $table->date('plan_expire_date')->nullable();
-                $table->float('storage_limit')->default('0.00');
                 $table->integer('delete_status')->default(1);
                 $table->integer('is_active')->default(1);
-                $table->rememberToken();
                 $table->datetime('last_login_at')->nullable();
                 $table->integer('parent')->nullable();
+                $table->rememberToken();
                 $table->timestamps();
+                $table->softDeletes();
             }
         );
     }

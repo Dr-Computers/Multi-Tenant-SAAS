@@ -12,9 +12,6 @@
 @section('container')
 
     <p style="color:red;"><strong>Default Super Admin Created : superadmin@example.com / 1234</strong></p>
-    <p style="color:red;"><strong>Default Company Created : company@example.com / 1234</strong></p>
-    <p style="color:red;"><strong>Default User Created : accountant@example.com / 1234</strong></p>
-
     @if(session('message')['dbOutputLog'])
         <p><strong><small>{{ trans('installer_messages.final.migration') }}</small></strong></p>
         <pre><code>{{ session('message')['dbOutputLog'] }}</code></pre>

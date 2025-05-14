@@ -258,7 +258,7 @@
 
     <div class="offcanvas offcanvas-end" id="commonModal" tabindex="-1" aria-labelledby="exampleModalLabel">
         <div class="offcanvas-header">
-            <h5 class="offcanvas-title" id="exampleModalLabel"></h5>
+            <h5 class="offcanvas-title fw-bold " id="exampleModalLabel"></h5>
             <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
         <div class="offcanvas-body">
@@ -271,7 +271,7 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="examplePopModalLabel"></h5>
+                    <h5 class="modal-title fw-bold " id="examplePopModalLabel"></h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="body">
@@ -284,7 +284,7 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel"></h5>
+                    <h5 class="modal-title fw-bold " id="exampleModalLabel"></h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">

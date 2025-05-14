@@ -16,7 +16,7 @@ class CreateInvoiceProductsTable extends Migration
         Schema::create(
             'invoice_products', function (Blueprint $table){
             $table->bigIncrements('id');
-            $table->integer('invoice_id');
+            $table->foreignId('invoice_id')->constrained('invoices')->onDelete('cascade');
             $table->integer('product_id');
             $table->decimal('quantity', 15, 2)->default('0.00');
             $table->decimal('tax', 15, 2)->default('0.00');

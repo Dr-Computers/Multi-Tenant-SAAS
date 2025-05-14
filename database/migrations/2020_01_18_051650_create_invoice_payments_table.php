@@ -16,7 +16,7 @@ class CreateInvoicePaymentsTable extends Migration
         Schema::create(
             'invoice_payments', function (Blueprint $table){
             $table->bigIncrements('id');
-            $table->integer('invoice_id');
+            $table->foreignId('invoice_id')->constrained('invoices')->onDelete('cascade');
             $table->date('date');
             $table->decimal('amount', 15, 2)->default('0.0');
             $table->integer('account_id');

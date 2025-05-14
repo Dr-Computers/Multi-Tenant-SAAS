@@ -213,7 +213,7 @@
                     <label for="database_password">
                         {{ trans('installer_messages.environment.wizard.form.db_password_label') }}
                     </label>
-                    <input type="password" name="database_password" id="database_password" value="" placeholder="{{ trans('installer_messages.environment.wizard.form.db_password_placeholder') }}" />
+                    <input type="password" autocomplete="new-password" name="database_password" id="database_password" value="" placeholder="{{ trans('installer_messages.environment.wizard.form.db_password_placeholder') }}" />
                     @if ($errors->has('database_password'))
                         <span class="error-block">
                             <i class="fa fa-fw fa-exclamation-triangle" aria-hidden="true"></i>

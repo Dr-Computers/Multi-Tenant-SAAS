@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create('realestate_payments', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('property_id')->nullable();
+            $table->foreignId('property_id')->constrained('properties')->onDelete('cascade');
             $table->string('type')->nullable();
-            $table->integer('invoice_id')->nullable();
+            $table->foreignId('invoice_id')->constrained('realestate_invoices')->onDelete('cascade');
             $table->string('transaction_id')->nullable();
             $table->string('payment_type')->nullable();
             $table->string('payment_for')->nullable();

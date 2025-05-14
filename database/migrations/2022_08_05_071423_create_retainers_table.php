@@ -16,7 +16,7 @@ class CreateRetainersTable extends Migration
         Schema::create('retainers', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->unsignedBigInteger('retainer_id');
-            $table->unsignedBigInteger('customer_id');
+            $table->foreignId('customer_id')->constrained('users')->onDelete('cascade');
             $table->date('issue_date');
             $table->date('due_date')->nullable();
             $table->date('send_date')->nullable();

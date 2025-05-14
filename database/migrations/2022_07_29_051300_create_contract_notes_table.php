@@ -15,7 +15,7 @@ class CreateContractNotesTable extends Migration
     {
         Schema::create('contract_notes', function (Blueprint $table) {
             $table->id();
-            $table->Integer('contract_id');
+            $table->foreignId('contract_id')->constrained('contracts')->onDelete('cascade');
             $table->longText('note');
             $table->string('type')->nullable();
             $table->integer('created_by');

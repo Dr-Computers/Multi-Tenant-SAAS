@@ -9,4 +9,8 @@ class Section extends Model
 {
     use HasFactory;
 
+    public function addedSections(){
+        return $this->hasOne(CompanySubscription::class,'section_id','id');
+    }
+
 }

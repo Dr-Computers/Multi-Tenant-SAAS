@@ -16,6 +16,7 @@ class CreateContractsTable extends Migration
         Schema::create(
             'contracts', function (Blueprint $table){
             $table->id();
+            $table->foreignId('company_id')->constrained('users')->onDelete('cascade');
             $table->integer('customer')->default(0);
             $table->string('subject')->nullable();
             $table->decimal('value', 15, 2)->default(0.00);

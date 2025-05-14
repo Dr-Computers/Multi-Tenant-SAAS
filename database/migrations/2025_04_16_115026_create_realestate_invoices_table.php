@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('realestate_invoices', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('company_id')->constrained('users')->onDelete('cascade');
             $table->integer('invoice_id')->default(0);
             $table->integer('property_id')->default(0);
             $table->integer('unit_id')->default(0);
@@ -26,7 +27,6 @@ return new class extends Migration
             $table->date('invoice_period_end_date')->nullable();
             $table->string('created_in_month')->nullable();
             $table->foreignId('tenant_id')->nullable()->constrained('users')->onDelete('set null');
-
             $table->enum('invoice_type', ['property_invoice', 'other'])->default('property_invoice');
         });
     }

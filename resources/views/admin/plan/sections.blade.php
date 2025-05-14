@@ -21,37 +21,40 @@
             <div class="card">
                 <div class="card-body table-border-style">
                     <div class="table-responsive">
-                        <table class="table datatable">
-                            <thead>
-                                <tr>
-                                    <th>{{ __('#') }}</th>
-                                    <th>{{ __('Category') }}</th>
-                                    <th>{{ __('Name') }}</th>
-                                    <th>{{ __('Price') }}</th>
-                                    <th class="text-center">{{ __('Action') }}</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach ($sections as $key => $section)
+                        @can('section listing')
+                            <table class="table datatable">
+                                <thead>
                                     <tr>
-                                        <td>{{ $key + 1 }}</td>
-                                        <td>{{ $section->category }}</td>
-                                        <td>{{ $section->name }}</td>
-                                        <td>{{ $section->price . ' ' . $currency_symbol }}</td>
-                                        <td class="text-center">
-                                            <a href="#!" data-size="md"
-                                                data-url="{{ route('admin.plans.section-edit', $section->id) }}"
-                                                data-ajax-popup="true" class="dropdown-item"
-                                                data-bs-original-title="{{ __('Edit') }}">
-                                                <i class="ti ti-pencil"></i>
-                                                <span>{{ __('Edit') }}</span>
-                                            </a>
-
-                                        </td>
+                                        <th>{{ __('#') }}</th>
+                                        <th>{{ __('Category') }}</th>
+                                        <th>{{ __('Name') }}</th>
+                                        <th>{{ __('Price') }}</th>
+                                        <th class="text-center">{{ __('Action') }}</th>
                                     </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody>
+                                    @foreach ($sections as $key => $section)
+                                        <tr>
+                                            <td>{{ $key + 1 }}</td>
+                                            <td>{{ $section->category }}</td>
+                                            <td>{{ $section->name }}</td>
+                                            <td>{{ $section->price . ' ' . $currency_symbol }}</td>
+                                            <td class="text-center">
+                                                @can('edit section')
+                                                    <a href="#!" data-size="md" 
+                                                        data-url="{{ route('admin.plans.section-edit', $section->id) }}"
+                                                        data-ajax-popup="true" class="btn-sm btn btn-info"
+                                                        data-bs-original-title="{{ __('Edit Section') }}">
+                                                        <i class="ti ti-pencil"></i>
+                                                        <span>{{ __('Edit') }}</span>
+                                                    </a>
+                                                @endcan
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        @endcan
                     </div>
                 </div>
             </div>

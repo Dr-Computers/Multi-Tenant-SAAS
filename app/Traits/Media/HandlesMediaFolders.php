@@ -11,6 +11,9 @@ use Illuminate\Support\Facades\Storage;
 
 trait HandlesMediaFolders
 {
+
+
+
     // public function CreateFolder($companyId, $FolderName = null)
     // {
     //     $storageDisk = config('filesystems.default');

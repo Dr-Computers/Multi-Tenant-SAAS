@@ -7,69 +7,74 @@ use App\Models\NotificationTemplates;
 use App\Models\Utility;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 
 class NotificationTemplatesController extends Controller
 {
 
     public function index($id = null, $lang = 'en')
     {
-        $usr = \Auth::user();
+        if (Auth::user()->can('edit email template')) {
+            $usr = \Auth::user();
 
-  
+
             $notification_templates = NotificationTemplates::all();
 
             return view('admin.notification_templates.index', compact('notification_templates'));
-       
+        } else {
+            return redirect()->back()->with('error', __('Permission Denied.'));
+        }
     }
 
-    public function update(Request $request,$id)
+    public function update(Request $request, $id)
     {
-        $validator = \Validator::make(
-            $request->all(), [
-                                'content' => 'required',
-                            ]
-        );
+        if (Auth::user()->can('edit email template')) {
+            $validator = \Validator::make(
+                $request->all(),
+                [
+                    'content' => 'required',
+                ]
+            );
 
-        if($validator->fails())
-        {
-            $messages = $validator->getMessageBag();
+            if ($validator->fails()) {
+                $messages = $validator->getMessageBag();
 
-            return redirect()->back()->with('error', $messages->first());
+                return redirect()->back()->with('error', $messages->first());
+            }
+
+            $NotiLangTemplate = NotificationTemplateLangs::where('parent_id', '=', $id)->where('lang', '=', $request->lang)->where('created_by', '=', \Auth::user()->creatorId())->first();
+
+            // if record not found then create new record else update it.
+            if (empty($NotiLangTemplate)) {
+                $variables = NotificationTemplateLangs::where('parent_id', '=', $id)->where('lang', '=', $request->lang)->first()->variables;
+
+                $NotiLangTemplate            = new NotificationTemplateLangs();
+                $NotiLangTemplate->parent_id = $id;
+                $NotiLangTemplate->lang      = $request['lang'];
+                $NotiLangTemplate->content   = $request['content'];
+                $NotiLangTemplate->variables = $variables;
+                $NotiLangTemplate->created_by = \Auth::user()->creatorId();
+                $NotiLangTemplate->save();
+            } else {
+                $NotiLangTemplate->content = $request['content'];
+                $NotiLangTemplate->save();
+            }
+
+            return redirect()->route(
+                'manage.notification.language',
+                [
+                    $id,
+                    $request->lang,
+                ]
+            )->with('success', __('Notification Template successfully updated.'));
+        } else {
+            return redirect()->back()->with('error', __('Permission Denied.'));
         }
-
-        $NotiLangTemplate = NotificationTemplateLangs::where('parent_id', '=', $id)->where('lang', '=', $request->lang)->where('created_by', '=', \Auth::user()->creatorId())->first();
-
-        // if record not found then create new record else update it.
-        if(empty($NotiLangTemplate))
-        {
-            $variables = NotificationTemplateLangs::where('parent_id', '=', $id)->where('lang', '=', $request->lang)->first()->variables;
-
-            $NotiLangTemplate            = new NotificationTemplateLangs();
-            $NotiLangTemplate->parent_id = $id;
-            $NotiLangTemplate->lang      = $request['lang'];
-            $NotiLangTemplate->content   = $request['content'];
-            $NotiLangTemplate->variables = $variables;
-            $NotiLangTemplate->created_by = \Auth::user()->creatorId();
-            $NotiLangTemplate->save();
-        }
-        else
-        {
-            $NotiLangTemplate->content = $request['content'];
-            $NotiLangTemplate->save();
-        }
-
-        return redirect()->route(
-            'manage.notification.language',
-            [
-                $id,
-                $request->lang,
-            ]
-        )->with('success', __('Notification Template successfully updated.'));
     }
 
     public function manageNotificationLang($id = null, $lang = 'en')
     {
-        if (\Auth::user()->type == 'company') {
+        if (Auth::user()->can('edit email template')) {
             if ($id != null) {
                 $notification_template     = NotificationTemplates::where('id', $id)->first();
             } else {

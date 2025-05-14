@@ -13,7 +13,8 @@ return new class extends Migration
     {
         Schema::create('property_units', function (Blueprint $table) {
             $table->id();
-            $table->integer('property_id')->nullable();      
+            $table->foreignId('company_id')->constrained('users')->onDelete('cascade');
+            $table->foreignId('property_id')->constrained('properties')->onDelete('cascade'); 
             $table->string('name')->nullable();      
             $table->integer('kitchen')->nullable(); 
             $table->integer('bed_rooms')->nullable(); 

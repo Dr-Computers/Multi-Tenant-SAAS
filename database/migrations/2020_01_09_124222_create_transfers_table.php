@@ -16,6 +16,7 @@ class CreateTransfersTable extends Migration
         Schema::create(
             'transfers', function (Blueprint $table){
             $table->bigIncrements('id');
+            $table->foreignId('company_id')->constrained('users')->onDelete('cascade');
             $table->integer('from_account')->default('0');
             $table->integer('to_account')->default('0');
             $table->decimal('amount', 15, 2)->default('0.0');

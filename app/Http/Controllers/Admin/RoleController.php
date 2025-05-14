@@ -15,7 +15,7 @@ class RoleController extends Controller
 {
     public function index()
     {
-        if(Auth::user()->can('manage role'))
+        if(Auth::user()->can('role listing'))
         {
             $roles = Role::where('created_by', '=', Auth::user()->creatorId())->get();
             return view('admin.role.index')->with('roles', $roles);
@@ -31,8 +31,7 @@ class RoleController extends Controller
     {
         if(Auth::user()->can('create role'))
         {
-            $user = Auth::user();
-            $permissions = Permission::where('ac_type','Admin')->get();
+            $permissions = Permission::where('is_admin',1)->get();
     
             return view('admin.role.form', ['permissions' => $permissions]);
         }
@@ -89,7 +88,7 @@ class RoleController extends Controller
         {
 
             $user = Auth::user();
-            $permissions = Permission::where('ac_type','Admin')->get();
+            $permissions = Permission::where('is_admin',1)->get();
             return view('admin.role.form', compact('role', 'permissions'));
         }
         else
@@ -121,14 +120,14 @@ class RoleController extends Controller
             $permissions = $request['permissions'];
             $role->fill($input)->save();
 
-            $p_all = Permission::all();
+            $p_all = Permission::where('is_admin',1)->get();
 
-            foreach($p_all as $p)
+            foreach($p_all ?? [] as $p)
             {
                 $role->revokePermissionTo($p);
             }
 
-            foreach($permissions as $permission)
+            foreach($permissions ?? [] as $permission)
             {
                 $p = Permission::where('id', '=', $permission)->firstOrFail();
                 $role->givePermissionTo($p);
@@ -146,7 +145,7 @@ class RoleController extends Controller
 
     public function destroy(Role $role)
     {
-        if(Auth::user()->can('delete role'))
+        if(Auth::user()->can('delete role '))
         {
             $role->delete();
 
@@ -158,7 +157,5 @@ class RoleController extends Controller
         {
             return redirect()->back()->with('error', 'Permission denied.');
         }
-
-
     }
 }

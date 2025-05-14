@@ -15,6 +15,8 @@ return new class extends Migration
             $table->id();
             $table->string('category');
             $table->string('name');
+            $table->string('price');
+            $table->string('duration')->nullable();
             $table->timestamps();
         });
     }

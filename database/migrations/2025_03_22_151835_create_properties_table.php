@@ -13,7 +13,8 @@ return new class extends Migration
     {
         Schema::create('properties', function (Blueprint $table) {
             $table->id();
-            $table->integer('company_id')->nullable(); 
+            $table->foreignId('company_id')->constrained('users')->onDelete('cascade');
+            $table->foreignId('owner_id')->constrained('users')->onDelete('cascade');
             $table->string('name')->nullable();      
             $table->string('purpose_type')->nullable(); 
             $table->string('ownership')->nullable(); 

@@ -17,8 +17,8 @@ return new class extends Migration
             $table->string('ticket_no', 50); 
             $table->text('subject'); 
             $table->text('body'); 
-            $table->unsignedBigInteger('company_id');
-            $table->unsignedBigInteger('user_id'); 
+            $table->foreignId('company_id')->constrained('users')->onDelete('cascade');
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->tinyInteger('status')->default(1); 
             $table->enum('to', ['admin', 'company'])->nullable();
             $table->dateTime('read_at')->nullable();

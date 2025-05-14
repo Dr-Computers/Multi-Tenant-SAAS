@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('realestate_leases', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('company_id')->constrained('users')->onDelete('cascade');
             $table->unsignedBigInteger('tenant_id'); // FK to tenants
             $table->string('property');
             $table->string('unit');

@@ -12,11 +12,11 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('property_custom_fields', function (Blueprint $table) {
-            $table->id();
-            $table->integer('company_id')->nullable();    
+            $table->id();  
             $table->string('field_name')->nullable(); 
             $table->mediumText('field_value')->nullable(); 
-            $table->integer('property_id')->nullable(); 
+            $table->foreignId('company_id')->constrained('users')->onDelete('cascade');
+            $table->foreignId('property_id')->constrained('properties')->onDelete('cascade');
             $table->timestamps();
         });
     }

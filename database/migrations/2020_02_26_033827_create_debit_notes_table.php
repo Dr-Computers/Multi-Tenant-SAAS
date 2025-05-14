@@ -16,7 +16,7 @@ class CreateDebitNotesTable extends Migration
         Schema::create('debit_notes', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->integer('bill')->default('0');
-            $table->integer('vendor')->default('0');
+            $table->foreignId('vendor')->constrained('users')->onDelete('cascade');
             $table->decimal('amount', 15, 2)->default('0.0');
             $table->date('date');
             $table->text('description')->nullable();

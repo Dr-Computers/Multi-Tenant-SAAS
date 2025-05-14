@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create('contract_templates', function (Blueprint $table) {
             $table->id();
+            $table->string('name')->nullable();
             $table->string('image')->nullable();
-            $table->longText('header')->nullable();
-            $table->longText('footer')->nullable();
+            $table->string('file_path')->nullable();
             $table->timestamps();
         });
     }

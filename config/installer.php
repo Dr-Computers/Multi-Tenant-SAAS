@@ -46,7 +46,7 @@ return [
         'storage/' => '777',
         'storage/framework/' => '777',
         'storage/logs/' => '777',
-        'storage/uploads/' => '777',
+        'storage/app/public/uploads/' => '777',
         'bootstrap/cache/' => '777',
         'resources/lang/' => '777',
     ],

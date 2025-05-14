@@ -17,7 +17,8 @@ class CreateProposalsTable extends Migration
             'proposals', function (Blueprint $table){
             $table->bigIncrements('id');
             $table->unsignedBigInteger('proposal_id');
-            $table->unsignedBigInteger('customer_id');
+            $table->foreignId('customer_id')->constrained('users')->onDelete('cascade');
+            $table->foreignId('company_id')->constrained('users')->onDelete('cascade');
             $table->date('issue_date');
             $table->date('send_date')->nullable();
             $table->integer('category_id');

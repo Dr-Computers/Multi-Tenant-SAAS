@@ -23,6 +23,7 @@ class CreateChartOfAccountsTable extends Migration
             $table->integer('is_enabled')->default(1);
             $table->text('description')->nullable();
             $table->integer('created_by')->default(0);
+            $table->foreignId('company_id')->constrained('users')->onDelete('cascade');
             $table->timestamps();
         }
         );

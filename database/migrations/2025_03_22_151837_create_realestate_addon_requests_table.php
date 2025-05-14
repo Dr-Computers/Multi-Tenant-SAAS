@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('realestate_addon_requests', function (Blueprint $table) {
             $table->id();
-            $table->integer('company_id')->nullable();
+            $table->foreignId('company_id')->constrained('users')->onDelete('cascade');
             $table->string('requesting_type')->nullable();
             $table->string('request_for')->nullable();
             $table->string('verified_by')->nullable();

@@ -26,16 +26,34 @@ Route::group(
 
         Route::resource('users', 'UserController')->names('users');
         Route::resource('roles', 'RoleController')->names('roles');
+
+        Route::get('/permissions', 'PermissionController@index')->name('permissions.index');
+        Route::get('/permissions/create', 'PermissionController@create')->name('permissions.create');
+        Route::put('/permissions/{id}', 'PermissionController@update')->name('permissions.update');
+
+        Route::post('/permissions-upload', 'PermissionController@upload')->name('permissions.upload');
+
         Route::any('company-reset-password/{id}', 'CompanyController@userPassword')->name('company.reset');
         Route::post('company-reset-password/{id}', 'CompanyController@userPasswordReset')->name('company.password.update');
         Route::post('company-unable', 'CompanyController@UserUnable')->name('company.unable');
+
+        Route::get('company/addon-features/{id}', 'CompanyController@addonFeatures')->name('company.addon-features');
+        Route::post('company/addon-features/{id}', 'CompanyController@addonFeaturesStore')->name('company.addon-features.store');
+
+        Route::post('company/existing-features/{id}', 'CompanyController@existingFeaturesStore')->name('company.existing-features.update');
+
+        Route::delete('company/existing-feature-remove/{company_id}/{id}', 'CompanyController@existingFeaturesRemove')->name('company.existing-features.update');
+
+
+        Route::post('company/coupon-validate', 'CompanyController@validateCoupon')->name('company.coupon.validate');
 
         Route::get('company-login/{id}', 'CompanyController@LoginWithCompany')->name('company.login');
         Route::get('company-login-activty/{id}', 'CompanyController@LoginManage')->name('company.login_fn');
 
         Route::get('login-with-company/exit', 'CompanyController@ExitCompany')->name('exit.company');
         Route::get('company-info/{id}', 'CompanyController@CompnayInfo')->name('company.info');
-        Route::get('company/{id}/plan', 'CompanyController@upgradePlan')->name('plan.upgrade');
+        Route::get('company/{id}/plan', 'CompanyController@upgradePlan')->name('company.plan.upgrade');
+        Route::post('company/{company_id}/plan/{id}', 'CompanyController@upgradePlanStore')->name('company.plan.upgrade.store');
         Route::get('company/{id}/plan/{pid}', 'CompanyController@activePlan')->name('plan.active');
         Route::resource('company', 'CompanyController')->names('company');
 
@@ -58,6 +76,9 @@ Route::group(
         Route::post('cookie-setting', 'SystemController@saveCookieSettings')->name('cookie.setting');
         Route::post('chatgptkey', 'SystemController@chatgptkey')->name('settings.chatgptkey');
         Route::post('reset-permissions', 'SystemController@resetPermissions')->name('settings.reset-permissions');
+
+        Route::post('invoice/template/settings/store', 'SystemController@invoiceTemplateStore')->name('invoice.template.settings.store');
+        Route::post('letter-pad/template/settings/store', 'SystemController@letterPadTemplateStore')->name('letter-pad.template.settings.store');
 
 
         Route::post('test', 'SystemController@testMail')->name('test.mail');
@@ -84,7 +105,15 @@ Route::group(
         Route::get('plan_request', 'PlanRequestController@index')->name('plan_request.index');
 
         Route::get('order', 'OrderController@index')->name('order.index');
+        Route::get('order/send-email/{order}', 'OrderController@sendEmail')->name('order.send.email');
+        Route::post('order/send-email/{order}', 'OrderController@sendEmailProcess')->name('order.send-email.process');
+        Route::get('order/download/invoice/{order}', 'OrderController@downloadInvoice')->name('order.download.invoice');
+        Route::get('order/make/payment/{order}', 'OrderController@makePayment')->name('order.make.payment');
+        Route::get('order/mark-as-payment/{order}', 'OrderController@markAsPayment')->name('order.mark.as.payment');
+        Route::delete('order/{id}/destroy', 'OrderController@destroy')->name('order.destroy');
+
         Route::get('/refund/{id}/{user_id}', 'OrderController@refund')->name('order.refund');
+
         Route::get('/stripe/{code}', 'OrderController@stripe')->name('stripe');
         Route::post('/stripe', 'OrderController@stripePost')->name('stripe.post');
 
@@ -105,6 +134,9 @@ Route::group(
         Route::post('email_template_status', 'EmailTemplateController@updateStatus')->name('status.email.language');
 
         Route::resource('email_template', 'EmailTemplateController');
+        Route::resource('templates/invoice', 'InvoiceTemplateController')->names('templates.invoices');
+        Route::resource('templates/letter-pad', 'letterPadTemplateController')->names('templates.letter-pads');
+        Route::resource('templates/estimate', 'EstimateTemplateController')->names('templates.estimates');
 
 
         Route::group([
@@ -112,9 +144,29 @@ Route::group(
             'as' => 'realestate.',
             'namespace' => 'Realestate',
         ], function () {
+
+            Route::get('categories/requests', 'CategoryController@requestsList')->name('categories.requests');
+            Route::get('categories/requests-single/{id}', 'CategoryController@requestsSingle')->name('categories.request-single');
+            Route::post('categories/requests-accept/{id}', 'CategoryController@requestsAccept')->name('categories.request-accept');
+            Route::post('categories/requests-reject/{id}', 'CategoryController@requestsReject')->name('categories.request-reject');
             Route::resource('categories', 'CategoryController')->names('categories');
+
+            Route::get('amenities/requests', 'AmenityController@requestsList')->name('amenities.requests');
+            Route::get('amenities/requests-single/{id}', 'AmenityController@requestsSingle')->name('amenities.request-single');
+            Route::post('amenities/requests-accept/{id}', 'AmenityController@requestsAccept')->name('amenities.request-accept');
+            Route::post('amenities/requests-reject/{id}', 'AmenityController@requestsReject')->name('amenities.request-reject');
             Route::resource('amenities', 'AmenityController')->names('amenities');
+
+            Route::get('furnishings/requests', 'FurnishingController@requestsList')->name('furnishings.requests');
+            Route::get('furnishings/requests-single/{id}', 'FurnishingController@requestsSingle')->name('furnishings.request-single');
+            Route::post('furnishings/requests-accept/{id}', 'FurnishingController@requestsAccept')->name('furnishings.request-accept');
+            Route::post('furnishings/requests-reject/{id}', 'FurnishingController@requestsReject')->name('furnishings.request-reject');
             Route::resource('furnishings', 'FurnishingController')->names('furnishings');
+
+            Route::get('landmarks/requests', 'LandmarkController@requestsList')->name('landmarks.requests');
+            Route::get('landmarks/requests-single/{id}', 'LandmarkController@requestsSingle')->name('landmarks.request-single');
+            Route::post('landmarks/requests-accept/{id}', 'LandmarkController@requestsAccept')->name('landmarks.request-accept');
+            Route::post('landmarks/requests-reject/{id}', 'LandmarkController@requestsReject')->name('landmarks.request-reject');
             Route::resource('landmarks', 'LandmarkController')->names('landmarks');
         });
 

@@ -8,4 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 class LetterPadTemplate extends Model
 {
     use HasFactory;
+    protected $fillable = ['name', 'header', 'footer', 'image'];
+
 }

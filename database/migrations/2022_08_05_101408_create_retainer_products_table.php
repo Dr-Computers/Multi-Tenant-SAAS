@@ -15,7 +15,7 @@ class CreateRetainerProductsTable extends Migration
     {
         Schema::create('retainer_products', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->integer('retainer_id');
+            $table->foreignId('retainer_id')->constrained('retainers')->onDelete('cascade');
             $table->integer('product_id');
             $table->decimal('quantity', 15, 2)->default('0.00');
             $table->decimal('tax', 15, 2)->default('0.00');

@@ -15,6 +15,7 @@ class CreateRevenuesTable extends Migration
     {
         Schema::create('revenues', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->foreignId('company_id')->constrained('users')->onDelete('cascade');
             $table->date('date');
             $table->decimal('amount', 15, 2)->default('0.0');
             $table->integer('account_id')->nullable();

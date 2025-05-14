@@ -15,7 +15,7 @@ class CreateRetainerPaymentsTable extends Migration
     {
         Schema::create('retainer_payments', function (Blueprint $table) {
             $table->id();
-            $table->integer('retainer_id');
+            $table->foreignId('retainer_id')->constrained('retainers')->onDelete('cascade');
             $table->date('date');
             $table->decimal('amount', 15, 2)->default('0.00');
             $table->integer('account_id');

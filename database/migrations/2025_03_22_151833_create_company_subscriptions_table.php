@@ -13,9 +13,12 @@ return new class extends Migration
     {
         Schema::create('company_subscriptions', function (Blueprint $table) {
             $table->id();
-            $table->string('order_id');
-            $table->string('secrion_id');
+            $table->foreignId('company_id')->constrained('users')->onDelete('cascade');
+            $table->string('plan_id')->nullable();
+            $table->string('order_id')->nullable();
+            $table->string('section_id');
             $table->string('section_validity');
+            $table->tinyInteger('status')->default(0);
             $table->timestamps();
         });
     }

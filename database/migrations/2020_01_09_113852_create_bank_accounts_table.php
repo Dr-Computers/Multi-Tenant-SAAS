@@ -17,6 +17,7 @@ class CreateBankAccountsTable extends Migration
             'bank_accounts',
             function (Blueprint $table) {
                 $table->bigIncrements('id');
+                $table->foreignId('company_id')->constrained('users')->onDelete('cascade');
                 $table->string('holder_name');
                 $table->string('bank_name');
                 $table->string('account_number');

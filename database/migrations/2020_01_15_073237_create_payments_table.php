@@ -18,7 +18,7 @@ class CreatePaymentsTable extends Migration
             $table->date('date');
             $table->decimal('amount', 15, 2)->default('0.0');
             $table->integer('account_id')->nullable();
-            $table->integer('vender_id')->nullable();
+            $table->foreignId('vender_id')->constrained('users')->onDelete('cascade');
             $table->text('description')->nullable();
             $table->integer('category_id')->nullable();
             $table->string('recurring')->nullable();

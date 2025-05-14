@@ -15,6 +15,7 @@ class CreateBudgetsTable extends Migration
     {
         Schema::create('budgets', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('company_id')->constrained('users')->onDelete('cascade');
             $table->string('name');
             $table->string('period');
             $table->string('from')->nullable();

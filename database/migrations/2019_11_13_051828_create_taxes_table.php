@@ -19,6 +19,7 @@ class CreateTaxesTable extends Migration
             $table->text('rate');
             $table->integer('created_by');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

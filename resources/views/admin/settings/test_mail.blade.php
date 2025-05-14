@@ -1,4 +1,4 @@
-<form class="pl-3 pr-3" method="post" action="{{ route('test.send.mail') }}" id="test_email">
+<form class="pl-3 pr-3" method="post" action="{{ route('admin.test.send.mail') }}" id="test_email">
     <div class="modal-body">
     @csrf
     <div class="form-group">

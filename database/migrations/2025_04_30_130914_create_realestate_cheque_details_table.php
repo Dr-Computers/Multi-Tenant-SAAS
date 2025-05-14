@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('realestate_cheque_details', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('invoice_id');
-            $table->unsignedBigInteger('tenant_id');
+            $table->foreignId('invoice_id')->constrained('realestate_invoices')->onDelete('cascade');
+            $table->foreignId('tenant_id')->constrained('users')->onDelete('cascade');
             $table->unsignedBigInteger('lease_id')->nullable();
             $table->string('cheque_number');
             $table->date('cheque_date');

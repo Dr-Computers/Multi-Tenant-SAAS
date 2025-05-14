@@ -15,6 +15,7 @@ return new class extends Migration
     {
         Schema::create('webhooks', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('company_id')->constrained('users')->onDelete('cascade');
             $table->string('module')->nullable();
             $table->string('method')->nullable();
             $table->string('url')->nullable();

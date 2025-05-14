@@ -15,15 +15,15 @@ class CreateOrdersTable extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->foreignId('company_id')->constrained('users')->onDelete('cascade');
             $table->string('order_id',100)->unique();
-            $table->string('name',100)->nullable();
-            $table->string('email',100)->nullable();
-            $table->string('card_number',10)->nullable();
-            $table->string('card_exp_month',10)->nullable();
-            $table->string('card_exp_year',10)->nullable();
             $table->string('plan_name',100);
             $table->integer('plan_id');
             $table->dateTime('plan_expire_date')->nullable();
+            $table->decimal('subtotal', 15, 2)->default('0.0');
+            $table->decimal('tax', 15, 2)->default('0.0');
+            $table->decimal('discount', 15, 2)->default('0.0');
+            $table->string('coupon_code')->nullable();
             $table->decimal('price', 15, 2)->default('0.0');
             $table->string('price_currency',10);
             $table->string('txn_id',100);

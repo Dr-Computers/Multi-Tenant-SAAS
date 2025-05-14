@@ -285,10 +285,6 @@ $flag = !empty($setting['color_flag']) ? $setting['color_flag'] : 'false';
                             class="list-group-item list-group-item-action border-0">{{ __('Company Settings') }}
                             <div class="float-end"><i class="ti ti-chevron-right"></i></div>
                         </a>
-                        <a href="#useradd-12"
-                            class="list-group-item list-group-item-action border-0">{{ __('Email Settings') }}
-                            <div class="float-end "><i class="ti ti-chevron-right"></i></div>
-                        </a>
                         <a href="#useradd-4"
                             class="list-group-item list-group-item-action border-0">{{ __('Proposal Print Settings') }}
                             <div class="float-end"><i class="ti ti-chevron-right"></i></div>
@@ -307,10 +303,6 @@ $flag = !empty($setting['color_flag']) ? $setting['color_flag'] : 'false';
                         </a>
                         <a href="#useradd-7"
                             class="list-group-item list-group-item-action border-0">{{ __('Payment Settings') }}
-                            <div class="float-end "><i class="ti ti-chevron-right"></i></div>
-                        </a>
-                        <a href="#useradd-8"
-                            class="list-group-item list-group-item-action border-0">{{ __('Twilio Settings') }}
                             <div class="float-end "><i class="ti ti-chevron-right"></i></div>
                         </a>
                         <a href="#useradd-9"

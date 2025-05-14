@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\CompanySubscription;
 use App\Models\Coupon;
 use App\Models\Customer;
 use App\Models\Invoice;
@@ -11,6 +12,7 @@ use App\Models\RetainerPayment;
 use App\Models\InvoicePayment;
 use App\Models\Order;
 use App\Models\Plan;
+use App\Models\SubscriptionOrder;
 use App\Models\Transaction;
 use App\Models\User;
 use App\Models\UserCoupon;
@@ -24,19 +26,24 @@ use Stripe;
 
 class OrderController extends Controller
 {
+
+    use \App\Emails;
+
     public $stripe_secret;
     public $settings;
     public $currancy;
 
     public function index()
     {
-        $objUser = \Auth::user();
+        if (Auth::user()->can('company listing')) {
 
-        if ($objUser->type == 'super admin') {
+            $objUser = \Auth::user();
+
+            // if ($objUser->type == 'super admin') {
             $orders = Order::select([
                 'orders.*',
                 'users.name as user_name',
-            ])->join('users', 'orders.user_id', '=', 'users.id')->orderBy('orders.created_at', 'DESC')->with('total_coupon_used.coupon_detail')->with(['total_coupon_used.coupon_detail'])->get();
+            ])->join('users', 'orders.company_id', '=', 'users.id')->orderBy('orders.created_at', 'DESC')->with('total_coupon_used.coupon_detail')->with(['total_coupon_used.coupon_detail'])->get();
 
             $userOrders = Order::select('*')
                 ->whereIn('id', function ($query) {
@@ -49,25 +56,77 @@ class OrderController extends Controller
 
             return view('admin.order.index', compact('orders', 'userOrders'));
         } else {
-            $orders = Order::select([
-                'orders.*',
-                'users.name as user_name',
-            ])->join('users', 'orders.user_id', '=', 'users.id')->orderBy('orders.created_at', 'DESC')->where('users.id', '=', $objUser->id)->with('total_coupon_used.coupon_detail')->with(['total_coupon_used.coupon_detail'])->get();
-
-            return view('admin.order.index', compact('orders'));
+            return redirect()->back()->with('error', 'Permission denied.');
         }
+
+        // } else {
+        //     $orders = Order::select([
+        //         'orders.*',
+        //         'users.name as user_name',
+        //     ])->join('users', 'orders.user_id', '=', 'users.id')->orderBy('orders.created_at', 'DESC')->where('users.id', '=', $objUser->id)->with('total_coupon_used.coupon_detail')->with(['total_coupon_used.coupon_detail'])->get();
+
+        //     return view('admin.order.index', compact('orders'));
+        // }
     }
+
+
+
+    public function sendEmail(Order $order){
+        
+        $company = $order->user;
+        return view('admin.order.send-email-form',compact('order','company'));
+    }
+
+    public function sendEmailProcess(Order $order,Request $request){
+
+        $this->sendOrderInvoice($order,$request->email);
+
+        return redirect()->back()->with('success', 'Email sent successfully.');
+    }
+    public function downloadInvoice(Request $request){
+
+    }
+    public function makePayment(Request $request){
+
+    }
+    public function markAsPayment(Request $request){
+
+    }
+
 
 
     public function refund(Request $request, $id, $user_id)
     {
-        Order::where('id', $request->id)->update(['is_refund' => 1]);
+        if (Auth::user()->can('company listing')) {
+            Order::where('id', $request->id)->update(['is_refund' => 1]);
 
-        $user = User::find($user_id);
+            // $user = User::find($user_id);
 
-        $assignPlan = $user->assignPlan(1);
+            // $assignPlan = $user->assignPlan(1);
 
-        return redirect()->back()->with('success', __('We successfully planned a refund and assigned a free plan.'));
+            return redirect()->back()->with('success', __('We successfully planned a refund and assigned a free plan.'));
+        } else {
+            return redirect()->back()->with('error', 'Permission denied.');
+        }
+    }
+
+    public function destroy($id)
+    {
+        if (Auth::user()->can('company listing')) {
+            $order =     Order::where('id', $id)->first() ?? abort(404);
+            $subOrder = SubscriptionOrder::where('order_id', $order->id)->first();
+            CompanySubscription::where('order_id', $order->id)->delete();
+            if ($subOrder->status == 1) {
+                Order::where('company_id', $subOrder->company_id)->orderBy('created_at', 'desc')->update(['status' => 1]);
+            }
+
+            $subOrder->delete();
+            $order->delete();
+
+            return redirect()->back()->with('success', __('Order Deleted Successfully'));
+        } else {
+            return redirect()->back()->with('error', 'Permission denied.');
+        }
     }
 
 
@@ -282,7 +341,7 @@ class OrderController extends Controller
                         ]
                     );
 
-                  
+
                     if ($invoice->getDue() <= 0) {
                         $invoice->status = 4;
                     } elseif (($invoice->getDue() - $payments->amount) == 0) {
@@ -341,7 +400,6 @@ class OrderController extends Controller
 
                         // 1 parameter is  URL , 2 parameter is data , 3 parameter is method
                         $status = Utility::WebhookCall($webhook['url'], $parameter, $webhook['method']);
-
                     }
 
                     if (Auth::check()) {

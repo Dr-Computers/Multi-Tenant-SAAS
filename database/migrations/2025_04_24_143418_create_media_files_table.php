@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('media_files', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('company_id');
-            $table->unsignedBigInteger('folder_id');
+            $table->foreignId('company_id')->constrained('users')->onDelete('cascade');
+            $table->foreignId('folder_id')->constrained('media_folders')->onDelete('cascade');
             $table->string('name');
             $table->string('alt')->nullable();
             $table->string('mime_type');

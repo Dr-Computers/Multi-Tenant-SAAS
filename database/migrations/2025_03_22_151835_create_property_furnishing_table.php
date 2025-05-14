@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create('property_furnishing', function (Blueprint $table) {
             $table->id();
-            $table->integer('company_id')->nullable();          
+            $table->foreignId('company_id')->constrained('users')->onDelete('cascade');
+            $table->foreignId('property_id')->constrained('properties')->onDelete('cascade');     
             $table->integer('furnishing_id')->nullable(); 
-            $table->integer('property_id')->nullable(); 
             $table->timestamps();
         });
     }

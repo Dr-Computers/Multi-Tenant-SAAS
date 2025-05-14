@@ -15,7 +15,7 @@ class CreateContractCommentsTable extends Migration
     {
         Schema::create('contract_comments', function (Blueprint $table) {
             $table->id();
-            $table->Integer('contract_id');
+            $table->foreignId('contract_id')->constrained('contracts')->onDelete('cascade');
             $table->longText('comment')->nullable();
             $table->string('type')->nullable();
             $table->integer('created_by');

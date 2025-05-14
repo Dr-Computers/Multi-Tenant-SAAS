@@ -29,176 +29,188 @@ class UserController extends Controller
     public function __construct()
     {
         $this->middleware('auth'); // Ensure user is authenticated
-        // Apply permission-based middleware for specific methods
-        $this->middleware('can:manage user')->only(['index']);
-        $this->middleware('can:create user')->only(['create', 'store']);
-        $this->middleware('can:edit user')->only(['edit', 'update']);
-        $this->middleware('can:delete user')->only(['destroy']);
     }
 
     public function index()
     {
-        $users = User::where('type', '=', 'admin-staff')->get();
-        return view('admin.user.index')->with('users', $users);
+        if (Auth::user()->can('staff user listing')) {
+            $users = User::where('type', '=', 'admin-staff')->get();
+            return view('admin.user.index')->with('users', $users);
+        } else {
+            return redirect()->back()->with('error', 'Permission denied.');
+        }
     }
 
 
     public function create()
     {
-        $customFields = CustomField::where('created_by', '=', Auth::user()->creatorId())->where('module', '=', 'user')->get();
-        $user         = Auth::user();
-        $roles  = Role::where('created_by', Auth::user()->creatorId())->get();
+        if (Auth::user()->can('create staff user')) {
+            $customFields = CustomField::where('created_by', '=', Auth::user()->creatorId())->where('module', '=', 'user')->get();
+            $user         = Auth::user();
+            $roles  = Role::where('created_by', Auth::user()->creatorId())->get();
 
-        return view('admin.user.form', compact('customFields', 'roles'));
+            return view('admin.user.form', compact('customFields', 'roles'));
+        } else {
+            return redirect()->back()->with('error', 'Permission denied.');
+        }
     }
 
     public function store(Request $request)
     {
-        $default_language = DB::table('settings')->select('value')->where('name', 'default_language')->first();
-        $userpassword               = $request->input('password');
-        $validator = Validator::make(
-            $request->all(),
-            [
-                'name' => 'required|max:120',
-                'email' => 'required|email|unique:users',
-                'mobile' => 'required|max:250',
-                'role'   => 'required',
-            ]
-        );
-
-        if ($validator->fails()) {
-            $messages = $validator->getMessageBag();
-            return redirect()->back()->with('error', $messages->first());
-        }
-
-        $enableLogin       = 0;
-        if (!empty($request->password_switch) && $request->password_switch == 'on') {
-            $enableLogin   = 1;
+        if (Auth::user()->can('create staff user')) {
+            DB::beginTransaction();
+            $default_language = DB::table('settings')->select('value')->where('name', 'default_language')->first();
+            $userpassword               = $request->input('password');
             $validator = Validator::make(
                 $request->all(),
-                ['password' => 'required|min:6']
+                [
+                    'name' => 'required|max:120',
+                    'email' => 'required|email|unique:users',
+                    'mobile' => 'required|max:250',
+                    'role'   => 'required',
+                ]
             );
 
             if ($validator->fails()) {
-                return redirect()->back()->with('error', $validator->errors()->first());
+                $messages = $validator->getMessageBag();
+                return redirect()->back()->with('error', $messages->first());
             }
+
+            $enableLogin       = 0;
+            if (!empty($request->password_switch) && $request->password_switch == 'on') {
+                $enableLogin   = 1;
+                $validator = Validator::make(
+                    $request->all(),
+                    ['password' => 'required|min:6']
+                );
+
+                if ($validator->fails()) {
+                    return redirect()->back()->with('error', $validator->errors()->first());
+                }
+            }
+
+            $user               = new User();
+            $user['name']       = $request->name;
+            $user['email']      = $request->email;
+            $user['mobile']     = $request->mobile;
+            $user['email_verified_at'] = date('Y-m-d H:i:s');
+            $psw                = $request->password;
+            $user['password'] = !empty($userpassword) ? Hash::make($userpassword) : null;
+            $user['type']       = 'admin-staff';
+            $user['lang']       = !empty($default_language) ? $default_language->value : '';
+            $user['created_by'] = Auth::user()->creatorId();
+            $user['is_enable_login'] = $enableLogin;
+            $user['parent']     = Auth::user()->creatorId();
+            $user['is_active']  = 1;
+
+            $user->save();
+
+            if ($request->hasFile('profile')) {
+                $file_id = $this->uploadAndSaveFile($request->profile, Auth::user()->creatorId(), 'avatar');
+                $user->avatar = $file_id;
+            }
+            $user->save();
+
+            $role_r = Role::findById($request->role);
+            $user->assignRole($role_r);
+
+            $uArr = [
+                'email' => $user->email,
+                'password' => $psw,
+            ];
+
+            try {
+                $resp = Utility::sendEmailTemplate('user_created', [$user->id => $user->email], $uArr);
+            } catch (\Exception $e) {
+                $smtp_error = __('E-Mail has been not sent due to SMTP configuration');
+            }
+
+            DB::commit();
+
+            return redirect()->route('admin.users.index')->with('success', __('User successfully added.') . ((isset($smtp_error)) ? '<br> <span class="text-danger">' . $smtp_error . '</span>' : ''));
+        } else {
+            DB::rollBack();
+            return redirect()->back()->with('error', 'Permission denied.');
         }
-
-        $user               = new User();
-        $user['name']       = $request->name;
-        $user['email']      = $request->email;
-        $user['mobile']     = $request->mobile;
-        $user['email_verified_at'] = date('Y-m-d H:i:s');
-        $psw                = $request->password;
-        $user['password'] = !empty($userpassword) ? Hash::make($userpassword) : null;
-        $user['type']       = 'admin-staff';
-        $user['lang']       = !empty($default_language) ? $default_language->value : '';
-        $user['created_by'] = Auth::user()->creatorId();
-        $user['is_enable_login'] = $enableLogin;
-        $user['is_active']  = 1;
-
-        $user->save();
-
-        if ($request->hasFile('profile')) {
-            $file_id = $this->uploadAndSaveFile($request->profile, Auth::user()->creatorId(), 'avatar');
-            $user->avatar = $file_id;
-        }
-        $user->save();
-
-        $role_r = Role::findById($request->role);
-        $user->assignRole($role_r);
-
-        $uArr = [
-            'email' => $user->email,
-            'password' => $psw,
-        ];
-
-        try {
-            $resp = Utility::sendEmailTemplate('user_created', [$user->id => $user->email], $uArr);
-        } catch (\Exception $e) {
-            $smtp_error = __('E-Mail has been not sent due to SMTP configuration');
-        }
-
-        return redirect()->route('admin.users.index')->with('success', __('User successfully added.') . ((isset($smtp_error)) ? '<br> <span class="text-danger">' . $smtp_error . '</span>' : ''));
     }
 
     public function edit($id)
     {
+        if (Auth::user()->can('edit staff user')) {
+            $user  = Auth::user();
+            $user              = User::findOrFail($id);
+            $user->customField = CustomField::getData($user, 'user');
+            $roles  = Role::where('created_by', Auth::user()->creatorId())->get();
+            $customFields      = CustomField::where('created_by', '=', Auth::user()->creatorId())->where('module', '=', 'user')->get();
 
-        $user  = Auth::user();
-        $user              = User::findOrFail($id);
-        $user->customField = CustomField::getData($user, 'user');
-        $roles  = Role::where('created_by', Auth::user()->creatorId())->get();
-        $customFields      = CustomField::where('created_by', '=', Auth::user()->creatorId())->where('module', '=', 'user')->get();
-
-        return view('admin.user.form', compact('user', 'customFields', 'roles'));
+            return view('admin.user.form', compact('user', 'customFields', 'roles'));
+        } else {
+            return redirect()->back()->with('error', 'Permission denied.');
+        }
     }
 
 
     public function update(Request $request, $id)
     {
-        $user = User::findOrFail($id);
+        if (Auth::user()->can('edit staff user')) {
+            DB::beginTransaction();
+            $user = User::findOrFail($id);
 
-        $validator = \Validator::make(
-            $request->all(),
-            [
-                'name' => 'required|max:120',
-                'email' => 'required|email|unique:users,email,' . $id,
-                'mobile' => 'required|max:120',
-                'role'   => 'required',
-            ]
-        );
-        if ($validator->fails()) {
-            $messages = $validator->getMessageBag();
+            $validator = \Validator::make(
+                $request->all(),
+                [
+                    'name' => 'required|max:120',
+                    'email' => 'required|email|unique:users,email,' . $id,
+                    'mobile' => 'required|max:120',
+                    'role'   => 'required',
+                ]
+            );
+            if ($validator->fails()) {
+                $messages = $validator->getMessageBag();
 
-            return redirect()->back()->with('error', $messages->first());
+                return redirect()->back()->with('error', $messages->first());
+            }
+
+            $input = $request->all();
+            $user->fill($input)->save();
+
+            if ($request->hasFile('profile')) {
+                $file_id = $this->uploadAndSaveFile($request->profile, Auth::user()->creatorId(), 'avatar');
+                $user->avatar = $file_id;
+            }
+            $user->save();
+
+            // $role_r = Role::findById($request->role);
+            // $user->assignRole($role_r);
+            $user->roles()->sync([$request->input('role')]);
+
+            CustomField::saveData($user, $request->customField);
+            DB::commit();
+            return redirect()->route('admin.users.index')->with(
+                'success',
+                'User successfully updated.'
+            );
+        } else {
+            DB::rollBack();
+            return redirect()->back()->with('error', 'Permission denied.');
         }
-
-        $input = $request->all();
-        $user->fill($input)->save();
-
-        if ($request->hasFile('profile')) {
-            $file_id = $this->uploadAndSaveFile($request->profile, Auth::user()->creatorId(), 'avatar');
-            $user->avatar = $file_id;
-        }
-        $user->save();
-
-        // $role_r = Role::findById($request->role);
-        // $user->assignRole($role_r);
-        $user->roles()->sync([$request->input('role')]);
-
-        CustomField::saveData($user, $request->customField);
-
-        return redirect()->route('admin.users.index')->with(
-            'success',
-            'User successfully updated.'
-        );
     }
 
 
     public function destroy($id)
     {
+        if (Auth::user()->can('delete staff user')) {
+            $user = User::find($id);
 
-        $user = User::find($id);
-
-        if ($user) {
-
-
-            User::where('type', '=', 'company')->delete();
-            $user->delete();
-            return redirect()->back()->with('success', __('Company Successfully deleted'));
-
-            // if ($user->delete_status == 0) {
-            //     $user->delete_status = 1;
-            // } else {
-            //     $user->delete_status = 0;
-            // }
-            // $user->save();
-
-
-            return redirect()->route('users.index')->with('success', __('User successfully deleted .'));
+            if ($user) {
+                User::where('type', '=', 'company')->where('parent')->delete();
+                $user->delete();
+                return redirect()->back()->with('success', __('User Successfully deleted'));
+            } else {
+                return redirect()->back();
+            }
         } else {
-            return redirect()->back();
+            return redirect()->back()->with('error', 'Permission denied.');
         }
     }
 }

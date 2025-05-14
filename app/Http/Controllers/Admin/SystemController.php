@@ -1,9 +1,15 @@
 <?php
 
 namespace App\Http\Controllers\Admin;
+
 use App\Http\Controllers\Controller;
+use App\Models\InvoiceSetting;
+use App\Models\InvoiceTemplate;
+use App\Models\LetterPadSettings;
+use App\Models\LetterPadTemplate;
 use App\Models\Mail\EmailTest;
 use App\Models\Mail\testMail;
+use App\Models\Permission as ModelsPermission;
 use App\Models\Utility;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -20,13 +26,19 @@ class SystemController extends Controller
     {
         $settings              = Utility::settings();
 
-        if (\Auth::user()->can('manage system settings')) {
+        // if (\Auth::user()->can('manage system settings')) {
             $settings              = Utility::settings();
             $admin_payment_setting = Utility::getAdminPaymentSetting();
-            return view('admin.settings.index', compact('settings', 'admin_payment_setting'));
-        } else {
-            return redirect()->back()->with('error', 'Permission denied.');
-        }
+            $invoiceTemplates      = InvoiceTemplate::get();
+            $InvoiceSettings = InvoiceSetting::where('user_id', Auth::user()->creatorId())->first();
+
+            $letterPadTemplates      = LetterPadTemplate::get();
+            $letterPadSettings       = LetterPadSettings::where('user_id', Auth::user()->creatorId())->first();
+
+            return view('admin.settings.index', compact('settings', 'admin_payment_setting', 'invoiceTemplates', 'InvoiceSettings','letterPadTemplates','letterPadSettings'));
+        // } else {
+        //     return redirect()->back()->with('error', 'Permission denied.');
+        // }
     }
 
     public function store(Request $request)
@@ -295,7 +307,7 @@ class SystemController extends Controller
 
     public function saveSystemSettings(Request $request)
     {
-        if (\Auth::user()->can('manage company settings')) {
+        // if (\Auth::user()->can('manage company settings')) {
             $user = \Auth::user();
             $request->validate(
                 [
@@ -328,9 +340,9 @@ class SystemController extends Controller
             }
 
             return redirect()->back()->with('success', __('Setting successfully updated.'));
-        } else {
-            return redirect()->back()->with('error', 'Permission denied.');
-        }
+        // } else {
+        //     return redirect()->back()->with('error', 'Permission denied.');
+        // }
     }
 
     public function saveBusinessSettings(Request $request)
@@ -2331,10 +2343,42 @@ class SystemController extends Controller
             }
         }
 
-        return redirect()->back()->with('success', __('Email setting successfully updated.'));
         // } else {
         //     return redirect()->back()->with('error', 'Permission denied.');
         // }
+    }
+
+
+
+    public function invoiceTemplateStore(Request $request)
+    {
+        $invSettings = InvoiceSetting::where('user_id', Auth::user()->creatorId())->first();
+        if (!$invSettings) {
+            $invSettings = new InvoiceSetting();
+        }
+        $invSettings->user_id          = Auth::user()->creatorId();
+        $invSettings->template         = $request->invoice_template;
+        $invSettings->prefix           = $request->prefix;
+        $invSettings->due_after        = $request->due_after;
+        $invSettings->terms            = $request->terms;
+        $invSettings->save();
+
+        return redirect()->back()->with('success', __('Invoice template successfully updated.'));
+    }
+
+
+    public function letterPadTemplateStore(Request $request)
+    {
+        $letterSettings = LetterPadSettings::where('user_id', Auth::user()->creatorId())->first();
+        if (!$letterSettings) {
+            $letterSettings = new LetterPadSettings();
+        }
+        $letterSettings->user_id          = Auth::user()->creatorId();
+        $letterSettings->template         = $request->template;
+        $letterSettings->terms            = $request->terms;
+        $letterSettings->save();
+
+        return redirect()->back()->with('success', __('Letter pad template successfully updated.'));
     }
 
 
@@ -2351,11 +2395,12 @@ class SystemController extends Controller
         $user->permissions()->detach();
 
         // Get permissions from the config file (stored in config/permissions.php)
-        $defaultPermissions = config('superadmin-permissions.default');
+        // $defaultPermissions = config('superadmin-permissions.default');
+        $defaultPermissions = ModelsPermission::where('is_admin','1')->get();
 
         // Assign new permissions
         foreach ($defaultPermissions as $permission) {
-            $perm = Permission::firstOrCreate(['name' => $permission]); // Ensure permission exists
+            $perm = Permission::firstOrCreate(['name' => $permission->name]); // Ensure permission exists
             $user->givePermissionTo($perm);
         }
 

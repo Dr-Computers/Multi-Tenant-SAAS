@@ -326,6 +326,7 @@ class Utility extends Model
     {
         $arr = [
             'ar' => '🇦🇪 ar',
+            'en' => '🇮🇳 en',
             // 'da' => '🇩🇰 da',
             // 'de' => '🇩🇪 de',
             // 'es' => '🇪🇸 es',
@@ -336,7 +337,6 @@ class Utility extends Model
             // 'pl' => '🇵🇱 pl',
             // 'ru' => '🇷🇺 ru',
             // 'pt' => '🇵🇹 pt',
-            'en' => '🇮🇳 en',
             // 'tr' => '🇹🇷 tr',
             // 'pt-br' => '🇵🇹 pt-br',
         ];
@@ -361,10 +361,10 @@ class Utility extends Model
     {
         $languages = [
             "ar" => "Arabic",
+            "en" => "English",
             // "zh" => "Chinese",
             // "da" => "Danish",
             // "de" => "German",
-            "en" => "English",
             // "es" => "Spanish",
             // "fr" => "French",
             // "he" => "Hebrew",
@@ -405,7 +405,7 @@ class Utility extends Model
                     $disabledlang = explode(',', $settings['disable_lang']);
                     $languages = Language::whereNotIn('code', $disabledlang)->pluck('fullName', 'code');
                 } else {
-                    $languages = Language::where('status',1)->pluck('fullname', 'code');
+                    $languages = Language::pluck('fullname', 'code');
                 }
                 self::$languageSetting = $languages;
             }
@@ -4030,7 +4030,7 @@ class Utility extends Model
     {
         do {
             $referralCode = rand(100000, 999999);
-        } while (User::where('referral_code', $referralCode)->exists());
+        } while (Company::where('referral_code', $referralCode)->exists());
 
         return $referralCode;
     }

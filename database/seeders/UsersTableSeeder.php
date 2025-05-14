@@ -1,6 +1,7 @@
 <?php
 
 namespace Database\Seeders;
+
 use App\Models\User;
 use App\Models\Utility;
 use Illuminate\Support\Facades\Hash;
@@ -21,6 +22,13 @@ class UsersTableSeeder extends Seeder
 
         $arrPermissions = [
             [
+                // 'section' => '',
+                // 'is_admin' => 1,
+                // 'is_company' => 0,
+                // 'is_owner'  => 0,
+                // 'is_customer' => 0,
+                // 'is_tenant' => 0,
+                // 'is_agent' => 0,
                 'name' => 'show dashboard',
                 'guard_name' => 'web',
                 'created_at' => date('Y-m-d H:i:s'),
@@ -1181,9 +1189,9 @@ class UsersTableSeeder extends Seeder
             ]
         );
 
-        $superAdminPermissions = config('superadmin-permissions.default');
+        // $superAdminPermissions = config('superadmin-permissions.default');
 
-        $superAdminRole->givePermissionTo($superAdminPermissions);
+        // $superAdminRole->givePermissionTo($superAdminPermissions);
 
         $superAdmin = User::create(
             [
@@ -1201,66 +1209,67 @@ class UsersTableSeeder extends Seeder
         $superAdmin->assignRole($superAdminRole);
 
         // customer
-        $customerRole       = Role::create(
-            [
-                'name' => 'customer',
-                'created_by' => 0,
-            ]
-        );
-        $customerPermission = [
-            'manage customer payment',
-            'manage customer transaction',
-            'manage customer invoice',
-            'show invoice',
-            'show proposal',
-            'manage customer proposal',
-            'show customer',
-            'manage customer contract',
-            'show contract',
-            'contract description',
-            'upload attachment',
-            'add comment',
-            'add notes',
+        // $customerRole       = Role::create(
+        //     [
+        //         'name' => 'customer',
+        //         'created_by' => 0,
+        //     ]
+        // );
+        // $customerPermission = [
+        //     'manage customer payment',
+        //     'manage customer transaction',
+        //     'manage customer invoice',
+        //     'show invoice',
+        //     'show proposal',
+        //     'manage customer proposal',
+        //     'show customer',
+        //     'manage customer contract',
+        //     'show contract',
+        //     'contract description',
+        //     'upload attachment',
+        //     'add comment',
+        //     'add notes',
 
 
 
 
 
-        ];
+        // ];
 
-        $customerRole->givePermissionTo($customerPermission);
+        // $customerRole->givePermissionTo($customerPermission);
 
-        // vender
-        $venderRole       = Role::create(
-            [
-                'name' => 'vender',
-                'created_by' => 0,
-            ]
-        );
-        $venderPermission = [
-            'vender manage bill',
-            'manage vender bill',
-            'manage vender payment',
-            'manage vender transaction',
-            'show vender',
-            'show bill',
-        ];
+        // // vender
+        // $venderRole       = Role::create(
+        //     [
+        //         'name' => 'vender',
+        //         'created_by' => 0,
+        //     ]
+        // );
+        // $venderPermission = [
+        //     'vender manage bill',
+        //     'manage vender bill',
+        //     'manage vender payment',
+        //     'manage vender transaction',
+        //     'show vender',
+        //     'show bill',
+        // ];
 
-        $venderRole->givePermissionTo($venderPermission);
+        // $venderRole->givePermissionTo($venderPermission);
 
-        // company
-        $companyRole        = Role::create(
-            [
-                'name' => 'company',
-                'created_by' => $superAdmin->id,
-            ]
-        );
+        // // company
+        // $companyRole        = Role::create(
+        //     [
+        //         'name' => 'company',
+        //         'created_by' => $superAdmin->id,
+        //     ]
+        // );
+
         $companyPermissions = [
             'show dashboard',
             'manage user',
             'create user',
             'edit user',
-            'delete user',  
+            'delete user',
             'manage role',
             'create role',
             'edit role',
@@ -1425,228 +1434,231 @@ class UsersTableSeeder extends Seeder
             'create constant contract type',
             'edit constant contract type',
             'delete constant contract type',
-            
-
         ];
 
-        $companyRole->givePermissionTo($companyPermissions);
+        // $companyRole->givePermissionTo($companyPermissions);
 
-        $company = User::create(
-            [
-                'name' => 'company',
-                'email' => 'company@example.com',
-                'password' => Hash::make('1234'),
-                'type' => 'company',
-                'lang' => 'en',
-                'avatar' => '',
-                'plan' => 1,
-                'created_by' => $superAdmin->id,
-                'email_verified_at' => date('Y-m-d H:i:s'),
-                'referral_code'         => Utility::generateReferralCode(),
+        // $company = User::create(
+        //     [
+        //         'name' => 'company',
+        //         'email' => 'company@example.com',
+        //         'password' => Hash::make('1234'),
+        //         'type' => 'company',
+        //         'lang' => 'en',
+        //         'avatar' => '',
+        //         'plan' => 1,
+        //         'created_by' => $superAdmin->id,
+        //         'email_verified_at' => date('Y-m-d H:i:s'),
+        //         'referral_code'         => Utility::generateReferralCode(),
 
-            ]
-        );
-        $company->assignRole($companyRole);
+        //     ]
+        // );
+        // $company->assignRole($companyRole);
 
-        // accountant
-        $accountantRole = Role::create(
-            [
-                'name' => 'accountant',
-                'created_by' => $company->id,
-            ]
-        );
+        // // accountant
+        // $accountantRole = Role::create(
+        //     [
+        //         'name' => 'accountant',
+        //         'created_by' => $company->id,
+        //     ]
+        // );
 
-        $accountantPermission = [
-            'show dashboard',
-            'manage expense',
-            'create expense',
-            'edit expense',
-            'delete expense',
-            'manage invoice',
-            'create invoice',
-            'edit invoice',
-            'delete invoice',
-            'show invoice',
-            'convert invoice',
-            'manage product & service',
-            'create product & service',
-            'delete product & service',
-            'edit product & service',
-            'manage constant tax',
-            'create constant tax',
-            'edit constant tax',
-            'delete constant tax',
-            'manage constant category',
-            'create constant category',
-            'edit constant category',
-            'delete constant category',
-            'manage constant unit',
-            'create constant unit',
-            'edit constant unit',
-            'delete constant unit',
-            'manage customer',
-            'create customer',
-            'edit customer',
-            'delete customer',
-            'show customer',
-            'manage vender',
-            'create vender',
-            'edit vender',
-            'delete vender',
-            'show vender',
-            'manage bank account',
-            'create bank account',
-            'edit bank account',
-            'delete bank account',
-            'manage transfer',
-            'create transfer',
-            'edit transfer',
-            'delete transfer',
-            'manage revenue',
-            'create revenue',
-            'edit revenue',
-            'delete revenue',
-            'manage bill',
-            'create bill',
-            'edit bill',
-            'delete bill',
-            'show bill',
-            'manage payment',
-            'create payment',
-            'edit payment',
-            'delete payment',
-            'delete invoice product',
-            'delete bill product',
-            'send invoice',
-            'create payment invoice',
-            'delete payment invoice',
-            'send bill',
-            'create payment bill',
-            'delete payment bill',
-            'income report',
-            'expense report',
-            'income vs expense report',
-            'invoice report',
-            'bill report',
-            'stock report',
-            'tax report',
-            'loss & profit report',
-            'manage transaction',
-            'manage credit note',
-            'create credit note',
-            'edit credit note',
-            'delete credit note',
-            'manage debit note',
-            'create debit note',
-            'edit debit note',
-            'delete debit note',
-            'manage proposal',
-            'create proposal',
-            'edit proposal',
-            'delete proposal',
-            'duplicate proposal',
-            'send proposal',
-            'show proposal',
-            'delete proposal product',
-            'manage goal',
-            'create goal',
-            'edit goal',
-            'delete goal',
-            'manage assets',
-            'create assets',
-            'edit assets',
-            'delete assets',
-            'statement report',
-            'manage constant custom field',
-            'create constant custom field',
-            'edit constant custom field',
-            'delete constant custom field',
-            'manage chart of account',
-            'create chart of account',
-            'edit chart of account',
-            'delete chart of account',
-            'manage journal entry',
-            'create journal entry',
-            'edit journal entry',
-            'delete journal entry',
-            'show journal entry',
-            'balance sheet report',
-            'ledger report',
-            'trial balance report',
-            'manage budget planner',
-            'create budget planner',
-            'edit budget planner',
-            'delete budget planner',
-            'view budget planner',
-            'manage retainer',
-            'create retainer',
-            'edit retainer',
-            'delete retainer',
-            'show retainer',
-            'send retainer',
-            'duplicate retainer',
-            'delete retainer product',
-            'convert invoice proposal',
-            'convert invoice retainer',
-            'convert retainer proposal',
-            'manage constant contract type',
-            'create constant contract type',
-            'edit constant contract type',
-            'delete constant contract type',
+        // $accountantPermission = [
+        //     'show dashboard',
+        //     'manage expense',
+        //     'create expense',
+        //     'edit expense',
+        //     'delete expense',
+        //     'manage invoice',
+        //     'create invoice',
+        //     'edit invoice',
+        //     'delete invoice',
+        //     'show invoice',
+        //     'convert invoice',
+        //     'manage product & service',
+        //     'create product & service',
+        //     'delete product & service',
+        //     'edit product & service',
+        //     'manage constant tax',
+        //     'create constant tax',
+        //     'edit constant tax',
+        //     'delete constant tax',
+        //     'manage constant category',
+        //     'create constant category',
+        //     'edit constant category',
+        //     'delete constant category',
+        //     'manage constant unit',
+        //     'create constant unit',
+        //     'edit constant unit',
+        //     'delete constant unit',
+        //     'manage customer',
+        //     'create customer',
+        //     'edit customer',
+        //     'delete customer',
+        //     'show customer',
+        //     'manage vender',
+        //     'create vender',
+        //     'edit vender',
+        //     'delete vender',
+        //     'show vender',
+        //     'manage bank account',
+        //     'create bank account',
+        //     'edit bank account',
+        //     'delete bank account',
+        //     'manage transfer',
+        //     'create transfer',
+        //     'edit transfer',
+        //     'delete transfer',
+        //     'manage revenue',
+        //     'create revenue',
+        //     'edit revenue',
+        //     'delete revenue',
+        //     'manage bill',
+        //     'create bill',
+        //     'edit bill',
+        //     'delete bill',
+        //     'show bill',
+        //     'manage payment',
+        //     'create payment',
+        //     'edit payment',
+        //     'delete payment',
+        //     'delete invoice product',
+        //     'delete bill product',
+        //     'send invoice',
+        //     'create payment invoice',
+        //     'delete payment invoice',
+        //     'send bill',
+        //     'create payment bill',
+        //     'delete payment bill',
+        //     'income report',
+        //     'expense report',
+        //     'income vs expense report',
+        //     'invoice report',
+        //     'bill report',
+        //     'stock report',
+        //     'tax report',
+        //     'loss & profit report',
+        //     'manage transaction',
+        //     'manage credit note',
+        //     'create credit note',
+        //     'edit credit note',
+        //     'delete credit note',
+        //     'manage debit note',
+        //     'create debit note',
+        //     'edit debit note',
+        //     'delete debit note',
+        //     'manage proposal',
+        //     'create proposal',
+        //     'edit proposal',
+        //     'delete proposal',
+        //     'duplicate proposal',
+        //     'send proposal',
+        //     'show proposal',
+        //     'delete proposal product',
+        //     'manage goal',
+        //     'create goal',
+        //     'edit goal',
+        //     'delete goal',
+        //     'manage assets',
+        //     'create assets',
+        //     'edit assets',
+        //     'delete assets',
+        //     'statement report',
+        //     'manage constant custom field',
+        //     'create constant custom field',
+        //     'edit constant custom field',
+        //     'delete constant custom field',
+        //     'manage chart of account',
+        //     'create chart of account',
+        //     'edit chart of account',
+        //     'delete chart of account',
+        //     'manage journal entry',
+        //     'create journal entry',
+        //     'edit journal entry',
+        //     'delete journal entry',
+        //     'show journal entry',
+        //     'balance sheet report',
+        //     'ledger report',
+        //     'trial balance report',
+        //     'manage budget planner',
+        //     'create budget planner',
+        //     'edit budget planner',
+        //     'delete budget planner',
+        //     'view budget planner',
+        //     'manage retainer',
+        //     'create retainer',
+        //     'edit retainer',
+        //     'delete retainer',
+        //     'show retainer',
+        //     'send retainer',
+        //     'duplicate retainer',
+        //     'delete retainer product',
+        //     'convert invoice proposal',
+        //     'convert invoice retainer',
+        //     'convert retainer proposal',
+        //     'manage constant contract type',
+        //     'create constant contract type',
+        //     'edit constant contract type',
+        //     'delete constant contract type',
 
 
-        ];
+        // ];
 
-        $accountantRole->givePermissionTo($accountantPermission);
+        // $accountantRole->givePermissionTo($accountantPermission);
 
-        $accountant = User::create(
-            [
-                'name' => 'accountant',
-                'email' => 'accountant@example.com',
-                'password' => Hash::make('1234'),
-                'type' => 'accountant',
-                'lang' => 'en',
-                'avatar' => '',
-                'created_by' => $company->id,
-                'email_verified_at' => date('Y-m-d H:i:s'),
-            ]
-        );
-        $accountant->assignRole($accountantRole);
+        // $accountant = User::create(
+        //     [
+        //         'name' => 'accountant',
+        //         'email' => 'accountant@example.com',
+        //         'password' => Hash::make('1234'),
+        //         'type' => 'accountant',
+        //         'lang' => 'en',
+        //         'avatar' => '',
+        //         'created_by' => $company->id,
+        //         'email_verified_at' => date('Y-m-d H:i:s'),
+        //     ]
+        // );
+        // $accountant->assignRole($accountantRole);
 
-        \App\Models\BankAccount::create(
-            [
-                'holder_name' => 'Cash',
-                'bank_name' => '',
-                'account_number' => '-',
-                'opening_balance' => '0.00',
-                'contact_number' => '-',
-                'bank_address' => '-',
-                'created_by' => $company->id,
-            ]
-        );
-        Utility::chartOfAccountTypeData($company->id);
-        Utility::chartOfAccountData($company);
-        $company->defaultEmail();
-        $company->userDefaultData();
-        Utility::languagecreate();
+        // \App\Models\BankAccount::create(
+        //     [
+        //         'holder_name' => 'Cash',
+        //         'bank_name' => '',
+        //         'account_number' => '-',
+        //         'opening_balance' => '0.00',
+        //         'contact_number' => '-',
+        //         'bank_address' => '-',
+        //         'created_by' => $company->id,
+        //     ]
+        // );
+        // Utility::chartOfAccountTypeData($company->id);
+        // Utility::chartOfAccountData($company);
+        // $company->defaultEmail();
+        // $company->userDefaultData();
+        // Utility::languagecreate();
 
 
 
 
         $data = [
-            ['name'=>'local_storage_validation', 'value'=> 'jpg,jpeg,png,xlsx,xls,csv,pdf', 'created_by'=> 1, 'created_at'=> now(), 'updated_at'=> now()],
-            ['name'=>'wasabi_storage_validation', 'value'=> 'jpg,jpeg,png,xlsx,xls,csv,pdf', 'created_by'=> 1, 'created_at'=> now(), 'updated_at'=> now()],
-            ['name'=>'s3_storage_validation', 'value'=> 'jpg,jpeg,png,xlsx,xls,csv,pdf', 'created_by'=> 1, 'created_at'=> now(), 'updated_at'=> now()],
-            ['name'=>'local_storage_max_upload_size', 'value'=> 2048000, 'created_by'=> 1, 'created_at'=> now(), 'updated_at'=> now()],
-            ['name'=>'wasabi_max_upload_size', 'value'=> 2048000, 'created_by'=> 1, 'created_at'=> now(), 'updated_at'=> now()],
-            ['name'=>'s3_max_upload_size', 'value'=> 2048000, 'created_by'=> 1, 'created_at'=> now(), 'updated_at'=> now()],
-            ['name'=>'storage_setting', 'value'=> 'local', 'created_by'=> 1, 'created_at'=> now(), 'updated_at'=> now()]
+            ['name' => 'local_storage_validation', 'value' => 'jpg,jpeg,png,xlsx,xls,csv,pdf', 'created_by' => 1, 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 'wasabi_storage_validation', 'value' => 'jpg,jpeg,png,xlsx,xls,csv,pdf', 'created_by' => 1, 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 's3_storage_validation', 'value' => 'jpg,jpeg,png,xlsx,xls,csv,pdf', 'created_by' => 1, 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 'local_storage_max_upload_size', 'value' => 2048000, 'created_by' => 1, 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 'wasabi_max_upload_size', 'value' => 2048000, 'created_by' => 1, 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 's3_max_upload_size', 'value' => 2048000, 'created_by' => 1, 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 'storage_setting', 'value' => 'local', 'created_by' => 1, 'created_at' => now(), 'updated_at' => now()]
 
         ];
 
         DB::table('settings')->insert($data);
 
+        $businessTypeData = [
+            ['name' => 'realestate', 'created_at' => now(), 'updated_at' => now()]
 
+        ];
 
+        DB::table('business_types')->insert($businessTypeData);
+        
     }
 }

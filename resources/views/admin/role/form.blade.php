@@ -31,8 +31,8 @@
                     </div>
                     @foreach ($permissions->groupBy('section') ?? [] as $section => $permission)
                         <div class="row mb-2">
-                            <div class="col-lg-12">
-                                <h6>{{ $section }}</h6>
+                            <div class="col-lg-12 mb-2">
+                                <h6 class="fw-bold">{{ $section }}</h6>
                             </div>
                             <div class="row">
                                 @foreach ($permission ?? [] as $permission_section)

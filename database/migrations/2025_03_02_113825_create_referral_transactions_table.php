@@ -15,7 +15,7 @@ return new class extends Migration
         {
             Schema::create('referral_transactions', function (Blueprint $table) {
                 $table->id();
-                $table->integer('company_id');
+                $table->foreignId('company_id')->constrained('users')->onDelete('cascade');
                 $table->integer('plan_id');
                 $table->decimal('plan_price',15,2)->default(0.0);
                 $table->integer('commission');

@@ -17,7 +17,6 @@ return new class extends Migration
             $table->decimal('closing_balance', 15, 2)->nullable();
             $table->string('email')->nullable();
             $table->string('phone')->nullable();
-            $table->integer('company_id')->nullable();    
         });
     }
 
@@ -32,8 +31,7 @@ return new class extends Migration
                 'bank_branch',
                 'closing_balance',
                 'email',
-                'phone',
-                'company_id',
+                'phone'
             ]);
         });
     }

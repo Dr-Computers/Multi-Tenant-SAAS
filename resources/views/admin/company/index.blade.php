@@ -15,16 +15,12 @@
 @endsection
 @section('action-btn')
     <div class="d-flex">
-        <a href="#" data-size="md" data-url="{{ route('admin.company.create') }}" data-ajax-popup="true"
-            data-bs-toggle="tooltip" title="{{ __('Create New Company') }}" class="btn btn-sm btn-primary me-2">
-            <i class="ti ti-plus"></i>
-        </a>
-        @if (\Auth::user()->type == 'company')
-            <a href="{{ route('userlogs.index') }}" class="btn btn-sm btn-primary" data-bs-toggle="tooltip"
-                title="{{ __('User Log') }}">
-                <i class="ti ti-user-check"></i>
+        @can('create company')
+            <a href="#" data-size="md" data-url="{{ route('admin.company.create') }}" data-ajax-popup="true"
+                data-bs-toggle="tooltip" title="{{ __('Create New Company') }}" class="btn btn-sm btn-primary me-2">
+                <i class="ti ti-plus"></i>
             </a>
-        @endif
+        @endcan
     </div>
 @endsection
 
@@ -32,18 +28,18 @@
     <div class="row">
         <div class="col-xxl-12">
             <div class="row">
-                @forelse ($users as $user)
-                    <div class="col-md-4 mb-4">
-                        <div class="card text-center card-2">
-                            <div class="card-header border-0 pb-0">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <h6 class="mb-0">
-                                        <div class="badge bg-primary p-2 px-3 ">
-                                            {{ !empty($user->currentPlan) ? $user->currentPlan->name : '' }}
-                                        </div>
-                                    </h6>
-                                </div>
-                                @if (Gate::check('edit user') || Gate::check('delete user'))
+                @can('company listing')
+                    @forelse ($users as $user)
+                        <div class="col-md-4 mb-4">
+                            <div class="card text-center card-2">
+                                <div class="card-header border-0 pb-0">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <h6 class="mb-0">
+                                            <div class="badge bg-primary p-2 px-3 ">
+                                                {{ !empty($user->currentPlan) && $user->currentPlan->plan ? $user->currentPlan->plan->name : '' }}
+                                            </div>
+                                        </h6>
+                                    </div>
                                     <div class="card-header-right">
                                         <div class="btn-group card-option">
                                             @if ($user->is_active == 1 && $user->is_disable == 1)
@@ -53,39 +49,43 @@
                                                 </button>
 
                                                 <div class="dropdown-menu dropdown-menu-end">
-
-                                                    <a href="#"
-                                                        data-url="{{ route('admin.company.info', $user->id) }}"
-                                                        data-size="lg" data-ajax-popup="true" class="dropdown-item"
-                                                        data-title="{{ __('Company Info') }}">
-                                                        <i class="ti ti-info-circle"></i>
-                                                        {{ __('Company Info') }}</a>
-
-                                                    {{-- <a href="#" class="dropdown-item">
-                                                        <i class="ti ti-plus"></i>
-                                                        {{ __('Addon Features') }}</a>
-                                                        <a href="#" data-url="{{ route('admin.plan.upgrade', $user->id) }}"
+                                                    @can('company details')
+                                                        <a href="#" data-url="{{ route('admin.company.info', $user->id) }}"
                                                             data-size="lg" data-ajax-popup="true" class="dropdown-item"
-                                                            data-title="{{ __('Upgrade Plan') }}">
+                                                            data-title="{{ __('Company Info') }}">
+                                                            <i class="ti ti-info-circle"></i>
+                                                            {{ __('Company Info') }}</a>
+                                                    @endcan
+                                                    @can('company addon features')
+                                                        <a href="{{ route('admin.company.addon-features', $user->id) }}"
+                                                            class="dropdown-item">
+                                                            <i class="ti ti-plus"></i>
+                                                            {{ __('Addon Features') }}</a>
+                                                    @endcan
+                                                    @can('company plan upgrade')
+                                                        <a href="{{ route('admin.company.plan.upgrade', $user->id) }}"
+                                                            class="dropdown-item">
                                                             <i class="ti ti-coin"></i>
-                                                            {{ __('Upgrade Plan') }}</a> --}}
-
-                                                    <a href="{{ route('admin.company.login', $user->id) }}"
-                                                        class="dropdown-item"
-                                                        data-bs-original-title="{{ __('Login as Company') }}">
-                                                        <i class="ti ti-replace"></i>
-                                                        <span> {{ __('Login as Company') }}</span>
-                                                    </a>
-
-
-                                                    <a href="#!"
-                                                        data-url="{{ route('admin.company.reset', \Crypt::encrypt($user->id)) }}"
-                                                        data-ajax-popup="true" data-size="md" class="dropdown-item"
-                                                        data-bs-original-title="{{ __('Reset Password') }}">
-                                                        <i class="ti ti-adjustments"></i>
-                                                        <span> {{ __('Reset Password') }}</span>
-                                                    </a>
-
+                                                            {{ __('Upgrade Plan') }}</a>
+                                                    @endcan
+                                                    @can('login as company')
+                                                        <a href="{{ route('admin.company.login', $user->id) }}"
+                                                            class="dropdown-item"
+                                                            data-bs-original-title="{{ __('Login as Company') }}">
+                                                            <i class="ti ti-replace"></i>
+                                                            <span> {{ __('Login as Company') }}</span>
+                                                        </a>
+                                                    @endcan
+                                                    @can('edit company')
+                                                        <a href="#!"
+                                                            data-url="{{ route('admin.company.reset', \Crypt::encrypt($user->id)) }}"
+                                                            data-ajax-popup="true" data-size="md" class="dropdown-item"
+                                                            data-bs-original-title="{{ __('Reset Password') }}">
+                                                            <i class="ti ti-adjustments"></i>
+                                                            <span> {{ __('Reset Password') }}</span>
+                                                        </a>
+                                                    @endcan
+                                                    @can('login company disable')
                                                     @if ($user->is_enable_login == 1)
                                                         <a href="{{ route('admin.company.login_fn', \Crypt::encrypt($user->id)) }}"
                                                             class="dropdown-item">
@@ -93,11 +93,8 @@
                                                             <span class="text-danger"> {{ __('Login Disable') }}</span>
                                                         </a>
                                                     @elseif ($user->is_enable_login == 0 && $user->password == null)
-                                                        <a href="#"
-                                                            data-url="{{ route('admin.company.reset', \Crypt::encrypt($user->id)) }}"
-                                                            data-ajax-popup="true" data-size="md"
-                                                            class="dropdown-item login_enable"
-                                                            data-title="{{ __('New Password') }}" class="dropdown-item">
+                                                        <a href="{{ route('admin.company.login_fn', \Crypt::encrypt($user->id)) }}"
+                                                            class="dropdown-item">
                                                             <i class="ti ti-road-sign"></i>
                                                             <span class="text-success"> {{ __('Login Enable') }}</span>
                                                         </a>
@@ -108,18 +105,18 @@
                                                             <span class="text-success"> {{ __('Login Enable') }}</span>
                                                         </a>
                                                     @endif
-
-                                                    @can('edit user')
+                                                    @endcan
+                                                    @can('edit company')
                                                         <a href="#!" data-size="md"
                                                             data-url="{{ route('admin.company.edit', $user->id) }}"
                                                             data-ajax-popup="true" class="dropdown-item"
-                                                            data-bs-original-title="{{ __('Edit') }}">
+                                                            data-bs-original-title="{{ __('Edit User') }}">
                                                             <i class="ti ti-pencil"></i>
                                                             <span>{{ __('Edit') }}</span>
                                                         </a>
                                                     @endcan
 
-                                                    @can('delete user')
+                                                    @can('delete company')
                                                         {!! Form::open([
                                                             'method' => 'DELETE',
                                                             'route' => ['admin.company.destroy', $user['id']],
@@ -140,70 +137,77 @@
 
                                         </div>
                                     </div>
-                                @endif
-                            </div>
 
-                            <div class="card-body full-card">
-                                <div class="img-fluid rounded-circle card-avatar">
-                                    <img src="{{ !empty($user->avatar_url) ? asset('storage/' . $user->avatar_url) : asset(Storage::url('uploads/avatar/avatar.png')) }}"
-                                        class="img-fluid rounded border-2 border border-primary" width="120px"
-                                        height="120px">
                                 </div>
-                                <h4 class=" mt-3 ">{{ $user->name }}</h4>
-                                <small class="">{{ $user->email }}</small>
-                                <p></p>
-                                <div class="text-center" data-bs-toggle="tooltip" title="{{ __('Last Login') }}">
-                                    {{ !empty($user->last_login_at) ? $user->last_login_at : '' }}
-                                </div>
-                                @if (\Auth::user()->type == 'super admin')
-                                    <div class="mt-1">
-                                        <div class="row justify-content-between align-items-center">
 
-                                            <div class="col-12 text-center pb-2">
-                                                <span class="text-dark text-xs">{{ __('Plan Expired : ') }}
-                                                    {{ !empty($user->plan_expire_date) ? \Auth::user()->dateFormat($user->plan_expire_date) : __('Lifetime') }}</span>
+                                <div class="card-body full-card">
+                                    <div class="img-fluid rounded-circle card-avatar">
+                                        <img src="{{ !empty($user->avatar_url) ? asset('storage/' . $user->avatar_url) : asset(Storage::url('uploads/avatar/avatar.png')) }}"
+                                            class="img-fluid rounded border-2 border border-primary mx-auto" width="120px"
+                                            height="120px">
+                                    </div>
+                                    <h4 class=" mt-3 ">{{ $user->name }}</h4>
+                                    <small class="">{{ $user->email }}</small>
+                                    <p></p>
+                                    <div class="text-center" data-bs-toggle="tooltip" title="{{ __('Last Login') }}">
+                                        {{ !empty($user->last_login_at) ? $user->last_login_at : '' }}
+                                    </div>
+                                    @if (\Auth::user()->type == 'super admin')
+                                        <div class="mt-1">
+                                            <div class="row justify-content-between align-items-center">
+
+                                                <div class="col-12 text-center pb-2">
+                                                    <span class="text-dark text-xs">{{ __('Plan Expired : ') }}
+                                                        {{ !empty($user->plan_expire_date) ? \Auth::user()->dateFormat($user->plan_expire_date) : __('Lifetime') }}</span>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                    <div class="row mt-1">
-                                        <div class="col-12 col-sm-12">
-                                            <div class="card mb-0">
-                                                <div class="card-body p-3">
-                                                    <div class="row">
-                                                        <div class="col-4">
-                                                            <p class="text-muted text-sm mb-0" data-bs-toggle="tooltip"
-                                                                title="{{ __('Users') }}"><i
-                                                                    class="ti ti-users card-icon-text-space"></i>{{ $user->totalCompanyUser($user->id) }}
-                                                            </p>
-                                                        </div>
-                                                        <div class="col-4">
-                                                            <p class="text-muted text-sm mb-0" data-bs-toggle="tooltip"
-                                                                title="{{ __('Customers') }}"><i
-                                                                    class="ti ti-users card-icon-text-space"></i>{{ $user->totalCompanyCustomer($user->id) }}
-                                                            </p>
-                                                        </div>
-                                                        <div class="col-4">
-                                                            <p class="text-muted text-sm mb-0" data-bs-toggle="tooltip"
-                                                                title="{{ __('Vendors') }}"><i
-                                                                    class="ti ti-users card-icon-text-space"></i>{{ $user->totalCompanyVender($user->id) }}
-                                                            </p>
+                                        <div class="row mt-1">
+                                            <div class="col-12 col-sm-12">
+                                                <div class="card mb-0">
+                                                    <div class="card-body p-3">
+                                                        <div class="row">
+                                                            <div class="col-4">
+                                                                <p class="text-muted text-sm mb-0" data-bs-toggle="tooltip"
+                                                                    title="{{ __('Users') }}"><i
+                                                                        class="ti ti-users card-icon-text-space"></i>{{ $user->totalCompanyUser($user->id) }}
+                                                                </p>
+                                                            </div>
+                                                            <div class="col-4">
+                                                                <p class="text-muted text-sm mb-0" data-bs-toggle="tooltip"
+                                                                    title="{{ __('Tenants') }}"><i
+                                                                        class="ti ti-users card-icon-text-space"></i>{{ $user->totalCompanyCustomer($user->id) }}
+                                                                </p>
+                                                            </div>
+                                                            <div class="col-4">
+                                                                <p class="text-muted text-sm mb-0" data-bs-toggle="tooltip"
+                                                                    title="{{ __('Owners') }}"><i
+                                                                        class="ti ti-users card-icon-text-space"></i>{{ $user->totalCompanyVender($user->id) }}
+                                                                </p>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
-                                @endif
+                                    @endif
+                                </div>
                             </div>
                         </div>
-                    </div>
-                @empty
+                    @empty
+                        <div class="col-md-12 mb-4">
+                            <div class="card text-center p-5 card-2">
+                                <h6>No Companies found</h6>
+                            </div>
+                        </div>
+                    @endforelse
+                @else
                     <div class="col-md-12 mb-4">
                         <div class="card text-center p-5 card-2">
-                            <h6>No Companies found</h6>
+                            <h6>Permission denied</h6>
                         </div>
                     </div>
-                @endforelse
+                @endcan
             </div>
         </div>
     </div>

@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('trashes', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('company_id')->index();
+            $table->foreignId('company_id')->constrained('users')->onDelete('cascade');
             $table->string('type'); // media_file or media_folder
             $table->unsignedBigInteger('deleted_id'); // original ID of the file/folder
             $table->string('name');

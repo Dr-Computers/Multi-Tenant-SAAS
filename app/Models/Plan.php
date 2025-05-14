@@ -13,8 +13,8 @@ class Plan extends Model
         'price',
         'duration',
         'max_users',
-        'max_customers',
-        'max_venders',
+        'max_owners',
+        'max_tenants',
         'storage_limit',
         'description',
         'image',
@@ -50,7 +50,7 @@ class Plan extends Model
     {
         $free_plan = Plan::where('price', '<=', 0)->first()->id ?? 0;
 
-        return User:: select(DB::raw('count(*) as total'))->where('type', '=', 'company')->where('plan', '!=', $free_plan)->groupBy('plan')->first();
+        return Company:: select(DB::raw('count(*) as total'))->where('plan_order_id', '!=', $free_plan)->groupBy('plan_order_id')->first();
     }
 
     public function module_section(){

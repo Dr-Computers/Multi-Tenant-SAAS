@@ -15,6 +15,7 @@ class CreateTransactionsTable extends Migration
     {
         Schema::create('transactions', function (Blueprint $table){
             $table->bigIncrements('id');
+            $table->foreignId('company_id')->constrained('users')->onDelete('cascade');
             $table->integer('user_id');
             $table->string('user_type');
             $table->integer('account');
