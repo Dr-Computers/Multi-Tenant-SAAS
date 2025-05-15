@@ -8,4 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 class InvoiceSetting extends Model
 {
     use HasFactory;
+
+    public function templateData(){
+       return $this->hasOne(InvoiceTemplate::class,'id','template');
+    }
 }

@@ -11,11 +11,14 @@ use App\Models\SupportTicketAttachment;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use App\Traits\Media\HandlesMediaFolders;
-
+use App\Traits\ActivityLogger;
 
 class SupportTicketController extends Controller
 {
+    use ActivityLogger;
     use HandlesMediaFolders;
+
+    
     public function index(Request $request)
     {
 

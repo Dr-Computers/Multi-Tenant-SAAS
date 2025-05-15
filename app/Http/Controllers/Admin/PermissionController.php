@@ -10,11 +10,14 @@ use Illuminate\Support\Carbon;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Artisan;
-
+use App\Traits\ActivityLogger;
 
 
 class PermissionController extends Controller
 {
+    use ActivityLogger;
+
+    
     public function upload(Request $request)
     {
         

@@ -8,9 +8,11 @@ use App\Models\RealestateAmenity;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use App\Traits\ActivityLogger;
 
 class AmenityController extends Controller
 {
+    use ActivityLogger;
     public function index()
     {
         if (Auth::user()->can('amenity listing')) {

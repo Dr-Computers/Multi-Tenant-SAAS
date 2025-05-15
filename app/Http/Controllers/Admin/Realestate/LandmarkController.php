@@ -8,9 +8,12 @@ use App\Models\RealestateLandmark;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use App\Traits\ActivityLogger;
 
 class  LandmarkController extends Controller
 {
+    use ActivityLogger;
+
     public function index()
     {
         if (Auth::user()->can('landmark listing')) {

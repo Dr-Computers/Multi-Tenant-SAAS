@@ -42,7 +42,7 @@
                                             <td class="fw-bolder">{{ $order->price . ' ' . $currency_symbol }}</td>
                                             <td class="fw-bold">{{ $order->payment_type }}</td>
                                             <td class="text-center">
-                                                @if ($order->payment_status == 'paid')
+                                                @if ($order->payment_status == 'completed')
                                                     <span class="badge bg-success py-1 px-2 rounded">
                                                         {{ ucfirst($order->payment_status) }}</span>
                                                 @elseif ($order->payment_status == 'pending')
@@ -65,7 +65,7 @@
 
                                                     <div class="dropdown-menu dropdown-menu-end">
                                                         @can('invoice sent to mail')
-                                                            <a class="dropdown-item" data-size="md"
+                                                            <a class="dropdown-item" data-size="md" role="button"
                                                                 data-url="{{ route('admin.order.send.email', $order->id) }}"
                                                                 data-ajax-popup2="true" data-bs-toggle="tooltip"
                                                                 title="{{ __('Send to Email') }}">
@@ -74,35 +74,41 @@
                                                             </a>
                                                         @endcan
                                                         @can('invoice download')
-                                                            <a class="dropdown-item"
+                                                            <a class="dropdown-item" role="button"
                                                                 href="{{ route('admin.order.download.invoice', $order->id) }}">
                                                                 <span> <i class="ti ti-download text-dark"></i>
                                                                     {{ __('Invoice Download') }}</span>
                                                             </a>
                                                         @endcan
-                                                        @can('mark as paid')
-                                                            <a class="dropdown-item" data-size="md"
-                                                                data-url="{{ route('admin.order.make.payment', $order->id) }}"
-                                                                data-ajax-popup2="true" data-bs-toggle="tooltip"
-                                                                title="{{ __('Mark as Paid') }}">
-                                                                <span> <i class="ti ti-check text-dark"></i>
-                                                                    {{ __('Mark as Paid') }}</span>
-                                                            </a>
-                                                        @endcan
-                                                        @can('delete order')
-                                                            @if ($order->payment_status == 'pending' && $order->is_refund == 0)
+                                                        @if ($order->payment_status === 'pending')
+                                                            @can('mark as paid')
+                                                                {!! Form::open([
+                                                                    'method' => 'POST',
+                                                                    'route' => ['admin.order.mark.as.payment', $order->id],
+                                                                    'id' => 'paid-form-' . $order->id,
+                                                                ]) !!}
+                                                                <button type="submit" class="dropdown-item"
+                                                                    onclick="return confirm('Are you sure you want to mark this as paid?')">
+                                                                    <i class="ti ti-check text-dark"></i> {{ __('Mark as Paid') }}
+                                                                </button>
+                                                                {!! Form::close() !!}
+                                                            @endcan
+                                                        @endif
+
+                                                        @if ($order->payment_status == 'pending' && $order->is_refund == 0)
+                                                            @can('delete order')
                                                                 {!! Form::open([
                                                                     'method' => 'DELETE',
                                                                     'route' => ['admin.order.destroy', $order->id],
                                                                     'id' => 'delete-form-' . $order->id,
                                                                 ]) !!}
-                                                                <a href="#" class="dropdown-item bs-pass-para "
+                                                                <a href="#" class="dropdown-item bs-pass-para " role="button"
                                                                     data-bs-toggle="tooltip" title="{{ __('Delete') }}">
                                                                     <i class="ti ti-trash text-dark "></i> {{ __('Delete') }}</a>
 
                                                                 {!! Form::close() !!}
-                                                            @endif
-                                                        @endcan
+                                                            @endcan
+                                                        @endif
                                                     </div>
                                                 </div>
                                             </td>

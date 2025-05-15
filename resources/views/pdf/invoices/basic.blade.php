@@ -1,203 +1,181 @@
 <!DOCTYPE html>
-<html>
-
-<head>
-    <meta charset="utf-8">
-    <title>Invoice #{{ $order->id }}</title>
-    <style>
-        body {
-            font-family: sans-serif;
-        }
-
-        h1 {
-            font-size: 24px;
-        }
-    </style>
-</head>
-
-<body>
-    <h1>Invoice #{{ $order->id }}</h1>
-    <p>Company: {{ $order->user->name }}</p>
-    <p>Total: ${{ $order->price }}</p>
-    <p>Date: {{ $order->created_at->format('d M Y') }}</p>
-</body>
-
-</html>
-
-{{-- 
-<!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="styles.css">
     <title>Invoice</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
     <style>
-    body {
-    font-family: Arial, sans-serif;
-    margin: 20px;
-}
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 12px;
+            line-height: 1.5;
+        }
 
-.invoice {
-    border: 1px solid #000;
-    padding: 20px;
-}
+        .invoice {
+            border: 1px solid #000;
+            padding: 20px;
+            width: 100%;
+        }
 
-header {
- display: flex;
-  justify-content: space-between;
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
 
-    margin-bottom: 20px;
-}
-.logo-img{
-	width:200px;
-}
+        .logo-img {
+            width: 150px;
+        }
 
-.invoice-head{
-	flot:right;
-	text-aligh:center;
-}
+        .invoice-head {
+            text-align: center;
+            width: 100%;
+        }
 
-.details {
-    display: flex;
-    justify-content: space-between;
-}
+        .details {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
 
-.details div {
-    width: 30%;
-}
+        .details div {
+            width: 45%;
+        }
 
-.items {
-    width: 100%;
-    border-collapse: collapse;
-    margin: 20px 0;
-}
+        .items {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
 
-.items th, .items td {
-    border: 1px solid #000;
-    padding: 10px;
-    text-align: left;
-}
-footer .payment-info{
+        .items th,
+        .items td {
+            border: 1px solid #000;
+            padding: 8px;
+            text-align: left;
+        }
 
-    padding: 10px;
-	border:1px solid black;
-}
+        .items th {
+            background-color: #f5f5f5;
+        }
 
-footer .company-signature{
-    margin-top: 20px;
-    text-align: right;
-}
+        .totals {
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-between;
+        }
 
-</style>
+        .totals p {
+            margin: 0;
+            padding: 0;
+        }
+
+        footer {
+            margin-top: 30px;
+        }
+
+        .payment-info {
+            padding: 10px;
+            border: 1px solid black;
+        }
+
+        .company-signature {
+            margin-top: 50px;
+            text-align: right;
+        }
+
+        .center-text {
+            text-align: center;
+            font-size: 11px;
+            margin-top: 30px;
+        }
+    </style>
+    <style>
+        body {
+            font-family: DejaVu Sans, sans-serif;
+            /* Compatible font */
+            font-size: 12px;
+        }
+
+        table {
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            /* border: 1px solid #000; */
+            padding: 6px;
+        }
+
+        h1,
+        h2 {
+            font-size: 14px;
+            margin: 4px 0;
+        }
+
+        p {
+            margin: 2px 0;
+        }
+    </style>
+
 </head>
+
 <body>
     <div class="invoice">
-        <header>
-        	<div class="logo">
-            		<img src="http://127.0.0.1:8000/storage/uploads/logo/logo-dark.png?1747211993" class="logo-img">
-            </div>
-            <div class="invoice-head">
-                 	<h1>Tax Invoice/Bill of Supply/Cash Memo</h1>
-            		<p>(Original for Recipient)</p>
-            </div>
-       
-        </header>
-
-        <section class="details">
-            <div class="sold-by">
-                <h2>From :</h2>
-                <p>Dr Computers</p>
-                <p>Al Mullah Building </p>
-                <p>42 - Bur Dubai - Dubai</p>
-                <p>United Arab Emirates</p>
-            </div>
-
-            <div class="billing-address">
-                <h2>Billing Address:</h2>
-                <p>ZAIN ABULAH KHAN</p>
-                <p>#305, Gulnaz Javeed Manor, Wheeler Road, Cooke Town, United Arab Emirates.</p>
-            </div>
-</section>
-<hr>
-   <section class="details">
-          
-            <div class="invoice-info">
-            
-                <p>Phone: +971 56 123 1093</p>
-                <p>Email: info@drcomputers.ae</p>
-                <p>VAT Registration No: 29AARPK5605J1Z8</p>
-                <p>Website : https://www.drcomputers.ae</p>
-                
-            </div>
-            <div class="shipping-address">
-             	 <p>Invoice Date: 12.05.2025</p>
-                <p>Invoice Number: 1001</p>
-                <p>Transation No: 2345234540439943</p>
-                <p>Order Number: Not Generated</p>
-                <p>Order Date: 13.04.2025</p>
-             </div>
-         </section>
-                
-
-        <table class="items">
-            <thead>
-                <tr>
-                    <th>Sl. No.</th>
-                    <th>Product/Service.</th>
-                    <th>Description</th>
-                    <th>Duration</th>
-                    <th>Amount (AED)</th>
-                    <th>VAT</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>1</td>
-                    <td>Basic Plan</td>
-                    <td>Plan Purchased</td>
-                    <td>1 Month</td>
-                    <td>10.00</td>
-                    <td>1.91</td>
-                </tr>
-            </tbody>
-            <tfooter>
-            	<tr >
-                	<th  colspan="10" >
-                    <div style="display:flex;justify-content: space-between;">
-                    <p>
-                    TOTAL:
-                    <br>
-                    Total invoice value (In words):
-                    </p>
-                      <p style="text-align:right"> AED 11.91/- <br>
-                         Eleven and ninety-one fils 
-                      </p>
-                      </div>
-                    </th>
-                </tr>
-               
-            </tfooter>
+        <table width="100%" style="margin-bottom: 20px;">
+            <tr>
+                <td width="50%">
+                    <img src="{{ public_path('storage/uploads/logo/logo-dark.png') }}" style="width: 50px;">
+                </td>
+                <td width="50%" style="text-align: right;">
+                    <span style="margin: 0;">Tax Invoice/Bill of Supply/Cash Memo</span>
+                    <p style="margin: 0;">(Original for Recipient)</p>
+                </td>
+            </tr>
         </table>
 
-        <footer>
-             <div class="payment-info">
-                  <span  >
-                  Mode of Payment: Prepaid
-                  </span>
+        <table width="100%" style="margin-bottom: 20px;">
+            <tr>
+                <td width="50%" valign="top">
+                    <h2>From:</h2>
+                    <p>Dr Computers</p>
+                    <p>Al Mullah Building</p>
+                    <p>42 - Bur Dubai - Dubai</p>
+                    <p>United Arab Emirates</p>
+                </td>
+                <td width="50%" valign="top">
+                    <h2>Billing Address:</h2>
+                    <p>ZAIN ABULAH KHAN</p>
+                    <p>#305, Gulnaz Javeed Manor, Wheeler Road, Cooke Town, United Arab Emirates.</p>
+                </td>
+            </tr>
+        </table>
 
-                </div>
-               <div class="company-signature">
-               
-            <p>for DR computers</p><br><br><br><br>
-            <p>Authorised Signatory</p>
-            <br><br><br><br><br>
-            </div>
-        </footer>
-        <div style="text-align:center">
-        <p>Declaration: We declare that this invoice shows the actual price of the goods described and that all particulars are true and correct.</p>
-        <p>This is a Computer Generated Invoice</p>
-        </div>
+
+        <table width="100%" style="margin-bottom: 20px;">
+            <tr>
+                <td width="50%" valign="top">
+                    <p>Phone: +971 56 123 1093</p>
+                    <p>Email: info@drcomputers.ae</p>
+                    <p>VAT Registration No: 29AARPK5605J1Z8</p>
+                    <p>Website : https://www.drcomputers.ae</p>
+                </td>
+                <td width="50%" valign="top">
+                    <p>Invoice Date: 12.05.2025</p>
+                    <p>Invoice Number: 1001</p>
+                    <p>Transaction No: 2345234540439943</p>
+                    <p>Order Number: Not Generated</p>
+                    <p>Order Date: 13.04.2025</p>
+                </td>
+            </tr>
+        </table>
+
+        @yield('content')
     </div>
 </body>
-</html> --}}
+
+</html>

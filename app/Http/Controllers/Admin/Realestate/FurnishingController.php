@@ -8,9 +8,12 @@ use App\Models\RealestateFurnishing;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use App\Traits\ActivityLogger;
 
 class  FurnishingController extends Controller
 {
+    use ActivityLogger;
+
     public function index()
     {
         if (Auth::user()->can('furnishing listing')) {

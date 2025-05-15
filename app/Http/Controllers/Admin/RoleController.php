@@ -9,10 +9,12 @@ use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Controller;
-
+use App\Traits\ActivityLogger;
 
 class RoleController extends Controller
 {
+    use ActivityLogger;
+
     public function index()
     {
         if(Auth::user()->can('role listing'))

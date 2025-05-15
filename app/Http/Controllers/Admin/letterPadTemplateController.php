@@ -10,9 +10,11 @@ use Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use App\Traits\ActivityLogger;
 
 class letterPadTemplateController extends Controller
 {
+    use ActivityLogger;
 
     public function index()
     {
@@ -39,19 +41,15 @@ class letterPadTemplateController extends Controller
         if (Auth::user()->can('show letter pad template')) {
             $validated = $request->validate([
                 'name' => 'required|string|max:255',
-                'header' => 'required|string',
-                'footer' => 'nullable|string',
                 'image' => 'required|image|mimes:jpeg,png,jpg|max:2048',
             ]);
 
 
             $new = new LetterPadTemplate();
             $new->name = $request->name;
-            $new->header = $request->header;
-            $new->footer = $request->footer;
 
             if ($request->hasFile('image')) {
-                $path = $request->file('image')->store('uploads/templates');
+                $path = $request->file('image')->store('app/public/uploads/templates');
                 $new->image = $path;
             }
             try {
@@ -85,8 +83,6 @@ class letterPadTemplateController extends Controller
         if (Auth::user()->can('edit letter pad template')) {
             $request->validate([
                 'name' => 'required|string|max:255',
-                'header' => 'required|string',
-                'footer' => 'nullable|string',
                 'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048', // not 'required' in update
             ]);
 
@@ -105,7 +101,7 @@ class letterPadTemplateController extends Controller
                 }
 
                 // Store new image
-                $path = $request->file('image')->store('uploads/templates');
+                $path = $request->file('image')->store('app/public/uploads/templates');
                 $new->image = $path;
             }
 

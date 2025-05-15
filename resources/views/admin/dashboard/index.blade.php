@@ -75,62 +75,75 @@
 @section('breadcrumb')
     {{-- <li class="breadcrumb-item"><a href="{{route('dashboard')}}">{{__('Dashboard')}}</a></li> --}}
 @endsection
+
 @section('content')
     <div class="row">
         <div class="col-xxl-12">
             <div class="row">
                 <div class="col-lg-3 col-6 dashboard-card">
                     <div class="card">
-                        <div class="card-body">
-                            <div class="d-flex flex-row gap-2">
-                                <div class="theme-avtar bg-primary mb-3 badge">
-                                    <i class="ti ti-users"></i>
+                        <div class="card-body"> <a href="{{ route('admin.company.index') }}" class="text-primary">
+                                <div class="d-flex flex-row gap-2">
+
+                                    <div class="theme-avtar bg-primary mb-3 badge">
+                                        <i class="ti ti-users"></i>
+                                    </div>
+                                    <div class="d-flex flex-column ">
+                                        <h6 class="mb-3 fw-bold">{{ __('Total Companies') }} : <span
+                                                class="mb-0">{{ $user['total_companies'] }}</span></h6>
+                                        <p class="text-muted text-sm mb-2">{{ __('Active Companies') }} : <span
+                                                class="text-dark">{{ $user['active_companies'] }}</span></p>
+                                        <p class="text-muted text-sm mb-2">{{ __('Inactive Companies') }} : <span
+                                                class="text-dark">{{ $user['inactive_companies'] }}</span></p>
+                                    </div>
+
                                 </div>
-                                <div class="d-flex flex-column ">
-                                    <p class="text-muted text-sm mb-2">{{ __('Paid Companies') }} : <span
-                                            class="text-dark">{{ $user['total_paid_user'] }}</span></p>
-                                    <h6><a href="{{ route('admin.company.index') }}"
-                                            class="text-primary">{{ __('Total Companies') }} : <span
-                                                class="mb-0">{{ $user->total_user }}</span></a></h6>
-                                </div>
-                            </div>
+                            </a>
                         </div>
                     </div>
                 </div>
                 <div class="col-lg-3 col-6 dashboard-card">
                     <div class="card">
                         <div class="card-body">
-                            <div class="d-flex flex-row gap-2">
-                                <div class="theme-avtar bg-info mb-3">
-                                    <i class="ti ti-shopping-cart-plus"></i>
+                            <a href="{{ route('admin.order.index') }}" class="text-info">
+                                <div class="d-flex flex-row gap-2">
+                                    <div class="theme-avtar bg-info mb-3">
+                                        <i class="ti ti-trophy "></i>
+                                    </div>
+                                    <div class="d-flex flex-column ">
+                                        <h6 class="mb-3 fw-bold">{{ __('Total Amount') }} : <span
+                                                class="mb-0">{{ $user['total_amount'] }}</span>
+                                        </h6>
+                                        <p class="text-muted text-sm mb-2 "> {{ __('Pending Amount') }} : <span
+                                                class="text-dark">{{ $user['pending_amount'] }}</span>
+                                        </p>
+                                        <p class="text-muted text-sm mb-2 "> {{ __('Due Amount') }} : <span
+                                                class="text-dark">{{ $user['due_amount'] }}</span>
+                                        </p>
+                                    </div>
                                 </div>
-                                <div class="d-flex flex-column ">
-                                    <p class="text-muted text-sm mb-2 "> {{ __('Total Amount') }} : <span
-                                            class="text-dark">{{ \Auth::user()->priceFormat($user['total_orders_price']) }}</span>
-                                    </p>
-                                    <h6 class="mb-3"><a href="{{ route('admin.order.index') }}"
-                                            class="text-info">{{ __('Total Orders') }} : <span
-                                                class="mb-0">{{ $user->total_orders }}</span></a></h6>
-                                </div>
-                            </div>
+                            </a>
                         </div>
                     </div>
                 </div>
                 <div class="col-lg-3 col-6 dashboard-card">
                     <div class="card">
                         <div class="card-body">
-                            <div class="d-flex flex-row gap-2">
-                                <div class="theme-avtar bg-danger mb-3">
-                                    <i class="ti ti-trophy"></i>
+                            <a href="{{ route('admin.plans.index') }}" class="text-danger">
+                                <div class="d-flex flex-row gap-2">
+                                    <div class="theme-avtar bg-danger mb-3">
+                                        <i class="ti ti-shopping-cart-plus"></i>
+                                    </div>
+                                    <div class="d-flex flex-column ">
+                                        <h6 class="mb-3 fw-bold">{{ __('Total Orders') }} : <span
+                                                class="mb-0">{{ $user['total_orders'] }}</span></h6>
+                                        <p class="text-muted text-sm mb-2">{{ __('Pending Invoices') }} : <span
+                                                class="text-dark">{{ $user['pending_invoices'] }}</span></p>
+                                        <p class="text-muted text-sm mb-2">{{ __('Due Invoices') }} : <span
+                                                class="text-dark">{{ $user['due_invoices'] }}</span></p>
+                                    </div>
                                 </div>
-                                <div class="d-flex flex-column ">
-                                    <p class="text-muted text-sm mb-2">{{ __('Most Purchase Plan') }} : <span
-                                            class="text-dark">{{ $user['most_purchese_plan'] }}</span></p>
-                                    <h6 class="mb-3"><a href="{{ route('admin.plans.index') }}"
-                                            class="text-danger">{{ __('Total Plans') }} : <span
-                                                class="mb-0">{{ $user->total_plan }}</span></a></h6>
-                                </div>
-                            </div>
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -142,11 +155,13 @@
                                     <i class="ti ti-ticket"></i>
                                 </div>
                                 <div class="d-flex flex-column ">
+                                    <h6 class="mb-3 fw-bold"><a href="{{ route('admin.plans.index') }}"
+                                            class="text-secondary">{{ __('Total Tickets') }} : <span
+                                                class="mb-0">{{ $user['total_ticket'] }}</span></a></h6>
+                                    <p class="text-muted text-sm mb-2">{{ __('Opened Tickets') }} : <span
+                                            class="text-dark">{{ $user['open_ticket'] }}</span></p>
                                     <p class="text-muted text-sm mb-2">{{ __('Closed Tickets') }} : <span
-                                            class="text-dark">{{ $user['most_purchese_plan'] }}</span></p>
-                                    <h6 class="mb-3"><a href="{{ route('admin.plans.index') }}"
-                                            class="text-secondary">{{ __('Open Tickets') }} : <span
-                                                class="mb-0">{{ $user->total_plan }}</span></a></h6>
+                                            class="text-dark">{{ $user['close_ticket'] }}</span></p>
                                 </div>
                             </div>
                         </div>

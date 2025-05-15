@@ -9,9 +9,12 @@ use App\Traits\Media\HandlesMediaFolders;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use App\Traits\ActivityLogger;
 
 class InvoiceTemplateController extends Controller
 {
+    use ActivityLogger;
+
     public function index()
     {
         if (Auth::user()->can('invoice template listing')) {
@@ -40,11 +43,14 @@ class InvoiceTemplateController extends Controller
                 'image' => 'required|image|mimes:jpeg,png,jpg|max:2048',
             ]);
 
+
+
             $new = new InvoiceTemplate();
             $new->name = $request->name;
 
             if ($request->hasFile('image')) {
-                $path = $request->file('image')->store('uploads/templates');
+                $path = $request->file('image')->store('app/public/uploads/templates');
+                
                 $new->image = $path;
             }
             $new->save();
@@ -72,27 +78,20 @@ class InvoiceTemplateController extends Controller
     public function update(Request $request, $id)
     {
         if (Auth::user()->can('edit invoice template')) {
+        
             $request->validate([
-                'name' => 'required|string|max:255',
-                'header' => 'required|string',
                 'footer' => 'nullable|string',
                 'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048', // not 'required' in update
             ]);
 
             $new = InvoiceTemplate::findOrFail($id);
-
             $new->name = $request->name;
-            $new->header = $request->header;
-            $new->footer = $request->footer;
-
-
-
             if ($request->hasFile('image')) {
+
                 // Delete old image if exists
                 if ($new->image && Storage::exists($new->image)) {
                     Storage::delete($new->image);
                 }
-
                 // Store new image
                 $path = $request->file('image')->store('uploads/templates');
                 $new->image = $path;

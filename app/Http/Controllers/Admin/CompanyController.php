@@ -28,11 +28,16 @@ use Illuminate\Support\Facades\Validator;
 use Session;
 use Lab404\Impersonate\Impersonate;
 use App\Traits\Media\HandlesMediaFolders;
+use App\Traits\ActivityLogger;
+
 
 class  CompanyController extends Controller
 {
 
     use HandlesMediaFolders;
+    use ActivityLogger;
+
+    
     public function __construct()
     {
         $this->middleware('auth'); // Ensure user is authenticated
@@ -55,6 +60,7 @@ class  CompanyController extends Controller
             $user            = Auth::user();
             $business_types  = BusinessType::get();
             $plans           = Plan::get();
+            
             return view('admin.company.form', compact('customFields', 'business_types', 'plans'));
         } else {
             return redirect()->back()->with('error', 'Permission denied.');
@@ -187,6 +193,10 @@ class  CompanyController extends Controller
             }
 
             DB::commit();
+
+            $this->logActivity('Create a Company', 'Company Id '.$user->id, route('admin.company.index'), 'New Company Created successfully',Auth::user()->creatorId(), Auth::user()->id);
+
+
             return redirect()->route('admin.company.index')->with('success', __('User successfully added.') . ((isset($smtp_error)) ? '<br> <span class="text-danger">' . $smtp_error . '</span>' : ''));
         } else {
             DB::rollBack();
@@ -257,6 +267,8 @@ class  CompanyController extends Controller
             $company->save();
 
             CustomField::saveData($user, $request->customField);
+
+            $this->logActivity('Update a Company', 'Company Id '.$user->id, route('admin.company.index'), 'Company Updated successfully',Auth::user()->creatorId(), Auth::user()->id);
 
             return redirect()->route('admin.company.index')->with(
                 'success',

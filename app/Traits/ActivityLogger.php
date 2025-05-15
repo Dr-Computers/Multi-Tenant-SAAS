@@ -14,7 +14,7 @@ trait ActivityLogger
             'reference_url'  => $reference_url ?? request()->fullUrl(),
             'user_agent'     => request()->userAgent(),
             'ip_address'     => request()->ip(),
-            'company_id'     => $company_id ?? (Auth::user()->company_id ?? null),
+            'company_id'     => $company_id ?? (Auth::user()->creatorId() ?? null),
             'user_id'        => $user_id ?? Auth::id(),
             'notes'          => $notes,
         ]);

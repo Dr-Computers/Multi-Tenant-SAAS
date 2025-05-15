@@ -17,12 +17,15 @@ use App\Models\ReferralTransactionOrder;
 use App\Models\ReferralTransaction;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Database\Eloquent\SoftDeletes;
+
 
 class User extends Authenticatable implements MustVerifyEmail
 {
     use HasRoles;
     use Notifiable;
     use Impersonate;
+    use SoftDeletes;
 
     protected $appends = ['profile'];
 
@@ -384,10 +387,23 @@ class User extends Authenticatable implements MustVerifyEmail
         return User::where('type', '!=', 'super admin')->where('type', '!=', 'company')->where('created_by', '=', $this->creatorId())->count();
     }
 
-    public function countCompany()
+    public function countCompanies()
     {
         return User::where('type', '=', 'company')->where('created_by', '=', $this->creatorId())->count();
     }
+
+    public function countActiveCompanies()
+    {
+        return User::where('type', '=', 'company')->where('created_by', '=', $this->creatorId())->where('is_active',1)->count();
+    }
+
+
+    public function countInActiveCompanies()
+    {
+        return User::where('type', '=', 'company')->where('created_by', '=', $this->creatorId())->where('is_active',0)->count();
+    }
+
+
 
     public function countOrder()
     {

@@ -19,9 +19,13 @@ use Artisan;
 use Illuminate\Support\Facades\Validator;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\PermissionRegistrar;
+use App\Traits\ActivityLogger;
+
 
 class SystemController extends Controller
 {
+    
+    use ActivityLogger;
     public function index()
     {
         $settings              = Utility::settings();

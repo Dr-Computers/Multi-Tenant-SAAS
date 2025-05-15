@@ -456,9 +456,9 @@ if (!function_exists('dateTimeFormat')) {
 
     function dateTimeFormat($date)
     {
-        $date = date('d M,Y',strtotime($date));
-        $time = date('h:i a',strtotime($date));
-        return  $date . ',' . $time ;
+        $date = date('d M,Y', strtotime($date));
+        $time = date('h:i a', strtotime($date));
+        return  $date . ',' . $time;
     }
 }
 
@@ -525,18 +525,18 @@ if (!function_exists('getCompanyAllDetails')) {
     function getCompanyAllDetails($key = null)
     {
         static $company = null;
-        
+
         // Cache the company details to avoid multiple queries
         if ($company === null) {
             $user = Auth::user();
             $company = $user && $user->company ? $user->company : null;
         }
-        
+
         // If no key requested, return entire company object
         if ($key === null) {
             return $company;
         }
-        
+
         // Return specific property if requested
         return $company?->{$key};
     }
@@ -550,4 +550,73 @@ if (!function_exists('getCompanyAllDetails')) {
 
 
 
-
+function numberToWords($number)
+{
+    $units = [
+        0 => '',
+        1 => 'one',
+        2 => 'two',
+        3 => 'three',
+        4 => 'four',
+        5 => 'five',
+        6 => 'six',
+        7 => 'seven',
+        8 => 'eight',
+        9 => 'nine',
+        10 => 'ten',
+        11 => 'eleven',
+        12 => 'twelve',
+        13 => 'thirteen',
+        14 => 'fourteen',
+        15 => 'fifteen',
+        16 => 'sixteen',
+        17 => 'seventeen',
+        18 => 'eighteen',
+        19 => 'nineteen'
+    ];
+    $tens = [
+        20 => 'twenty',
+        30 => 'thirty',
+        40 => 'forty',
+        50 => 'fifty',
+        60 => 'sixty',
+        70 => 'seventy',
+        80 => 'eighty',
+        90 => 'ninety'
+    ];
+    $scales = [
+        100 => 'hundred',
+        1000 => 'thousand',
+        1000000 => 'million',
+        1000000000 => 'billion'
+    ];
+    $result = [];
+    if ($number == 0) {
+        return 'zero';
+    }
+    while ($number > 0) {
+        $scale = 1;
+        foreach ($scales as $multiplier => $scaleName) {
+            if ($number >= $multiplier) {
+                $scale = $multiplier;
+            }
+        }
+        $scaleName = $scales[$scale] ?? '';
+        if ($scaleName) {
+            $result[] = numberToWords($number / $scale) . ' ' . $scaleName;
+            $number %= $scale;
+        } elseif ($number < 20) {
+            $result[] = $units[$number];
+            $number = 0;
+        } elseif ($number < 100) {
+            $ten = floor($number / 10) * 10;
+            $unit = $number % 10;
+            $result[] = ($tens[$ten] ?? '') . ($unit ? ' ' . $units[$unit] : '');
+            $number = 0;
+        } else {
+            $result[] = numberToWords($number / 100) . ' hundred';
+            $number %= 100;
+        }
+    }
+    return implode(' ', array_reverse($result));
+}

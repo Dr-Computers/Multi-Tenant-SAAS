@@ -14,6 +14,7 @@ use App\Models\Plan;
 use App\Models\ProductServiceCategory;
 use App\Models\ProductServiceUnit;
 use App\Models\Revenue;
+use App\Models\SupportTicket;
 use App\Models\Tax;
 use App\Models\Utility;
 use App\Models\User;
@@ -21,10 +22,14 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Traits\Media\HandlesMediaFolders;
+use App\Traits\ActivityLogger;
 
 class DashboardController extends Controller
 {
     use HandlesMediaFolders;
+    use ActivityLogger;
+
+    
     /**
      * Create a new controller instance.
      *
@@ -44,15 +49,28 @@ class DashboardController extends Controller
     {
         if (Auth::check()) {
             if (Auth::user()->type == 'super admin' || Auth::user()->type == 'admin staff') {
-                $user                       = Auth::user();
-                $user['total_user']         = $user->countCompany();
-                $user['total_paid_user']    = $user->countPaidCompany();
-                $user['total_orders']       = Order::total_orders();
-                $user['total_orders_price'] = Order::total_orders_price();
-                $user['total_plan']         = Plan::total_plan();
-                $user['most_purchese_plan'] = (!empty(Plan::most_purchese_plan()) ? Plan::most_purchese_plan()->total : 0);
-                $chartData                  = $this->getOrderChart(['duration' => 'week']);
-                return view('admin.dashboard.super_admin', compact('user', 'chartData'));
+                $user                           = Auth::user();
+
+                $user['total_companies']        = $user->countCompanies();
+                $user['active_companies']       = $user->countActiveCompanies();
+                $user['inactive_companies']     = $user->countInActiveCompanies();
+
+                $user['total_amount']           = Order::totalAmount();
+                $user['pending_amount']         = Order::pendingAmount();
+                $user['due_amount']             = Order::dueAmount();
+
+
+                $user['total_orders']           = Order::total_orders();
+                $user['pending_invoices']         = Order::pendingInvoices();
+                $user['due_invoices']             = Order::dueInvoices();
+
+
+                $user['total_ticket']           = SupportTicket::count();
+                $user['open_ticket']            = SupportTicket::where('status',0)->count();
+                $user['close_ticket']           = SupportTicket::where('status',1)->count();
+
+                $chartData                      = $this->getOrderChart(['duration' => 'week']);
+                return view('admin.dashboard.index', compact('user', 'chartData'));
             } 
             else {
                 return redirect('login');

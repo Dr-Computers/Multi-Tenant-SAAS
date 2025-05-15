@@ -10,6 +10,7 @@ use App\Models\Invoice;
 use App\Models\Retainer;
 use App\Models\RetainerPayment;
 use App\Models\InvoicePayment;
+use App\Models\InvoiceSetting;
 use App\Models\Order;
 use App\Models\Plan;
 use App\Models\SubscriptionOrder;
@@ -18,16 +19,25 @@ use App\Models\User;
 use App\Models\UserCoupon;
 use App\Models\Utility;
 use App\Models\Vender;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
 use Session;
 use Stripe;
+
+use Barryvdh\DomPDF\Facade\Pdf;
+use Symfony\Component\HttpFoundation\Response;
+use App\Traits\ActivityLogger;
+
 
 class OrderController extends Controller
 {
 
     use \App\Emails;
+    use ActivityLogger;
+
 
     public $stripe_secret;
     public $settings;
@@ -58,42 +68,48 @@ class OrderController extends Controller
         } else {
             return redirect()->back()->with('error', 'Permission denied.');
         }
-
-        // } else {
-        //     $orders = Order::select([
-        //         'orders.*',
-        //         'users.name as user_name',
-        //     ])->join('users', 'orders.user_id', '=', 'users.id')->orderBy('orders.created_at', 'DESC')->where('users.id', '=', $objUser->id)->with('total_coupon_used.coupon_detail')->with(['total_coupon_used.coupon_detail'])->get();
-
-        //     return view('admin.order.index', compact('orders'));
-        // }
     }
 
 
 
-    public function sendEmail(Order $order){
-        
+    public function sendEmail(Order $order)
+    {
         $company = $order->user;
-        return view('admin.order.send-email-form',compact('order','company'));
+        return view('admin.order.send-email-form', compact('order', 'company'));
     }
 
-    public function sendEmailProcess(Order $order,Request $request){
-
-        $this->sendOrderInvoice($order,$request->email);
+    public function sendEmailProcess(Order $order, Request $request)
+    {
+        $this->sendOrderInvoice($order, $request->email);
 
         return redirect()->back()->with('success', 'Email sent successfully.');
     }
-    public function downloadInvoice(Request $request){
 
+    public function downloadInvoice(Order $order)
+    {
+        $adminTemplate = InvoiceSetting::where('user_id', Auth::user()->creatorId())->first();
+
+        $pdf = PDF::loadView('pdf.invoices.partial.admin-invoice', compact('order', 'adminTemplate'))->setPaper('a4', 'portrait');
+
+        // Save PDF to temporary location
+        $relativePath = 'public/uploads/invoices/invoice-' . $order->order_id . '.pdf';
+        $absolutePath = storage_path('app/' . $relativePath);
+
+        File::ensureDirectoryExists(dirname($absolutePath));
+        $pdf->save($absolutePath);
+
+        // Return the file as download and delete after response
+        return response()->download($absolutePath)->deleteFileAfterSend(true);
     }
-    public function makePayment(Request $request){
 
+    public function makePayment(Request $request) {}
+
+    public function markAsPayment(Order $order)
+    {
+        $order->payment_status = 'completed';
+        $order->save();
+        return redirect()->back()->with('success', __('Order marked as paid successfully.'));
     }
-    public function markAsPayment(Request $request){
-
-    }
-
-
 
     public function refund(Request $request, $id, $user_id)
     {
@@ -116,11 +132,12 @@ class OrderController extends Controller
             $order =     Order::where('id', $id)->first() ?? abort(404);
             $subOrder = SubscriptionOrder::where('order_id', $order->id)->first();
             CompanySubscription::where('order_id', $order->id)->delete();
-            if ($subOrder->status == 1) {
+            if ($subOrder && $subOrder->status == 1) {
                 Order::where('company_id', $subOrder->company_id)->orderBy('created_at', 'desc')->update(['status' => 1]);
             }
-
+            if ($subOrder)
             $subOrder->delete();
+        
             $order->delete();
 
             return redirect()->back()->with('success', __('Order Deleted Successfully'));

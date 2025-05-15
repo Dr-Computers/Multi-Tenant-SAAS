@@ -26,8 +26,14 @@ class Order extends Model
 
     public function user()
     {
-        return $this->hasOne(User::class,'id','company_id');
+        return $this->hasOne(User::class, 'id', 'company_id');
     }
+
+    public function plan()
+    {
+        return $this->hasMany(Plan::class, 'id', 'plan_id');
+    }
+
 
     public static function total_orders()
     {
@@ -43,4 +49,36 @@ class Order extends Model
     {
         return $this->hasOne('App\Models\UserCoupon', 'order', 'order_id');
     }
+
+     public static function pendingInvoices()
+     {
+         return Order::where('payment_status', 'pending')->count();
+     }
+ 
+     public static function dueInvoices()
+     {
+         return Order::where('payment_status', 'pending')
+             ->whereRaw('DATE_ADD(created_at, INTERVAL 7 DAY) < NOW()')
+             ->count();
+     }
+
+
+    public static function totalAmount()
+    {
+        return Order::sum('price');
+    }
+
+    public static function pendingAmount()
+    {
+        return Order::where('payment_status', 'pending')->sum('price');
+    }
+
+    public static function dueAmount()
+    {
+        return Order::where('payment_status', 'pending')
+            ->whereRaw('DATE_ADD(created_at, INTERVAL 7 DAY) < NOW()')
+            ->sum('price');
+    }
+
+    
 }

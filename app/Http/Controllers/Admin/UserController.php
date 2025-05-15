@@ -20,12 +20,15 @@ use Session;
 use Spatie\Permission\Models\Role;
 use Lab404\Impersonate\Impersonate;
 use App\Traits\Media\HandlesMediaFolders;
+use App\Traits\ActivityLogger;
 
 
 class UserController extends Controller
 {
 
-    use HandlesMediaFolders;
+    use HandlesMediaFolders; 
+    use ActivityLogger;
+
     public function __construct()
     {
         $this->middleware('auth'); // Ensure user is authenticated

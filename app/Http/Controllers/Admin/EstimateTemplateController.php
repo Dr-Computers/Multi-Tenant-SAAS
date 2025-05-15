@@ -9,11 +9,14 @@ use App\Traits\Media\HandlesMediaFolders;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use App\Traits\ActivityLogger;
 
 
 class EstimateTemplateController extends Controller
 {
+    use ActivityLogger;
 
+    
     public function index()
     {
         if (Auth::user()->can('edit email template')) {
@@ -39,18 +42,14 @@ class EstimateTemplateController extends Controller
         if (Auth::user()->can('edit email template')) {
             $request->validate([
                 'name' => 'required|string|max:255',
-                'header' => 'required|string',
-                'footer' => 'nullable|string',
                 'image' => 'required|image|mimes:jpeg,png,jpg|max:2048',
             ]);
 
             $new = new EstimateTemplate();
             $new->name = $request->name;
-            $new->header = $request->header;
-            $new->footer = $request->footer;
 
             if ($request->hasFile('image')) {
-                $path = $request->file('image')->store('uploads/templates');
+                $path = $request->file('image')->store('app/public/uploads/templates');
                 $new->image = $path;
             }
             $new->save();
@@ -80,18 +79,11 @@ class EstimateTemplateController extends Controller
         if (Auth::user()->can('edit email template')) {
             $request->validate([
                 'name' => 'required|string|max:255',
-                'header' => 'required|string',
-                'footer' => 'nullable|string',
                 'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048', // not 'required' in update
             ]);
 
             $new = EstimateTemplate::findOrFail($id);
-
             $new->name = $request->name;
-            $new->header = $request->header;
-            $new->footer = $request->footer;
-
-
 
             if ($request->hasFile('image')) {
                 // Delete old image if exists
@@ -100,7 +92,7 @@ class EstimateTemplateController extends Controller
                 }
 
                 // Store new image
-                $path = $request->file('image')->store('uploads/templates');
+                $path = $request->file('image')->store('app/public/uploads/templates');
                 $new->image = $path;
             }
 

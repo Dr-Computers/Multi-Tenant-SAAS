@@ -9,10 +9,14 @@ use App\Models\Utility;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use App\Traits\ActivityLogger;
 
 class EmailTemplateController extends Controller
 {
 
+    use ActivityLogger;
+
+    
     public function index()
     {
         $usr = \Auth::user();

@@ -109,7 +109,7 @@ Route::group(
         Route::post('order/send-email/{order}', 'OrderController@sendEmailProcess')->name('order.send-email.process');
         Route::get('order/download/invoice/{order}', 'OrderController@downloadInvoice')->name('order.download.invoice');
         Route::get('order/make/payment/{order}', 'OrderController@makePayment')->name('order.make.payment');
-        Route::get('order/mark-as-payment/{order}', 'OrderController@markAsPayment')->name('order.mark.as.payment');
+        Route::post('order/mark-as-payment/{order}', 'OrderController@markAsPayment')->name('order.mark.as.payment');
         Route::delete('order/{id}/destroy', 'OrderController@destroy')->name('order.destroy');
 
         Route::get('/refund/{id}/{user_id}', 'OrderController@refund')->name('order.refund');

@@ -11,9 +11,13 @@ use App\Models\User;
 use App\Models\Utility;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Traits\ActivityLogger;
 
 class SectionRequestController extends Controller
 {
+    use ActivityLogger;
+
+    
     /**
      * Display a listing of the resource.
      *

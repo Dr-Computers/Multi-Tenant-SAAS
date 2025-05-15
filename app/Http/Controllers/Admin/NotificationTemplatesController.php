@@ -8,9 +8,12 @@ use App\Models\Utility;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use App\Traits\ActivityLogger;
 
 class NotificationTemplatesController extends Controller
 {
+
+    use ActivityLogger;
 
     public function index($id = null, $lang = 'en')
     {
