@@ -89,6 +89,8 @@ class OrderController extends Controller
     {
         $adminTemplate = InvoiceSetting::where('user_id', Auth::user()->creatorId())->first();
 
+
+        return view('pdf.invoices.partial.admin-invoice', compact('order', 'adminTemplate'));
         $pdf = PDF::loadView('pdf.invoices.partial.admin-invoice', compact('order', 'adminTemplate'))->setPaper('a4', 'portrait');
 
         // Save PDF to temporary location

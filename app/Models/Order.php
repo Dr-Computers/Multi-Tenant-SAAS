@@ -29,6 +29,15 @@ class Order extends Model
         return $this->hasOne(User::class, 'id', 'company_id');
     }
 
+    public function company()
+    {
+        return $this->hasOne(Company::class, 'user_id', 'company_id');
+    }
+
+    public function companySubscriptions(){
+        return $this->hasMany(CompanySubscription::class, 'order_id', 'id');
+    }
+
     public function plan()
     {
         return $this->hasMany(Plan::class, 'id', 'plan_id');

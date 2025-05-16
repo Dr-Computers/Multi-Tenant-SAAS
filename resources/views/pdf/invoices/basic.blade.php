@@ -149,8 +149,13 @@
                 </td>
                 <td width="50%" valign="top">
                     <h2>Billing Address:</h2>
-                    <p>ZAIN ABULAH KHAN</p>
-                    <p>#305, Gulnaz Javeed Manor, Wheeler Road, Cooke Town, United Arab Emirates.</p>
+                    <p>{{ $order->user->name }}</p>
+                    @php
+                        $company = $order->company;
+                    @endphp
+                    <p>{{ $company ? $company->address . ', ' : ''}}</p>
+                       {{ $company ? $company->landmark . ', ' . $company->postalcode . ', ' : ''}}</p>
+                    <p>{{ $company ?  $company->city . ', ' . $company->country : '' }}</p>
                 </td>
             </tr>
         </table>
@@ -165,11 +170,9 @@
                     <p>Website : https://www.drcomputers.ae</p>
                 </td>
                 <td width="50%" valign="top">
-                    <p>Invoice Date: 12.05.2025</p>
-                    <p>Invoice Number: 1001</p>
-                    <p>Transaction No: 2345234540439943</p>
+                    <p>Order Date: {{ dateTimeFormat($order->created_at) }}</p>
+                    <p>Order Number: {{ $order->order_id }}</p>
                     <p>Order Number: Not Generated</p>
-                    <p>Order Date: 13.04.2025</p>
                 </td>
             </tr>
         </table>
