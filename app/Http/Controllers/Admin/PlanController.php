@@ -97,6 +97,16 @@ class PlanController extends Controller
                     $sections->save();
                 }
 
+                $this->logActivity(
+                    'Subscription Plan as Created',
+                    'Subscription Plan  ' . $plan->name,
+                    route('admin.plans.index'),
+                    'Subscription Plan as Created successfully',
+                    Auth::user()->creatorId(),
+                    Auth::user()->id
+                );
+
+
                 return redirect()->back()->with('success', __('Plan Successfully created.'));
             } catch (\Exception $e) {
                 return redirect()->back()->with('error', __('Failed to create plan: ') . $e->getMessage());
@@ -128,7 +138,7 @@ class PlanController extends Controller
 
     public function update(Request $request, $plan_id)
     {
-        if (\Auth::user()->can('edit plan')) {
+        if (Auth::user()->can('edit plan')) {
             $admin_payment_setting = Utility::getAdminPaymentSetting();
             $plan = Plan::find($plan_id);
             if (!empty($plan)) {
@@ -187,6 +197,17 @@ class PlanController extends Controller
                         $sections->plan_id           = $plan->id;
                         $sections->save();
                     }
+
+
+                    $this->logActivity(
+                        'Subscription Plan as Updated',
+                        'Subscription Plan  ' . $plan->name,
+                        route('admin.plans.index'),
+                        'Subscription Plan as Updated successfully',
+                        Auth::user()->creatorId(),
+                        Auth::user()->id
+                    );
+
 
                     return redirect()->back()->with('success', __('Plan successfully updated.'));
                 } else {
@@ -260,6 +281,16 @@ class PlanController extends Controller
             $plan = Plan::find($id);
             if ($plan->id == $id) {
                 PlanModuleSection::where('plan_id', $plan->id)->delete();
+
+                $this->logActivity(
+                    'Subscription Plan as Deleted',
+                    'Subscription Plan  ' . $plan->name,
+                    route('admin.plans.index'),
+                    'Subscription Plan as Deleted successfully',
+                    Auth::user()->creatorId(),
+                    Auth::user()->id
+                );
+
                 $plan->delete();
                 return redirect()->back()->with('success', __('Plan deleted successfully'));
             } else {
@@ -321,6 +352,16 @@ class PlanController extends Controller
                 $section->price    = $request->price;
                 $section->name     =  $request->name;
                 $section->save();
+
+                $this->logActivity(
+                    'Feature Section as Updated',
+                    'Feature Section  ' . $plan->name,
+                    route('admin.plans.index'),
+                    'Feature Sectionas Updated successfully',
+                    Auth::user()->creatorId(),
+                    Auth::user()->id
+                );
+
                 return redirect()->back()->with('success', __('section successfully updated.'));
             } else {
                 return redirect()->back()->with('error', __('section not found.'));

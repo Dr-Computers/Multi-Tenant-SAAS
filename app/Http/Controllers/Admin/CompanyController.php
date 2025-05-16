@@ -37,7 +37,7 @@ class  CompanyController extends Controller
     use HandlesMediaFolders;
     use ActivityLogger;
 
-    
+
     public function __construct()
     {
         $this->middleware('auth'); // Ensure user is authenticated
@@ -60,7 +60,7 @@ class  CompanyController extends Controller
             $user            = Auth::user();
             $business_types  = BusinessType::get();
             $plans           = Plan::get();
-            
+
             return view('admin.company.form', compact('customFields', 'business_types', 'plans'));
         } else {
             return redirect()->back()->with('error', 'Permission denied.');
@@ -132,7 +132,7 @@ class  CompanyController extends Controller
             }
 
             $user->save();
-            
+
             Company::planOrderStore($plan, $user->id);
 
             $order = Order::where('company_id', $user->id)->orderBy('created_at', 'desc')->first();
@@ -161,8 +161,8 @@ class  CompanyController extends Controller
             CustomField::saveData($user, $request->customField);
 
             Company::createCompanyRoles($user->id);
-            
-            $role_r = Role::findByName('company-'.$user->id);
+
+            $role_r = Role::findByName('company-' . $user->id);
             $user->assignRole($role_r);
 
             // $user->userDefaultDataRegister($user->id);
@@ -194,7 +194,14 @@ class  CompanyController extends Controller
 
             DB::commit();
 
-            $this->logActivity('Create a Company', 'Company Id '.$user->id, route('admin.company.index'), 'New Company Created successfully',Auth::user()->creatorId(), Auth::user()->id);
+            $this->logActivity(
+                'Create a Company',
+                'Company Id ' . $user->id,
+                route('admin.company.index'),
+                'New Company Created successfully',
+                Auth::user()->creatorId(),
+                Auth::user()->id
+            );
 
 
             return redirect()->route('admin.company.index')->with('success', __('User successfully added.') . ((isset($smtp_error)) ? '<br> <span class="text-danger">' . $smtp_error . '</span>' : ''));
@@ -268,7 +275,14 @@ class  CompanyController extends Controller
 
             CustomField::saveData($user, $request->customField);
 
-            $this->logActivity('Update a Company', 'Company Id '.$user->id, route('admin.company.index'), 'Company Updated successfully',Auth::user()->creatorId(), Auth::user()->id);
+            $this->logActivity(
+                'Update a Company',
+                'Company Id ' . $user->id,
+                route('admin.company.index'),
+                'Company Updated successfully',
+                Auth::user()->creatorId(),
+                Auth::user()->id
+            );
 
             return redirect()->route('admin.company.index')->with(
                 'success',
@@ -293,15 +307,14 @@ class  CompanyController extends Controller
                 $user->delete();
                 return redirect()->back()->with('success', __('Company Successfully deleted'));
 
-                // if ($user->delete_status == 0) {
-                //     $user->delete_status = 1;
-                // } else {
-                //     $user->delete_status = 0;
-                // }
-                // $user->save();
-
-
-                return redirect()->route('admin.company.index')->with('success', __('User successfully deleted .'));
+                $this->logActivity(
+                    'Delete a Company',
+                    'Company Id ' . $user->id,
+                    route('admin.company.index'),
+                    'Company Delete successfully',
+                    Auth::user()->creatorId(),
+                    Auth::user()->id
+                );
             } else {
                 return redirect()->back();
             }
@@ -436,6 +449,16 @@ class  CompanyController extends Controller
                     $obj_user->password = Hash::make($request_data['new_password']);;
                     $obj_user->save();
 
+                    $this->logActivity(
+                        'Company Password Reseted',
+                        'Company Id ' . $user->id,
+                        route('admin.company.index'),
+                        'Company Password Reset successfully',
+                        Auth::user()->creatorId(),
+                        Auth::user()->id
+                    );
+
+
                     return redirect()->route('profile', $objUser->id)->with('success', __('Password successfully updated.'));
                 } else {
                     return redirect()->route('profile', $objUser->id)->with('error', __('Please enter correct current password.'));
@@ -466,7 +489,16 @@ class  CompanyController extends Controller
         if (Auth::user()->can('company plan upgrade')) {
             $plan = Plan::where('id', $plan_id)->first();
             Company::planOrderStore($plan, $company_id);
-            return redirect()->back()->with('success', __('successfully updated.'));
+            $this->logActivity(
+                'Company Plan Upgrade',
+                'Company Id ' . $user->id,
+                route('admin.company.index'),
+                'Company Plan Upgraded successfully',
+                Auth::user()->creatorId(),
+                Auth::user()->id
+            );
+
+            return redirect()->back()->with('success', __('successfully upgraded.'));
         } else {
             return redirect()->back()->with('error', 'Permission denied.');
         }
@@ -568,6 +600,16 @@ class  CompanyController extends Controller
             $user = User::find($id);
             if ($user && auth()->check()) {
                 Impersonate::take($request->user(), $user);
+
+                $this->logActivity(
+                    'Company Account Accessed',
+                    'Company Id ' . $user->id,
+                    route('admin.company.index'),
+                    'Company Account Accessed successfully',
+                    Auth::user()->creatorId(),
+                    Auth::user()->id
+                );
+
                 return redirect('/');
             }
         } else {
@@ -578,6 +620,15 @@ class  CompanyController extends Controller
     public function ExitCompany(Request $request)
     {
         Auth::user()->leaveImpersonation($request->user());
+        $this->logActivity(
+            'Company Account Existed',
+            'Company Id ' . $user->id,
+            route('admin.company.index'),
+            'Company Account Existed successfully',
+            Auth::user()->creatorId(),
+            Auth::user()->id
+        );
+
         return redirect('/');
     }
 
@@ -658,11 +709,28 @@ class  CompanyController extends Controller
             if ($user->is_enable_login == 1) {
                 $user->is_enable_login = 0;
                 $user->save();
-                return redirect()->back()->with('success', __('User login disable successfully.'));
+                $this->logActivity(
+                    'Company Login Disabled',
+                    'Company Id ' . $user->id,
+                    route('admin.company.index'),
+                    'Company login disable successfully',
+                    Auth::user()->creatorId(),
+                    Auth::user()->id
+                );
+
+                return redirect()->back()->with('success', __('Company login disable successfully.'));
             } else {
                 $user->is_enable_login = 1;
                 $user->save();
-                return redirect()->back()->with('success', __('User login enable successfully.'));
+                $this->logActivity(
+                    'Company Login Enabled',
+                    'Company Id ' . $user->id,
+                    route('admin.company.index'),
+                    'Company login enable successfully',
+                    Auth::user()->creatorId(),
+                    Auth::user()->id
+                );
+                return redirect()->back()->with('success', __('Company login enable successfully.'));
             }
         } else {
             return redirect()->back()->with('error', 'Permission denied.');
@@ -749,7 +817,16 @@ class  CompanyController extends Controller
 
             Company::sectionOrderStore($features, $company_id, $request->tax, $request->subtotal, $request->discount, $request->coupon_code, $request->grandtotal);
 
-            return back()->with('success', 'Purchase completed successfully!');
+            $this->logActivity(
+                'Company Feature Purchasing Completed',
+                'Company Id ' . $user->id,
+                route('admin.company.index'),
+                'Company Feature Purchasing Completed',
+                Auth::user()->creatorId(),
+                Auth::user()->id
+            );
+
+            return back()->with('success', 'Purchase  completed successfully!');
         } else {
             return redirect()->back()->with('error', 'Permission denied.');
         }

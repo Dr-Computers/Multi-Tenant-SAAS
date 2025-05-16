@@ -17,6 +17,7 @@ class AmenityController extends Controller
     {
         if (Auth::user()->can('amenity listing')) {
             $amenities = RealestateAmenity::get();
+
             return view('admin.realestate.amenities.index', compact('amenities'));
         } else {
             return redirect()->back()->with('error', 'Permission denied.');
@@ -48,6 +49,15 @@ class AmenityController extends Controller
             $amenity->name            = $request->name;
             $amenity->save();
 
+            $this->logActivity(
+                'Realestate Amenity Section as Created',
+                'Amenity  Name' . $amenity->name,
+                route('admin.realestate.landmarks.index'),
+                'Realestate Amenity Section Created successfully',
+                Auth::user()->creatorId(),
+                Auth::user()->id
+            );
+            
             return redirect()->route('admin.realestate.amenities.index')->with('success', 'Amenity created successfully.');
         } else {
             return redirect()->back()->with('error', 'Permission denied.');
@@ -79,15 +89,36 @@ class AmenityController extends Controller
             $amenity->name            = $request->name;
             $amenity->save();
 
+          
+            $this->logActivity(
+                'Realestate Landmark Section as Updated',
+                'Landmark  Name' . $landmark->name,
+                route('admin.realestate.landmarks.index'),
+                'Realestate Landmark Section Updated successfully',
+                Auth::user()->creatorId(),
+                Auth::user()->id
+            );
+          
             return redirect()->route('admin.realestate.amenities.index')->with('success', 'Amenity updated successfully.');
         } else {
             return redirect()->back()->with('error', 'Permission denied.');
         }
     }
 
+  
+    
+
     public function destroy(RealestateAmenity $amenity)
     {
         if (Auth::user()->can('delete amenity')) {
+            $this->logActivity(
+                'Realestate Landmark Section as Deleted',
+                'Landmark  Name' . $landmark->name,
+                route('admin.realestate.landmarks.index'),
+                'Realestate Landmark Section Deleted successfully',
+                Auth::user()->creatorId(),
+                Auth::user()->id
+            );
             $amenity->delete();
             return redirect()->back()->with('success', 'Amenity deleted successfully.');
         } else {
@@ -137,6 +168,15 @@ class AmenityController extends Controller
             $category->name            = $categoryRequest->request_for;
             $category->save();
 
+            $this->logActivity(
+                'Realestate Landmark Section Request Accepted',
+                'Requested Landmark  Name' . $landmark->name,
+                route('admin.realestate.landmarks.index'),
+                'Realestate Landmark Section Request Accepted successfully',
+                Auth::user()->creatorId(),
+                Auth::user()->id
+            );
+            
             return redirect()->back()->with('success', 'Amenities Request accepted successfully.');
         } else {
             return redirect()->back()->with('error', 'Permission denied.');
@@ -149,9 +189,18 @@ class AmenityController extends Controller
             $categoryRequest = RealestateAddonRequest::where('id', $id)->where('requesting_type', 'amenity')->first();
             $categoryRequest->status = -1;
             $categoryRequest->save();
+            $this->logActivity(
+                'Realestate Landmark Section Request Rejected',
+                'Requested Landmark  Name' . $landmarkRequest->request_for,
+                route('admin.realestate.landmarks.index'),
+                'Realestate Landmark Section Request Rejected',
+                Auth::user()->creatorId(),
+                Auth::user()->id
+            );
             return redirect()->back()->with('error', 'Amenities Request rejected  successfully.');
         } else {
             return redirect()->back()->with('error', 'Permission denied.');
         }
     }
 }
+

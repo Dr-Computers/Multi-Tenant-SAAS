@@ -46,9 +46,18 @@ class  FurnishingController extends Controller
                 return redirect()->back()->with('error', $validator->errors()->first());
             }
 
-            $category                  = new RealestateFurnishing();
-            $category->name            = $request->name;
-            $category->save();
+            $furnishing                  = new RealestateFurnishing();
+            $furnishing->name            = $request->name;
+            $furnishing->save();
+
+            $this->logActivity(
+                'Realestate Furnishing Section as Created',
+                'Furnishing  Name' . $furnishing->name,
+                route('admin.realestate.furnishings.index'),
+                'Realestate Furnishing Section Created successfully',
+                Auth::user()->creatorId(),
+                Auth::user()->id
+            );
 
             return redirect()->route('admin.realestate.furnishings.index')->with('success', 'Furnishing created successfully.');
         } else {
@@ -81,6 +90,16 @@ class  FurnishingController extends Controller
             $furnishing->name            = $request->name;
             $furnishing->save();
 
+
+            $this->logActivity(
+                'Realestate Furnishing Section as Updated',
+                'Furnishing  Name' . $furnishing->name,
+                route('admin.realestate.furnishings.index'),
+                'Realestate Furnishing Section Updated successfully',
+                Auth::user()->creatorId(),
+                Auth::user()->id
+            );
+
             return redirect()->route('admin.realestate.furnishings.index')->with('success', 'Furnishing updated successfully.');
         } else {
             return redirect()->back()->with('error', 'Permission denied.');
@@ -91,6 +110,16 @@ class  FurnishingController extends Controller
     {
         if (Auth::user()->can('delete furnishing')) {
             $furnishing->delete();
+
+            $this->logActivity(
+                'Realestate Furnishing Section as Deleted',
+                'Furnishing  Name' . $furnishing->name,
+                route('admin.realestate.furnishings.index'),
+                'Realestate Furnishing Section Deleted successfully',
+                Auth::user()->creatorId(),
+                Auth::user()->id
+            );
+
             return redirect()->back()->with('success', 'Furnishing deleted successfully.');
         } else {
             return redirect()->back()->with('error', 'Permission denied.');
@@ -110,8 +139,8 @@ class  FurnishingController extends Controller
     public function requestsList(Request $request)
     {
         if (Auth::user()->can('manage furnishing request')) {
-            $categoryRequests = RealestateAddonRequest::where('requesting_type', 'furnishing')->orderBy('status', 'asc')->get();
-            return view('admin.realestate.furnishings.requests', compact('categoryRequests'));
+            $furnishingRequests = RealestateAddonRequest::where('requesting_type', 'furnishing')->orderBy('status', 'asc')->get();
+            return view('admin.realestate.furnishings.requests', compact('furnishingRequests'));
         } else {
             return redirect()->back()->with('error', 'Permission denied.');
         }
@@ -120,8 +149,8 @@ class  FurnishingController extends Controller
     public function requestsSingle(Request $request, $id)
     {
         if (Auth::user()->can('manage furnishing request')) {
-            $categoryRequest = RealestateAddonRequest::where('id', $id)->where('requesting_type', 'furnishing')->first();
-            return view('admin.realestate.furnishings.request-single', compact('categoryRequest'));
+            $furnishingRequest = RealestateAddonRequest::where('id', $id)->where('requesting_type', 'furnishing')->first();
+            return view('admin.realestate.furnishings.request-single', compact('furnishingRequest'));
         } else {
             return redirect()->back()->with('error', 'Permission denied.');
         }
@@ -130,13 +159,23 @@ class  FurnishingController extends Controller
     public function requestsAccept(Request $request, $id)
     {
         if (Auth::user()->can('manage furnishing request')) {
-            $categoryRequest = RealestateAddonRequest::where('id', $id)->where('requesting_type', 'furnishing')->first();
-            $categoryRequest->status = 1;
-            $categoryRequest->save();
+            $furnishingRequest = RealestateAddonRequest::where('id', $id)->where('requesting_type', 'furnishing')->first();
+            $furnishingRequest->status = 1;
+            $furnishingRequest->save();
 
-            $category                  = new RealestateFurnishing();
-            $category->name            = $categoryRequest->request_for;
-            $category->save();
+            $furnishing                  = new RealestateFurnishing();
+            $furnishing->name            = $furnishingRequest->request_for;
+            $furnishing->save();
+
+              $this->logActivity(
+                'Realestate Furnishing Section Request Accepted',
+                'Requested Furnishing  Name' . $furnishing->name,
+                route('admin.realestate.furnishings.index'),
+                'Realestate Furnishing Section Request Accepted successfully',
+                Auth::user()->creatorId(),
+                Auth::user()->id
+            );
+
 
             return redirect()->back()->with('success', 'Furnishing Request accepted successfully.');
         } else {
@@ -147,9 +186,18 @@ class  FurnishingController extends Controller
     public function requestsReject(Request $request, $id)
     {
         if (Auth::user()->can('manage furnishing request')) {
-            $categoryRequest = RealestateAddonRequest::where('id', $id)->where('requesting_type', 'furnishing')->first();
-            $categoryRequest->status = -1;
-            $categoryRequest->save();
+            $furnishingRequest = RealestateAddonRequest::where('id', $id)->where('requesting_type', 'furnishing')->first();
+            $furnishingRequest->status = -1;
+            $furnishingRequest->save();
+
+               $this->logActivity(
+                'Realestate Furnishing Section Request Rejected',
+                'Requested Furnishing  Name' . $furnishingRequest->request_for,
+                route('admin.realestate.furnishings.index'),
+                'Realestate Furnishing Section Request Rejected',
+                Auth::user()->creatorId(),
+                Auth::user()->id
+            );
             return redirect()->back()->with('error', 'Furnishing Request rejected  successfully.');
         } else {
             return redirect()->back()->with('error', 'Permission denied.');

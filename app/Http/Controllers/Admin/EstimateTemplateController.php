@@ -54,6 +54,16 @@ class EstimateTemplateController extends Controller
             }
             $new->save();
 
+
+            $this->logActivity(
+                'Estimate Template as Created',
+                'Estimate Template ' . $new->name,
+                route('admin.estimate.index'),
+                'Estimate Template Created successfully',
+                Auth::user()->creatorId(),
+                Auth::user()->id
+            );
+
             return redirect()->back()->with('success', 'Estimate Template created successfully.');
         } else {
             return redirect()->back()->with('error', __('Permission Denied.'));
@@ -96,6 +106,15 @@ class EstimateTemplateController extends Controller
                 $new->image = $path;
             }
 
+            $this->logActivity(
+                'Estimate Template as Updated',
+                'Estimate Template ' . $new->name,
+                route('admin.estimate.index'),
+                'Estimate Template Updated successfully',
+                Auth::user()->creatorId(),
+                Auth::user()->id
+            );
+
             $new->save();
 
             return redirect()->back()->with('success', 'Estimate Template Updated Successfully.');
@@ -114,6 +133,16 @@ class EstimateTemplateController extends Controller
             if ($template->image && Storage::exists($template->image)) {
                 Storage::delete($template->image);
             }
+
+            $this->logActivity(
+                'Estimate Template as Deleted',
+                'Estimate Template ' . $template->name,
+                route('admin.estimate.index'),
+                'Estimate Template Deleted successfully',
+                Auth::user()->creatorId(),
+                Auth::user()->id
+            );
+
 
             // Delete database record
             $template->delete();

@@ -469,7 +469,7 @@
                             <div class="card-header">
                                 <h5>{{ __('Brand Settings') }}</h5>
                             </div>
-                            {{ Form::model($settings, ['url' => 'settings', 'method' => 'POST', 'enctype' => 'multipart/form-data', 'class' => 'mb-0']) }}
+                            {{ Form::model($settings, ['route' => 'admin.settings.store', 'method' => 'POST', 'enctype' => 'multipart/form-data', 'class' => 'mb-0']) }}
 
                             <div class="card-body">
                                 <div class="row">

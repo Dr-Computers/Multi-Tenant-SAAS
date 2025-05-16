@@ -50,10 +50,19 @@ class InvoiceTemplateController extends Controller
 
             if ($request->hasFile('image')) {
                 $path = $request->file('image')->store('app/public/uploads/templates');
-                
+
                 $new->image = $path;
             }
             $new->save();
+
+            $this->logActivity(
+                'Invoice Template as Created',
+                'Invoice Template ' . $new->name,
+                route('admin.invoice.index'),
+                'Invoice Template Created successfully',
+                Auth::user()->creatorId(),
+                Auth::user()->id
+            );
 
             return redirect()->back()->with('success', 'Invoice Template created successfully.');
         } else {
@@ -78,7 +87,7 @@ class InvoiceTemplateController extends Controller
     public function update(Request $request, $id)
     {
         if (Auth::user()->can('edit invoice template')) {
-        
+
             $request->validate([
                 'footer' => 'nullable|string',
                 'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048', // not 'required' in update
@@ -96,6 +105,15 @@ class InvoiceTemplateController extends Controller
                 $path = $request->file('image')->store('uploads/templates');
                 $new->image = $path;
             }
+
+            $this->logActivity(
+                'Invoice Template as Updated',
+                'Invoice Template ' . $new->name,
+                route('admin.invoice.index'),
+                'Invoice Template Updated successfully',
+                Auth::user()->creatorId(),
+                Auth::user()->id
+            );
 
             $new->save();
 
@@ -115,6 +133,16 @@ class InvoiceTemplateController extends Controller
             if ($template->image && Storage::exists($template->image)) {
                 Storage::delete($template->image);
             }
+
+
+            $this->logActivity(
+                'Invoice Template as Deleted',
+                'Invoice Template ' . $template->name,
+                route('admin.invoice.index'),
+                'Invoice Template Deleted successfully',
+                Auth::user()->creatorId(),
+                Auth::user()->id
+            );
 
             // Delete database record
             $template->delete();

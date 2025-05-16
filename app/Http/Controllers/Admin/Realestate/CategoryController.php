@@ -13,7 +13,7 @@ use App\Traits\ActivityLogger;
 class  CategoryController extends Controller
 {
     use ActivityLogger;
-    
+
     public function index()
     {
         if (Auth::user()->can('category listing')) {
@@ -49,6 +49,15 @@ class  CategoryController extends Controller
             $category->name            = $request->name;
             $category->save();
 
+            $this->logActivity(
+                'Realestate Category Section as Created',
+                'Category  Name' . $category->name,
+                route('admin.realestate.categories.index'),
+                'Realestate Category Section Created successfully',
+                Auth::user()->creatorId(),
+                Auth::user()->id
+            );
+
             return redirect()->route('admin.realestate.categories.index')->with('success', 'Category created successfully.');
         } else {
             return redirect()->back()->with('error', 'Permission denied.');
@@ -80,6 +89,15 @@ class  CategoryController extends Controller
             $category->name            = $request->name;
             $category->save();
 
+            $this->logActivity(
+                'Realestate Category Section as Updated',
+                'Category  Name' . $category->name,
+                route('admin.realestate.categories.index'),
+                'Realestate Category Section Updated successfully',
+                Auth::user()->creatorId(),
+                Auth::user()->id
+            );
+
             return redirect()->route('admin.realestate.categories.index')->with('success', 'Owner updated successfully.');
         } else {
             return redirect()->back()->with('error', 'Permission denied.');
@@ -89,7 +107,17 @@ class  CategoryController extends Controller
     public function destroy(RealestateCategory $category)
     {
         if (Auth::user()->can('delete category')) {
+            $this->logActivity(
+                'Realestate Category Section as Deleted',
+                'Category  Name' . $category->name,
+                route('admin.realestate.categories.index'),
+                'Realestate Category Section Deleted successfully',
+                Auth::user()->creatorId(),
+                Auth::user()->id
+            );
+
             $category->delete();
+
             return redirect()->back()->with('success', 'Category deleted successfully.');
         } else {
             return redirect()->back()->with('error', 'Permission denied.');
@@ -138,6 +166,16 @@ class  CategoryController extends Controller
             $category->name            = $categoryRequest->request_for;
             $category->save();
 
+            $this->logActivity(
+                'Realestate Category Section Request Accepted',
+                'Requested Category  Name' . $category->name,
+                route('admin.realestate.categories.index'),
+                'Realestate Category Section Request Accepted successfully',
+                Auth::user()->creatorId(),
+                Auth::user()->id
+            );
+
+
             return redirect()->back()->with('success', 'Category Request accepted successfully.');
         } else {
             return redirect()->back()->with('error', 'Permission denied.');
@@ -150,6 +188,16 @@ class  CategoryController extends Controller
             $categoryRequest = RealestateAddonRequest::where('id', $id)->where('requesting_type', 'category')->first();
             $categoryRequest->status = -1;
             $categoryRequest->save();
+
+            $this->logActivity(
+                'Realestate Category Section Request Rejected',
+                'Requested Category  Name' . $categoryRequest->request_for,
+                route('admin.realestate.categories.index'),
+                'Realestate Category Section Request Rejected',
+                Auth::user()->creatorId(),
+                Auth::user()->id
+            );
+
             return redirect()->back()->with('error', 'Category Request rejected  successfully.');
         } else {
             return redirect()->back()->with('error', 'Permission denied.');

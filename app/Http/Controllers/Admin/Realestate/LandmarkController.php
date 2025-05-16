@@ -46,9 +46,19 @@ class  LandmarkController extends Controller
                 return redirect()->back()->with('error', $validator->errors()->first());
             }
 
-            $category                  = new RealestateLandmark();
-            $category->name            = $request->name;
-            $category->save();
+            $landmark                  = new RealestateLandmark();
+            $landmark->name            = $request->name;
+            $landmark->save();
+
+            $this->logActivity(
+                'Realestate Landmark Section as Created',
+                'Landmark  Name' . $landmark->name,
+                route('admin.realestate.landmarks.index'),
+                'Realestate Landmark Section Created successfully',
+                Auth::user()->creatorId(),
+                Auth::user()->id
+            );
+
 
             return redirect()->route('admin.realestate.landmarks.index')->with('success', 'Landmark created successfully.');
         } else {
@@ -81,6 +91,16 @@ class  LandmarkController extends Controller
             $landmark->name            = $request->name;
             $landmark->save();
 
+            $this->logActivity(
+                'Realestate Landmark Section as Updated',
+                'Landmark  Name' . $landmark->name,
+                route('admin.realestate.landmarks.index'),
+                'Realestate Landmark Section Updated successfully',
+                Auth::user()->creatorId(),
+                Auth::user()->id
+            );
+
+
             return redirect()->route('admin.realestate.landmarks.index')->with('success', 'Owner updated successfully.');
         } else {
             return redirect()->back()->with('error', 'Permission denied.');
@@ -90,6 +110,15 @@ class  LandmarkController extends Controller
     public function destroy(RealestateLandmark $landmark)
     {
         if (Auth::user()->can('delete landmark')) {
+
+            $this->logActivity(
+                'Realestate Landmark Section as Deleted',
+                'Landmark  Name' . $landmark->name,
+                route('admin.realestate.landmarks.index'),
+                'Realestate Landmark Section Deleted successfully',
+                Auth::user()->creatorId(),
+                Auth::user()->id
+            );
             $landmark->delete();
             return redirect()->back()->with('success', 'Landmark deleted successfully.');
         } else {
@@ -110,8 +139,8 @@ class  LandmarkController extends Controller
     public function requestsList(Request $request)
     {
         if (Auth::user()->can('manage landmark request')) {
-            $categoryRequests = RealestateAddonRequest::where('requesting_type', 'landmark')->orderBy('status', 'asc')->get();
-            return view('admin.realestate.landmarks.requests', compact('categoryRequests'));
+            $landmarkRequests = RealestateAddonRequest::where('requesting_type', 'landmark')->orderBy('status', 'asc')->get();
+            return view('admin.realestate.landmarks.requests', compact('landmarkRequests'));
         } else {
             return redirect()->back()->with('error', 'Permission denied.');
         }
@@ -120,8 +149,8 @@ class  LandmarkController extends Controller
     public function requestsSingle(Request $request, $id)
     {
         if (Auth::user()->can('manage landmark request')) {
-            $categoryRequest = RealestateAddonRequest::where('id', $id)->where('requesting_type', 'landmark')->first();
-            return view('admin.realestate.landmarks.request-single', compact('categoryRequest'));
+            $landmarkRequest = RealestateAddonRequest::where('id', $id)->where('requesting_type', 'landmark')->first();
+            return view('admin.realestate.landmarks.request-single', compact('landmarkRequest'));
         } else {
             return redirect()->back()->with('error', 'Permission denied.');
         }
@@ -130,13 +159,25 @@ class  LandmarkController extends Controller
     public function requestsAccept(Request $request, $id)
     {
         if (Auth::user()->can('manage landmark request')) {
-            $categoryRequest = RealestateAddonRequest::where('id', $id)->where('requesting_type', 'landmark')->first();
-            $categoryRequest->status = 1;
-            $categoryRequest->save();
+            $landmarkRequest = RealestateAddonRequest::where('id', $id)->where('requesting_type', 'landmark')->first();
+            $landmarkRequest->status = 1;
+            $landmarkRequest->save();
 
-            $category                  = new RealestateLandmark();
-            $category->name            = $categoryRequest->request_for;
-            $category->save();
+            $landmark                  = new RealestateLandmark();
+            $landmark->name            = $landmarkRequest->request_for;
+            $landmark->save();
+
+
+            $this->logActivity(
+                'Realestate Landmark Section Request Accepted',
+                'Requested Landmark  Name' . $landmark->name,
+                route('admin.realestate.landmarks.index'),
+                'Realestate Landmark Section Request Accepted successfully',
+                Auth::user()->creatorId(),
+                Auth::user()->id
+            );
+
+
 
             return redirect()->back()->with('success', 'Landmark Request accepted successfully.');
         } else {
@@ -147,9 +188,18 @@ class  LandmarkController extends Controller
     public function requestsReject(Request $request, $id)
     {
         if (Auth::user()->can('manage landmark request')) {
-            $categoryRequest = RealestateAddonRequest::where('id', $id)->where('requesting_type', 'landmark')->first();
-            $categoryRequest->status = -1;
-            $categoryRequest->save();
+            $landmarkRequest = RealestateAddonRequest::where('id', $id)->where('requesting_type', 'landmark')->first();
+            $landmarkRequest->status = -1;
+            $landmarkRequest->save();
+
+            $this->logActivity(
+                'Realestate Landmark Section Request Rejected',
+                'Requested Landmark  Name' . $landmarkRequest->request_for,
+                route('admin.realestate.landmarks.index'),
+                'Realestate Landmark Section Request Rejected',
+                Auth::user()->creatorId(),
+                Auth::user()->id
+            );
             return redirect()->back()->with('error', 'Landmark Request rejected  successfully.');
         } else {
             return redirect()->back()->with('error', 'Permission denied.');

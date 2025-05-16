@@ -68,7 +68,7 @@ class AuthenticatedSessionController extends Controller
 
         $user = User::where('email', $request->email)->first();
 
-        $allowedTypes = ['company', 'super admin', 'admin staff', 'company staff', 'vendor', 'customer'];
+        $allowedTypes = ['company', 'super admin', 'admin staff', 'company staff', 'owner', 'tenant'];
 
         if ($user != null && $user->is_disable == 0 && !in_array($user->type, $allowedTypes)) {
             return redirect()->back()->with('status', __('Your Account is disable,please contact your Administrator.'));
@@ -266,9 +266,28 @@ class AuthenticatedSessionController extends Controller
             }
         }
 
-     
 
 
+        if ($user->type == 'admin' || $user->type == 'admin staff') {
+            $this->logActivity(
+                'User Loged',
+                'User Id ' . $user->id,
+                url('/admin'),
+                'User Loged successfully',
+                Auth::user()->creatorId(),
+                Auth::user()->id
+            );
+        }
+        else if($user->type == 'company' || $user->type == 'company staff'){
+            $this->logActivity(
+                'User Loged',
+                'User Id ' . $user->id,
+                url('/company'),
+                'User Loged successfully',
+                Auth::user()->creatorId(),
+                Auth::user()->id
+            );
+        }
 
 
         return redirect()->intended(RouteServiceProvider::HOME);

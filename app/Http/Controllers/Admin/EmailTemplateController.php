@@ -16,14 +16,12 @@ class EmailTemplateController extends Controller
 
     use ActivityLogger;
 
-    
+
     public function index()
     {
-        $usr = \Auth::user();
+        $usr = Auth::user();
         if (Auth::user()->can('email template listing')) {
-
             $EmailTemplates = EmailTemplate::all();
-
             return view('admin.template.emails.index', compact('EmailTemplates'));
         } else {
             return redirect()->back()->with('error', __('Permission denied.'));
@@ -34,7 +32,6 @@ class EmailTemplateController extends Controller
     public function create()
     {
         if (Auth::user()->can('create email template')) {
-
             return view('admin.template.emails.create');
         } else {
             return redirect()->back()->with('error', __('Permission denied.'));
@@ -44,7 +41,7 @@ class EmailTemplateController extends Controller
 
     public function store(Request $request)
     {
-        $usr = \Auth::user();
+        $usr = Auth::user();
 
         if (Auth::user()->can('create email template')) {
             $validator = \Validator::make(
@@ -66,6 +63,15 @@ class EmailTemplateController extends Controller
             $EmailTemplate->from       = env('APP_NAME');
             $EmailTemplate->created_by = $usr->id;
             $EmailTemplate->save();
+
+            $this->logActivity(
+                'Email Template as Created',
+                'Email Template ' . $EmailTemplate->name,
+                route('admin.email_template.index'),
+                'Email Template Created successfully',
+                Auth::user()->creatorId(),
+                Auth::user()->id
+            );
 
             return redirect()->route('admin.email_template.index')->with('success', __('Email Template successfully created.'));
         } else {
@@ -99,13 +105,22 @@ class EmailTemplateController extends Controller
 
             if ($validator->fails()) {
                 $messages = $validator->getMessageBag();
-
                 return redirect()->back()->with('error', $messages->first());
             }
 
             $emailTemplate = EmailTemplate::find($id);
             $emailTemplate->from = $request->from;
             $emailTemplate->save();
+
+            $this->logActivity(
+                'Email Template as Updated',
+                'Email Template ' . $emailTemplate->name,
+                route('admin.email_template.index'),
+                'Email Template Updated successfully',
+                Auth::user()->creatorId(),
+                Auth::user()->id
+            );
+
             return redirect()->back()->with('success', __('The email template details are updated successfully'));
         } else {
             return redirect()->back()->with('error', __('Permission denied.'));
@@ -118,6 +133,14 @@ class EmailTemplateController extends Controller
     public function destroy(EmailTemplate $emailTemplate)
     {
         //
+        // $this->logActivity(
+        //     'Email Template as Deleted',
+        //     'Email Template ' . $emailTemplate->name,
+        //     route('admin.email_template.index'),
+        //     'Email Template Deleted successfully',
+        //     Auth::user()->creatorId(),
+        //     Auth::user()->id
+        // );
     }
 
     // Used For View Email Template Language Wise
@@ -199,7 +222,6 @@ class EmailTemplateController extends Controller
     }
 
     // Used For Update Status Company Wise.
-
     public function updateStatus(Request $request)
     {
 

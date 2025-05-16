@@ -55,6 +55,15 @@ class letterPadTemplateController extends Controller
             try {
                 $new->save();
 
+                $this->logActivity(
+                    'Letter Pad Template as Created',
+                    'Letter Pad Template ' . $new->name,
+                    route('admin.letter-pad.index'),
+                    'Letter Pad Template Created successfully',
+                    Auth::user()->creatorId(),
+                    Auth::user()->id
+                );
+
                 return redirect()->back()->with('success', 'Letter pad Template created successfully.');
             } catch (Exception $e) {
                 dd($e->getMessage());
@@ -105,6 +114,15 @@ class letterPadTemplateController extends Controller
                 $new->image = $path;
             }
 
+            $this->logActivity(
+                'Letter Pad Template as Updated',
+                'Letter Pad Template ' . $new->name,
+                route('admin.letter-pad.index'),
+                'Letter Pad Template Updated successfully',
+                Auth::user()->creatorId(),
+                Auth::user()->id
+            );
+
             $new->save();
 
             return redirect()->back()->with('success', 'Letter pad Template Updated Successfully.');
@@ -123,6 +141,15 @@ class letterPadTemplateController extends Controller
             if ($template->image && Storage::exists($template->image)) {
                 Storage::delete($template->image);
             }
+
+            $this->logActivity(
+                'Letter Pad Template as Deleted',
+                'Letter Pad Template ' . $template->name,
+                route('admin.letter-pad.index'),
+                'Letter Pad Template Deleted successfully',
+                Auth::user()->creatorId(),
+                Auth::user()->id
+            );
 
             // Delete database record
             $template->delete();

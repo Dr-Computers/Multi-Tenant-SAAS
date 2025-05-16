@@ -70,8 +70,6 @@ class OrderController extends Controller
         }
     }
 
-
-
     public function sendEmail(Order $order)
     {
         $company = $order->user;
@@ -81,7 +79,13 @@ class OrderController extends Controller
     public function sendEmailProcess(Order $order, Request $request)
     {
         $this->sendOrderInvoice($order, $request->email);
-
+        $this->logActivity(
+            'Order Invoice sent to email', 
+            'Order Number '.$order->order_id, 
+            route('admin.order.index'), 
+            'Company Name '.$order->user->name .', Order Number '.$order->order_id .'Email sent successfully',
+            Auth::user()->creatorId(), Auth::user()->id
+        );
         return redirect()->back()->with('success', 'Email sent successfully.');
     }
 
@@ -90,7 +94,7 @@ class OrderController extends Controller
         $adminTemplate = InvoiceSetting::where('user_id', Auth::user()->creatorId())->first();
 
 
-        return view('pdf.invoices.partial.admin-invoice', compact('order', 'adminTemplate'));
+        // return view('pdf.invoices.partial.admin-invoice', compact('order', 'adminTemplate'));
         $pdf = PDF::loadView('pdf.invoices.partial.admin-invoice', compact('order', 'adminTemplate'))->setPaper('a4', 'portrait');
 
         // Save PDF to temporary location
@@ -99,6 +103,12 @@ class OrderController extends Controller
 
         File::ensureDirectoryExists(dirname($absolutePath));
         $pdf->save($absolutePath);
+        $this->logActivity(
+            'Order Invoice Downloded', 
+            'Order Number '.$order->order_id, 
+            route('admin.order.index'), 
+            'Company Name '.$order->user->name .', Order Number '.$order->order_id .' : Order Invoice Downloded successfully',
+            Auth::user()->creatorId(), Auth::user()->id);
 
         // Return the file as download and delete after response
         return response()->download($absolutePath)->deleteFileAfterSend(true);
@@ -110,6 +120,12 @@ class OrderController extends Controller
     {
         $order->payment_status = 'completed';
         $order->save();
+        $this->logActivity(
+            'Order Number: '.$order->order_id.' Payment Marked Successfully',
+            'Order Number '.$order->order_id, 
+            route('admin.order.index'), 
+            'Company Name '.$order->user->name .', '.'Order Number '.$order->order_id.' : Order Payment Marked Successfully',Auth::user()->creatorId(), Auth::user()->id);
+
         return redirect()->back()->with('success', __('Order marked as paid successfully.'));
     }
 
@@ -137,10 +153,17 @@ class OrderController extends Controller
             if ($subOrder && $subOrder->status == 1) {
                 Order::where('company_id', $subOrder->company_id)->orderBy('created_at', 'desc')->update(['status' => 1]);
             }
-            if ($subOrder)
-            $subOrder->delete();
-        
+            if ($subOrder){
+                $subOrder->delete();
+            }
+
             $order->delete();
+
+            $this->logActivity(
+                'Deleted a Order, Order Number '.$order->order_id,
+                route('admin.order.index'),
+                'Company Name '.$order->user->name .', Order Deleted Successfully, Order Number '.$order->order_id,
+                Auth::user()->creatorId(), Auth::user()->id);
 
             return redirect()->back()->with('success', __('Order Deleted Successfully'));
         } else {

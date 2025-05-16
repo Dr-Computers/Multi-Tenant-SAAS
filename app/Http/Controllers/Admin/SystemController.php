@@ -24,22 +24,21 @@ use App\Traits\ActivityLogger;
 
 class SystemController extends Controller
 {
-    
+
     use ActivityLogger;
     public function index()
     {
         $settings              = Utility::settings();
-
         // if (\Auth::user()->can('manage system settings')) {
-            $settings              = Utility::settings();
-            $admin_payment_setting = Utility::getAdminPaymentSetting();
-            $invoiceTemplates      = InvoiceTemplate::get();
-            $InvoiceSettings = InvoiceSetting::where('user_id', Auth::user()->creatorId())->first();
+        $settings              = Utility::settings();
+        $admin_payment_setting = Utility::getAdminPaymentSetting();
+        $invoiceTemplates      = InvoiceTemplate::get();
+        $InvoiceSettings = InvoiceSetting::where('user_id', Auth::user()->creatorId())->first();
 
-            $letterPadTemplates      = LetterPadTemplate::get();
-            $letterPadSettings       = LetterPadSettings::where('user_id', Auth::user()->creatorId())->first();
+        $letterPadTemplates      = LetterPadTemplate::get();
+        $letterPadSettings       = LetterPadSettings::where('user_id', Auth::user()->creatorId())->first();
 
-            return view('admin.settings.index', compact('settings', 'admin_payment_setting', 'invoiceTemplates', 'InvoiceSettings','letterPadTemplates','letterPadSettings'));
+        return view('admin.settings.index', compact('settings', 'admin_payment_setting', 'invoiceTemplates', 'InvoiceSettings', 'letterPadTemplates', 'letterPadSettings'));
         // } else {
         //     return redirect()->back()->with('error', 'Permission denied.');
         // }
@@ -47,7 +46,7 @@ class SystemController extends Controller
 
     public function store(Request $request)
     {
-        if (\Auth::user()->can('manage system settings')) {
+        if (Auth::user()->can('brand settings')) {
             if ($request->logo_dark) {
                 $request->validate(
                     [
@@ -177,17 +176,26 @@ class SystemController extends Controller
                 unset($post['_token'], $post['logo_dark'], $post['logo_light'], $post['favicon']);
                 foreach ($post as $key => $data) {
                     if (in_array($key, array_keys($settings))) {
-                        \DB::insert(
+                        DB::insert(
                             'insert into settings (`value`, `name`,`created_by`) values (?, ?, ?) ON DUPLICATE KEY UPDATE `value` = VALUES(`value`) ',
                             [
                                 $data,
                                 $key,
-                                \Auth::user()->creatorId(),
+                                Auth::user()->creatorId(),
                             ]
                         );
                     }
                 }
             }
+
+            $this->logActivity(
+                'Brand Settings Updated',
+                'Brand Settings Updated',
+                route('admin.settings.index'),
+                'Brand Settings Updated successfully',
+                Auth::user()->creatorId(),
+                Auth::user()->id
+            );
 
             return redirect()->back()->with('success', 'Setting successfully updated.');
         } else {
@@ -197,7 +205,7 @@ class SystemController extends Controller
 
     public function saveEmailSettings(Request $request)
     {
-        if (\Auth::user()->can('manage system settings')) {
+        if (Auth::user()->can('manage system settings')) {
             $request->validate(
                 [
                     'mail_driver' => 'required|string|max:255',
@@ -229,6 +237,16 @@ class SystemController extends Controller
                     );
                 }
             }
+
+            $this->logActivity(
+                'Email Settings Updated',
+                'Email Settings Updated',
+                route('admin.settings.index'),
+                'Email Settings Updated successfully',
+                Auth::user()->creatorId(),
+                Auth::user()->id
+            );
+
 
             return redirect()->back()->with('success', __('Setting successfully updated.'));
         } else {
@@ -266,6 +284,17 @@ class SystemController extends Controller
                 }
             }
 
+
+            $this->logActivity(
+                'Company Settings Updated',
+                'Company Settings Updated',
+                route('admin.settings.index'),
+                'Company Settings Updated successfully',
+                Auth::user()->creatorId(),
+                Auth::user()->id
+            );
+
+
             return redirect()->back()->with('success', __('Setting successfully updated.'));
         } else {
             return redirect()->back()->with('error', 'Permission denied.');
@@ -302,6 +331,17 @@ class SystemController extends Controller
                 );
             }
 
+
+            $this->logActivity(
+                'Payment Settings Updated',
+                'Payment Settings Updated',
+                route('admin.settings.index'),
+                'Payment Settings Updated Successfully',
+                Auth::user()->creatorId(),
+                Auth::user()->id
+            );
+
+
             return redirect()->back()->with('success', __('Payment setting updated successfully.'));
         } else {
             return redirect()->back()->with('error', 'Permission denied.');
@@ -312,38 +352,38 @@ class SystemController extends Controller
     public function saveSystemSettings(Request $request)
     {
         // if (\Auth::user()->can('manage company settings')) {
-            $user = \Auth::user();
-            $request->validate(
-                [
-                    'site_currency' => 'required',
-                ]
-            );
-            $post = $request->all();
-            unset($post['_token']);
+        $user = \Auth::user();
+        $request->validate(
+            [
+                'site_currency' => 'required',
+            ]
+        );
+        $post = $request->all();
+        unset($post['_token']);
 
-            if (!isset($post['shipping_display'])) {
-                $post['shipping_display'] = 'off';
+        if (!isset($post['shipping_display'])) {
+            $post['shipping_display'] = 'off';
+        }
+
+        $settings = Utility::settings();
+        $settings['footer_notes'] = $request->input('footer_notes');
+
+        foreach ($post as $key => $data) {
+            if (in_array($key, array_keys($settings))) {
+                \DB::insert(
+                    'insert into settings (`value`, `name`,`created_by`,`created_at`,`updated_at`) values (?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE `value` = VALUES(`value`) ',
+                    [
+                        $data,
+                        $key,
+                        \Auth::user()->creatorId(),
+                        date('Y-m-d H:i:s'),
+                        date('Y-m-d H:i:s'),
+                    ]
+                );
             }
+        }
 
-            $settings = Utility::settings();
-            $settings['footer_notes'] = $request->input('footer_notes');
-
-            foreach ($post as $key => $data) {
-                if (in_array($key, array_keys($settings))) {
-                    \DB::insert(
-                        'insert into settings (`value`, `name`,`created_by`,`created_at`,`updated_at`) values (?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE `value` = VALUES(`value`) ',
-                        [
-                            $data,
-                            $key,
-                            \Auth::user()->creatorId(),
-                            date('Y-m-d H:i:s'),
-                            date('Y-m-d H:i:s'),
-                        ]
-                    );
-                }
-            }
-
-            return redirect()->back()->with('success', __('Setting successfully updated.'));
+        return redirect()->back()->with('success', __('Setting successfully updated.'));
         // } else {
         //     return redirect()->back()->with('error', 'Permission denied.');
         // }
@@ -2083,6 +2123,15 @@ class SystemController extends Controller
             );
         }
 
+        $this->logActivity(
+            'Storage Settings Updated',
+            'Storage Settings Updated',
+            route('admin.settings.index'),
+            'Storage Settings Updated Successfully',
+            Auth::user()->creatorId(),
+            Auth::user()->id
+        );
+
         return redirect()->back()->with('success', 'Storage setting successfully updated.');
     }
 
@@ -2152,6 +2201,15 @@ class SystemController extends Controller
                 $arr
             );
         }
+
+        $this->logActivity(
+            'SEO Settings Updated',
+            'SEO Settings Updated',
+            route('admin.settings.index'),
+            'SEO Settings Updated Successfully',
+            Auth::user()->creatorId(),
+            Auth::user()->id
+        );
 
         return redirect()->back()->with('success', 'SEO setting successfully updated.');
     }
@@ -2367,6 +2425,15 @@ class SystemController extends Controller
         $invSettings->terms            = $request->terms;
         $invSettings->save();
 
+        $this->logActivity(
+            'Invoice Template Choosed',
+            'Invoice Template Choosed',
+            route('admin.settings.index'),
+            'Invoice Template Choosed Successfully',
+            Auth::user()->creatorId(),
+            Auth::user()->id
+        );
+
         return redirect()->back()->with('success', __('Invoice template successfully updated.'));
     }
 
@@ -2381,6 +2448,16 @@ class SystemController extends Controller
         $letterSettings->template         = $request->template;
         $letterSettings->terms            = $request->terms;
         $letterSettings->save();
+
+
+        $this->logActivity(
+            'Letterpad Template Choosed',
+            'Letterpad Template Choosed',
+            route('admin.settings.index'),
+            'Letterpad Template Choosed Successfully',
+            Auth::user()->creatorId(),
+            Auth::user()->id
+        );
 
         return redirect()->back()->with('success', __('Letter pad template successfully updated.'));
     }
@@ -2400,7 +2477,7 @@ class SystemController extends Controller
 
         // Get permissions from the config file (stored in config/permissions.php)
         // $defaultPermissions = config('superadmin-permissions.default');
-        $defaultPermissions = ModelsPermission::where('is_admin','1')->get();
+        $defaultPermissions = ModelsPermission::where('is_admin', '1')->get();
 
         // Assign new permissions
         foreach ($defaultPermissions as $permission) {
@@ -2408,6 +2485,14 @@ class SystemController extends Controller
             $user->givePermissionTo($perm);
         }
 
+        $this->logActivity(
+            'Permission Reseted',
+            'Permission Reseted',
+            route('admin.settings.index'),
+            'Permission Reseted',
+            Auth::user()->creatorId(),
+            Auth::user()->id
+        );
 
         app()[PermissionRegistrar::class]->forgetCachedPermissions();
         return redirect()->back()->with('success', __('Permissions reset successfully'));

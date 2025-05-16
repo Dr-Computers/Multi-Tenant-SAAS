@@ -74,7 +74,7 @@
                         </ul>
                     </li>
                 @endcanany
-                @canany(['category listing', 'amenty listing', 'furnishing listing','landmark listing'])
+                @canany(['category listing', 'amenity listing', 'furnishing listing', 'landmark listing'])
                     <li
                         class="dash-item dash-hasmenu {{ Request::segment(1) == 'users' || Request::segment(1) == 'roles' || Request::segment(1) == 'permissions' ? ' active dash-trigger' : '' }}">
                         <a href="#!" class="dash-link "><span class="dash-micon"><i
@@ -90,7 +90,7 @@
                                         href="{{ route('admin.realestate.categories.index') }}">{{ __('Categories') }}</a>
                                 </li>
                             @endcan
-                            @can('amenty listing')
+                            @can('amenity listing')
                                 <li
                                     class="dash-item {{ Request::route()->getName() == 'roles.index' || Request::route()->getName() == 'roles.create' || Request::route()->getName() == 'roles.edit' ? ' active' : '' }}">
                                     <a class="dash-link"

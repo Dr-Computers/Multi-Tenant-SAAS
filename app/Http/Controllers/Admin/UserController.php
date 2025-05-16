@@ -26,7 +26,7 @@ use App\Traits\ActivityLogger;
 class UserController extends Controller
 {
 
-    use HandlesMediaFolders; 
+    use HandlesMediaFolders;
     use ActivityLogger;
 
     public function __construct()
@@ -130,6 +130,17 @@ class UserController extends Controller
 
             DB::commit();
 
+
+            $this->logActivity(
+                'Create a Staff User',
+                'User Id ' . $user->id,
+                route('admin.users.index'),
+                'New Staff User Created successfully',
+                Auth::user()->creatorId(),
+                Auth::user()->id
+            );
+
+
             return redirect()->route('admin.users.index')->with('success', __('User successfully added.') . ((isset($smtp_error)) ? '<br> <span class="text-danger">' . $smtp_error . '</span>' : ''));
         } else {
             DB::rollBack();
@@ -189,6 +200,14 @@ class UserController extends Controller
 
             CustomField::saveData($user, $request->customField);
             DB::commit();
+            $this->logActivity(
+                'Update a Staff User',
+                'User Id ' . $user->id,
+                route('admin.users.index'),
+                'Staff User Updated successfully',
+                Auth::user()->creatorId(),
+                Auth::user()->id
+            );
             return redirect()->route('admin.users.index')->with(
                 'success',
                 'User successfully updated.'
@@ -206,8 +225,15 @@ class UserController extends Controller
             $user = User::find($id);
 
             if ($user) {
-                User::where('type', '=', 'company')->where('parent')->delete();
                 $user->delete();
+                $this->logActivity(
+                    'Delete a Staff User',
+                    'User Id ' . $id,
+                    route('admin.users.index'),
+                    'Staff User Delete successfully',
+                    Auth::user()->creatorId(),
+                    Auth::user()->id
+                );
                 return redirect()->back()->with('success', __('User Successfully deleted'));
             } else {
                 return redirect()->back();

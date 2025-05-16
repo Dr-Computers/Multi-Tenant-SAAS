@@ -9,13 +9,14 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
+
     public function up(): void
     {
         Schema::create('realestate_landmarks', function (Blueprint $table) {
             $table->id();
-            $table->integer('icon_id')->nullable();    
-            $table->string('name')->nullable();     
-            $table->boolean('status')->nullable(); 
+            $table->integer('icon_id')->nullable();
+            $table->string('name')->nullable();
+            $table->boolean('status')->nullable();
             $table->timestamps();
         });
     }
@@ -23,6 +24,7 @@ return new class extends Migration
     /**
      * Reverse the migrations.
      */
+
     public function down(): void
     {
         Schema::dropIfExists('realestate_landmarks');

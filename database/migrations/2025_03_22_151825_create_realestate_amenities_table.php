@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('realestate_amenities', function (Blueprint $table) {
             $table->id();
             $table->integer('icon_id')->nullable();    
-            $table->integer('name')->nullable();     
+            $table->string('name')->nullable();     
             $table->boolean('status')->nullable(); 
             $table->timestamps();
         });

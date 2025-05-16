@@ -92,14 +92,14 @@
             <ul class="list-unstyled">
 
                 <li class="dropdown dash-h-item drp-language">
-                    {{-- <a class="dash-head-link dropdown-toggle arrow-none me-0" data-bs-toggle="dropdown"
+                  <a class="dash-head-link dropdown-toggle arrow-none me-0" data-bs-toggle="dropdown"
                         href="#" role="button" aria-haspopup="false" aria-expanded="false">
                         <i class="ti ti-world nocolor"></i>
                         <span class="drp-text hide-mob">{{ ucFirst($languages->fullName ?? 'English') }}</span>
                         <i class="ti ti-chevron-down drp-arrow nocolor"></i>
-                    </a> --}}
+                    </a> 
 
-                    {{-- <div class="dropdown-menu dash-h-dropdown dropdown-menu-end">
+                 <div class="dropdown-menu dash-h-dropdown dropdown-menu-end">
 
                         @if (\Auth::guard('customer')->check())
                             @foreach (App\Models\Utility::languages() as $code => $lang)
@@ -124,7 +124,7 @@
                                 </a>
                             @endforeach
                         @endif
-
+{{-- 
                         @if (\Auth::user()->type == 'super admin')
                             <div class="dropdown-divider m-0"></div>
                             <a href="#" data-url="{{ route('create.language') }}"
@@ -138,9 +138,9 @@
                             <div class="dropdown-divider m-0"></div>
                             <a class="dropdown-item text-primary"
                                 href="{{ route('manage.language', [$currantLang]) }}">{{ __('Manage Language') }}</a>
-                        @endif
+                        @endif --}}
 
-                    </div> --}}
+                    </div> 
                 </li>
                 <li class="dropdown dash-h-item drp-company">
                     <a class="dash-head-link dropdown-toggle arrow-none me-0" data-bs-toggle="dropdown" href="#"

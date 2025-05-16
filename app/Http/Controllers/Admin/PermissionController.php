@@ -11,16 +11,16 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Artisan;
 use App\Traits\ActivityLogger;
-
+use Illuminate\Support\Facades\Auth;
 
 class PermissionController extends Controller
 {
     use ActivityLogger;
 
-    
+
     public function upload(Request $request)
     {
-        
+
         $request->validate([
             'permission_file' => 'required|file|mimes:xlsx,csv,txt',
         ]);
@@ -43,7 +43,7 @@ class PermissionController extends Controller
 
             $section = trim($row[0]);
             $name    = trim($row[1]);
-            if($section != null && $name != null){
+            if ($section != null && $name != null) {
                 // Optional: check if exists already
                 $existing = Permission::where('section', $section)->where('name', $name)->first();
 
@@ -77,6 +77,15 @@ class PermissionController extends Controller
             }
         }
 
+        $this->logActivity(
+            'New Permission File Imported',
+            'File Imported',
+            route('admin.permissions.index'),
+            'New Permission File Imported Successfully',
+            Auth::user()->creatorId(),
+            Auth::user()->id
+        );
+
         return back()->with('success', 'Permissions uploaded successfully!');
     }
 
@@ -104,6 +113,15 @@ class PermissionController extends Controller
             'is_tenant',
             'is_agent',
         ]));
+
+        $this->logActivity(
+            'Permission ' . $permission->name . ' Updated',
+            $permission->name . ' Updated',
+            route('admin.permissions.index'),
+            'New Permission ' . $permission->name . ' Updated',
+            Auth::user()->creatorId(),
+            Auth::user()->id
+        );
 
         return redirect()->route('admin.permissions.index')->with('success', 'Permission updated successfully.');
     }
