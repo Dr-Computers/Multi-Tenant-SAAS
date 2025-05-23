@@ -8,12 +8,12 @@
 @endsection
 @section('action-btn')
     <div class="d-flex">
-        @can('create staff user')
+        {{-- @can('create staff user') --}}
         <button href="#" data-size="md" data-url="{{ route('company.hrms.users.create') }}" data-ajax-popup="true"
             data-bs-toggle="tooltip" title="{{ __('Create New User') }}" class="btn btn-sm btn-primary me-2">
             <i class="ti ti-plus"></i> {{ __('Create New User') }}
         </button>
-        @endcan
+        {{-- @endcan --}}
     </div>
 @endsection
 @section('content')

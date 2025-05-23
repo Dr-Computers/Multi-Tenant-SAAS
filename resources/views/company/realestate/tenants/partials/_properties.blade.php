@@ -3,95 +3,56 @@
         <div class="card">
             <div class="card-body table-bUsers-style">
                 <div class="table-responsive">
-                    <table class="table datatable">
+                    <table class="table">
                         <thead>
                             <tr>
                                 <th>{{ __('#') }}</th>
                                 <th>{{ __('Name') }}</th>
-                                <th>{{ __('Category') }}</th>
-                                <th>{{ __('Type') }}</th>
-                                <th>{{ __('Units') }}</th>
+                                <th>{{ __('Owner') }}</th>
+                                <th class="text-center">{{ __('Rent Duration') }}</th>
+                                <th class="text-center">{{ __('Deposit') }}</th>
+                                <th class="text-center">{{ __('Rent') }}</th>
+                                <th class="text-center">{{ __('No:of Payments') }}</th>
                                 <th>{{ __('Status') }}</th>
                                 <th>{{ __('Action') }}</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @forelse ($tenant->properties ?? [] as $key => $property)
+                            @forelse ($tenant->unitLeases ?? [] as $key => $lease)
                                 <tr>
                                     <td>{{ $key + 1 }}</td>
-                                    <td>{{ $property->name }}</td>
-                                    <td>{{ $property->categories->pluck('name')->first() }}</td>
-                                    <td>{{ $property->purpose_type }}<br>
-                                        <span class="badge text-capitalize bg-dark">
-                                            <i class="rounded"></i>
-                                            {{ $property->mode }}</span>
-                                    </td>
                                     <td>
-
-                                        <a href="{{ route('company.realestate.property.units.index', $property->id) }}">
-                                                {{ $property->units ? count($property->units) : 0 }}
-                                        </a>
+                                        Property : {{ $lease->unitDetails->property->name }} <br>
+                                        Unit : {{ $lease->unitDetails->name }} <br>
+                                        Reg no : {{ $lease->unitDetails->property->registration_no }}
                                     </td>
+                                    <td>{{ $lease->unitDetails->property->owner->name }}</td>
+                                    <td class="text-center">{{ $lease->unitDetails->rent_duration }}</td>
+                                    <td class="text-end">{{ $lease->unitDetails->deposite_amount }}/
+                                        {{ $lease->unitDetails->deposite_type }}</td>
+                                    <td class="text-end">{{ $lease->unitDetails->price }}/
+                                        {{ $lease->unitDetails->rent_type }}</td>
+                                    <td class="text-center">{{ $lease->unitDetails->lease->no_of_payments }}</td>
+                                    <td class="text-center">{{ $lease->unitDetails->lease->status }}</td>
                                     <td>
-                                        @if ($property->moderation_status == '1')
-                                            <span class="badge bg-success p-1 px-3 rounded">
-                                                {{ ucfirst('Enabled') }}</span>
-                                        @else
-                                            <span class="badge bg-danger p-1 px-3 rounded">
-                                                {{ ucfirst('Disabled') }}</span>
-                                        @endif
-                                    </td>
-
-                                    <td>
-                                        <div class="btn-group card-option">
-
-                                            <button type="button" class="btn dropdown-toggle" data-bs-toggle="dropdown"
-                                                aria-haspopup="true" aria-expanded="false">
-                                                <i class="ti ti-dots-vertical"></i>
-                                            </button>
-
-                                            <div class="dropdown-menu dropdown-menu-end">
-                                                <a class="dropdown-item"
-                                                    href="{{ route('company.realestate.property.units.index', $property->id) }}">
-                                                    <span> <i class="ti ti-plus text-dark"></i>
-                                                        {{ __('Units') }}</span>
-                                                </a>
-                                                <a class="dropdown-item"
-                                                    href="{{ route('company.realestate.properties.show', $property->id) }}">
-                                                    <span> <i class="ti ti-eye text-dark"></i>
-                                                        {{ __('View') }}</span>
-                                                </a>
-                                                <a class="dropdown-item"
-                                                    href="{{ route('company.realestate.properties.edit', $property->id) }}">
-                                                    <span> <i class="ti ti-pencil text-dark"></i>
-                                                        {{ __('Edit') }}</span>
-                                                </a>
-                                                {!! Form::open([
-                                                    'method' => 'DELETE',
-                                                    'route' => ['company.realestate.properties.destroy', $property->id],
-                                                    'id' => 'delete-form-' . $property->id,
-                                                ]) !!}
-                                                <a href="#" class="dropdown-item bs-pass-para "
-                                                    data-bs-toggle="tooltip" title="{{ __('Delete') }}">
-                                                    <i class="ti ti-trash text-dark "></i> {{ __('Delete') }}</a>
-
-                                                {!! Form::close() !!}
-                                            </div>
-                                        </div>
-
-
-
+                                        <a class="dropdown-item" data-bs-toggle="tooltip"
+                                            title="{{ __('Unit Detailed View') }}" target="_blank"
+                                            href="{{ route('company.realestate.property.units.show', ['property_id' => $lease->unitDetails->property_id, 'unit' => $lease->unitDetails->id]) }}"
+                                            data-original-title="{{ __('Unit Detailed View') }}" href="#">
+                                            <span> <i class="ti ti-eye text-dark"></i>
+                                                {{ __('Unit View') }}</span>
                                     </td>
                                 </tr>
                             @empty
                                 <tr>
                                     <td colspan="7" class="text-center">
-                                        <h6>No properties found..!</h6>
+                                        <h6>No units found..!</h6>
                                     </td>
                                 </tr>
                             @endforelse
                         </tbody>
                     </table>
+
                 </div>
             </div>
         </div>

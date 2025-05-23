@@ -30,10 +30,6 @@
                                 href="{{ route('company.realestate.maintainers.show', $maintainer->id) }}?tab=overview">Overview</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link {{ $tab == 'properties' ? 'active' : '' }}"
-                                href="{{ route('company.realestate.maintainers.show', $maintainer->id) }}?tab=properties">Properties</a>
-                        </li>
-                        <li class="nav-item">
                             <a class="nav-link {{ $tab == 'documents' ? 'active' : '' }}"
                                 href="{{ route('company.realestate.maintainers.show', $maintainer->id) }}?tab=documents">Documents</a>
                         </li>
@@ -55,8 +51,6 @@
                     <div class="tab-content p-4 border border-top-0 rounded-bottom">
                         @if ($tab == 'overview')
                             @include('company.realestate.maintainers.partials._overview', ['maintainer' => $maintainer])
-                        @elseif($tab == 'properties')
-                            @include('company.realestate.maintainers.partials._properties', ['maintainer' => $maintainer])
                         @elseif($tab == 'works')
                             @include('company.realestate.maintainers.partials._works', ['maintainer' => $maintainer])
                         @elseif($tab == 'settlements')

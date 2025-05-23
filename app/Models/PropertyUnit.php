@@ -82,4 +82,17 @@ class PropertyUnit extends Model
         // If there are invoices, return their invoice_ids
         return $invoices->pluck('invoice_id'); // Returns an array of invoice_ids
     }
+
+    public function lease()
+    {
+        return $this->hasOne(RealestateLease::class, 'unit_id', 'id');
+    }
+
+
+
+    public function propertyUnitImages()
+    {
+        return $this->belongsToMany(MediaFile::class, 'property_unit_images', 'property_id', 'file_id');
+    }
+
 }

@@ -10,7 +10,7 @@
 
     </div>
     <form @submit.prevent="submitForm" enctype="multipart/form-data" id="requestFrom"
-        action="{{ isset($maintenance) ? route('company.realestate.maintaince-requests.update', $maintenance->id) : route('company.realestate.maintaince-requests.store') }}"
+        action="{{ isset($maintenance) ? route('company.realestate.maintenance-requests.update', $maintenance->id) : route('company.realestate.maintenance-requests.store') }}"
         method="POST">
         @csrf
         @if (isset($maintenance))
@@ -47,6 +47,13 @@
                                     <select name="unit" class="form-control" id="unitSelect" x-model="selectedUnit"
                                         required>
                                         <option value="">-- Select Unit --</option>
+                                        @if (isset($maintenance))
+                                            @foreach ($units ?? [] as $unit)
+                                                <option value="{{ $unit->id }}"
+                                                    {{ $unit->id == $maintenance->unit_id ? 'selected' : '' }}>
+                                                    {{ $unit->name }}</option>
+                                            @endforeach
+                                        @endif
                                         <template x-for="unit in units" :key="unit.id">
                                             <option :value="unit.id" x-text="unit.name"></option>
                                         </template>
@@ -82,7 +89,7 @@
                                         <option value="">-- Select Issue Type --</option>
                                         @foreach ($issues as $issue)
                                             <option value="{{ $issue->id }}"
-                                                {{ old('issue', $maintenance->issue_id ?? '') == $issue->id ? 'selected' : '' }}>
+                                                {{ old('issue', $maintenance->issue_type ?? '') == $issue->id ? 'selected' : '' }}>
                                                 {{ $issue->name }}
                                             </option>
                                         @endforeach
@@ -96,7 +103,7 @@
                                 {{-- Request date --}}
                                 <div class="form-group">
                                     <label class="form-label">Request date <x-required /></label>
-                                    <input type="date" class="form-control" name="request_date">
+                                    <input type="date" class="form-control" value="{{ old('request_date', isset($maintenance)  ? date('Y-m-d',strtotime($maintenance->request_date)) : '') }}" name="request_date">
                                     @error('request_date')
                                         <small class="text-danger">{{ $message }}</small>
                                     @enderror
@@ -109,8 +116,10 @@
                                     <div x-data="documentUploader()" class="mx-auto bg-white shadow rounded-lg space-y-6">
                                         <!-- Document Preview Grid -->
                                         <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
-                                            @if (isset($maintenance) && is_array($maintenance->images))
-                                                @foreach ($maintenance->images ?? [] as $key => $image)
+                                            {{-- @dump($maintenance->maintenanceRequestAttachments) --}}
+                                            @if (isset($maintenance))
+                                     
+                                                @foreach ($maintenance->maintenanceRequestAttachments ?? [] as $key => $image)
                                                     <div class="flex flex-col relative existing-data-box">
                                                         <div class="relative group border rounded-lg overflow-hidden ">
                                                             <img src="{{ asset('images/' . $image) }}"
@@ -142,7 +151,7 @@
                                                         <div
                                                             class="absolute flex flex-col inset-0 group-hover:opacity-100 space-y-2 transition">
                                                             <!-- Remove Document -->
-                                                            <button @click="removeDocument(index)"
+                                                            <span @click="removeDocument(index)"
                                                                 class="absolute bg-white p-1 right-0 rounded-full top-0">
                                                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4"
                                                                     viewBox="0 0 20 20" fill="red">
@@ -150,7 +159,7 @@
                                                                         d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 011.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
                                                                         clip-rule="evenodd" />
                                                                 </svg>
-                                                            </button>
+                                                            </span>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -287,7 +296,7 @@
                     return;
                 }
 
-                const url = `{{ route('company.realestate.maintaince-requests.units', ':id') }}`.replace(':id', this
+                const url = `{{ route('company.realestate.maintenance-requests.units', ':id') }}`.replace(':id', this
                     .selectedProperty);
 
                 this.units = [{
@@ -332,7 +341,7 @@
                 const formData = new FormData(formElement);
 
                 try {
-                    const response = await fetch(`{{ route('company.realestate.maintaince-requests.store') }}`, {
+                    const response = await fetch(`{{ route('company.realestate.maintenance-requests.store') }}`, {
                         method: 'POST',
                         headers: {
                             'X-CSRF-TOKEN': '{{ csrf_token() }}' // Include Laravel CSRF token

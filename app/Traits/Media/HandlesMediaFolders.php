@@ -357,4 +357,106 @@ trait HandlesMediaFolders
 
         return $mediaFile->id;
     }
+
+    // public function directoryCheckAndStoreFile($file, $companyId, $folders = [])
+    // {
+    //     $disk = env('FILESYSTEM_DISK', 'public');
+    //     $base_path = 'uploads/company_' . $companyId;
+
+    //     // Ensure base path exists
+    //     if (!Storage::disk($disk)->directoryExists($base_path)) {
+    //         Storage::disk($disk)->makeDirectory($base_path);
+    //     }
+
+    //     // Find or create folder
+    //     $folder = MediaFolder::where('name', $folder_name)->where('company_id', $companyId)->first();
+
+    //     if ($folder) {
+    //         $filePath = $folder->path;
+    //     } else {
+    //         $slug = Str::slug($folder_name) . '-' . uniqid();
+    //         $filePath = $base_path . '/' . $slug;
+
+    //         $folder = MediaFolder::create([
+    //             'company_id' => $companyId,
+    //             'name'       => $folder_name,
+    //             'slug'       => $slug,
+    //             'path'       => $filePath,
+    //             'parent_id'  => NULL
+    //         ]);
+
+    //         if (!Storage::disk($disk)->directoryExists($filePath)) {
+    //             Storage::disk($disk)->makeDirectory($filePath);
+    //         }
+    //     }
+
+    //     // Store the file
+    //     $storedPath = $file->store($filePath, $disk);
+
+    //     $mediaFile = MediaFile::create([
+    //         'company_id' => $companyId,
+    //         'folder_id'  => $folder ? $folder->id : 0,
+    //         'name'       => $file->getClientOriginalName(),
+    //         'alt'        => '',
+    //         'mime_type'  => $file->getMimeType(),
+    //         'size'       => $file->getSize(),
+    //         'url'        => str_replace($filePath . '/', '', $storedPath),
+    //         'options'    => json_encode([])
+    //     ]);
+
+    //     return $mediaFile->id;
+    // }
+
+    public function directoryCheckAndStoreFile($file, int $companyId, array $folders = [])
+    {
+        $disk = env('FILESYSTEM_DISK', 'public');
+
+        $parentId   = null;
+        $currentPath = ''; // e.g. "company_2/properties/units"
+
+        foreach ($folders as $key => $folderName) {
+            // build up the path one segment at a time
+            $currentPath = trim($currentPath . '/' . $folderName, '/');
+
+            // make the directory on disk if missing
+            if (! Storage::disk($disk)->exists($currentPath)) {
+                Storage::disk($disk)->makeDirectory($currentPath);
+            }
+
+            // find or create the DB record, linking to its parent
+            $folder = MediaFolder::firstOrCreate(
+                [
+                    'company_id' => $companyId,
+                    'name'       => $folderName,
+                    'parent_id'  => $parentId,
+                ],
+                [
+                    'slug' => Str::slug($folderName) . '-' . uniqid(),
+                    'path' => $currentPath,
+                ]
+            );
+
+            if($key > 1){
+                $parentId = $folder->id;
+            }
+        }
+
+        // now $currentPath is the full nested path; store the file there
+        $storedPath = $file->store($currentPath, $disk);
+
+        // finally, record the file in media_files
+        $mediaFile = MediaFile::create([
+            'company_id' => $companyId,
+            'folder_id'  => $parentId ?? 0,
+            'name'       => $file->getClientOriginalName(),
+            'alt'        => '',
+            'mime_type'  => $file->getMimeType(),
+            'size'       => $file->getSize(),
+            // strip off the folder prefix so url is relative inside that folder
+            'url'        => ltrim(str_replace($currentPath, '', $storedPath), '/'),
+            'options'    => json_encode([]),
+        ]);
+
+        return $mediaFile;
+    }
 }

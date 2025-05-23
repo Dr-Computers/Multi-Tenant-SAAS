@@ -107,17 +107,17 @@
                             <h3 class="box-title">Total Properties</h3>
                             <div class="d-flex justify-content-between">
                                 <div class="col-xs-4"><i class="ti ti-checkbox fs-2 text-success"></i></div>
-                                <div class="col-xs-8 text-right fs-3 fw-bold">0</div>
+                                <div class="col-xs-8 text-right fs-3 fw-bold">{{ $owner->properties->count() }}</div>
                             </div>
 
                         </div>
                     </div>
                     <div class="col-md-6 row-in-br b-r-none">
                         <div class="col-in row">
-                            <h3 class="box-title">Documents</h3>
+                            <h3 class="box-title">Total Units</h3>
                             <div class="d-flex justify-content-between">
                                 <div class="col-xs-4"><i class="ti ti-file fs-2 text-danger"></i></div>
-                                <div class="col-xs-8 text-right fs-3 fw-bold">0</div>
+                                <div class="col-xs-8 text-right fs-3 fw-bold">{{ $owner->propertyUnits->count() }}</div>
                             </div>
                         </div>
                     </div>
@@ -125,19 +125,19 @@
                 <div class="row row-in">
                     <div class="col-md-6 row-in-br">
                         <div class="col-in row">
-                            <h3 class="box-title">Total Invoices</h3>
+                            <h3 class="box-title">Documents</h3>
                             <div class="d-flex justify-content-between">
                                 <div class="col-xs-4"><i class="ti ti-files fs-2 text-warning"></i></div>
-                                <div class="col-xs-8 text-right fs-3 fw-bold">0</div>
+                                <div class="col-xs-8 text-right fs-3 fw-bold">{{ $owner->documents->count() }}</div>
                             </div>
                         </div>
                     </div>
                     <div class="col-md-6 row-in-br b-r-none">
                         <div class="col-in row">
-                            <h3 class="box-title">Pending Invoices</h3>
+                            <h3 class="box-title">Total Invoices</h3>
                             <div class="d-flex justify-content-between">
                                 <div class="col-xs-4"><i class="ti ti-files fs-2 text-danger"></i></div>
-                                <div class="col-xs-8 text-right fs-3 fw-bold">15</div>
+                                <div class="col-xs-8 text-right fs-3 fw-bold">{{ $owner->invoices->count() }}</div>
                             </div>
                         </div>
                     </div>
@@ -149,7 +149,7 @@
                             <h3 class="box-title">Total Amount</h3>
                             <div class="d-flex justify-content-between">
                                 <div class="col-xs-2"><i class="ti ti-cash fs-2 text-info"></i></div>
-                                <div class="col-xs-10 text-right fs-3 fw-bold">0 </div>
+                                <div class="col-xs-10 text-right fs-3 fw-bold">{{ $owner->invoices->sum('amount') }} </div>
                             </div>
                         </div>
                     </div>
@@ -158,7 +158,7 @@
                             <h3 class="box-title">Due Amount</h3>
                             <div class="d-flex justify-content-between">
                                 <div class="col-xs-4"><i class="ti ti-cash fs-2 text-danger"></i></div>
-                                <div class="col-xs-8 text-right fs-3 fw-bold">0</div>
+                                <div class="col-xs-8 text-right fs-3 fw-bold">{{ $owner->invoices->sum('amount') }}</div>
                             </div>
                         </div>
                     </div>
@@ -169,9 +169,9 @@
     </div>
     <div class="col-md-6">
         <div class="white-box" style="min-height:450px !important;max-height:650px !important;overflow:auto;">
-            <div class="row my-4">
+            <div class="row mb-4">
                 <div class="col-md-12">
-                    <label class="mb-2"><b>Personal Details</b></label>
+                    <label class="mb-3"><b>Personal Details</b></label>
                     <h6 class="mb-2">Address: {{ $owner->personal ? $owner->personal->address : '---' }}</h6>
                     <h6 class="mb-2">City: {{ $owner->personal ? $owner->personal->city : '---' }}</h6>
                     <h6 class="mb-2">State: {{ $owner->personal ? $owner->personal->state : '---' }}</h6>
@@ -179,24 +179,21 @@
                     </h6>
                     <h6 class="mb-2">County: {{ $owner->personal ? $owner->personal->country : '---' }}</h6>
                 </div>
-            </div>
-            <div class="row ">
-                <hr>
-                <div class="col-md-12 my-4 ">
+                <div class="col-md-12 mb-4 ">
                     <label class="mb-2"><b>Role</b></label>
                     <div class="d-flex gap-2">
                         <img src="https://avatar.iran.liara.run/ownername?background=000&color=fff&uppercase=true&ownername={{ $owner->getRoleNames()->first() }}"
                             alt="owner" class="rounded-circle mb-2 w-10 h-10">
                         <label
-                            class="text-capitalize fw-bold text-primary mt-2">{{ $owner->getRoleNames()->first() }}</label>
+                            class="text-capitalize fw-bold text-dark mt-2">{{ $owner->getRoleNames()->first() }}</label>
                     </div>
                 </div>
-
             </div>
+           
             <div class="row">
                 <hr>
                 <div class="col-md-12 my-4">
-                    <label class="mb-2 text-primary"><b>Activity Details</b></label>
+                    <label class="mb-4 text-primary"><b>Activity Details</b></label>
                     <h6 class="mb-2"><strong>Joined date : </strong>{!! dateTimeFormat($owner->created_at) !!}</h6>
                     <h6 class="mb-2"><strong>Account create at : </strong>{!! dateTimeFormat($owner->created_at) !!}</h6>
                     <h6 class="mb-2"><strong>Last login at : </strong>{!! dateTimeFormat($owner->last_login_at) !!}</h6>

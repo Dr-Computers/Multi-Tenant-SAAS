@@ -51,12 +51,12 @@
                                             </button>
 
                                             <div class="dropdown-menu dropdown-menu-end">
-                                                <a class="dropdown-item"
+                                                <a class="dropdown-item" target="_blank"
                                                     href="{{ route('company.realestate.property.units.index', $property->id) }}">
                                                     <span> <i class="ti ti-plus text-dark"></i>
                                                         {{ __('Units') }}</span>
                                                 </a>
-                                                <a class="dropdown-item"
+                                                <a class="dropdown-item" target="_blank"
                                                     href="{{ route('company.realestate.properties.show', $property->id) }}">
                                                     <span> <i class="ti ti-eye text-dark"></i>
                                                         {{ __('View') }}</span>

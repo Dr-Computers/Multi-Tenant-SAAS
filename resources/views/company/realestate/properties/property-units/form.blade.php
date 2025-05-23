@@ -6,7 +6,8 @@
 
     <li class="breadcrumb-item"><a href="{{ route('company.realestate.properties.index') }}">{{ __('Properties') }}</a></li>
     <li class="breadcrumb-item"><a
-            href="{{ route('company.realestate.property.units.index', $property->id) }}">{{ __('Units') }}</a></li>
+            href="{{ route('company.realestate.property.units.index', ['property_id' => $property->id]) }}">{{ __('Units') }}</a>
+    </li>
     <li class="breadcrumb-item">{{ $unit->exists ? __('Edit') : __('Create') }}</li>
 @endsection
 
@@ -15,11 +16,19 @@
     <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.js"></script>
 @endpush
 
+
+@section('action-btn')
+    <a href="{{ route('company.realestate.property.units.store', $property->id) }}"
+        class="btn btn-sm text-light btn-primary-subtle">
+        <i class="ti ti-arrow-left"></i> {{ __('Back') }}
+    </a>
+@endsection
+
 @section('content')
     <div class="row">
         <div class="col-md-12">
-            <form @submit.prevent="submitForm" id="propertyFrom"
-                action="{{ $unit->exists ? route('company.realestate.property.units.update', [$property->id, $unit->id]) : route('company.realestate.property.units.store', $property->id) }}"
+            <form x-data="formHandler()" @submit.prevent="submitForm($event)" id="propertyFrom"
+                action="{{ $unit->exists ? route('company.realestate.property.units.update', ['property_id' => $property->id, 'unit' => $unit->id]) : route('company.realestate.property.units.store', $property->id) }}"
                 method="POST" enctype="multipart/form-data">
                 @csrf
                 @if ($unit->exists)
@@ -27,11 +36,21 @@
                 @endif
                 <div class="card">
                     <div class="card-body row">
+
+                        <div x-show="showToast" x-transition
+                            :class="toastType === 'success' ? 'bg-success text-light' : 'bg-danger text-light'"
+                            class="fixed top-5 text-white p-3 rounded shadow-lg transition">
+                            <p x-html="toastMessage"></p>
+
+                        </div>
+                        <div id="loader" class="loader-overlay hidden">
+                            <div class="spinner"></div>
+                        </div>
                         <!-- Name -->
                         <div class="form-group col-md-6">
                             <label for="name">{{ __('Name') }}<sup class="text-danger fs-6 d-none">*</sup></label>
-                            <input form="propertyFrom" type="text" name="name" autocomplete="off" value="{{ old('name', $unit->name) }}"
-                                class="form-control" required>
+                            <input form="propertyFrom" type="text" name="name" autocomplete="off"
+                                value="{{ old('name', $unit->name) }}" class="form-control" required>
                         </div>
                         <!-- Registration No -->
                         <div class="form-group col-md-6">
@@ -50,7 +69,7 @@
                                             @for ($i = 1; $i < 5; $i++)
                                                 <li class="relative mb-1">
                                                     <input class="sr-only peer" form="propertyFrom"
-                                                        @if ($i == $unit->bed_rooms) checked @endif type="radio"
+                                                        @if ($i == 1 || $i == $unit->bed_rooms) checked @endif type="radio"
                                                         value="{{ $i }}" name="bed_rooms"
                                                         id="bed_room_{{ $i }}">
                                                     <label
@@ -120,7 +139,7 @@
                                             @for ($i = 1; $i < 5; $i++)
                                                 <li class="relative mb-1">
                                                     <input class="sr-only peer" form="propertyFrom"
-                                                        @if ($i == $unit->bath_rooms) checked @endif type="radio"
+                                                        @if ($i == 1 || $i == $unit->bath_rooms) checked @endif type="radio"
                                                         value="{{ $i }}" name="bath_rooms"
                                                         id="bath_rooms_{{ $i }}">
                                                     <label
@@ -131,8 +150,8 @@
                                             @if ($property->bath_rooms > 4)
                                                 <li class="relative mb-1">
                                                     <input form="propertyFrom" class="sr-only peer" checked
-                                                        type="radio" value="{{ $property->bath_rooms }}" name="bath_rooms"
-                                                        id="bath_rooms_{{ $property->bath_rooms }}">
+                                                        type="radio" value="{{ $property->bath_rooms }}"
+                                                        name="bath_rooms" id="bath_rooms_{{ $property->bath_rooms }}">
                                                     <label
                                                         class="mx-1 px-3 py-1 bg-white border border-gray-300 rounded-5 cursor-pointer focus:outline-none hover:bg-gray-50 peer-checked:ring-green-500 peer-checked:ring-2 peer-checked:border-transparent"
                                                         for="bath_rooms_{{ $property->bath_rooms }}">{{ $property->bath_rooms }}</label>
@@ -188,7 +207,7 @@
                                             @for ($i = 0; $i < 4; $i++)
                                                 <li class="relative mb-1">
                                                     <input class="sr-only peer" form="propertyFrom"
-                                                        @if ($i == $unit->balconies) checked @endif type="radio"
+                                                        @if ($i == 0 || $i == $unit->balconies) checked @endif type="radio"
                                                         value="{{ $i }}" name="balconies"
                                                         id="balconies_{{ $i }}">
                                                     <label
@@ -199,8 +218,8 @@
                                             @if ($property->balconies > 4)
                                                 <li class="relative mb-1">
                                                     <input form="propertyFrom" class="sr-only peer" checked
-                                                        type="radio" value="{{ $property->balconies }}" name="balconies"
-                                                        id="balconies_{{ $property->balconies }}">
+                                                        type="radio" value="{{ $property->balconies }}"
+                                                        name="balconies" id="balconies_{{ $property->balconies }}">
                                                     <label
                                                         class="mx-1 px-3 py-1 bg-white border border-gray-300 rounded-5 cursor-pointer focus:outline-none hover:bg-gray-50 peer-checked:ring-green-500 peer-checked:ring-2 peer-checked:border-transparent"
                                                         for="balconies_{{ $property->balconies }}">{{ $property->balconies }}</label>
@@ -256,7 +275,7 @@
                                             @for ($i = 0; $i < 4; $i++)
                                                 <li class="relative mb-1">
                                                     <input class="sr-only peer" form="propertyFrom"
-                                                        @if ($i == $unit->kitchen) checked @endif type="radio"
+                                                        @if ($i == 0 || $i == $unit->kitchen) checked @endif type="radio"
                                                         value="{{ $i }}" name="kitchen"
                                                         id="kitchen_{{ $i }}">
                                                     <label
@@ -315,9 +334,6 @@
                                         </ul>
                                     </div>
                                 </div>
-
-
-
                             </div>
                         </div>
 
@@ -355,8 +371,9 @@
                         <!-- Deposit Amount -->
                         <div class="form-group col-md-6">
                             <label for="deposite_amount">{{ __('Deposit Amount') }}</label>
-                            <input type="number" step="0.01" form="propertyFrom" autocomplete="off" name="deposite_amount"
-                                value="{{ old('deposite_amount', $unit->deposite_amount) }}" class="form-control">
+                            <input type="number" step="0.01" form="propertyFrom" autocomplete="off"
+                                name="deposite_amount" value="{{ old('deposite_amount', $unit->deposite_amount) }}"
+                                class="form-control">
                         </div>
 
                         <!-- Late Fee Type -->
@@ -376,14 +393,16 @@
                         <!-- Late Fee Amount -->
                         <div class="form-group col-md-6">
                             <label for="late_fee_amount">{{ __('Late Fee Amount') }}</label>
-                            <input type="number" form="propertyFrom" autocomplete="off" step="0.01" name="late_fee_amount"
-                                value="{{ old('late_fee_amount', $unit->late_fee_amount) }}" class="form-control">
+                            <input type="number" form="propertyFrom" autocomplete="off" step="0.01"
+                                name="late_fee_amount" value="{{ old('late_fee_amount', $unit->late_fee_amount) }}"
+                                class="form-control">
                         </div>
 
                         <!-- Incident Receipt -->
                         <div class="form-group col-md-6">
                             <label for="incident_reicept_amount">{{ __('Incident Receipt Amount') }}</label>
-                            <input type="number" form="propertyFrom" autocomplete="off" step="0.01" name="incident_reicept_amount"
+                            <input type="number" form="propertyFrom" autocomplete="off" step="0.01"
+                                name="incident_reicept_amount"
                                 value="{{ old('incident_reicept_amount', $unit->incident_reicept_amount) }}"
                                 class="form-control">
                         </div>
@@ -406,6 +425,57 @@
                                     <div x-data="imageUploader()" class="mx-auto bg-white shadow rounded-lg space-y-6">
                                         <!-- Image Preview Grid -->
                                         <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+                                            @foreach ($unit->propertyUnitImages ?? [] as $key => $image)
+                                                @php
+                                                    $isImage2 = Str::startsWith($image->mime_type, 'image/');
+                                                    $icon2 = match (true) {
+                                                        Str::contains($image->mime_type, 'pdf')
+                                                            => '/assets/icons/pdf-icon.png',
+                                                        Str::contains($image->mime_type, 'msword'),
+                                                        Str::contains($image->mime_type, 'wordprocessingml')
+                                                            => '/assets/icons/docx-icon.png',
+                                                        default => '/assets/icons/file-icon.png',
+                                                    };
+                                                    $thumbnail2 = $isImage2
+                                                        ? asset('storage/' . $image->file_url)
+                                                        : asset($icon);
+                                                @endphp
+                                                <div class="flex flex-col relative existing-data-box">
+                                                    <div
+                                                        class="relative text-center group border rounded-lg overflow-hidden ">
+                                                        <img src="{{ $thumbnail2 }}"
+                                                            alt="{{ $image->alt ?? $image->name }}"
+                                                            class="w-auto object-cover mx-auto mb-2 rounded"
+                                                            style="height: 100px;width: 100%;">
+                                                        <span title="{{ $image->name }}">{{ $image->name }}</span>
+                                                        <input type="hidden" form="propertyFrom"
+                                                            value="{{ $image->id }}" name="existingImage[]" />
+                                                        <button type="button" onclick="removeExistingRow(this)"
+                                                            class="absolute bg-white p-1 right-0 top-0 rounded-full">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4"
+                                                                fill="red" viewBox="0 0 20 20">
+                                                                <path fill-rule="evenodd"
+                                                                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 011.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                                                    clip-rule="evenodd" />
+                                                            </svg>
+                                                        </button>
+                                                    </div>
+                                                    <div class="mb-2">
+                                                        <label
+                                                            class="flex items-center space-x-2 text-dark cursor-pointer ">
+                                                            <input type="radio" name="exCoverImage" form="propertyFrom"
+                                                                value="{{ $image->id }}"
+                                                                @change="setCoverImage({{ $key + 200 }})"
+                                                                {{ $unit->thumbnail_image == $image->id ? 'checked' : '' }}>
+                                                            <span>Make Cover Photo</span>
+                                                        </label>
+                                                        <span x-show="currentCover === {{ $key + 200 }}"
+                                                            class="absolute top-0 left-0 p-2 text-white bg-black opacity-50">Cover</span>
+                                                    </div>
+
+                                                </div>
+                                            @endforeach
+
                                             <!-- Existing Images -->
                                             <template x-for="(image, index) in images" :key="index">
                                                 <div class="flex flex-col relative">
@@ -430,8 +500,9 @@
                                                         </div>
                                                     </div>
                                                     <label class="flex items-center space-x-2 text-dark cursor-pointer ">
-                                                        <input type="radio" name="coverImage" class="" form="propertyFrom"
-                                                            :value="image.name" @change="setCoverImage(index)"
+                                                        <input type="radio" name="coverImage" class=""
+                                                            form="propertyFrom" :value="image.name"
+                                                            @change="setCoverImage(index)"
                                                             :checked="currentCover === index" />
                                                         <span>Make Cover Photo</span>
                                                     </label>
@@ -445,8 +516,9 @@
                                                 <div class="relative group border rounded-lg p-2 overflow-hidden"
                                                     @click="triggerFileInput()"
                                                     x-bind:class="{ 'border-blue-500': isDragging }">
-                                                    <input name="images[]" type="file" accept="image/*" form="propertyFrom"
-                                                        id="fileInput" class="hidden" multiple
+                                                    <img src="/assets/icons/upload-icon.png" class="w-50 mx-auto">
+                                                    <input name="images[]" type="file" accept="image/*"
+                                                        form="propertyFrom" id="fileInput" class="hidden" multiple
                                                         @change="addImages($event)">
                                                     <p class="text-dark-600">
                                                         click to upload your images here.</p>
@@ -462,8 +534,8 @@
 
                             <div class="mt-3">
                                 <label for="images">{{ __('Description Notes') }}</label>
-                                <textarea name="unique_info" form="propertyFrom" rows="4" autocomplete="off" class="block w-full mt-2 p-2 border rounded-lg"
-                                    placeholder="Write your thoughts here...">{{ $unit ? $unit->notes : '' }}</textarea>
+                                <textarea name="unique_info" form="propertyFrom" rows="4" autocomplete="off"
+                                    class="block w-full mt-2 p-2 border rounded-lg" placeholder="Write your thoughts here...">{{ $unit ? $unit->notes : '' }}</textarea>
                             </div>
 
 
@@ -622,6 +694,98 @@
                 toggleDragging(state) {
                     this.isDragging = state;
                 },
+            };
+        }
+    </script>
+    <script>
+        function formHandler() {
+            return {
+                formData: {}, // Object to hold form data
+                responseMessage: '', // Success message
+                errorMessage: '', // Error message
+                validationErrors: [], // Array to store validation errors
+                showToast: false, // Controls visibility of the toast
+                toastMessage: '', // Message for the toast
+                toastType: '', // Type of toast (success/error)
+
+                async submitForm() {
+                    // Show loader
+                    this.toggleLoader(true);
+
+                    // Reset validation errors before submitting
+                    this.validationErrors = [];
+                    this.errorMessage = '';
+                    this.responseMessage = '';
+
+                    // Reference the form element
+                    const formElement = document.getElementById('propertyFrom');
+                    const formData = new FormData(formElement);
+                    const url = formElement.action;
+
+
+                    try {
+                        const response = await fetch(url, {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}' // Include Laravel CSRF token
+                            },
+                            body: formData // Use FormData as request body
+                        });
+
+
+                        // Handle validation errors (422)
+                        if (!response.ok) {
+                            const errorData = await response.json();
+                            this.validationErrors = errorData.errors || [];
+                            this.showToastMessage('Validation failed.', 'error');
+                            return; // Stop further execution if validation fails
+                        }
+
+                        // Handle successful response
+                        const data = await response.json();
+                        this.responseMessage = data.message || 'Form submitted successfully!';
+                        this.validationErrors = []; // Clear validation errors
+                        this.showToastMessage(this.responseMessage, 'success');
+                        window.location = data.redirect ?? "";
+                    } catch (error) {
+                        // Catch unexpected errors (e.g., network issues)
+                        this.errorMessage = error.message || 'An error occurred during form submission';
+                        this.responseMessage = ''; // Clear success messages
+                        this.showToastMessage(this.errorMessage, 'error');
+                    } finally {
+                        // Hide loader
+                        this.toggleLoader(false);
+                    }
+                },
+                toggleLoader(show) {
+                    const loader = document.getElementById('loader');
+                    if (show) {
+                        loader.classList.remove('hidden');
+                    } else {
+                        loader.classList.add('hidden');
+                    }
+                },
+
+                showToastMessage(message, type) {
+                    this.toastType = type;
+
+                    if (type === 'error' && this.validationErrors.length > 0) {
+                        // Construct an unordered list of errors
+                        this.toastMessage = `
+                                    <strong>${message}</strong>
+                                    <ul>
+                                        ${this.validationErrors.map(error => `<li>${error}</li>`).join('')}
+                                    </ul>
+                                `;
+                    } else {
+                        this.toastMessage = message + ':(';
+                    }
+
+                    this.showToast = true;
+                    setTimeout(() => {
+                        this.showToast = false; // Hide toast after 3 seconds
+                    }, 3000);
+                }
             };
         }
     </script>

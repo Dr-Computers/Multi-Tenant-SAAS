@@ -25,6 +25,7 @@ class CreateBankAccountsTable extends Migration
                 $table->string('contact_number')->nullable();
                 $table->text('bank_address')->nullable();
                 $table->integer('created_by')->default('0');
+                $table->decimal('current_balance', 15, 2)->default('0.0');
                 $table->timestamps();
             }
         );

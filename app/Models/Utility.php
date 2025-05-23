@@ -327,18 +327,6 @@ class Utility extends Model
         $arr = [
             'ar' => '🇦🇪 ar',
             'en' => '🇮🇳 en',
-            // 'da' => '🇩🇰 da',
-            // 'de' => '🇩🇪 de',
-            // 'es' => '🇪🇸 es',
-            // 'fr' => '🇫🇷 fr',
-            // 'it' => '🇮🇹 it',
-            // 'ja' => '🇯🇵 ja',
-            // 'nl' => '🇳🇱 nl',
-            // 'pl' => '🇵🇱 pl',
-            // 'ru' => '🇷🇺 ru',
-            // 'pt' => '🇵🇹 pt',
-            // 'tr' => '🇹🇷 tr',
-            // 'pt-br' => '🇵🇹 pt-br',
         ];
         return $arr;
     }
@@ -362,20 +350,6 @@ class Utility extends Model
         $languages = [
             "ar" => "Arabic",
             "en" => "English",
-            // "zh" => "Chinese",
-            // "da" => "Danish",
-            // "de" => "German",
-            // "es" => "Spanish",
-            // "fr" => "French",
-            // "he" => "Hebrew",
-            // "it" => "Italian",
-            // "ja" => "Japanese",
-            // "nl" => "Dutch",
-            // "pl" => "Polish",
-            // "pt" => "Portuguese",
-            // "ru" => "Russian",
-            // "tr" => "Turkish",
-            // "pt-br" => "Portuguese(Brazil)"
         ];
         return $languages;
     }
@@ -1852,7 +1826,7 @@ class Utility extends Model
                     $name = $name;
 
                     if ($settings['storage_setting'] == 'local') {
-                        $request->$key_name->move(storage_path('app/public/'.$path), $name);
+                        $request->$key_name->move(storage_path('app/public/' . $path), $name);
                         // $request->file($key_name)->storeAs($path, $name, 'public'); // Store in 'storage/app/public/uploads/avatar/'
                         $path = $path . $name;
                     } else if ($settings['storage_setting'] == 'wasabi') {
@@ -1920,19 +1894,17 @@ class Utility extends Model
                     $mimes =  !empty($settings['local_storage_validation']) ? $settings['local_storage_validation'] : '';
                 }
 
-                    $res = [
-                        'types'  => $mimes,
-                        'max_size'  => $max_size,
-                    ];
-                    return $res;
-
+                $res = [
+                    'types'  => $mimes,
+                    'max_size'  => $max_size,
+                ];
+                return $res;
             } else {
                 $res = [
                     'flag' => 0,
                     'msg' => __('Please set proper configuration for storage.'),
                 ];
                 return $res;
-
             }
         } catch (\Exception $e) {
             // dd($e);
@@ -1973,7 +1945,7 @@ class Utility extends Model
                 // return \Storage::disk($settings['storage_setting'])->url($path);
             }
 
-            return url('/').\Storage::disk($settings['storage_setting'])->url($path);
+            return url('/') . \Storage::disk($settings['storage_setting'])->url($path);
         } catch (\Throwable $th) {
             return '';
         }
@@ -2700,7 +2672,8 @@ class Utility extends Model
             'name' => 'Purchase Tax',
             'type' => 2,
             'sub_type' => 4,
-        ], [
+        ],
+        [
             'code' => '2150',
             'name' => 'VAT Pay / Refund',
             'type' => 2,
@@ -2771,7 +2744,8 @@ class Utility extends Model
             'name' => 'Accr. Benefits - Central Provident Fund',
             'type' => 2,
             'sub_type' => 4,
-        ], [
+        ],
+        [
             'code' => '2320',
             'name' => 'Accr. Benefits - Stock Purchase',
             'type' => 2,
@@ -3375,7 +3349,8 @@ class Utility extends Model
             'name' => 'Purchase Tax',
             'type' => 'Liabilities',
             'sub_type' => 'Current Liabilities',
-        ], [
+        ],
+        [
             'code' => '2150',
             'name' => 'VAT Pay / Refund',
             'type' => 'Liabilities',
@@ -3446,7 +3421,8 @@ class Utility extends Model
             'name' => 'Accr. Benefits - Central Provident Fund',
             'type' => 'Liabilities',
             'sub_type' => 'Current Liabilities',
-        ], [
+        ],
+        [
             'code' => '2320',
             'name' => 'Accr. Benefits - Stock Purchase',
             'type' => 'Liabilities',
@@ -3965,17 +3941,17 @@ class Utility extends Model
         }
     }
 
-    public static function check_file($path){
-        if(!empty($path)){
+    public static function check_file($path)
+    {
+        if (!empty($path)) {
 
             $settings = Utility::settings();
-            if( $settings['storage_setting'] == 'local' || $settings['storage_setting'] == null){
+            if ($settings['storage_setting'] == 'local' || $settings['storage_setting'] == null) {
 
-                 return Storage::disk($settings['storage_setting'])->exists($path);
-            }else{
+                return Storage::disk($settings['storage_setting'])->exists($path);
+            } else {
 
-                if($settings['storage_setting'] == 's3')
-                {
+                if ($settings['storage_setting'] == 's3') {
                     config(
                         [
                             'filesystems.disks.s3.key' => $settings['s3_key'],
@@ -3986,9 +3962,7 @@ class Utility extends Model
                             'filesystems.disks.s3.endpoint' => $settings['s3_endpoint'],
                         ]
                     );
-                }
-                else if($settings['storage_setting'] == 'wasabi')
-                {
+                } else if ($settings['storage_setting'] == 'wasabi') {
                     config(
                         [
                             'filesystems.disks.wasabi.key' => $settings['wasabi_key'],
@@ -4002,14 +3976,13 @@ class Utility extends Model
                     );
                 }
 
-            try{
-                return Storage::disk($settings['storage_setting'])->exists($path);
-            } catch (\Exception $e) {
-                return 0;
+                try {
+                    return Storage::disk($settings['storage_setting'])->exists($path);
+                } catch (\Exception $e) {
+                    return 0;
+                }
             }
-
-            }
-        }else{
+        } else {
             return 0;
         }
     }
@@ -4019,9 +3992,9 @@ class Utility extends Model
         $data = DB::table('admin_payment_settings');
 
         if (Auth::check()) {
-            $data->where('name',$key)->where('created_by', '=', Auth::user()->creatorId());
+            $data->where('name', $key)->where('created_by', '=', Auth::user()->creatorId());
         } else {
-            $data->where('name',$key)->where('created_by', '=', 1);
+            $data->where('name', $key)->where('created_by', '=', 1);
         }
         return $data->pluck('value')->first();
     }
@@ -4035,23 +4008,19 @@ class Utility extends Model
         return $referralCode;
     }
 
-    public static function referralTransaction($plan , $company= '')
+    public static function referralTransaction($plan, $company = '')
     {
-        if($company != '')
-        {
+        if ($company != '') {
             $objUser = $company;
-        }
-        else
-        {
+        } else {
             $objUser = \Auth::user();
         }
 
-        $user = ReferralTransaction::where('company_id' , $objUser->id)->first();
+        $user = ReferralTransaction::where('company_id', $objUser->id)->first();
 
-        $referralSetting = ReferralSetting::where('created_by' , 1)->first();
+        $referralSetting = ReferralSetting::where('created_by', 1)->first();
 
-        if($objUser->used_referral_code != 0 && $user == null && (isset($referralSetting) && $referralSetting->is_enable == 1))
-        {
+        if ($objUser->used_referral_code != 0 && $user == null && (isset($referralSetting) && $referralSetting->is_enable == 1)) {
             $transaction         = new ReferralTransaction();
             $transaction->company_id    = $objUser->id;
             $transaction->plan_id       = $plan->id;
@@ -4059,7 +4028,6 @@ class Utility extends Model
             $transaction->commission    = $referralSetting->percentage;
             $transaction->referral_code = $objUser->used_referral_code;
             $transaction->save();
-
         }
     }
 
@@ -4067,5 +4035,4 @@ class Utility extends Model
     {
         return number_format($price, 2);
     }
-
 }

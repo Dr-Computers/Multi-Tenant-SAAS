@@ -23,6 +23,7 @@ return new class extends Migration
             $table->text('other_rooms')->nullable(); 
             $table->decimal('registration_no',8,4)->nullable();            
             $table->string('rent_type')->nullable(); 
+            $table->integer('rent_duration')->nullable()->default(1)->comment('month'); 
             $table->decimal('price',8,2)->nullable();             
             $table->string('deposite_type')->nullable(); 
             $table->decimal('deposite_amount',8,2)->nullable();             

@@ -107,9 +107,30 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(Property::class, 'owner_id', 'id');
     }
 
+    public function unitLeases()
+    {
+        return $this->hasMany(RealestateLease::class, 'tenant_id', 'id');
+    }
+
+    public function propertyUnits()
+    {
+        return $this->hasManyThrough(
+            PropertyUnit::class,  // Final model
+            Property::class,      // Intermediate model
+            'owner_id',           // Foreign key on Property table
+            'property_id',        // Foreign key on PropertyUnit table
+            'id',                 // Local key on User table
+            'id'                  // Local key on Property table
+        );
+    }
+
     public function personal()
     {
         return $this->hasOne(PersonalDetail::class, 'user_id', 'id');
+    }
+
+    public function activityLogs(){
+        return $this->hasMany(ActivityLog::class, 'id', 'user_id');
     }
 
     public function maintainer()
@@ -394,13 +415,13 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function countActiveCompanies()
     {
-        return User::where('type', '=', 'company')->where('created_by', '=', $this->creatorId())->where('is_active',1)->count();
+        return User::where('type', '=', 'company')->where('created_by', '=', $this->creatorId())->where('is_active', 1)->count();
     }
 
 
     public function countInActiveCompanies()
     {
-        return User::where('type', '=', 'company')->where('created_by', '=', $this->creatorId())->where('is_active',0)->count();
+        return User::where('type', '=', 'company')->where('created_by', '=', $this->creatorId())->where('is_active', 0)->count();
     }
 
 
@@ -428,6 +449,11 @@ class User extends Authenticatable implements MustVerifyEmail
     public function countVenders()
     {
         return Vender::where('created_by', '=', $this->creatorId())->count();
+    }
+
+    public function invoices()
+    {
+        return $this->hasMany(Invoice::class, 'company_id', 'id');
     }
 
     public function countInvoices()
@@ -642,7 +668,7 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function currentPlan()
     {
-        return $this->hasOne(SubscriptionOrder::class, 'company_id', 'id')->where('status',1);
+        return $this->hasOne(SubscriptionOrder::class, 'company_id', 'id')->where('status', 1);
     }
 
     public function weeklyInvoice()

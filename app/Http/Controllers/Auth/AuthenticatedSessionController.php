@@ -30,10 +30,10 @@ class AuthenticatedSessionController extends Controller
 
     public function __construct()
     {
-        if (!file_exists(storage_path() . "/installed")) {
-            header('location:install');
-            die;
-        }
+        // if (!file_exists(storage_path() . "/installed")) {
+        //     header('location:install');
+        //     die;
+        // }
 
         $settings = Utility::settings();
 
@@ -277,8 +277,7 @@ class AuthenticatedSessionController extends Controller
                 Auth::user()->creatorId(),
                 Auth::user()->id
             );
-        }
-        else if($user->type == 'company' || $user->type == 'company staff'){
+        } else if ($user->type == 'company' || $user->type == 'company staff') {
             $this->logActivity(
                 'User Loged',
                 'User Id ' . $user->id,
@@ -544,6 +543,20 @@ class AuthenticatedSessionController extends Controller
 
     public function showLoginForm($lang = '')
     {
+        if (Auth::check()) {
+            if (Auth::user()->type == 'super admin' || Auth::user()->type == 'admin staff') {
+                return redirect()->route('admin.dashboard');
+            } else if (Auth::user()->type == 'company' || Auth::user()->type == 'company staff') {
+                return redirect()->route('company.dashboard');
+            } else if (Auth::user()->type == 'owner') {
+                return redirect()->route('owner.dashboard');
+            } else if (Auth::user()->type == 'tenant') {
+                return redirect()->route('tenant.dashboard');
+            } else if (Auth::user()->type == 'maintainer') {
+                return redirect()->route('maintainer.dashboard');
+            }
+        }
+
         $langList = Utility::langList();
         $lang = array_key_exists($lang, $langList) ? $lang : 'en';
 

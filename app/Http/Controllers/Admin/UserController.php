@@ -140,7 +140,6 @@ class UserController extends Controller
                 Auth::user()->id
             );
 
-
             return redirect()->route('admin.users.index')->with('success', __('User successfully added.') . ((isset($smtp_error)) ? '<br> <span class="text-danger">' . $smtp_error . '</span>' : ''));
         } else {
             DB::rollBack();

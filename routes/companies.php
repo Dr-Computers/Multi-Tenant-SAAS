@@ -55,9 +55,24 @@ Route::group(
             Route::delete('owners/documents/delete/{document}', 'OwnerController@deleteDocument')->name('owners.documents.destroy');
 
             Route::resource('properties', 'PropertyController')->names('properties');
+
+            Route::get('lease-properties', 'PropertyLeaseController@index')->name('properties.lease.index');   
+            Route::get('lease-properties/create/{unit}', 'PropertyLeaseController@create')->name('properties.lease.create');
+            Route::post('lease-properties/{unit}/store', 'PropertyLeaseController@store')->name('properties.lease.store');
+            Route::get('lease-properties/{unit}/show', 'PropertyLeaseController@create')->name('properties.lease.show');
+            Route::post('lease-properties/{unit}', 'PropertyLeaseController@update')->name('properties.lease.update');
+            Route::delete('lease-properties/{unit}/destroy', 'PropertyLeaseController@destroy')->name('properties.lease.destroy');
+            
+            Route::post('lease-properties/{unit}/cancel', 'PropertyLeaseController@cancel')->name('properties.lease.cancel');
+            Route::post('lease-properties/{unit}/in-hold', 'PropertyLeaseController@inHold')->name('properties.lease.in-hold');
+            Route::post('lease-properties/{unit}/approve', 'PropertyLeaseController@approve')->name('properties.lease.approve');
+            
+            
+
             // Route::resource('property-units/{id}', 'PropertyUnitController')->names('property.units');
             Route::get('property/{pid}/unit', [PropertyController::class, 'getPropertyUnit'])->name('property.unit');
             Route::resource('property/{property_id}/units', 'PropertyUnitController')->names('property.units');
+            
             Route::get('unit/{uid}/rent-type', [PropertyController::class, 'getUnitRentType'])->name('unit.rent_type');
             Route::resource('tenants', 'TenantController')->names('tenants');
             Route::get('tenants/{user}/reset-password', 'TenantController@resetPasswordForm')->name('tenants.reset.form');
@@ -76,7 +91,7 @@ Route::group(
             Route::get('maintenance-requests/units/{id}', 'MaintenanceRequestController@getUnits')->name('maintenance-requests.units');
 
             Route::resource('maintenance-requests', 'MaintenanceRequestController')->names('maintenance-requests');
-
+            
             Route::resource('categories', 'CategoryController')->names('categories');
             Route::resource('furnishing', 'FurnishingController')->names('furnishing');
             Route::resource('amenities', 'AmenitiesController')->names('amenities');
@@ -120,13 +135,11 @@ Route::group(
                 Route::get('/other-payments/create', [PaymentController::class, 'otherCreate'])->name('other.payments.create');
                 Route::get('/other-payments/{payment}/edit', [PaymentController::class, 'otherEdit'])->name('other.payments.edit');
                 Route::delete('/other-payments/{payment}', [PaymentController::class, 'otherDestroy'])->name('other.payments.destroy');
-                Route::get('other-payments/tenant/{pid}/invoice', [PaymentController::class,'getInvoices'])->name('tenant.invoices');
-         
+                Route::get('other-payments/tenant/{pid}/invoice', [PaymentController::class, 'getInvoices'])->name('tenant.invoices');
+
                 //Payments Payable
                 Route::resource('/payments/payable', PaymentPayableController::class)->names('payments.payables');
-                Route::get('user/{tid}/type', [PaymentPayableController::class,'fetchUsersByType'])->name('user.type');
-
-
+                Route::get('user/{tid}/type', [PaymentPayableController::class, 'fetchUsersByType'])->name('user.type');
             });
 
             // Bank Accounts
@@ -142,9 +155,9 @@ Route::group(
             Route::get('view/{company_id}/{ticket_no}', 'SupportTicketController@view')->name('view');
             Route::post('reply/{ticket_no}', 'SupportTicketController@sendreply')->name('reply');
         });
-        
-       
-        
+
+
+
 
         Route::group([
             'prefix' => 'media',
@@ -163,5 +176,14 @@ Route::group(
 
             Route::post('/upload', 'MediaController@uploadFiles')->name('file.upload');
         });
+
+
+        Route::resource('settings', 'SystemController');
+        Route::post('company-settings', 'SystemController@saveCompanySettings')->name('company.settings');
+        Route::get('company-setting', 'SystemController@companyIndex')->name('company.setting');
+        Route::post('business-setting', 'SystemController@saveBusinessSettings')->name('business.setting');
+        Route::post('reset-permissions', 'SystemController@resetPermissions')->name('settings.reset-permissions');
+        Route::post('invoice/template/settings/store', 'SystemController@invoiceTemplateStore')->name('invoice.template.settings.store');
+        Route::post('letter-pad/template/settings/store', 'SystemController@letterPadTemplateStore')->name('letter-pad.template.settings.store');
     }
 );

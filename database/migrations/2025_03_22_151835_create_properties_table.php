@@ -41,6 +41,9 @@ return new class extends Migration
             $table->string('insurance_end_date')->nullable(); 
             $table->string('youtube_video')->nullable(); 
             $table->mediumText('thumbnail_image')->nullable(); 
+            $table->string('furnishing_status')->nullable();
+            $table->longText('unique_info')->nullable();
+            
             $table->timestamps();
         });
     }

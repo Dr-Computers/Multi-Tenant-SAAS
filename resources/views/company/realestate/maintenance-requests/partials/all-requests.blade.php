@@ -3,7 +3,7 @@
         <div class="card">
             <div class="card-body table-bUsers-style">
                 <div class="table-responsive">
-                    
+
                     <table class="table datatable">
                         <thead>
                             <tr>
@@ -25,7 +25,7 @@
                                     <td>{{ $req->unit && $req->unit ? $req->unit->name : '---' }}</td>
                                     <td>{{ $req->issue ? $req->issue->name : '' }}</td>
                                     <td>{{ $req->maintainer ? $req->maintainer->name : '---' }}</td>
-                                    <td>{{ dateTimeFormat($req->created_at) }}</td>
+                                    <td>{{ dateTimeFormat($req->request_date) }}</td>
                                     <td>
                                         @if ($req->status == '1')
                                             <span class="badge bg-success p-1 px-3 rounded">
@@ -47,24 +47,30 @@
                                             </button>
 
                                             <div class="dropdown-menu dropdown-menu-end">
-                                                <a class="dropdown-item"
-                                                    href="{{ route('company.realestate.maintenance-requests.index', $req->id) }}">
+                                                <a class="dropdown-item" data-size="lg"
+                                                    data-url="{{ route('company.realestate.maintenance-requests.create') }}"
+                                                    data-ajax-popup2="true" data-bs-toggle="tooltip"
+                                                    title="{{ __('Create a Invoice ') }}">
                                                     <span> <i class="ti ti-plus text-dark"></i>
                                                         {{ __('Invoice') }}</span>
                                                 </a>
-                                                <a class="dropdown-item"
-                                                    href="{{ route('company.realestate.maintenance-requests.show', $req->id) }}">
+                                                <a class="dropdown-item" data-size="lg"
+                                                    data-url="{{ route('company.realestate.maintenance-requests.show', $req->id) }}"
+                                                    data-ajax-popup2="true" data-bs-toggle="tooltip"
+                                                    title="{{ __('View Request') }}">
                                                     <span> <i class="ti ti-eye text-dark"></i>
                                                         {{ __('View') }}</span>
                                                 </a>
-                                                <a class="dropdown-item"
-                                                    href="{{ route('company.realestate.maintenance-requests.edit', $req->id) }}">
+                                                <a class="dropdown-item" data-size="lg"
+                                                    data-url="{{ route('company.realestate.maintenance-requests.edit', $req->id) }}"
+                                                    data-ajax-popup2="true" data-bs-toggle="tooltip"
+                                                    title="{{ __('Edit Request ') }}">
                                                     <span> <i class="ti ti-pencil text-dark"></i>
                                                         {{ __('Edit') }}</span>
                                                 </a>
                                                 {!! Form::open([
                                                     'method' => 'DELETE',
-                                                    'route' => ['company.realestate.properties.destroy', $req->id],
+                                                    'route' => ['company.realestate.maintenance-requests.destroy', $req->id],
                                                     'id' => 'delete-form-' . $req->id,
                                                 ]) !!}
                                                 <a href="#" class="dropdown-item bs-pass-para "

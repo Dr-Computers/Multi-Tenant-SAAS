@@ -123,7 +123,19 @@
 
 @section('breadcrumb')
     <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">{{ __('Dashboard') }}</a></li>
-    <li class="breadcrumb-item">{{ __('Properties') }}</li>
+    <li class="breadcrumb-item">
+        <a href="{{ route('company.realestate.properties.index') }}">
+            {{ __('Properties') }}
+        </a>
+    </li>
+    <li class="breadcrumb-item">{{ __('Property Create') }}</li>
+@endsection
+
+
+@section('action-btn')
+    <a href="{{ route('company.realestate.properties.index') }}" class="btn btn-sm  text-light btn-primary-subtle">
+        <i class="ti ti-arrow-left"></i> {{ __('Back') }}
+    </a>
 @endsection
 
 @section('content')
@@ -132,6 +144,7 @@
 
             <form method="POST" @submit.prevent="submitForm" id="propertyFrom"
                 action="{{ route('company.realestate.properties.store') }}" enctype="multipart/form-data">
+                @method('PUT')
                 @csrf
             </form>
 
@@ -400,7 +413,7 @@
                                                     <div class="relative z-0 w-full mb-3 group">
                                                         <input form="propertyFrom" name="property_name" type="text"
                                                             autocomplete="off" id="name"
-                                                            value="{{ $property ? $property->property_name : '' }}"
+                                                            value="{{ $property ? $property->name : '' }}"
                                                             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 "
                                                             placeholder=" " />
                                                         <label for="name" id="property_heighlight_name"
@@ -832,9 +845,7 @@
                                                                         <label for="furnished-radio"
                                                                             class="ms-2 text-sm font-medium text-dark dark:text-dark">Furnished</label>
                                                                     </div>
-
                                                                 </div>
-
                                                                 <!-- Conditionally Display Content for Furnishing Status -->
                                                                 <div x-show="furnishingStatus === 'furnished' || furnishingStatus === 'semi-furnished'"
                                                                     class="mt-2 border-top bg-body card p-3">
@@ -923,11 +934,11 @@
                                                                                 class="w-full p-2 bg-gray-100 border border-gray-300 rounded-md">
                                                                                 <option value="">Select Landmark
                                                                                 </option>
-                                                                                @foreach ($facilities ?? [] as $facility_item)
+                                                                                @foreach ($landmarks ?? [] as $landmark_item)
                                                                                     <option
-                                                                                        {{ $exFacility['id'] == $facility_item->id ? 'selected' : '' }}
-                                                                                        value="{{ $facility_item->id }}">
-                                                                                        {{ $facility_item->name }}</option>
+                                                                                        {{ $exFacility['id'] == $landmark_item->id ? 'selected' : '' }}
+                                                                                        value="{{ $landmark_item->id }}">
+                                                                                        {{ $landmark_item->name }}</option>
                                                                                 @endforeach
                                                                             </select>
                                                                         </div>
@@ -936,7 +947,7 @@
                                                                         <div class="col-lg-6 mb-2">
                                                                             <input type="text"
                                                                                 name="facilities[100{{ $keyFac }}][distance]"
-                                                                                value="{{ $exFacility['distance'] }}"
+                                                                                value="{{ $exFacility->pivot->landmark_value }}"
                                                                                 autocomplete="off" form="propertyFrom"
                                                                                 class="w-full p-2 mt-1 border border-gray-300 rounded-md"
                                                                                 placeholder="Enter custom facility distance">
@@ -1031,36 +1042,50 @@
                     <div x-show="currentStep === 3" class="space-y-4 mt-2">
                         <div class="mb-5 mx-2">
 
-
                             <div class="section">
                                 <h5 class="mt-3 font-bold text-black fs-3">Add Documents of your property</h5>
-
 
                                 <div class="mt-3 border-dashed border-2 border-gray-300 rounded-lg p-3  bg-gray-100">
                                     <div x-data="documentUploader()" class="mx-auto bg-white shadow rounded-lg space-y-6">
                                         <!-- Document Preview Grid -->
                                         <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
-                                            @if (is_array($property->images))
-                                                @foreach ($property->images ?? [] as $key => $image)
-                                                    <div class="flex flex-col relative existing-data-box">
-                                                        <div class="relative group border rounded-lg overflow-hidden ">
-                                                            <img src="{{ asset('images/' . $image) }}" class="thumbnail"
-                                                                style="height: 100px;width: 100%;" alt="Uploaded Image">
-                                                            <input type="hidden" form="propertyFrom"
-                                                                value="{{ $image }}" name="existingImage[]" />
-                                                            <button type="button" onclick="removeExistingRow(this)"
-                                                                class="absolute bg-white p-1 right-0 top-0 rounded-full">
-                                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4"
-                                                                    fill="red" viewBox="0 0 20 20">
-                                                                    <path fill-rule="evenodd"
-                                                                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 011.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                                                                        clip-rule="evenodd" />
-                                                                </svg>
-                                                            </button>
-                                                        </div>
+                                            @foreach ($property->propertyDocuments ?? [] as $key => $document)
+                                                @php
+                                                    $isImage = Str::startsWith($document->mime_type, 'image/');
+                                                    $icon = match (true) {
+                                                        Str::contains($document->mime_type, 'pdf')
+                                                            => '/assets/icons/pdf-icon.png',
+                                                        Str::contains($document->mime_type, 'msword'),
+                                                        Str::contains($document->mime_type, 'wordprocessingml')
+                                                            => '/assets/icons/docx-icon.png',
+                                                        default => '/assets/icons/file-icon.png',
+                                                    };
+                                                    $thumbnail = $isImage
+                                                        ? asset('storage/' . $document->file_url)
+                                                        : asset($icon);
+                                                @endphp
+                                                <div class="flex flex-col relative existing-data-box">
+                                                    <div
+                                                        class="relative text-center group border rounded-lg overflow-hidden ">
+                                                        <img src="{{ $thumbnail }}"
+                                                            alt="{{ $document->alt ?? $document->name }}"
+                                                            class="w-auto  object-cover mx-auto mb-2 py-3 rounded"
+                                                            style="height: 100px;width: 100%;">
+                                                        <span title="{{ $document->name }}">{{ $document->name }}</span>
+                                                        <input type="hidden" form="propertyFrom"
+                                                            value="{{ $document->id }}" name="existingDocx[]" />
+                                                        <button type="button" onclick="removeExistingRow(this)"
+                                                            class="absolute bg-white p-1 right-0 top-0 rounded-full">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4"
+                                                                fill="red" viewBox="0 0 20 20">
+                                                                <path fill-rule="evenodd"
+                                                                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 011.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                                                    clip-rule="evenodd" />
+                                                            </svg>
+                                                        </button>
                                                     </div>
-                                                @endforeach
-                                            @endif
+                                                </div>
+                                            @endforeach
                                             <!-- Existing Documents -->
                                             <template x-for="(document, index) in documents" :key="index">
                                                 <div class="flex flex-col relative">
@@ -1113,37 +1138,58 @@
                                     <div x-data="imageUploader()" class="mx-auto bg-white shadow rounded-lg space-y-6">
                                         <!-- Image Preview Grid -->
                                         <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
-                                            @if (is_array($property->images))
-                                                @foreach ($property->images ?? [] as $key => $image)
-                                                    <div class="flex flex-col relative existing-data-box">
-                                                        <div class="relative group border rounded-lg overflow-hidden ">
-                                                            <img src="{{ asset('images/' . $image) }}" class="thumbnail"
-                                                                style="height: 100px;width: 100%;" alt="Uploaded Image">
-                                                            <input type="hidden" form="propertyFrom"
-                                                                value="{{ $image }}" name="existingImage[]" />
-                                                            <button type="button" onclick="removeExistingRow(this)"
-                                                                class="absolute bg-white p-1 right-0 top-0 rounded-full">
-                                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4"
-                                                                    fill="red" viewBox="0 0 20 20">
-                                                                    <path fill-rule="evenodd"
-                                                                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 011.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                                                                        clip-rule="evenodd" />
-                                                                </svg>
-                                                            </button>
-                                                        </div>
+
+                                            @foreach ($property->propertyImages ?? [] as $key => $image)
+                                                @php
+                                                    $isImage2 = Str::startsWith($image->mime_type, 'image/');
+                                                    $icon2 = match (true) {
+                                                        Str::contains($image->mime_type, 'pdf')
+                                                            => '/assets/icons/pdf-icon.png',
+                                                        Str::contains($image->mime_type, 'msword'),
+                                                        Str::contains($image->mime_type, 'wordprocessingml')
+                                                            => '/assets/icons/docx-icon.png',
+                                                        default => '/assets/icons/file-icon.png',
+                                                    };
+                                                    $thumbnail2 = $isImage2
+                                                        ? asset('storage/' . $image->file_url)
+                                                        : asset($icon);
+                                                @endphp
+                                                <div class="flex flex-col relative existing-data-box">
+                                                    <div
+                                                        class="relative text-center group border rounded-lg overflow-hidden ">
+                                                        <img src="{{ $thumbnail2 }}"
+                                                            alt="{{ $image->alt ?? $image->name }}"
+                                                            class="w-auto object-cover mx-auto mb-2 rounded"
+                                                            style="height: 100px;width: 100%;">
+                                                        <span title="{{ $image->name }}">{{ $image->name }}</span>
+                                                        <input type="hidden" form="propertyFrom"
+                                                            value="{{ $image->id }}" name="existingImage[]" />
+                                                        <button type="button" onclick="removeExistingRow(this)"
+                                                            class="absolute bg-white p-1 right-0 top-0 rounded-full">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4"
+                                                                fill="red" viewBox="0 0 20 20">
+                                                                <path fill-rule="evenodd"
+                                                                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 011.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                                                    clip-rule="evenodd" />
+                                                            </svg>
+                                                        </button>
+                                                    </div>
+                                                    <div class="mb-2">
                                                         <label
-                                                            class="flex items-center space-x-2 text-dark cursor-pointer">
+                                                            class="flex items-center space-x-2 text-dark cursor-pointer ">
                                                             <input type="radio" name="coverImage" form="propertyFrom"
-                                                                value="{{ $image }}"
+                                                                value="{{ $image->id }}"
                                                                 @change="setCoverImage({{ $key + 200 }})"
-                                                                {{ $property->cover_image === $image ? 'checked' : '' }}>
+                                                                {{ $property->thumbnail_image == $image->id ? 'checked' : '' }}>
                                                             <span>Make Cover Photo</span>
                                                         </label>
                                                         <span x-show="currentCover === {{ $key + 200 }}"
                                                             class="absolute top-0 left-0 p-2 text-white bg-black opacity-50">Cover</span>
                                                     </div>
-                                                @endforeach
-                                            @endif
+
+                                                </div>
+                                            @endforeach
+
                                             <!-- Existing Images -->
                                             <template x-for="(image, index) in images" :key="index">
                                                 <div class="flex flex-col relative">
@@ -1209,7 +1255,8 @@
                                     <option value="" selected>None of the below
                                     </option>
                                     @foreach ($owners ?? [] as $owner)
-                                        <option value="{{ $owner->id }}">
+                                        <option value="{{ $owner->id }}"
+                                            {{ $owner->id == $property->owner_id ? 'selected' : '' }}>
                                             {{ $owner->name }}
                                         </option>
                                     @endforeach
@@ -1220,7 +1267,8 @@
                                 <ul class="flex gap-5 mt-3 flex-wrap">
                                     <li class="relative">
                                         <input form="propertyFrom" class="sr-only peer" checked type="radio"
-                                            value="freehold" name="ownership" id="freehold">
+                                            {{ $property->ownership == 'freehold' ? 'checked' : '' }} value="freehold"
+                                            name="ownership" id="freehold">
                                         <label for="freehold"
                                             class="mx-1 px-3 py-1 bg-white border rounded-lg cursor-pointer peer-checked:ring-2 peer-checked:ring-green-500">
                                             Freehold
@@ -1228,6 +1276,7 @@
                                     </li>
                                     <li class="relative">
                                         <input form="propertyFrom" class="sr-only peer" type="radio"
+                                            {{ $property->ownership == 'co-operative_society' ? 'checked' : '' }}
                                             value="co-operative_society" name="ownership" id="co_operative_society">
                                         <label for="co_operative_society"
                                             class="mx-1 px-3 py-1 bg-white border rounded-lg cursor-pointer peer-checked:ring-2 peer-checked:ring-green-500">
@@ -1236,6 +1285,7 @@
                                     </li>
                                     <li class="relative">
                                         <input form="propertyFrom" class="sr-only peer" type="radio"
+                                            {{ $property->ownership == 'power_of_attorney' ? 'checked' : '' }}
                                             value="power_of_attorney" name="ownership" id="power_of_attorney">
                                         <label for="power_of_attorney"
                                             class="mx-1 px-3 py-1 bg-white border rounded-lg cursor-pointer peer-checked:ring-2 peer-checked:ring-green-500">
@@ -1247,31 +1297,71 @@
                             <div class="mt-5">
                                 <h6 class="mt-3 font-bold text-black fs-3">What makes your property unique?</h6>
                                 <textarea form="propertyFrom" name="unique_info" rows="4" autocomplete="off"
-                                    class="block w-full mt-2 p-2 border rounded-lg" placeholder="Write your thoughts here..."></textarea>
+                                    class="block w-full mt-2 p-2 border rounded-lg" placeholder="Write your thoughts here...">{{ $property->unique_info }}</textarea>
                             </div>
 
-                            <div class="mt-5">
-                                <h6 class="mt-3 font-bold text-black fs-3">Mark as moderation status <sup
-                                        class="text-danger fs-4">*</sup>
-                                </h6>
-                                <ul class="flex gap-5 mt-3 flex-wrap">
-                                    <li class="relative">
-                                        <input form="propertyFrom" class="sr-only peer" checked type="radio"
-                                            value="draft" name="moderation_status" id="draft">
-                                        <label for="draft"
-                                            class="mx-1 px-3 py-1 bg-white border rounded-lg cursor-pointer peer-checked:ring-2 peer-checked:ring-green-500">
-                                            Draft
-                                        </label>
-                                    </li>
-                                    <li class="relative">
-                                        <input form="propertyFrom" class="sr-only peer" type="radio" value="pending"
-                                            name="moderation_status" id="pending">
-                                        <label for="pending"
-                                            class="mx-1 px-3 py-1 bg-white border rounded-lg cursor-pointer peer-checked:ring-2 peer-checked:ring-green-500">
-                                            Submit for review
-                                        </label>
-                                    </li>
-                                </ul>
+                            <div class="col-md-12 my-3">
+                                <div class="card shadow">
+                                    <div class="card-body">
+
+                                        <div class="">
+                                            <strong class="mb-3">Status:</strong>
+                                            <div class="d-flex gap-4 mt-3 flex-wrap">
+                                                <div class="form-check">
+                                                    <input type="radio" id="statusUnread" name="moderation_status"
+                                                        value="draft" class="form-check-input"
+                                                        {{ $property->moderation_status === 'draft' ? 'checked' : '' }}>
+                                                    <label for="statusUnread" class="form-check-label">Draft</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input type="radio" id="statusSuspended" name="moderation_status"
+                                                        value="suspended" class="form-check-input"
+                                                        {{ $property->moderation_status === 'suspended' ? 'checked' : '' }}>
+                                                    <label for="statusSuspended"
+                                                        class="form-check-label">Suspended</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input type="radio" id="statusApproved" name="moderation_status"
+                                                        value="approved" class="form-check-input"
+                                                        {{ $property->moderation_status === 'approved' ? 'checked' : '' }}>
+                                                    <label for="statusApproved" class="form-check-label">Approved</label>
+                                                </div>
+                                                @if ($property->type == 'rent')
+                                                    <div class="form-check">
+                                                        <input type="radio" id="statusRenting" name="moderation_status"
+                                                            value="renting" class="form-check-input"
+                                                            {{ $property->moderation_status === 'renting' ? 'checked' : '' }}>
+                                                        <label for="statusRenting"
+                                                            class="form-check-label">Renting</label>
+                                                    </div>
+
+                                                    <div class="form-check">
+                                                        <input type="radio" id="statusRented" name="moderation_status"
+                                                            value="rented" class="form-check-input"
+                                                            {{ $property->moderation_status === 'rented' ? 'checked' : '' }}>
+                                                        <label for="statusRented" class="form-check-label">Rented</label>
+                                                    </div>
+                                                @else
+                                                    <div class="form-check">
+                                                        <input type="radio" id="statusSelling" name="moderation_status"
+                                                            value="selling" class="form-check-input"
+                                                            {{ $property->moderation_status === 'selling' ? 'checked' : '' }}>
+                                                        <label for="statusSelling"
+                                                            class="form-check-label">Selling</label>
+                                                    </div>
+                                                    <div class="form-check">
+                                                        <input type="radio" id="statusSold" name="moderation_status"
+                                                            value="sold" class="form-check-input"
+                                                            {{ $property->moderation_status === 'sold' ? 'checked' : '' }}>
+                                                        <label for="statusSold" class="form-check-label">Sold</label>
+                                                    </div>
+                                                @endif
+
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -1901,13 +1991,14 @@
                     const formData = new FormData(formElement);
 
                     try {
-                        const response = await fetch(`{{ route('company.realestate.properties.store') }}`, {
-                            method: 'POST',
-                            headers: {
-                                'X-CSRF-TOKEN': '{{ csrf_token() }}' // Include Laravel CSRF token
-                            },
-                            body: formData // Use FormData as request body
-                        });
+                        const response = await fetch(
+                            `{{ route('company.realestate.properties.update', $property->id) }}`, {
+                                method: 'POST',
+                                headers: {
+                                    'X-CSRF-TOKEN': '{{ csrf_token() }}' // Include Laravel CSRF token
+                                },
+                                body: formData // Use FormData as request body
+                            });
 
                         // Handle validation errors (422)
                         if (!response.ok) {

@@ -462,6 +462,15 @@ if (!function_exists('dateTimeFormat')) {
     }
 }
 
+if (!function_exists('dateFormat')) {
+
+    function dateFormat($date)
+    {
+        $date = date('d M,Y', strtotime($date));
+        return  $date;
+    }
+}
+
 function indian_number_format($number)
 {
     $decimal = ''; // To store decimal part if needed

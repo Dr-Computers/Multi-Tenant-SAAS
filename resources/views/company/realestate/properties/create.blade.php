@@ -124,6 +124,12 @@
     <li class="breadcrumb-item">{{ __('Property Create') }}</li>
 @endsection
 
+@section('action-btn')
+    <a href="{{ route('company.realestate.properties.index') }}" class="btn btn-sm text-light btn-primary-subtle">
+        <i class="ti ti-arrow-left"></i> {{ __('Back') }}
+    </a>
+@endsection
+
 @section('content')
     <div x-data="stepper()" class="container bg-white rounded-lg shadow-lg p-lg-6 p-2.5 mt-5">
         <div class="pb-1" x-data="formHandler()">
@@ -183,7 +189,7 @@
 
                             <!-- Step Titles -->
                             <div class="ms-2 lg:ml-0  ">
-                                Submit for review
+                                Submit
                             </div>
                         </div>
 
@@ -1017,7 +1023,7 @@
                                                     x-bind:class="{ 'border-blue-500': isDragging }">
                                                     <img src="/assets/icons/upload-icon.png" class="w-50 mx-auto">
                                                     <input name="documents[]" form="propertyFrom" type="file"
-                                                        accept=".pdf,.docx,image/*" id="fileDocInput" class="hidden"
+                                                        accept=".pdf,.docx,.jpg,.png,.webp" id="fileDocInput" class="hidden"
                                                         multiple @change="addDocuments($event)">
                                                     <p class="text-gray-600">
                                                         click to upload your documents here.</p>
@@ -1079,7 +1085,7 @@
                                                     x-bind:class="{ 'border-blue-500': isDragging }">
                                                     <img src="/assets/icons/upload-icon.png" class="w-50 mx-auto">
                                                     <input name="images[]" form="propertyFrom" type="file"
-                                                        accept="image/*" id="fileInput" class="hidden" multiple
+                                                        accept=".jpg,.png,.webp" id="fileInput" class="hidden" multiple
                                                         @change="addImages($event)">
                                                     <p class="text-gray-600">
                                                         click to upload your images here.</p>
@@ -1143,7 +1149,7 @@
                                     class="block w-full mt-2 p-2 border rounded-lg" placeholder="Write your thoughts here..."></textarea>
                             </div>
 
-                            <div class="mt-5">
+                            {{-- <div class="mt-5">
                                 <h6 class="mt-3 font-bold text-black fs-3">Mark as moderation status <sup
                                         class="text-danger fs-4">*</sup>
                                 </h6>
@@ -1165,7 +1171,7 @@
                                         </label>
                                     </li>
                                 </ul>
-                            </div>
+                            </div> --}}
                         </div>
                     </div>
                 </div>

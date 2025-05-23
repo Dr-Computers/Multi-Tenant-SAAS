@@ -13,7 +13,6 @@ return new class extends Migration
     {
         Schema::create('property_furnishing', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('company_id')->constrained('users')->onDelete('cascade');
             $table->foreignId('property_id')->constrained('properties')->onDelete('cascade');     
             $table->integer('furnishing_id')->nullable(); 
             $table->timestamps();

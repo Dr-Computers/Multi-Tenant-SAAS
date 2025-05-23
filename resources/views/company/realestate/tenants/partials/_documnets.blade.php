@@ -11,7 +11,7 @@
         <div class="card">
             <div class="card-body table-bdocuments-style">
                 <div class="table-responsive">
-                    <table class="table datatable">
+                    <table class="table">
                         <thead>
                             <tr>
                                 <th>{{ __('#') }}</th>

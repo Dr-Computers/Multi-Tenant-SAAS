@@ -8,7 +8,7 @@
 @endsection
 
 @section('action-btn')
-    <a href="{{ route('company.realestate.property.units.create', $property->id) }}" class="btn btn-sm btn-primary">
+    <a href="{{ route('company.realestate.property.units.create', ['property_id'=>$property->id]) }}" class="btn btn-sm btn-primary">
         <i class="ti ti-plus"></i> {{ __('Add Unit') }}
     </a>
 @endsection

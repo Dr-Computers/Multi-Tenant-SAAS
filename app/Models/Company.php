@@ -29,16 +29,16 @@ class Company extends Model
     public static function generateOrderId($orderID)
     {
         $orderIdExist = Order::where('order_id', $orderID)->exists();
-    
+
         if ($orderIdExist) {
             // Try again recursively with a new ID
             $newID = strtoupper(uniqid());
             return self::generateOrderId($newID);
         }
-    
+
         return $orderID;
     }
-    
+
 
 
     public static function planOrderStore($plan, $company_id)
@@ -48,7 +48,7 @@ class Company extends Model
         $orderID = strtoupper(uniqid());
 
         $orderID = self::generateOrderId($orderID);
-        
+
 
         $order = Order::create(
             [
@@ -206,10 +206,10 @@ class Company extends Model
         // Create company role
         $role_c             = new Role();
         $role_c->name       = 'company-' . $company_id;
-        $role_c->guard_name = 'web'; 
+        $role_c->guard_name = 'web';
         $role_c->created_by = $company_id;
-        $role_c->is_editable= 1;
-        $role_c->is_deletable= 0;
+        $role_c->is_editable = 1;
+        $role_c->is_deletable = 0;
         $role_c->save();
 
         $companyPermissions = Permission::where('is_company', '1')->get();
@@ -220,8 +220,8 @@ class Company extends Model
         $role_t->name = 'tenant-' . $company_id;
         $role_t->guard_name = 'web';
         $role_c->created_by = $company_id;
-        $role_c->is_editable= 1;
-        $role_c->is_deletable= 0;
+        $role_c->is_editable = 1;
+        $role_c->is_deletable = 0;
         $role_t->save();
 
         $tenantPermissions = Permission::where('is_tenant', '1')->get();
@@ -232,11 +232,24 @@ class Company extends Model
         $role_o->name = 'owner-' . $company_id;
         $role_o->guard_name = 'web';
         $role_c->created_by = $company_id;
-        $role_c->is_editable= 1;
-        $role_c->is_deletable= 0;
+        $role_c->is_editable = 1;
+        $role_c->is_deletable = 0;
         $role_o->save();
 
         $ownerPermissions = Permission::where('is_owner', '1')->get();
         $role_o->givePermissionTo($ownerPermissions);
+
+
+        // Create maintainer role
+        $role_o       = new Role();
+        $role_o->name = 'maintainer-' . $company_id;
+        $role_o->guard_name = 'web';
+        $role_c->created_by = $company_id;
+        $role_c->is_editable = 1;
+        $role_c->is_deletable = 0;
+        $role_o->save();
+
+        $maintainerPermissions = Permission::where('is_maintainer', '1')->get();
+        $role_o->givePermissionTo($maintainerPermissions);
     }
 }
