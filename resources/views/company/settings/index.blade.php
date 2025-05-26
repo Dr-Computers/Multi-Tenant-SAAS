@@ -8,13 +8,30 @@
     $logo_light = Utility::getValByName('company_logo_light');
     $logo_dark = Utility::getValByName('company_logo_dark');
     $company_favicon = Utility::getValByName('company_favicon');
+
     $EmailTemplates = App\Models\EmailTemplate::all();
     $setting = App\Models\Utility::settings();
     $lang = Utility::getValByName('company_default_language');
     $color = !empty($setting['color']) ? $setting['color'] : 'theme-3';
     $flag = !empty($setting['color_flag']) ? $setting['color_flag'] : 'false';
 
+    $companyDetails = App\Models\Utility::companySettings();
+    $logo_1 = $companyDetails->logo_1;
+    $logo_2 = $companyDetails->logo_2;
+    $company_seal = $companyDetails->seal;
+    $company_signature = $companyDetails->signature;
+    $company_name = $companyDetails->bussiness_name ?? '';
+    $company_address = $companyDetails->address ?? '';
+    $company_city = $companyDetails->city ?? '';
+    $company_zipcode = $companyDetails->postalcode ?? '';
+    $company_country = $companyDetails->country ?? '';
+    $registration_number = $companyDetails->reg_no ?? '';
+    $tax_number = $companyDetails->vat != null ? true : false;
+    $vat_number = $companyDetails->vat ?? '';
+
 @endphp
+
+
 
 <style>
     .dash-footer {
@@ -262,7 +279,7 @@
 @endpush
 
 @section('breadcrumb')
-    {{-- <li class="breadcrumb-item"><a href="{{ action('company.dashboard') }}">{{ __('Dashboard') }}</a></li> --}}
+    <li class="breadcrumb-item"><a href="{{ route('company.dashboard') }}">{{ __('Dashboard') }}</a></li>
     <li class="breadcrumb-item">{{ __('Settings') }}</li>
 @endsection
 
@@ -287,25 +304,20 @@
                                 <div class="float-end"><i class="ti ti-chevron-right"></i></div>
                             </a>
                             <a href="#useradd-4"
-                                class="list-group-item list-group-item-action border-0">{{ __('Proposal Print Settings') }}
-                                <div class="float-end"><i class="ti ti-chevron-right"></i></div>
-                            </a>
-                            <a href="#useradd-10"
-                                class="list-group-item list-group-item-action border-0">{{ __('Retainer Print Settings') }}
+                                class="list-group-item list-group-item-action border-0">{{ __('Invoice Template Settings') }}
                                 <div class="float-end"><i class="ti ti-chevron-right"></i></div>
                             </a>
                             <a href="#useradd-5"
-                                class="list-group-item list-group-item-action border-0">{{ __('Invoice Print Settings') }}
+                                class="list-group-item list-group-item-action border-0">{{ __('Letter Pad Template Settings') }}
                                 <div class="float-end"><i class="ti ti-chevron-right"></i></div>
                             </a>
                             <a href="#useradd-6"
-                                class="list-group-item list-group-item-action border-0">{{ __('Bill Print Settings') }}
+                                class="list-group-item list-group-item-action border-0">{{ __('Estimate Templete Settings') }}
                                 <div class="float-end"><i class="ti ti-chevron-right"></i></div>
                             </a>
-
-                            <a href="#useradd-11"
-                                class="list-group-item list-group-item-action border-0">{{ __('Webhook Settings') }}
-                                <div class="float-end "><i class="ti ti-chevron-right"></i></div>
+                            <a href="#useradd-7"
+                                class="list-group-item list-group-item-action border-0">{{ __('Reset Permissions') }}
+                                <div class="float-end"><i class="ti ti-chevron-right"></i></div>
                             </a>
 
                         </div>
@@ -318,7 +330,7 @@
                     <!--Business Setting-->
                     <div id="useradd-1" class="card">
 
-                        {{-- {{ Form::model($settings, ['action' => 'company.business.setting', 'class' => 'mb-0', 'method' => 'POST', 'enctype' => 'multipart/form-data']) }} --}}
+                        {{ Form::model($settings, ['route' => 'company.business.setting', 'class' => 'mb-0', 'method' => 'POST', 'enctype' => 'multipart/form-data']) }}
                         <div class="card-header">
                             <h5>{{ __('Brand Settings') }}</h5>
                             <small class="text-muted">{{ __('Edit your brand details') }}</small>
@@ -443,115 +455,6 @@
                                     </div>
                                 </div>
 
-                                {{-- <div class="row">
-                                    <div class="form-group col-md-6">
-                                        {{ Form::label('title_text', __('Title Text'), ['class' => 'form-label']) }}
-                            {{ Form::text('title_text', null, ['class' => 'form-control', 'placeholder' => __('Enter Title Text')]) }}
-                            @error('title_text')
-                            <span class="invalid-title_text" role="alert">
-                                <strong class="text-danger">{{ $message }}</strong>
-                            </span>
-                            @enderror
-                        </div>
-
-
-                        <div class="col-3 my-auto">
-                            <div class="form-group">
-                                <label class="text-dark mb-1" for="SITE_RTL">{{ __('Enable RTL') }}</label>
-                                <div class="">
-                                    <input type="checkbox" name="SITE_RTL" id="SITE_RTL"
-                                        data-toggle="switchbutton"
-                                        {{ $settings['SITE_RTL'] == 'on' ? 'checked="checked"' : '' }}
-                                        data-onstyle="primary">
-                                    <label class="form-check-labe" for="SITE_RTL"></label>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-3">
-                            <div class="form-group"
-                                style="
-                                        margin-left: -70px;
-                                        margin-right: -25px;">
-                                {{ Form::label('company_default_language', __('Default Language'), ['class' => 'form-label text-dark']) }}
-                                <div class="changeLanguage">
-                                    <select name="company_default_language" id="company_default_language"
-                                        class="form-control select">
-                                        @foreach (App\Models\Utility::languages() as $code => $language)
-                                        <option @if ($lang == $code) selected @endif
-                                            value="{{ $code }}">
-                                            {{ Str::upper($language) }}
-                                        </option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                                @error('company_default_language')
-                                <span class="invalid-company_default_language" role="alert">
-                                    <strong class="text-danger">{{ $message }}</strong>
-                                </span>
-                                @enderror
-                            </div>
-
-                        </div>
-
-                    </div> --}}
-                                <div class="row">
-                                    <div class="form-group col-md-3">
-                                        {{ Form::label('title_text', __('Title Text'), ['class' => 'form-label']) }}
-                                        {{ Form::text('title_text', Utility::getValByName('title_text') ? Utility::getValByName('title_text') : 'ErpGo Saas', ['class' => 'form-control', 'placeholder' => __('Title Text')]) }}
-                                        @error('title_text')
-                                            <span class="invalid-title_text" role="alert">
-                                                <strong class="text-danger">{{ $message }}</strong>
-                                            </span>
-                                        @enderror
-                                    </div>
-                                    <div class="col-md-3 form-group">
-                                        {{ Form::label('footer_text', __('Footer Text'), ['class' => 'form-label']) }}
-                                        {{ Form::text('footer_text', Utility::getValByName('footer_text'), ['class' => 'form-control', 'placeholder' => __('Enter Footer Text')]) }}
-                                        @error('footer_text')
-                                            <span class="invalid-footer_text" role="alert">
-                                                <strong class="text-danger">{{ $message }}</strong>
-                                            </span>
-                                        @enderror
-                                    </div>
-                                    <div class="col-md-3">
-                                        <div class="form-group">
-                                            {{ Form::label('default_language', __('Default Language'), ['class' => 'form-label text-dark']) }}
-                                            <div class="changeLanguage">
-                                                <select name="default_language" id="default_language"
-                                                    class="form-control select">
-                                                    @foreach (\App\Models\Utility::languages() as $code => $language)
-                                                        <option @if ($lang == $code) selected @endif
-                                                            value="{{ $code }}">
-                                                            {{ ucFirst($language) }}
-                                                        </option>
-                                                    @endforeach
-                                                </select>
-                                            </div>
-                                            @error('default_language')
-                                                <span class="invalid-default_language" role="alert">
-                                                    <strong class="text-danger">{{ $message }}</strong>
-                                                </span>
-                                            @enderror
-                                        </div>
-                                    </div>
-
-
-                                    <div class="col-3 form-group">
-                                        <div class="custom-control custom-switch">
-                                            <label class=" mb-1 mt-1 " for="SITE_RTL">{{ __('Enable RTL') }}</label>
-                                            <div class="">
-                                                <input type="checkbox" name="SITE_RTL" id="SITE_RTL"
-                                                    data-toggle="switchbutton"
-                                                    {{ $settings['SITE_RTL'] == 'on' ? 'checked="checked"' : '' }}
-                                                    data-onstyle="primary">
-                                                <label class="custom-control-label" for="SITE_RTL"></label>
-                                            </div>
-                                        </div>
-                                    </div>
-
-
-                                </div>
                                 <h4 class="small-title">{{ __('Theme Customizer') }}</h4>
                                 <div class="setting-card setting-logo-box p-3">
                                     <div class="row">
@@ -628,19 +531,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="col-lg-4 col-xl-4 col-md-4">
-                                            <h6 class="mt-2">
-                                                <i data-feather="layout" class="me-2"></i>{{ __('Sidebar settings') }}
-                                            </h6>
-                                            <hr class="my-2" />
-                                            <div class="form-check form-switch">
-                                                <input type="checkbox" class="form-check-input" id="cust-theme-bg"
-                                                    name="cust_theme_bg"
-                                                    {{ !empty($settings['cust_theme_bg']) && $settings['cust_theme_bg'] == 'on' ? 'checked' : '' }} />
-                                                <label class="form-check-label f-w-600 pl-1"
-                                                    for="cust-theme-bg">{{ __('Transparent layout') }}</label>
-                                            </div>
-                                        </div>
+
                                         <div class="col-lg-4 col-xl-4 col-md-4">
                                             <h6 class="mt-2">
                                                 <i data-feather="sun" class="me-2"></i>{{ __('Layout settings') }}
@@ -654,6 +545,7 @@
                                                     for="cust-darklayout">{{ __('Dark Layout') }}</label>
                                             </div>
                                         </div>
+
                                     </div>
                                 </div>
 
@@ -665,9 +557,10 @@
                                 value="{{ __('Save Changes') }}">
 
                         </div>
-                        {{-- {{ Form::close() }} --}}
+                        {{ Form::close() }}
 
                     </div>
+
                     <!--System Setting-->
                     <div id="useradd-2" class="card">
                         <div class="card-header">
@@ -675,7 +568,7 @@
                             <small class="text-muted">{{ __('Edit your system details') }}</small>
                         </div>
 
-                        {{-- {{ Form::model($settings, ['action' => 'company.system.settings', 'class' => 'mb-0', 'method' => 'post']) }} --}}
+                        {{ Form::model($settings, ['route' => 'company.system.settings', 'class' => 'mb-0', 'method' => 'post']) }}
                         <div class="card-body">
                             <div class="row">
                                 <div class="form-group col-md-6">
@@ -719,19 +612,7 @@
                                                 </label>
                                             </div>
 
-                                            {{-- <div class="col-md-6">
-                                            <div class="custom-control custom-radio mb-3">
 
-                                                <input type="radio" id="customRadio5" name="site_currency_symbol_position" value="pre" class="custom-control-input" @if (@$settings['site_currency_symbol_position'] == 'pre') checked @endif>
-                                                <label class="custom-control-label" for="customRadio5">{{__('Pre')}}</label>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="custom-control custom-radio mb-3">
-                                <input type="radio" id="customRadio6" name="site_currency_symbol_position" value="post" class="custom-control-input" @if (@$settings['site_currency_symbol_position'] == 'post') checked @endif>
-                                <label class="custom-control-label" for="customRadio6">{{__('Post')}}</label>
-                            </div>
-                        </div> --}}
                                         </div>
                                     </div>
                                 </div>
@@ -755,22 +636,10 @@
                                         id="site_time_format">
                                         <option value="g:i A"
                                             @if (@$settings['site_time_format'] == 'g:i A') selected="selected" @endif>10:30 PM</option>
-                                        <option value="g:i a"
-                                            @if (@$settings['site_time_format'] == 'g:i a') selected="selected" @endif>10:30 pm</option>
+
                                         <option value="H:i"
                                             @if (@$settings['site_time_format'] == 'H:i') selected="selected" @endif>22:30</option>
                                     </select>
-                                </div>
-
-
-                                <div class="form-group col-md-6">
-                                    {{ Form::label('footer_notes', __('Invoice/Bill Footer Notes'), ['class' => 'form-label']) }}
-                                    <textarea class="summernote-simple" name="footer_notes">{!! $settings['footer_notes'] !!}</textarea>
-                                    @error('footer_notes')
-                                        <span class="invalid-footer_notes" role="alert">
-                                            <strong class="text-danger">{{ $message }}</strong>
-                                        </span>
-                                    @enderror
                                 </div>
                             </div>
                         </div>
@@ -780,7 +649,7 @@
                                 value="{{ __('Save Changes') }}">
 
                         </div>
-                        {{-- {{ Form::close() }} --}}
+                        {{ Form::close() }}
                     </div>
 
                     <!--Company Setting-->
@@ -789,12 +658,167 @@
                             <h5>{{ __('Company Settings') }}</h5>
                             <small class="text-muted">{{ __('Edit your company details') }}</small>
                         </div>
-                        {{-- {{ Form::model($settings, ['action' => 'company.company.settings', 'method' => 'post', 'class' => 'mb-0']) }} --}}
+                        {{ Form::model($settings, ['route' => 'company.company-settings', 'method' => 'post', 'class' => 'mb-0', 'enctype' => 'multipart/form-data']) }}
                         <div class="card-body">
                             <div class="row">
+                                <div class="col-lg-6 col-sm-6 col-md-6 dashboard-card">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h5>{{ __('Logo 1') }}</h5>
+                                        </div>
+                                        <div class="card-body pt-0">
+                                            <div class=" setting-card">
+                                                <div class="logo-content mt-4">
+                                                    <a href="{{ $logo . (isset($logo_1) && !empty($logo_1) ? $logo_1 : 'logo-dark.png') . '?' . time() }}"
+                                                        target="_blank">
+                                                        <img id="logo1" alt="your image"
+                                                            src="{{ $logo . (isset($logo_1) && !empty($logo_1) ? $logo_1 : 'logo-dark.png') . '?' . time() }}"
+                                                            width="" class="big-logo">
+                                                    </a>
+                                                </div>
+                                                <div class="choose-files mt-5">
+                                                    <label for="logo_1">
+                                                        <div class=" bg-primary logo_1_update "> <i
+                                                                class="ti ti-upload px-1"></i>{{ __('Choose file here') }}
+                                                        </div>
+                                                        <input type="file" name="logo_1" id="logo_1"
+                                                            accept=".png" class="form-control file"
+                                                            data-filename="logo_1_update"
+                                                            onchange="document.getElementById('logo1').src = window.URL.createObjectURL(this.files[0])">
+                                                    </label>
+                                                </div>
+                                                @error('logo_1')
+                                                    <div class="row">
+                                                        <span class="invalid-logo" role="alert">
+                                                            <strong class="text-danger">{{ $message }}</strong>
+                                                        </span>
+                                                    </div>
+                                                @enderror
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6 col-sm-6 col-md-6 dashboard-card">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h5>{{ __('Logo 2') }}</h5>
+                                        </div>
+                                        <div class="card-body pt-0">
+                                            <div class=" setting-card">
+                                                <div class="logo-content mt-4">
+                                                    <a href="{{ $logo . (isset($logo_2) && !empty($logo_2) ? $logo_2 : 'logo-light.png') . '?' . time() }}"
+                                                        target="_blank">
+                                                        <img id="logo2" alt="your image"
+                                                            src="{{ $logo . (isset($logo_2) && !empty($logo_2) ? $logo_2 : 'logo-light.png') . '?' . time() }}"
+                                                            width="150px" class="big-logo img_setting">
+                                                    </a>
+                                                </div>
+                                                <div class="choose-files mt-5">
+                                                    <label for="logo_2">
+                                                        <div class=" bg-primary dark_logo_update "> <i
+                                                                class="ti ti-upload px-1"></i>{{ __('Choose file here') }}
+                                                        </div>
+                                                        <input type="file" name="logo_2" id="logo_2"
+                                                            accept=".png" class="form-control file"
+                                                            data-filename="dark_logo_update"
+                                                            onchange="document.getElementById('logo2').src = window.URL.createObjectURL(this.files[0])">
+                                                    </label>
+                                                </div>
+                                                @error('logo_2')
+                                                    <div class="row">
+                                                        <span class="invalid-logo" role="alert">
+                                                            <strong class="text-danger">{{ $message }}</strong>
+                                                        </span>
+                                                    </div>
+                                                @enderror
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6 col-sm-6 col-md-6 dashboard-card">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h5>{{ __('Seal') }}</h5>
+                                        </div>
+                                        <div class="card-body pt-0">
+                                            <div class=" setting-card">
+                                                <div class="logo-content mt-4">
+
+
+                                                    <a href="{{ $logo . (isset($company_seal) && !empty($company_seal) ? $company_seal : 'favicon.png') . '?' . time() }}"
+                                                        target="_blank">
+                                                        <img id="signature" alt="your image"
+                                                            src="{{ $logo . (isset($company_seal) && !empty($company_seal) ? $company_seal : 'favicon.png') . '?' . time() }}"
+                                                            width="60px" height="63px" class=" img_setting">
+                                                    </a>
+
+
+                                                </div>
+                                                <div class="choose-files mt-5">
+                                                    <label for="company_seal">
+                                                        <div class="bg-primary company_seal_update "> <i
+                                                                class="ti ti-upload px-1"></i>{{ __('Choose file here') }}
+                                                        </div>
+                                                        <input type="file" name="company_seal" id="company_seal"
+                                                            accept=".png" class="form-control file"
+                                                            data-filename="company_seal_update"
+                                                            onchange="document.getElementById('seal').src = window.URL.createObjectURL(this.files[0])">
+
+                                                    </label>
+                                                </div>
+                                                @error('company_seal')
+                                                    <div class="row">
+                                                        <span class="invalid-logo" role="alert">
+                                                            <strong class="text-danger">{{ $message }}</strong>
+                                                        </span>
+                                                    </div>
+                                                @enderror
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6 col-sm-6 col-md-6 dashboard-card">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h5>{{ __('Signature') }}</h5>
+                                        </div>
+                                        <div class="card-body pt-0">
+                                            <div class=" setting-card">
+                                                <div class="logo-content mt-4">
+                                                    <a href="{{ $logo . (isset($company_signature) && !empty($company_signature) ? $company_signature : 'favicon.png') . '?' . time() }}"
+                                                        target="_blank">
+                                                        <img id="signature" alt="your image"
+                                                            src="{{ $logo . (isset($company_signature) && !empty($company_signature) ? $company_signature : 'favicon.png') . '?' . time() }}"
+                                                            width="60px" height="63px" class=" img_setting">
+                                                    </a>
+
+                                                </div>
+                                                <div class="choose-files mt-5">
+                                                    <label for="company_signature">
+                                                        <div class="bg-primary company_signature_update "> <i
+                                                                class="ti ti-upload px-1"></i>{{ __('Choose file here') }}
+                                                        </div>
+                                                        <input type="file" name="company_signature" accept=".png"
+                                                            id="company_signature" class="form-control file"
+                                                            data-filename="company_signature_update"
+                                                            onchange="document.getElementById('signature').src = window.URL.createObjectURL(this.files[0])">
+
+                                                    </label>
+                                                </div>
+                                                @error('company_signature')
+                                                    <div class="row">
+                                                        <span class="invalid-logo" role="alert">
+                                                            <strong class="text-danger">{{ $message }}</strong>
+                                                        </span>
+                                                    </div>
+                                                @enderror
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                                 <div class="form-group col-md-6">
                                     {{ Form::label('company_name *', __('Company Name *'), ['class' => 'form-label']) }}
-                                    {{ Form::text('company_name', null, ['class' => 'form-control font-style']) }}
+                                    {{ Form::text('company_name', $company_name, ['class' => 'form-control font-style']) }}
                                     @error('company_name')
                                         <span class="invalid-company_name" role="alert">
                                             <strong class="text-danger">{{ $message }}</strong>
@@ -803,7 +827,7 @@
                                 </div>
                                 <div class="form-group col-md-6">
                                     {{ Form::label('company_address', __('Address'), ['class' => 'form-label']) }}
-                                    {{ Form::text('company_address', null, ['class' => 'form-control font-style']) }}
+                                    {{ Form::text('company_address', $company_address, ['class' => 'form-control font-style']) }}
                                     @error('company_address')
                                         <span class="invalid-company_address" role="alert">
                                             <strong class="text-danger">{{ $message }}</strong>
@@ -812,14 +836,14 @@
                                 </div>
                                 <div class="form-group col-md-6">
                                     {{ Form::label('company_city', __('City'), ['class' => 'form-label']) }}
-                                    {{ Form::text('company_city', null, ['class' => 'form-control font-style']) }}
+                                    {{ Form::text('company_city', $company_city, ['class' => 'form-control font-style']) }}
                                     @error('company_city')
                                         <span class="invalid-company_city" role="alert">
                                             <strong class="text-danger">{{ $message }}</strong>
                                         </span>
                                     @enderror
                                 </div>
-                                <div class="form-group col-md-6">
+                                {{-- <div class="form-group col-md-6">
                                     {{ Form::label('company_state', __('State'), ['class' => 'form-label']) }}
                                     {{ Form::text('company_state', null, ['class' => 'form-control font-style']) }}
                                     @error('company_state')
@@ -827,10 +851,10 @@
                                             <strong class="text-danger">{{ $message }}</strong>
                                         </span>
                                     @enderror
-                                </div>
+                                </div> --}}
                                 <div class="form-group col-md-6">
                                     {{ Form::label('company_zipcode', __('Zip/Post Code'), ['class' => 'form-label']) }}
-                                    {{ Form::text('company_zipcode', null, ['class' => 'form-control']) }}
+                                    {{ Form::text('company_zipcode', $company_zipcode, ['class' => 'form-control']) }}
                                     @error('company_zipcode')
                                         <span class="invalid-company_zipcode" role="alert">
                                             <strong class="text-danger">{{ $message }}</strong>
@@ -839,14 +863,14 @@
                                 </div>
                                 <div class="form-group  col-md-6">
                                     {{ Form::label('company_country', __('Country'), ['class' => 'form-label']) }}
-                                    {{ Form::text('company_country', null, ['class' => 'form-control font-style']) }}
+                                    {{ Form::text('company_country', $company_country, ['class' => 'form-control font-style']) }}
                                     @error('company_country')
                                         <span class="invalid-company_country" role="alert">
                                             <strong class="text-danger">{{ $message }}</strong>
                                         </span>
                                     @enderror
                                 </div>
-                                <div class="form-group col-md-6">
+                                {{-- <div class="form-group col-md-6">
                                     {{ Form::label('company_telephone', __('Telephone'), ['class' => 'form-label']) }}
                                     {{ Form::text('company_telephone', null, ['class' => 'form-control']) }}
                                     @error('company_telephone')
@@ -854,10 +878,10 @@
                                             <strong class="text-danger">{{ $message }}</strong>
                                         </span>
                                     @enderror
-                                </div>
+                                </div> --}}
                                 <div class="form-group col-md-6">
                                     {{ Form::label('registration_number', __('Company Registration Number *'), ['class' => 'form-label']) }}
-                                    {{ Form::text('registration_number', null, ['class' => 'form-control']) }}
+                                    {{ Form::text('registration_number', $registration_number, ['class' => 'form-control']) }}
                                     @error('registration_number')
                                         <span class="invalid-registration_number" role="alert">
                                             <strong class="text-danger">{{ $message }}</strong>
@@ -870,8 +894,7 @@
                                             {{ Form::label('tax_number', __('Tax Number'), ['class' => 'form-chech-label']) }}
                                             <div class="form-check form-switch custom-switch-v1 float-end">
                                                 <input type="checkbox" class="form-check-input" name="tax_number"
-                                                    id="tax_number"
-                                                    {{ $settings['tax_number'] == 'on' ? 'checked' : '' }}>
+                                                    id="tax_number" {{ $tax_number == 'on' ? 'checked' : '' }}>
                                                 <label class="form-check-label" for="vat_gst_number_switch"></label>
                                             </div>
                                         </div>
@@ -884,13 +907,13 @@
                                             <div class="col-md-6">
                                                 <div class="form-check form-check-inline form-group mb-3">
                                                     <input type="radio" id="customRadio8" name="tax_type"
-                                                        value="VAT" class="form-check-input"
+                                                        value="VAT" class="form-check-input" checked
                                                         {{ $settings['tax_type'] == 'VAT' ? 'checked' : '' }}>
                                                     <label class="form-check-label"
                                                         for="customRadio8">{{ __('VAT Number') }}</label>
                                                 </div>
                                             </div>
-                                            <div class="col-md-6">
+                                            {{-- <div class="col-md-6">
                                                 <div class="form-check form-check-inline form-group mb-3">
                                                     <input type="radio" id="customRadio7" name="tax_type"
                                                         value="GST" class="form-check-input"
@@ -898,9 +921,9 @@
                                                     <label class="form-check-label"
                                                         for="customRadio7">{{ __('GST Number') }}</label>
                                                 </div>
-                                            </div>
+                                            </div> --}}
                                         </div>
-                                        {{ Form::text('vat_number', null, ['class' => 'form-control', 'placeholder' => __('Enter VAT / GST Number')]) }}
+                                        {{ Form::text('vat_number', $vat_number, ['class' => 'form-control', 'placeholder' => __('Enter VAT / GST Number')]) }}
                                     </div>
                                 </div>
                             </div>
@@ -909,242 +932,290 @@
                             <input class="btn btn-print-invoice btn-primary m-r-10" type="submit" id="addSig"
                                 value="{{ __('Save Changes') }}">
                         </div>
-                        {{-- {{ Form::close() }} --}}
+                        {{ Form::close() }}
                     </div>
 
 
-                    <!--Proposal Print Setting-->
+                    <!--Choose Invoice Template & Settings-->
                     <div id="useradd-4" class="card">
-                        <div class="card-header">
-                            <h5>{{ __('Proposal Print Settings') }}</h5>
-                            <small class="text-muted">{{ __('Edit your company proposal details') }}</small>
-                        </div>
-
-                        <div class="bg-none">
-                            <div class="row company-setting">
-
-                            </div>
-                        </div>
-
-                    </div>
-
-                    <!--Retainer Print Setting-->
-                    <div id="useradd-10" class="card">
-                        <div class="card-header">
-                            <h5>{{ __('Retainer Print Settings') }}</h5>
-                            <small class="text-muted">{{ __('Edit your company retainer details') }}</small>
-                        </div>
-
-                        <div class="bg-none">
-                            <div class="row company-setting">
-
-                            </div>
-                        </div>
-
-                    </div>
-
-                    <!--Invoice Setting-->
-                    <div id="useradd-5" class="card">
-                        <div class="card-header">
-                            <h5>{{ __('Invoice Print Settings') }}</h5>
-                            <small class="text-muted">{{ __('Edit your company invoice details') }}</small>
-                        </div>
-
-                        <div class="bg-none">
-                            <div class="row company-setting">
-
-                            </div>
-                        </div>
-
-
-                    </div>
-
-                    <div id="useradd-7" class="card">
-                        <div class="card-header">
-                            <h5>{{ __('Bill Print Settings') }}</h5>
-                            <small class="text-muted">{{ __('Edit your company bill details') }}</small>
-                        </div>
-
-                        <div class="bg-none">
-                            <div class="row company-setting">
-
-                            </div>
-                        </div>
-                    </div>
-                    <!--Webhook Setting-->
-                    <div class="" id="useradd-11">
-                        <div class="card">
-                            <div class="card-header d-flex justify-content-between">
-                                <h5>{{ __('Webhook Settings') }}</h5>
-
-                                {{-- <a data-url="{{ action('company.webhook.create') }}" style="height: 30px;" class="btn btn-sm btn-primary mx-3 align-items-center  d-inline-flex justify-content-center"
-                                        data-bs-toggle="tooltip" data-bs-original-title="{{ __('Create') }}"
-                                        data-bs-placement="bottom" data-size="md" data-ajax-popup="true"
-                                        data-title="{{ __('Create New Webhook') }}">
-                                        <i class="ti ti-plus text-white"></i>
-                                    </a> --}}
-                            </div>
-                            <div class="card-body table-border-style ">
-                                <div class="table-responsive">
-                                    <table class="table" id="pc-dt-simple">
-                                        <thead>
-                                            <tr>
-                                                <th> {{ __('Modules') }}</th>
-                                                <th> {{ __('url') }}</th>
-                                                <th> {{ __('Method') }}</th>
-                                                <th width="200px"> {{ 'Action' }}</th>
-                                            </tr>
-                                        </thead>
-                                        @php
-                                            $webhooks = App\Models\Webhook::where(
-                                                'created_by',
-                                                Auth::user()->id,
-                                            )->get();
-                                        @endphp
-                                        <tbody>
-                                            @foreach ($webhooks as $webhook)
-                                                <tr class="action">
-                                                    <td class="sorting_1">
-                                                        {{ $webhook->module }}
-                                                    </td>
-                                                    <td class="sorting_3">
-                                                        {{ $webhook->url }}
-                                                    </td>
-                                                    <td class="sorting_2">
-                                                        {{ $webhook->method }}
-                                                    </td>
-                                                    <td class="">
-                                                        <div class="action-btn me-2">
-                                                            <a class="mx-3 btn btn-sm align-items-center bg-info d-inline-flex justify-content-center"
-                                                                data-url="{{ action('company.webhook.edit', $webhook->id) }}"
-                                                                style="height: 30px;" data-size="md"
-                                                                data-ajax-popup="true" title="{{ __('Edit') }}"
-                                                                data-bs-toggle="tooltip" data-bs-placement="bottom"
-                                                                class="edit-icon"><i
-                                                                    class="ti ti-pencil text-white"></i></a>
-                                                        </div>
-
-                                                        <div class="action-btn">
-                                                            {!! Form::open([
-                                                                'method' => 'DELETE',
-                                                                'action' => ['webhook.destroy', $webhook->id],
-                                                                'id' => 'delete-form-' . $webhook->id,
-                                                            ]) !!}
-                                                            <a href="#"
-                                                                class="mx-3 btn btn-sm  align-items-center bs-pass-para bg-danger d-inline-flex justify-content-center"
-                                                                style="height: 30px;" data-bs-placement="bottom"
-                                                                data-bs-toggle="tooltip" title="{{ __('Delete') }}"><i
-                                                                    class="ti ti-trash text-white text-white"></i></a>
-                                                            {!! Form::close() !!}
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                            @endforeach
-
-                                        </tbody>
-                                    </table>
+                        <form action="{{ route('company.invoice.template.settings.store') }}" method="POST"
+                            class="mb-0" accept-charset="UTF-8" x-data="{ selected: '{{ $InvoiceSettings->template ?? '' }}' }">
+                            @csrf
+                            <div class="card-header row d-flex justify-content-between">
+                                <div class="col-auto">
+                                    <h5>{{ __('Choose Invoice Template & Settings') }}</h5>
                                 </div>
                             </div>
-                        </div>
+                            <div class="card-body">
+
+                                <div class="row">
+                                    @foreach ($invoiceTemplates ?? [] as $InvTemplate)
+                                        <div class="col-md-3">
+                                            <label
+                                                @click="selected = '{{ $InvoiceSettings ? $InvoiceSettings->template : '' }}'"
+                                                class="template-card invoice-template-card card text-center p-3"
+                                                :class="selected === '{{ $InvTemplate->id }}' ? 'selected' : ''">
+                                                <input type="radio" name="invoice_template"
+                                                    value="{{ $InvTemplate->id }}"
+                                                    :checked="selected === '{{ $InvTemplate->id }}'">
+                                                <div>
+                                                    <div class="my-2">
+                                                        <img src="{{ asset('storage/' . $InvTemplate->image) }}"
+                                                            class="img-fluid" style="height: 100px;">
+                                                    </div>
+                                                    <div class="my-2 fw-bold">
+                                                        {{ $InvTemplate->name }}
+                                                    </div>
+                                                </div>
+                                            </label>
+                                        </div>
+                                    @endforeach
+
+                                </div>
+
+                                <div class="row mt-4">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">{{ __('Invoice Prefix') }}</label>
+                                        <input type="text" name="prefix"
+                                            value="{{ $InvoiceSettings->prefix ?? '' }}" class="form-control"
+                                            placeholder="INV" autocomplete="off">
+                                    </div>
+
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">{{ __('Due After (days)') }}</label>
+                                        <input type="number" name="due_after"
+                                            value="{{ $InvoiceSettings->due_after ?? 7 }}" class="form-control"
+                                            min="1">
+                                    </div>
+
+                                    <div class="col-md-12 mb-3">
+                                        <label class="form-label">{{ __('Invoice Terms & Conditions') }}</label>
+                                        <textarea name="terms" rows="4" class="form-control" placeholder="Enter default terms & conditions...">{{ $InvoiceSettings->terms ?? '' }}</textarea>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <div class="card-footer text-end">
+                                <button type="submit" class="btn btn-primary">{{ __('Save Changes') }}</button>
+                            </div>
+                        </form>
                     </div>
 
+                    <!--Choose Letter Pad Template & Settings-->
+                    <div id="useradd-5" class="card">
+                        <form action="{{ route('company.letter-pad.template.settings.store') }}" method="POST"
+                            class="mb-0" accept-charset="UTF-8" x-data="{ selected: '{{ $letterPadSettings->template ?? '' }}' }">
+                            @csrf
+                            <div class="card-header row d-flex justify-content-between">
+                                <div class="col-auto">
+                                    <h5>{{ __('Choose Letter Pad Template & Settings') }}</h5>
+                                </div>
+                            </div>
+
+                            <div class="card-body">
+                                <div class="row">
+                                    @foreach ($letterPadTemplates ?? [] as $letterTemplate)
+                                        <div class="col-md-3">
+                                            <label
+                                                @click="selected = '{{ $letterPadSettings ? $letterPadSettings->template : '' }}'"
+                                                class="template-card invoice-template-card card text-center p-3"
+                                                :class="selected === '{{ $letterTemplate->id }}' ? 'selected' : ''">
+                                                <input type="radio" name="template" value="{{ $letterTemplate->id }}"
+                                                    :checked="selected === '{{ $letterTemplate->id }}'">
+                                                <div>
+                                                    <div class="my-2">
+                                                        <img src="{{ asset('storage/' . $letterTemplate->image) }}"
+                                                            class="img-fluid" style="height: 100px;">
+                                                    </div>
+                                                    <div class="my-2 fw-bold">
+                                                        {{ $letterTemplate->name }}
+                                                    </div>
+                                                </div>
+                                            </label>
+                                        </div>
+                                    @endforeach
+                                </div>
+
+                                <div class="row mt-4">
+                                    <div class="col-md-12 mb-3">
+                                        <label class="form-label">{{ __('Letter pad Terms & Conditions') }}</label>
+                                        <textarea name="terms" rows="4" class="form-control" placeholder="Enter default terms & conditions...">{{ $letterPadSettings->terms ?? '' }}</textarea>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="card-footer text-end">
+                                <button type="submit" class="btn btn-primary">{{ __('Save Changes') }}</button>
+                            </div>
+                        </form>
+
+                    </div>
+
+                    <!--Choose Estimate Template & Settings-->
+                    <div id="useradd-6" class="card">
+                        <form action="{{ route('company.estimate.template.settings.store') }}" method="POST"
+                            class="mb-0" accept-charset="UTF-8" x-data="{ selected: '{{ $estimateSettings->template ?? '' }}' }">
+                            @csrf
+                            <div class="card-header row d-flex justify-content-between">
+                                <div class="col-auto">
+                                    <h5>{{ __('Choose Estimate Template & Settings') }}</h5>
+                                </div>
+                            </div>
+
+                            <div class="card-body">
+                                <div class="row">
 
 
+                                    @foreach ($estimateTemplates ?? [] as $estimateTemplate)
+                                        <div class="col-md-3">
+                                            <label
+                                                @click="selected = '{{ $estimateSettings ? $estimateSettings->template : '' }}'"
+                                                class="template-card invoice-template-card card text-center p-3"
+                                                :class="selected === '{{ $estimateTemplate->id }}' ? 'selected' : ''">
+                                                <input type="radio" name="estimateTemplate"
+                                                    value="{{ $estimateTemplate->id }}"
+                                                    :checked="selected === '{{ $estimateTemplate->id }}'">
+                                                <div>
+                                                    <div class="my-2">
+                                                        <img src="{{ asset('storage/' . $estimateTemplate->image) }}"
+                                                            class="img-fluid" style="height: 100px;">
+                                                    </div>
+                                                    <div class="my-2 fw-bold">
+                                                        {{ $estimateTemplate->name }}
+                                                    </div>
+                                                </div>
+                                            </label>
+                                        </div>
+                                    @endforeach
+                                </div>
+
+                                <div class="row mt-4">
+                                    <div class="col-md-12 mb-3">
+                                        <label class="form-label">{{ __('Estimate Terms & Conditions') }}</label>
+                                        <textarea name="terms" rows="4" class="form-control" placeholder="Enter default terms & conditions...">{{ $estimateSettings->terms ?? '' }}</textarea>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="card-footer text-end">
+                                <button type="submit" class="btn btn-primary">{{ __('Save Changes') }}</button>
+                            </div>
+                        </form>
+                    </div>
+                    <!-- Reset Role based allowed permission-->
+                    <div id="useradd-7" class="card">
+
+                        <div class="card-header">
+                            {{ Form::model($settings, ['route' => 'company.settings.reset-permissions', 'method' => 'post', 'class' => 'mb-0']) }}
+                            <h5>{{ __('Reset Role based allowed permission') }}</h5>
+                            <small>{{ __('Reset your permissions') }}</small>
+                        </div>
+
+                        <div class="card-footer text-end">
+                            <button class="btn btn-primary m-r-10" type="submit">{{ __('Reset Permissions') }}</button>
+                        </div>
+                        {{ Form::close() }}
+                    </div>
                 </div>
-                <!-- [ sample-page ] end -->
+
+
+
             </div>
-            <!-- [ Main Content ] end -->
+            <!-- [ sample-page ] end -->
         </div>
-    @endsection
+        <!-- [ Main Content ] end -->
+    </div>
+@endsection
 
 
-    @push('css-page')
-        <link rel="stylesheet" href="{{ asset('css/summernote/summernote-bs4.css') }}">
-    @endpush
-    @push('script-page')
-        <script src="{{ asset('css/summernote/summernote-bs4.js') }}"></script>
+@push('css-page')
+    <link rel="stylesheet" href="{{ asset('css/summernote/summernote-bs4.css') }}">
+@endpush
+@push('script-page')
+    <script src="{{ asset('css/summernote/summernote-bs4.js') }}"></script>
 
-        <script>
-            $(document).ready(function() {
-                $('.summernote-simple').summernote({
-                    toolbar: [
-                        ['style', ['style']],
-                        ['font', ['bold', 'italic', 'underline', 'strikethrough']],
-                        ['list', ['ul', 'ol', 'paragraph']],
-                        ['insert', ['link', 'unlink']],
-                    ],
-                    height: 200,
-                });
+    <script>
+        $(document).ready(function() {
+            $('.summernote-simple').summernote({
+                toolbar: [
+                    ['style', ['style']],
+                    ['font', ['bold', 'italic', 'underline', 'strikethrough']],
+                    ['list', ['ul', 'ol', 'paragraph']],
+                    ['insert', ['link', 'unlink']],
+                ],
+                height: 200,
             });
-        </script>
+        });
+    </script>
 
-        <script>
-            $(document).on('click', 'input[name="theme_color"]', function() {
-                var eleParent = $(this).attr('data-theme');
-                $('#themefile').val(eleParent);
-                var imgpath = $(this).attr('data-imgpath');
-                $('.' + eleParent + '_img').attr('src', imgpath);
-            });
+    <script>
+        $(document).on('click', 'input[name="theme_color"]', function() {
+            var eleParent = $(this).attr('data-theme');
+            $('#themefile').val(eleParent);
+            var imgpath = $(this).attr('data-imgpath');
+            $('.' + eleParent + '_img').attr('src', imgpath);
+        });
 
-            $(document).ready(function() {
-                setTimeout(function(e) {
-                    var checked = $("input[type=radio][name='theme_color']:checked");
-                    $('#themefile').val(checked.attr('data-theme'));
-                    $('.' + checked.attr('data-theme') + '_img').attr('src', checked.attr('data-imgpath'));
-                }, 300);
-            });
+        $(document).ready(function() {
+            setTimeout(function(e) {
+                var checked = $("input[type=radio][name='theme_color']:checked");
+                $('#themefile').val(checked.attr('data-theme'));
+                $('.' + checked.attr('data-theme') + '_img').attr('src', checked.attr('data-imgpath'));
+            }, 300);
+        });
 
-            function check_theme(color_val) {
+        function check_theme(color_val) {
 
-                $('.theme-color').prop('checked', false);
-                $('input[value="' + color_val + '"]').prop('checked', true);
-                $('#color_value').val(color_val);
+            $('.theme-color').prop('checked', false);
+            $('input[value="' + color_val + '"]').prop('checked', true);
+            $('#color_value').val(color_val);
+        }
+    </script>
+
+    <script>
+        $('.colorPicker').on('click', function(e) {
+            $('body').removeClass('custom-color');
+            if (/^theme-\d+$/) {
+                $('body').removeClassRegex(/^theme-\d+$/);
             }
-        </script>
+            $('body').addClass('custom-color');
+            $('.themes-color-change').removeClass('active_color');
+            $(this).addClass('active_color');
+            const input = document.getElementById("color-picker");
+            setColor();
+            input.addEventListener("input", setColor);
 
-        <script>
-            $('.colorPicker').on('click', function(e) {
-                $('body').removeClass('custom-color');
-                if (/^theme-\d+$/) {
-                    $('body').removeClassRegex(/^theme-\d+$/);
-                }
-                $('body').addClass('custom-color');
-                $('.themes-color-change').removeClass('active_color');
-                $(this).addClass('active_color');
-                const input = document.getElementById("color-picker");
-                setColor();
-                input.addEventListener("input", setColor);
+            function setColor() {
+                $(':root').css('--color-customColor', input.value);
+            }
 
-                function setColor() {
-                    $(':root').css('--color-customColor', input.value);
-                }
+            $(`input[name='color_flag`).val('true');
+        });
 
-                $(`input[name='color_flag`).val('true');
+        $('.themes-color-change').on('click', function() {
+
+            $(`input[name='color_flag`).val('false');
+
+            var color_val = $(this).data('value');
+            $('body').removeClass('custom-color');
+            if (/^theme-\d+$/) {
+                $('body').removeClassRegex(/^theme-\d+$/);
+            }
+            $('body').addClass(color_val);
+            $('.theme-color').prop('checked', false);
+            $('.themes-color-change').removeClass('active_color');
+            $('.colorPicker').removeClass('active_color');
+            $(this).addClass('active_color');
+            $(`input[value=${color_val}]`).prop('checked', true);
+        });
+
+        $.fn.removeClassRegex = function(regex) {
+            return $(this).removeClass(function(index, classes) {
+                return classes.split(/\s+/).filter(function(c) {
+                    return regex.test(c);
+                }).join(' ');
             });
-
-            $('.themes-color-change').on('click', function() {
-
-                $(`input[name='color_flag`).val('false');
-
-                var color_val = $(this).data('value');
-                $('body').removeClass('custom-color');
-                if (/^theme-\d+$/) {
-                    $('body').removeClassRegex(/^theme-\d+$/);
-                }
-                $('body').addClass(color_val);
-                $('.theme-color').prop('checked', false);
-                $('.themes-color-change').removeClass('active_color');
-                $('.colorPicker').removeClass('active_color');
-                $(this).addClass('active_color');
-                $(`input[value=${color_val}]`).prop('checked', true);
-            });
-
-            $.fn.removeClassRegex = function(regex) {
-                return $(this).removeClass(function(index, classes) {
-                    return classes.split(/\s+/).filter(function(c) {
-                        return regex.test(c);
-                    }).join(' ');
-                });
-            };
-        </script>
-    @endpush
+        };
+    </script>
+@endpush

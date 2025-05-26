@@ -180,6 +180,13 @@ class Utility extends Model
         return $settings;
     }
 
+
+    public static function companySettings(){
+        $userId = Auth::user()->creatorId();
+        $company = Company::where('user_id',$userId)->first();
+        return $company;
+    }
+
     private static $cookie = null;
 
     public static function cookies()
@@ -2136,14 +2143,14 @@ class Utility extends Model
         $image_size = number_format($image_size / 1048576, 2);
         $user   = User::find($company_id);
         $plan   = Plan::find($user->plan);
-        $total_storage = $user->storage_limit + $image_size;
+        $total_storage = $user->company->storage_limit + $image_size;
 
 
         if ($plan->storage_limit <= $total_storage && $plan->storage_limit != -1) {
             $error = __('Plan storage limit is over so please upgrade the plan.');
             return $error;
         } else {
-            $user->storage_limit = $total_storage;
+            $user->company->storage_limit = $total_storage;
         }
 
         $user->save();
@@ -2162,8 +2169,8 @@ class Utility extends Model
         $image_size = number_format($fileSize / 1048576, 2);
         $user   = User::find($company_id);
         $plan   = Plan::find($user->plan);
-        $total_storage = $user->storage_limit - $image_size;
-        $user->storage_limit = $total_storage;
+        $total_storage = $user->company->storage_limit - $image_size;
+        $user->company->storage_limit = $total_storage;
         $user->save();
 
         $status = false;

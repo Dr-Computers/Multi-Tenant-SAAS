@@ -27,7 +27,7 @@ return new class extends Migration
             $table->date('invoice_period_end_date')->nullable();
             $table->string('created_in_month')->nullable();
             $table->foreignId('tenant_id')->nullable()->constrained('users')->onDelete('set null');
-            $table->enum('invoice_type', ['property_invoice', 'other'])->default('property_invoice');
+            $table->enum('invoice_type', ['property_invoice', 'other','maintenance_invoice'])->default('property_invoice');
         });
     }
 

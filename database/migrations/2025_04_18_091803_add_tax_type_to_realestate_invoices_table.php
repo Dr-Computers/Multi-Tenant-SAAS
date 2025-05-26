@@ -13,6 +13,11 @@ return new class extends Migration
     {
         Schema::table('realestate_invoices', function (Blueprint $table) {
             $table->string('tax_type')->nullable();
+            $table->decimal('sub_total',8,2)->nullable();
+            $table->decimal('total_tax',8,2)->nullable();
+            $table->string('discount_reason',8,2)->nullable();
+            $table->decimal('discount_amount',8,2)->nullable();
+            $table->decimal('grand_total',8,2)->nullable();
         });
     }
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Company;
+namespace App\Http\Controllers\Company\Finance;
 
 use App\Http\Controllers\Controller;
 use App\Models\BankAccount;
@@ -116,7 +116,7 @@ class BankAccountController extends Controller
      */
     public function update(Request $request, $id)
     {
-        if (\Auth::user()->can('create bank account')) {
+        // if (\Auth::user()->can('create bank account')) {
             $validator = \Validator::make(
                 $request->all(),
                 [
@@ -155,9 +155,9 @@ class BankAccountController extends Controller
             $bankAccount->bank_branch      = $request->bank_branch;
 
             return redirect()->route('company.finance.bank-accounts.index')->with('success', __('Bank Account successfully updated.'));
-        } else {
-            return redirect()->back()->with('error', __('Permission Denied!'));
-        }
+        // } else {
+        //     return redirect()->back()->with('error', __('Permission Denied!'));
+        // }
     }
 
     /**

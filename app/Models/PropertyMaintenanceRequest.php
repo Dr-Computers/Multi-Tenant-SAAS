@@ -14,7 +14,7 @@ class PropertyMaintenanceRequest extends Model
 
     public function unit()
     {
-        return $this->hasOne(PropertyUnit::class, 'id', 'property_id');
+        return $this->hasOne(PropertyUnit::class, 'id', 'unit_id');
     }
 
     public function issue()
@@ -29,7 +29,11 @@ class PropertyMaintenanceRequest extends Model
 
     public function maintenanceRequestAttachments()
     {
-
         return $this->belongsToMany(MediaFile::class, 'maintenance_request_attachments', 'request_id', 'file_id');
+    }
+
+    public function invoice()
+    {
+        return $this->hasOne(RealestateInvoice::class, 'id', 'invoice_id');
     }
 }

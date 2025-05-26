@@ -19,7 +19,7 @@ return new class extends Migration
             $table->integer('issue_type')->nullable();
             $table->integer('maintainer_id')->nullable();
             $table->decimal('amount', 8, 4)->nullable();
-            $table->integer('status')->nullable();
+            $table->string('status')->nullable();
             $table->string('issue_attachment')->nullable();
             $table->dateTime('invoice_published')->nullable();
             $table->dateTime('invoice_due_date')->nullable();
@@ -27,6 +27,7 @@ return new class extends Migration
             $table->dateTime('fixed_date')->nullable();
             $table->longText('notes')->nullable();
             $table->string('parent_id')->nullable();
+            $table->integer('invoice_id')->default(0)->nullable();
             $table->timestamps();
         });
     }

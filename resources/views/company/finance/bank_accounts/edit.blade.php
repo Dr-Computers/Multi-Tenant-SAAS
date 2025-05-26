@@ -120,7 +120,6 @@
                 </div>
 
                 <div class="modal-footer m-4">
-                    <a href="{{ route('company.finance.bank-accounts.index') }}" class="btn btn-light">Cancel</a>
                     <button type="submit" class="btn btn-primary">Update Bank Account</button>
                 </div>
             </div>

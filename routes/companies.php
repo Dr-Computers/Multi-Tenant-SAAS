@@ -1,10 +1,12 @@
 <?php
 
-
+use App\Http\Controllers\Company\Finance\AssetController;
 use App\Http\Controllers\Company\Realestate\InvoiceController;
 use App\Http\Controllers\Company\Realestate\OtherInvoiceController;
 use App\Http\Controllers\Company\Realestate\PropertyController;
-use App\Http\Controllers\Company\BankAccountController;
+use App\Http\Controllers\Company\Finance\BankAccountController;
+use App\Http\Controllers\Company\Finance\ExpenseController;
+use App\Http\Controllers\Company\Finance\LiabilityController;
 use App\Http\Controllers\Company\Realestate\PaymentController;
 use App\Http\Controllers\Company\Realestate\PaymentPayableController;
 use Illuminate\Support\Facades\Route;
@@ -21,9 +23,6 @@ Route::group(
         Route::get('profile', 'DashboardController@profile')->name('profile');
         Route::post('profile', 'DashboardController@editprofile')->name('profile.update');
         Route::post('password', 'DashboardController@updatePassword')->name('profile.update.password');
-
-
-
 
         // HRMS
         Route::group([
@@ -56,23 +55,23 @@ Route::group(
 
             Route::resource('properties', 'PropertyController')->names('properties');
 
-            Route::get('lease-properties', 'PropertyLeaseController@index')->name('properties.lease.index');   
+            Route::get('lease-properties', 'PropertyLeaseController@index')->name('properties.lease.index');
             Route::get('lease-properties/create/{unit}', 'PropertyLeaseController@create')->name('properties.lease.create');
             Route::post('lease-properties/{unit}/store', 'PropertyLeaseController@store')->name('properties.lease.store');
             Route::get('lease-properties/{unit}/show', 'PropertyLeaseController@create')->name('properties.lease.show');
             Route::post('lease-properties/{unit}', 'PropertyLeaseController@update')->name('properties.lease.update');
             Route::delete('lease-properties/{unit}/destroy', 'PropertyLeaseController@destroy')->name('properties.lease.destroy');
-            
+
             Route::post('lease-properties/{unit}/cancel', 'PropertyLeaseController@cancel')->name('properties.lease.cancel');
             Route::post('lease-properties/{unit}/in-hold', 'PropertyLeaseController@inHold')->name('properties.lease.in-hold');
             Route::post('lease-properties/{unit}/approve', 'PropertyLeaseController@approve')->name('properties.lease.approve');
-            
-            
+
+
 
             // Route::resource('property-units/{id}', 'PropertyUnitController')->names('property.units');
             Route::get('property/{pid}/unit', [PropertyController::class, 'getPropertyUnit'])->name('property.unit');
             Route::resource('property/{property_id}/units', 'PropertyUnitController')->names('property.units');
-            
+
             Route::get('unit/{uid}/rent-type', [PropertyController::class, 'getUnitRentType'])->name('unit.rent_type');
             Route::resource('tenants', 'TenantController')->names('tenants');
             Route::get('tenants/{user}/reset-password', 'TenantController@resetPasswordForm')->name('tenants.reset.form');
@@ -90,8 +89,13 @@ Route::group(
 
             Route::get('maintenance-requests/units/{id}', 'MaintenanceRequestController@getUnits')->name('maintenance-requests.units');
 
+            Route::get('maintenance-requests/invoice/{id}/create', 'MaintenanceRequestController@invoiceCreate')->name('maintenance-requests.create-invoice');
+            Route::post('maintenance-requests/invoice/{id}/store', 'MaintenanceRequestController@invoiceStore')->name('maintenance-requests.store-invoice');
+            Route::post('maintenance-requests/invoice/{id}/download', 'MaintenanceRequestController@invoiceDownload')->name('maintenance-requests.download-invoice');
+            Route::get('maintenance-requests/invoice/{id}/edit', 'MaintenanceRequestController@invoiceEdit')->name('maintenance-requests.edit-invoice');
+            Route::post('maintenance-requests/invoice/{id}/update', 'MaintenanceRequestController@invoiceUpdate')->name('maintenance-requests.update-invoice');
             Route::resource('maintenance-requests', 'MaintenanceRequestController')->names('maintenance-requests');
-            
+
             Route::resource('categories', 'CategoryController')->names('categories');
             Route::resource('furnishing', 'FurnishingController')->names('furnishing');
             Route::resource('amenities', 'AmenitiesController')->names('amenities');
@@ -100,7 +104,6 @@ Route::group(
 
 
         // Finance Group
-
 
         Route::group([
             'prefix' => 'finance',
@@ -145,8 +148,24 @@ Route::group(
             // Bank Accounts
             Route::get('/bank-account/details', [BankAccountController::class, 'getAccountDetails'])->name('bank-account.fetchdetails');
             Route::resource('bank-accounts', BankAccountController::class);
+            Route::resource('expense', ExpenseController::class);
+
+            Route::get('asset-list', [AssetController::class, 'index'])->name('assets.index');
+            Route::get('assets/create', [AssetController::class, 'create'])->name('assets.create');
+            Route::post('assets/store', [AssetController::class, 'store'])->name('assets.store');
+            Route::get('assets/{id}/edit', [AssetController::class, 'edit'])->name('assets.edit');
+            Route::put('assets/{id}', [AssetController::class, 'update'])->name('assets.update');
+            Route::delete('assets/{id}', [AssetController::class, 'destroy'])->name('assets.destroy');
+
+            Route::get('liabilities', [LiabilityController::class, 'index'])->name('liabilities.index');
+            Route::get('liabilities/create', [LiabilityController::class, 'create'])->name('liabilities.create');
+            Route::post('liabilities/store', [LiabilityController::class, 'store'])->name('liabilities.store');
+            Route::get('liabilities/{id}/edit', [liabilityController::class, 'edit'])->name('liabilities.edit');
+            Route::put('liabilities/{id}', [LiabilityController::class, 'update'])->name('liabilities.update');
+            Route::delete('liabilities/{id}', [LiabilityController::class, 'destroy'])->name('liabilities.destroy');
         });
 
+        //Support Ticket 
         Route::group([
             'prefix' => 'tickets',
             'as' => 'tickets.',
@@ -158,7 +177,7 @@ Route::group(
 
 
 
-
+        //Media Storage
         Route::group([
             'prefix' => 'media',
             'as' => 'media.',
@@ -177,13 +196,113 @@ Route::group(
             Route::post('/upload', 'MediaController@uploadFiles')->name('file.upload');
         });
 
-
+        //Settingd
         Route::resource('settings', 'SystemController');
-        Route::post('company-settings', 'SystemController@saveCompanySettings')->name('company.settings');
+        Route::post('company-settings', 'SystemController@saveCompanySettings')->name('company-settings');
         Route::get('company-setting', 'SystemController@companyIndex')->name('company.setting');
         Route::post('business-setting', 'SystemController@saveBusinessSettings')->name('business.setting');
+        Route::post('system-settings', 'SystemController@saveSystemSettings')->name('system.settings');
         Route::post('reset-permissions', 'SystemController@resetPermissions')->name('settings.reset-permissions');
         Route::post('invoice/template/settings/store', 'SystemController@invoiceTemplateStore')->name('invoice.template.settings.store');
         Route::post('letter-pad/template/settings/store', 'SystemController@letterPadTemplateStore')->name('letter-pad.template.settings.store');
+        Route::post('estimate/template/settings/store', 'SystemController@estimateTemplateStore')->name('estimate.template.settings.store');
+        //End Settings
+
+        Route::group(
+            [
+                'middleware' => [
+                    'auth',
+                    'XSS',
+                ],
+            ],
+            function () {
+                Route::get('/expenses/import', [ImportController::class, 'createImport'])->name('expense.createImport');
+                Route::post('/expenses/import', [ImportController::class, 'store'])->name('expense.import');
+                Route::get('/tenants/import', [ImportController::class, 'createTenantsImport'])->name('tenants.createImport');
+                Route::post('/tenants/import', [ImportController::class, 'storeTenants'])->name('tenants.import');
+                Route::get('/properties/import', [ImportController::class, 'createPropertiesImport'])->name('properties.createImport');
+                Route::post('/properties/import', [ImportController::class, 'storeProperties'])->name('properties.import');
+                Route::get('/units/import', [ImportController::class, 'createUnitsImport'])->name('units.createImport');
+                Route::post('/units/import', [ImportController::class, 'storeUnits'])->name('units.import');
+                Route::post('/tenant/{tenantId}/cancel', [TenantController::class, 'cancelTenant'])->name('tenant.cancel');
+
+                Route::get('tenant/{tenant}/renew', [TenantController::class, 'showRenewForm'])->name('tenant.renew');
+                Route::put('tenant/{tenant}/renew', [TenantController::class, 'renew'])->name('tenant.renew.submit');
+
+                Route::post('/tenant/{tenantId}/active', [TenantController::class, 'activateTenant'])->name('tenant.activate');
+                Route::post('/tenant/{tenantId}/case', [TenantController::class, 'caseTenant'])->name('tenant.case');
+
+
+                Route::get('tenant/{tenant}/renew', [TenantController::class, 'showRenewForm'])->name('tenant.renew');
+                Route::put('tenant/{tenant}/renew', [TenantController::class, 'renew'])->name('tenant.renew.submit');
+
+                Route::get('/renew-report/{id}/download', [TenantController::class, 'downloadRenewReport'])->name('renew-report.download');
+
+                Route::get('/lease-report/{id}/download', [TenantController::class, 'downloadLeaseReport'])->name('lease-report.download');
+            }
+        );
+
+
+        //report
+        Route::group(
+            [
+                'middleware' => [
+                    'auth',
+                    'XSS',
+                ],
+            ],
+            function () {
+                Route::get('reports/invoice', [ReportController::class, 'invoiceIndex'])->name('report.invoices.index');
+                Route::get('reports/deposit/payment', [ReportController::class, 'depositPaymentIndex'])->name('report.deposit.payments.index');
+
+                // Invoice Report
+                Route::get('reports/payment', [ReportController::class, 'paymentIndex'])->name('report.payments.index');
+
+                // Expense Report
+                Route::get('reports/cheques', [ReportController::class, 'chequesIndex'])->name('report.cheques.index');
+
+                // Cheques Report
+                Route::get('reports/expense', [ReportController::class, 'expenseIndex'])->name('report.expenses.index');
+
+                // Tenants Report
+                Route::get('reports/tenants', [ReportController::class, 'tenantsIndex'])->name('report.tenants.index');
+                Route::get('/reports/lease-expiry', [ReportController::class, 'leaseExpiryReport'])->name('reports.lease-expiry');
+                // Properties Report
+                Route::get('reports/properties', [ReportController::class, 'propertiesIndex'])->name('report.properties.index');
+                Route::get('reports/download', [ReportController::class, 'downloadPropertyReport'])->name('report.properties.download');
+
+
+                // Units Report
+                Route::get('reports/units', [ReportController::class, 'unitsIndex'])->name('report.units.index');
+                Route::get('/units/{id}/view', [ReportController::class, 'view'])->name('units.view');
+                Route::get('/units/{id}/download', [ReportController::class, 'downloadUnits'])->name('units.download');
+
+                Route::get('reports/rent-collection', [ReportController::class, 'rentCollectionSummaryReport'])->name('report.rent_collection.index');
+
+
+                // Payments Report
+                Route::get('reports/maintainers', [ReportController::class, 'maintainersIndex'])->name('report.maintainers.index');
+                Route::get('reports/maintenances', [ReportController::class, 'maintenancesIndex'])->name('report.maintenances.index');
+
+
+                Route::get('reports/bank-transactions', [ReportController::class, 'transactionsIndex'])->name('report.bank_transactions.index');
+                Route::get('/reports/profit-loss', [ReportController::class, 'profitLossIndex'])->name('report.profit_loss.index')->middleware('can:view profit and loss report');
+                Route::get('/reports/balance-sheet', [ReportController::class, 'balanceSheetIndex'])->name('report.balance_sheet.index')->middleware('can:view balance sheet report');
+                Route::get('report/profit_loss/download_pdf', [ReportController::class, 'downloadPdf'])->name('report.profit_loss.download_pdf');
+
+                //Fire And Safety Expiry Report
+                Route::get('/reports/fireandsafety-expiry', [ReportController::class, 'fireandsafetyExpiryReport'])->name('reports.fireandsafety-expiry');
+
+                //Insurance Expiry Report
+                Route::get('/reports/insurance-expiry', [ReportController::class, 'insuranceExpiryReport'])->name('reports.insurance-expiry');
+
+                //Building wise outstanding report
+                Route::get('/reports/invoice-outstanding', [ReportController::class, 'invoiceOutstandingReport'])->name('reports.invoice-outstanding');
+
+                // Route for downloading the Profit and Loss Report as an Excel file
+                Route::get('report/profit_loss/download_excel', [ReportController::class, 'downloadExcel'])->name('report.profit_loss.download_excel');
+            }
+        );
     }
+
 );

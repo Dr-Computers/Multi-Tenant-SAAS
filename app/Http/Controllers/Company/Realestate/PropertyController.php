@@ -266,6 +266,7 @@ class PropertyController extends Controller
                 MediaFile::where('id', $img->id)->delete();
             }
 
+            
             $removedDocsList = MediaFile::whereIn('id',$removedDocs)->get();
 
 

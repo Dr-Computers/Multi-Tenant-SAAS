@@ -137,7 +137,6 @@
                     </div>
 
                     <div class="modal-footer m-4">
-                        <button type="reset" class="btn btn-light">Cancel</button>
                         <button type="submit" class="btn btn-primary">Create Bank Account</button>
                     </div>
                 </div>

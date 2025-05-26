@@ -104,14 +104,18 @@
                                     </a>
                             
                                     <!-- Delete Button -->
-                                    {!! Form::open(['method' => 'DELETE', 'route' => ['company.finance.bank-accounts.destroy', $account->id], 'id' => 'delete-form-' . $account->id]) !!}
-                                        <a href="#"
-                                           class="btn btn-sm btn-outline-danger"
-                                           data-bs-toggle="tooltip" title="{{ __('Delete') }}"
-                                           onclick="event.preventDefault(); if(confirm('Are you sure you want to delete this bank account?')) document.getElementById('delete-form-{{ $account->id }}').submit();">
-                                            <i class="ti ti-trash"></i>
-                                        </a>
+                                    {!! Form::open([
+                                        'method' => 'DELETE',
+                                        'route' => ['company.finance.bank-accounts.destroy', $account->id],
+                                        'id' => 'delete-form-' . $account->id,
+                                    ]) !!}
+                                    <a href="#"
+                                        class="mx-4 btn btn-sm btn-outline-danger align-items-center bs-pass-para"
+                                        data-bs-toggle="tooltip" title="{{ __('Delete') }}">
+                                        <i class="ti ti-trash text-black "></i></a>
+
                                     {!! Form::close() !!}
+
                             
                                 </div>
                             </div>
@@ -125,7 +129,7 @@
                                 <i class="ti ti-bank-off text-muted" style="font-size: 48px;"></i>
                                 <h5 class="mt-3">{{ __('No Bank Accounts Found') }}</h5>
                                 <p class="text-muted">{{ __('Add your first bank account to get started') }}</p>
-                                <a href="{{ route('company.bank-accounts.create') }}" class="btn btn-primary mt-3">
+                                <a href="{{ route('company.finance.bank-accounts.create') }}" class="btn btn-primary mt-3">
                                     <i class="ti ti-plus me-2"></i>{{ __('Add Bank Account') }}
                                 </a>
                             </div>

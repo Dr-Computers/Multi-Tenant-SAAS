@@ -4,6 +4,7 @@ use App\Models\Currency;
 use Illuminate\Support\Facades\Storage;
 use App\Models\MediaFile;
 use App\Models\Property;
+use App\Models\Utility;
 use Illuminate\Support\Facades\Auth;
 use Spatie\Image\Image;
 use Spatie\Image\Enums\AlignPosition;
@@ -448,6 +449,31 @@ if (!function_exists('permission_check')) {
         } else {
             return false;
         }
+    }
+}
+
+if (!function_exists('expensePrefix')) {
+    function expensePrefix()
+    {
+        $settings = Utility::settings();
+        return $settings["expense_number_prefix"] ?? 'EXP';
+    }
+}
+
+
+if (!function_exists('creditNotePrefix')) {
+    function creditNotePrefix()
+    {
+        return '#CN-000';
+    }
+}
+
+if (!function_exists('priceFormat')) {
+    function priceFormat($price)
+    {
+        $settings = Utility::settings();
+
+        return $settings['site_currency'] . $price;
     }
 }
 

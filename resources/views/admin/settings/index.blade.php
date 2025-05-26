@@ -1519,10 +1519,8 @@
                                     </div>
                                 </div>
 
-
                                 <div class="card-body">
                                     <div class="row">
-
                                         @foreach ($letterPadTemplates ?? [] as $letterTemplate)
                                             <div class="col-md-3">
                                                 <label
@@ -1543,7 +1541,6 @@
                                                 </label>
                                             </div>
                                         @endforeach
-
                                     </div>
 
                                     <div class="row mt-4">

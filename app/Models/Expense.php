@@ -19,4 +19,8 @@ class Expense extends Model
     public function user(){
         return $this->hasOne('App\Models\User','id','user_id');
     }
+
+    public function account(){
+        return $this->hasOne(BankAccount::class,'id','bank_account_id');
+    }
 }

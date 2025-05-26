@@ -27,15 +27,18 @@
                                     <td>{{ $req->maintainer ? $req->maintainer->name : '---' }}</td>
                                     <td>{{ dateTimeFormat($req->request_date) }}</td>
                                     <td>
-                                        @if ($req->status == '1')
+                                        @if ($req->status == 'completed')
                                             <span class="badge bg-success p-1 px-3 rounded">
-                                                {{ ucfirst('Approved') }}</span>
-                                        @elseif($req->status == '2')
+                                                {{ ucfirst('completed') }}</span>
+                                        @elseif($req->status == 'rejected')
                                             <span class="badge bg-danger p-1 px-3 rounded">
                                                 {{ ucfirst('Rejected') }}</span>
-                                        @elseif($req->status == '0')
+                                        @elseif($req->status == 'pending')
                                             <span class="badge bg-warning p-1 px-3 rounded">
                                                 {{ ucfirst('Pending') }}</span>
+                                        @elseif($req->status == 'inprogress')
+                                        <span class="badge bg-info p-1 px-3 rounded">
+                                            {{ ucfirst('in progress') }}</span>
                                         @endif
                                     </td>
                                     <td>

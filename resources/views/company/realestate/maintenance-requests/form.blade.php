@@ -103,7 +103,9 @@
                                 {{-- Request date --}}
                                 <div class="form-group">
                                     <label class="form-label">Request date <x-required /></label>
-                                    <input type="date" class="form-control" value="{{ old('request_date', isset($maintenance)  ? date('Y-m-d',strtotime($maintenance->request_date)) : '') }}" name="request_date">
+                                    <input type="date" class="form-control"
+                                        value="{{ old('request_date', isset($maintenance) ? date('Y-m-d', strtotime($maintenance->request_date)) : '') }}"
+                                        name="request_date">
                                     @error('request_date')
                                         <small class="text-danger">{{ $message }}</small>
                                     @enderror
@@ -118,14 +120,14 @@
                                         <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
                                             {{-- @dump($maintenance->maintenanceRequestAttachments) --}}
                                             @if (isset($maintenance))
-                                     
+
                                                 @foreach ($maintenance->maintenanceRequestAttachments ?? [] as $key => $image)
                                                     <div class="flex flex-col relative existing-data-box">
                                                         <div class="relative group border rounded-lg overflow-hidden ">
-                                                            <img src="{{ asset('images/' . $image) }}"
+                                                            <img src="{{ asset('storage/' . $image->file_url) }}"
                                                                 class="thumbnail" style="height: 100px;width: 100%;"
                                                                 alt="Uploaded Image">
-                                                            <input type="hidden" value="{{ $image }}"
+                                                            <input type="hidden" value="{{ $image->id }}"
                                                                 name="existingImage[]" />
                                                             <button type="button" onclick="removeExistingRow(this)"
                                                                 class="absolute bg-white p-1 right-0 top-0 rounded-full">
@@ -214,6 +216,12 @@
                                             value="completed" {{ $status == 'completed' ? 'checked' : '' }}>
                                         <label class="form-check-label">Completed</label>
                                     </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="status"
+                                            value="rejected" {{ $status == 'rejected' ? 'checked' : '' }}>
+                                        <label class="form-check-label">Rejected</label>
+                                    </div>
+
                                     @error('status')
                                         <br><small class="text-danger">{{ $message }}</small>
                                     @enderror
@@ -339,9 +347,9 @@
                 // Reference the form element
                 const formElement = document.getElementById('requestFrom');
                 const formData = new FormData(formElement);
-
+                const url =`{{ isset($maintenance) ? route('company.realestate.maintenance-requests.update', $maintenance->id) : route('company.realestate.maintenance-requests.store') }}`;
                 try {
-                    const response = await fetch(`{{ route('company.realestate.maintenance-requests.store') }}`, {
+                    const response = await fetch(url, {
                         method: 'POST',
                         headers: {
                             'X-CSRF-TOKEN': '{{ csrf_token() }}' // Include Laravel CSRF token
