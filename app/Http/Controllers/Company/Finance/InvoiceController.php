@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Company\Realestate;
+namespace App\Http\Controllers\Company\Finance;
 
 use App\Http\Controllers\Controller;
 use App\Models\Property;
@@ -13,6 +13,7 @@ use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Traits\ActivityLogger;
 
 class InvoiceController extends Controller
 {
@@ -20,6 +21,7 @@ class InvoiceController extends Controller
      * Display a listing of the resource.
      */
 
+    use ActivityLogger;
 
     public function chooseInvoice()
     {
@@ -33,65 +35,64 @@ class InvoiceController extends Controller
     }
     public function index(Request $request)
     {
-    
-            if (\Auth::user()->type == 'tenant') {
 
-                $tenant = User::where('type', 'tenant')->where('id', Auth::user()->id)->first();
-                // $leasedUnitIds = $tenant->leases->pluck('unit_id');
+        if (\Auth::user()->type == 'tenant') {
 
-                // Fetch invoices related to the tenant's leased units
-                // $invoices = RealestateInvoice::whereIn('unit_id', $leasedUnitIds)
-                //     ->where('invoice_type', 'property_invoice') // Filter by invoice_type 'property_invoice'
-                //     ->when($request->searchInput, function ($query, $searchInput) {
-                //         $searchId = str_replace('INVOICE-', '', $searchInput);
-                //         return $query->where('invoice_id', $searchId);
-                //     })
-                //     ->when($request->property, function ($query, $property) {
-                //         return $query->where('property_id', $property);
-                //     })
-                //     ->when($request->unit, function ($query, $unit) {
-                //         return $query->where('unit_id', $unit);
-                //     })
-                //     ->orderBy('created_at', 'desc') // Order by created_at in descending order
-                //     ->paginate(25);
-            } else if (\Auth::user()->type === 'propertyowner') {
-                // $invoices = Invoice::whereIn('property_id', getOwnerPropertyIds())
-                //     ->where('parent_id', parentId())
-                //     ->where('invoice_type', 'property_invoice') // Filter by invoice_type 'property_invoice'
-                //     ->when($request->searchInput, function ($query, $searchInput) {
-                //         $searchId = str_replace('INVOICE-', '', $searchInput);
-                //         return $query->where('invoice_id', $searchId);
-                //     })
-                //     ->when($request->property, function ($query, $property) {
-                //         return $query->where('property_id', $property);
-                //     })
-                //     ->when($request->unit, function ($query, $unit) {
-                //         return $query->where('unit_id', $unit);
-                //     })
-                //     ->orderBy('created_at', 'desc') // Order by created_at in descending order
-                //     ->paginate(25);
-            } else {
-                $invoices = RealestateInvoice::where('parent_id', creatorId())
-                    ->where('invoice_type', 'property_invoice') // Filter by invoice_type 'property_invoice'
-                    ->when($request->searchInput, function ($query, $searchInput) {
-                        $searchId = str_replace('INVOICE-', '', $searchInput);
-                        return $query->where('invoice_id', $searchId);
-                    })
-                    ->when($request->property, function ($query, $property) {
-                        return $query->where('property_id', $property);
-                    })
-                    ->when($request->unit, function ($query, $unit) {
-                        return $query->where('unit_id', $unit);
-                    })
-                    ->orderBy('created_at', 'desc') // Order by created_at in descending order
-                    ->paginate(25);
-            }
+            $tenant = User::where('type', 'tenant')->where('id', Auth::user()->id)->first();
+            // $leasedUnitIds = $tenant->leases->pluck('unit_id');
 
-            // $filterProperty = Property::select('id', 'name')->orderBy('name', 'asc')->get();
-            // $filterUnit = PropertyUnit::select('id', 'name')->orderBy('name', 'asc')->get();
+            // Fetch invoices related to the tenant's leased units
+            // $invoices = RealestateInvoice::whereIn('unit_id', $leasedUnitIds)
+            //     ->where('invoice_type', 'property_invoice') // Filter by invoice_type 'property_invoice'
+            //     ->when($request->searchInput, function ($query, $searchInput) {
+            //         $searchId = str_replace('INVOICE-', '', $searchInput);
+            //         return $query->where('invoice_id', $searchId);
+            //     })
+            //     ->when($request->property, function ($query, $property) {
+            //         return $query->where('property_id', $property);
+            //     })
+            //     ->when($request->unit, function ($query, $unit) {
+            //         return $query->where('unit_id', $unit);
+            //     })
+            //     ->orderBy('created_at', 'desc') // Order by created_at in descending order
+            //     ->paginate(25);
+        } else if (\Auth::user()->type === 'propertyowner') {
+            // $invoices = Invoice::whereIn('property_id', getOwnerPropertyIds())
+            //     ->where('parent_id', parentId())
+            //     ->where('invoice_type', 'property_invoice') // Filter by invoice_type 'property_invoice'
+            //     ->when($request->searchInput, function ($query, $searchInput) {
+            //         $searchId = str_replace('INVOICE-', '', $searchInput);
+            //         return $query->where('invoice_id', $searchId);
+            //     })
+            //     ->when($request->property, function ($query, $property) {
+            //         return $query->where('property_id', $property);
+            //     })
+            //     ->when($request->unit, function ($query, $unit) {
+            //         return $query->where('unit_id', $unit);
+            //     })
+            //     ->orderBy('created_at', 'desc') // Order by created_at in descending order
+            //     ->paginate(25);
+        } else {
+            $invoices = RealestateInvoice::where('parent_id', creatorId())
+                ->where('invoice_type', 'property_invoice') // Filter by invoice_type 'property_invoice'
+                ->when($request->searchInput, function ($query, $searchInput) {
+                    $searchId = str_replace('INVOICE-', '', $searchInput);
+                    return $query->where('invoice_id', $searchId);
+                })
+                ->when($request->property, function ($query, $property) {
+                    return $query->where('property_id', $property);
+                })
+                ->when($request->unit, function ($query, $unit) {
+                    return $query->where('unit_id', $unit);
+                })
+                ->orderBy('created_at', 'desc') // Order by created_at in descending order
+                ->paginate(25);
+        }
 
-            return view('company.finance.realestate.invoices.index', compact('invoices'));
-       
+        // $filterProperty = Property::select('id', 'name')->orderBy('name', 'asc')->get();
+        // $filterUnit = PropertyUnit::select('id', 'name')->orderBy('name', 'asc')->get();
+
+        return view('company.finance.realestate.invoices.index', compact('invoices'));
     }
 
     /**
@@ -100,9 +101,9 @@ class InvoiceController extends Controller
     public function create()
     {
 
-        $property = Property::where('company_id',creatorId())->get()->pluck('name', 'id');
+        $property = Property::where('company_id', creatorId())->get()->pluck('name', 'id');
         $property->prepend(__('Select Property'), '');
-       
+
 
         $types = RealestateType::where('parent_id', creatorId())->where('type', 'invoice')->get()->pluck('title', 'id');
         $types->prepend(__('Select Type'), '');
@@ -136,8 +137,6 @@ class InvoiceController extends Controller
      */
     public function store(Request $request)
     {
-
-
 
         $validator = \Validator::make(
             $request->all(),
@@ -278,6 +277,17 @@ class InvoiceController extends Controller
                 $invoiceItem->description = $description;
                 $invoiceItem->save();
             }
+
+            $this->logActivity(
+                'Create a Invoice',
+                'Invoice Id ' . $invoice->invoice_id,
+                route('company.finance.realestate.invoices.index'),
+                'New Staff User Created successfully',
+                Auth::user()->creatorId(),
+                Auth::user()->id
+            );
+
+
             return redirect()->route('company.finance.realestate.invoices.index')->with('success', __('Invoice successfully created.'));
         }
     }
@@ -462,6 +472,16 @@ class InvoiceController extends Controller
         }
 
 
+        $this->logActivity(
+            'Updated a Invoice',
+            'Invoice Id: ' . $invoice->id,
+            route('company.finance.realestate.invoices.index'),
+            'A Invoice updated successfully',
+            Auth::user()->creatorId(),
+            Auth::user()->id
+        );
+
+
 
         return redirect()->route('company.finance.realestate.invoices.index')->with('success', __('Invoice successfully updated.'));
         // } else {
@@ -479,6 +499,14 @@ class InvoiceController extends Controller
         RealestateInvoiceItem::where('invoice_id', $invoice->id)->delete();
         // InvoicePayment::where('invoice_id', $invoice->id)->delete();
         $invoice->delete();
+        $this->logActivity(
+            'Delete a Invoice',
+            'Invoice Id ' . $invoice->id,
+            route('company.finance.realestate.invoices.index'),
+            'A Invoice deleted successfully',
+            Auth::user()->creatorId(),
+            Auth::user()->id
+        );
         return redirect()->route('company.finance.realestate.invoices.index')->with('success', __('Invoice successfully deleted.'));
         // } else {
         //     return redirect()->back()->with('error', __('Permission Denied!'));
@@ -489,6 +517,10 @@ class InvoiceController extends Controller
         // if (\Auth::user()->can('delete invoice type')) {
         $invoiceType = RealestateInvoiceItem::find($request->id);
         $invoiceType->delete();
+
+
+
+
 
         return response()->json([
             'status' => 'success',
@@ -502,16 +534,16 @@ class InvoiceController extends Controller
     {
         // Find the unit
         $unit = PropertyUnit::find($id);
-        
-    
+
+
         // Get the related property
         $property = $unit ? $unit->properties : null;
-    
+
         // Determine the invoice prefix (use database value or fallback to default)
-        $prefix= invoicePrefix();
-        
+        $prefix = invoicePrefix();
+
         $invoicePrefix = $property && $property->invoice_prefix ? $property->invoice_prefix : $prefix;
-       
+
         // Fetch invoices for the given unit ID and filter by due amount
         $invoices = RealestateInvoice::where('unit_id', $id)
             ->get()

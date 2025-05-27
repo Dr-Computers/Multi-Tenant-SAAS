@@ -197,7 +197,7 @@ class SystemController extends Controller
             $this->logActivity(
                 'Brand Settings Updated',
                 'Brand Settings Updated',
-                route('admin.settings.index'),
+                route('company.settings.index'),
                 'Brand Settings Updated successfully',
                 Auth::user()->creatorId(),
                 Auth::user()->id
@@ -209,56 +209,56 @@ class SystemController extends Controller
         }
     }
 
-    public function saveEmailSettings(Request $request)
-    {
-        if (Auth::user()->can('manage system settings')) {
-            $request->validate(
-                [
-                    'mail_driver' => 'required|string|max:255',
-                    'mail_host' => 'required|string|max:255',
-                    'mail_port' => 'required|string|max:255',
-                    'mail_username' => 'required|string|max:255',
-                    'mail_password' => 'required|string|max:255',
-                    'mail_encryption' => 'required|string|max:255',
-                    'mail_from_address' => 'required|string|max:255',
-                    'mail_from_name' => 'required|string|max:255',
-                ]
-            );
+    // public function saveEmailSettings(Request $request)
+    // {
+    //     if (Auth::user()->can('manage system settings')) {
+    //         $request->validate(
+    //             [
+    //                 'mail_driver' => 'required|string|max:255',
+    //                 'mail_host' => 'required|string|max:255',
+    //                 'mail_port' => 'required|string|max:255',
+    //                 'mail_username' => 'required|string|max:255',
+    //                 'mail_password' => 'required|string|max:255',
+    //                 'mail_encryption' => 'required|string|max:255',
+    //                 'mail_from_address' => 'required|string|max:255',
+    //                 'mail_from_name' => 'required|string|max:255',
+    //             ]
+    //         );
 
-            $post = $request->all();
-            unset($post['_token']);
+    //         $post = $request->all();
+    //         unset($post['_token']);
 
-            $settings = Utility::settings();
-            foreach ($post as $key => $data) {
-                if (in_array($key, array_keys($settings))) {
-                    \DB::insert(
-                        'insert into settings (`value`, `name`,`created_by`,`created_at`,`updated_at`) values (?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE `value` = VALUES(`value`) ',
-                        [
-                            $data,
-                            $key,
-                            \Auth::user()->id,
-                            date('Y-m-d H:i:s'),
-                            date('Y-m-d H:i:s'),
-                        ]
-                    );
-                }
-            }
+    //         $settings = Utility::settings();
+    //         foreach ($post as $key => $data) {
+    //             if (in_array($key, array_keys($settings))) {
+    //                 \DB::insert(
+    //                     'insert into settings (`value`, `name`,`created_by`,`created_at`,`updated_at`) values (?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE `value` = VALUES(`value`) ',
+    //                     [
+    //                         $data,
+    //                         $key,
+    //                         \Auth::user()->id,
+    //                         date('Y-m-d H:i:s'),
+    //                         date('Y-m-d H:i:s'),
+    //                     ]
+    //                 );
+    //             }
+    //         }
 
-            $this->logActivity(
-                'Email Settings Updated',
-                'Email Settings Updated',
-                route('admin.settings.index'),
-                'Email Settings Updated successfully',
-                Auth::user()->creatorId(),
-                Auth::user()->id
-            );
+    //         $this->logActivity(
+    //             'Email Settings Updated',
+    //             'Email Settings Updated',
+    //             route('admin.settings.index'),
+    //             'Email Settings Updated successfully',
+    //             Auth::user()->creatorId(),
+    //             Auth::user()->id
+    //         );
 
 
-            return redirect()->back()->with('success', __('Setting successfully updated.'));
-        } else {
-            return redirect()->back()->with('error', 'Permission denied.');
-        }
-    }
+    //         return redirect()->back()->with('success', __('Setting successfully updated.'));
+    //     } else {
+    //         return redirect()->back()->with('error', 'Permission denied.');
+    //     }
+    // }
 
     public function saveCompanySettings(Request $request)
     {
@@ -464,7 +464,7 @@ class SystemController extends Controller
             $this->logActivity(
                 'Company Settings Updated',
                 'Company Settings Updated',
-                route('admin.settings.index'),
+                route('company.settings.index'),
                 'Company Settings Updated successfully',
                 Auth::user()->creatorId(),
                 Auth::user()->id
@@ -569,6 +569,16 @@ class SystemController extends Controller
                 }
             }
             DB::commit();
+
+            $this->logActivity(
+                'Company Settings Updated',
+                'Company Settings Updated',
+                route('company.settings.index'),
+                'Company Settings Updated successfully',
+                Auth::user()->creatorId(),
+                Auth::user()->id
+            );
+
             return redirect()->back()->with('success', __('Setting successfully updated.'));
         } catch (Exception $e) {
             DB::rollBack();
@@ -761,6 +771,17 @@ class SystemController extends Controller
                 }
             }
             // }
+
+
+            $this->logActivity(
+                'Business Settings Updated',
+                'Business Settings Updated',
+                route('company.settings.index'),
+                'Business Settings Updated successfully',
+                Auth::user()->creatorId(),
+                Auth::user()->id
+            );
+
             DB::commit();
 
             return redirect()->back()->with('success', 'Brand Setting successfully updated.');
@@ -2617,7 +2638,7 @@ class SystemController extends Controller
         $this->logActivity(
             'Invoice Template Choosed',
             'Invoice Template Choosed',
-            route('admin.settings.index'),
+            route('company.settings.index'),
             'Invoice Template Choosed Successfully',
             Auth::user()->creatorId(),
             Auth::user()->id
@@ -2642,7 +2663,7 @@ class SystemController extends Controller
         $this->logActivity(
             'Letterpad Template Choosed',
             'Letterpad Template Choosed',
-            route('admin.settings.index'),
+            route('company.settings.index'),
             'Letterpad Template Choosed Successfully',
             Auth::user()->creatorId(),
             Auth::user()->id
@@ -2667,7 +2688,7 @@ class SystemController extends Controller
         $this->logActivity(
             'Estimate Template Choosed',
             'Estimate Template Choosed',
-            route('admin.settings.index'),
+            route('company.settings.index'),
             'Estimate Template Choosed Successfully',
             Auth::user()->creatorId(),
             Auth::user()->id
@@ -2709,12 +2730,10 @@ class SystemController extends Controller
         //     $user->givePermissionTo($perm);
         // }
 
-
-
         $this->logActivity(
             'Permission Reseted',
             'Permission Reseted',
-            route('admin.settings.index'),
+            route('company.settings.index'),
             'Permission Reseted',
             Auth::user()->creatorId(),
             Auth::user()->id

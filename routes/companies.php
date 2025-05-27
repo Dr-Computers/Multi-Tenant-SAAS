@@ -1,8 +1,8 @@
 <?php
 
 use App\Http\Controllers\Company\AssetController;
-use App\Http\Controllers\Company\Realestate\InvoiceController;
-use App\Http\Controllers\Company\Realestate\OtherInvoiceController;
+use App\Http\Controllers\Company\Finance\InvoiceController;
+use App\Http\Controllers\Company\Finance\OtherInvoiceController;
 use App\Http\Controllers\Company\Realestate\PropertyController;
 use App\Http\Controllers\Company\Finance\BankAccountController;
 use App\Http\Controllers\Company\Finance\ExpenseController;

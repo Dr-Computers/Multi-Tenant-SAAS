@@ -11,10 +11,12 @@ use App\Http\Controllers\Controller;
 use App\Models\Trash;
 use Illuminate\Support\Facades\Auth;
 use App\Traits\Media\HandlesMediaFolders;
+use App\Traits\ActivityLogger;
 
 class MediaController extends Controller
 {
     use HandlesMediaFolders;
+    use ActivityLogger;
 
     public function index()
     {
@@ -99,6 +101,15 @@ class MediaController extends Controller
             Storage::disk($disk)->makeDirectory($fullPath);
         }
 
+        $this->logActivity(
+            'Create a Folder',
+            'Folder Name ' . $request->name,
+            route('company.media.index'),
+            'New Folder Created successfully',
+            Auth::user()->creatorId(),
+            Auth::user()->id
+        );
+
         return response()->json(['success' => true, 'folder' => $folder]);
     }
 
@@ -113,50 +124,61 @@ class MediaController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
         ]);
-    
+
         $companyId = Auth::user()->creatorId();
         $disk = env('FILESYSTEM_DISK', 'public');
-    
+
         $folder = MediaFolder::where('id', $folder_id)
             ->where('company_id', $companyId)
             ->firstOrFail();
-    
+
         // Prevent duplicate name under same parent
         $exists = MediaFolder::where('company_id', $companyId)
             ->where('name', $request->name)
             ->where('parent_id', $folder->parent_id)
             ->where('id', '!=', $folder->id)
             ->exists();
-    
+
         if ($exists) {
             return response()->json([
                 'success' => false,
                 'message' => 'A folder with this name already exists in this location.'
             ], 422);
         }
-    
+
         $oldSlug = $folder->slug;
         $oldPath = $folder->path;
         $newSlug = Str::slug($request->name) . '-' . uniqid();
         $newPath = str_replace($oldSlug, $newSlug, $oldPath);
-    
+
         // Step 1: Move storage folder
         if (Storage::disk($disk)->exists($oldPath)) {
             Storage::disk($disk)->move($oldPath, $newPath);
         }
-    
+
         // Step 2: Update current folder
         $folder->name = $request->name;
         $folder->slug = $newSlug;
         $folder->path = $newPath;
         $folder->save();
-    
+
+
         // Step 3: Recursively update child folders and files
         $this->updateChildPaths($folder, $oldPath, $newPath);
-    
+
+
+        $this->logActivity(
+            'Uplate a Folder',
+            'Folder Name ' . $request->name,
+            route('company.media.index'),
+            'Folder Updated successfully',
+            Auth::user()->creatorId(),
+            Auth::user()->id
+        );
+
         return response()->json(['success' => true, 'folder' => $folder]);
     }
-    
+
 
 
     public function getBreadcrumb($folder)
@@ -198,6 +220,15 @@ class MediaController extends Controller
         $files = $request->file('documents', []);
         $uploadedFiles = $this->uploadAndSaveFiles($files, $companyId, $folder->name ?? null);
 
+        $this->logActivity(
+            'Upload a File',
+            'File Name ' . $file->name,
+            route('company.media.index'),
+            'File Upload successfully',
+            Auth::user()->creatorId(),
+            Auth::user()->id
+        );
+
         return response()->json([
             'success' => true,
             'folder_id' => $request->input('folder_id'),
@@ -211,6 +242,15 @@ class MediaController extends Controller
 
         $this->softDeleteFile($file);
 
+        $this->logActivity(
+            'Delete a File',
+            'File Name ' . $file->name,
+            route('company.media.index'),
+            'File deleted successfully',
+            Auth::user()->creatorId(),
+            Auth::user()->id
+        );
+
         return response()->json(['success' => true, 'message' => 'File moved to trash.']);
     }
 
@@ -220,10 +260,19 @@ class MediaController extends Controller
 
         $this->softDeleteFolder($folder);
 
+        $this->logActivity(
+            'Delete a Folder',
+            'Folder Name ' . $folder->name,
+            route('company.media.index'),
+            'Folder deleted successfully',
+            Auth::user()->creatorId(),
+            Auth::user()->id
+        );
+
         return response()->json(['success' => true, 'message' => 'Folder moved to trash.']);
     }
 
-    
+
 
 
     protected function updateChildPaths(MediaFolder $parent, $oldParentPath, $newParentPath)
@@ -236,7 +285,7 @@ class MediaController extends Controller
             $newChildPath = str_replace($oldParentPath, $newParentPath, $oldChildPath);
 
             // Rename folder in storage
-    
+
             if (Storage::disk($disk)->exists($oldChildPath)) {
                 Storage::disk($disk)->move($oldChildPath, $newChildPath);
             }

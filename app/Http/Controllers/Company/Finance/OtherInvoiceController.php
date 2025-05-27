@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Company\Realestate;
+namespace App\Http\Controllers\Company\Finance;
 
 use App\Http\Controllers\Controller;
 use App\Models\RealestateInvoice;

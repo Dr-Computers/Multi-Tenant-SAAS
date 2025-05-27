@@ -15,10 +15,11 @@ use App\Http\Controllers\Controller;
 use App\Models\RealestateType;
 use Illuminate\Support\Facades\Auth;
 use App\Traits\Media\HandlesMediaFolders;
+use App\Traits\ActivityLogger;
 
 class ExpenseController extends Controller
 {
-
+    use ActivityLogger;
     use HandlesMediaFolders;
     public function index(Request $request)
     {
@@ -150,6 +151,15 @@ class ExpenseController extends Controller
                     }
                 }
             }
+            $this->logActivity(
+                'Create a new Expense',
+                'Expense Title ' . $expense->title,
+                route('company.finance.expense.index'),
+                'New Expense Created successfully',
+                Auth::user()->creatorId(),
+                Auth::user()->id
+            );
+
 
             $this->updateBankAccountBalance($request->account_id, $request->amount, 'withdrawal', expensePrefix() . $request->expense_id, 'expense added');
         }
@@ -330,186 +340,126 @@ class ExpenseController extends Controller
     {
 
         // if (\Auth::user()->can('edit expense')) {
-            $validator = \Validator::make(
-                $request->all(),
-                [
-                    'title' => 'required',
-                    'property_id' => 'required_if:expense_type,0',
-                    'unit_id' => 'required_if:expense_type,0',
-                    'liability_id' => 'required_if:expense_type,10000',
-                    'expense_type' => 'required',
-                    'amount' => 'required',
-                    'date' => 'required',
-                    'base_amount' => 'required',
-                    'vat_amount' => 'required',
-                    'date' => 'required',
-                    'vat_included' => 'required|in:included,excluded',
-                    'vendor' => 'nullable',
-                    'reference_no' => 'nullable',
+        $validator = \Validator::make(
+            $request->all(),
+            [
+                'title' => 'required',
+                'property_id' => 'required_if:expense_type,0',
+                'unit_id' => 'required_if:expense_type,0',
+                'liability_id' => 'required_if:expense_type,10000',
+                'expense_type' => 'required',
+                'amount' => 'required',
+                'date' => 'required',
+                'base_amount' => 'required',
+                'vat_amount' => 'required',
+                'date' => 'required',
+                'vat_included' => 'required|in:included,excluded',
+                'vendor' => 'nullable',
+                'reference_no' => 'nullable',
 
-                ]
-            );
+            ]
+        );
 
-            if ($validator->fails()) {
-                $messages = $validator->getMessageBag();
-                return redirect()->back()->with('error', $messages->first());
+        if ($validator->fails()) {
+            $messages = $validator->getMessageBag();
+            return redirect()->back()->with('error', $messages->first());
+        }
+
+        // Handle receipt upload if it exists
+        if (!empty($request->receipt)) {
+            $receiptFilenameWithExt = $request->file('receipt')->getClientOriginalName();
+            $receiptFilename = pathinfo($receiptFilenameWithExt, PATHINFO_FILENAME);
+            $receiptExtension = $request->file('receipt')->getClientOriginalExtension();
+            $receiptFileName = $receiptFilename . '_' . time() . '.' . $receiptExtension;
+            $dir = storage_path('upload/receipt');
+            if (!file_exists($dir)) {
+                mkdir($dir, 0777, true);
             }
+            $request->file('receipt')->storeAs('upload/receipt/', $receiptFileName);
+            $expense->receipt = $receiptFileName;
+        }
+        $oldBankAccountId = $expense->bank_account_id;
+        $oldLiabiltyId = $expense->liability_id;
+        $oldAmount = $expense->amount;
 
-            // Handle receipt upload if it exists
-            if (!empty($request->receipt)) {
-                $receiptFilenameWithExt = $request->file('receipt')->getClientOriginalName();
-                $receiptFilename = pathinfo($receiptFilenameWithExt, PATHINFO_FILENAME);
-                $receiptExtension = $request->file('receipt')->getClientOriginalExtension();
-                $receiptFileName = $receiptFilename . '_' . time() . '.' . $receiptExtension;
-                $dir = storage_path('upload/receipt');
-                if (!file_exists($dir)) {
-                    mkdir($dir, 0777, true);
-                }
-                $request->file('receipt')->storeAs('upload/receipt/', $receiptFileName);
-                $expense->receipt = $receiptFileName;
-            }
-            $oldBankAccountId = $expense->bank_account_id;
-            $oldLiabiltyId = $expense->liability_id;
-            $oldAmount = $expense->amount;
+        $expense->title = $request->title;
+        $expense->expense_id = $request->expense_id;
+        $expense->property_id = $request->property_id ?: null;
+        $expense->liability_id = $request->liability_id ?: null;
+        $expense->unit_id = $request->unit_id ?: null;
+        $expense->expense_type = $request->expense_type;
+        $expense->bank_account_id = $request->account_id;
+        $expense->vendor = $request->vendor ?: null;
+        $expense->reference_no = $request->reference_no ?: null;
+        $expense->amount = $request->amount;
+        $expense->base_amount = $request->base_amount;
+        $expense->vat_amount = $request->vat_amount;
+        $expense->vat_included = $request->vat_included;
 
-            $expense->title = $request->title;
-            $expense->expense_id = $request->expense_id;
-            $expense->property_id = $request->property_id ?: null;
-            $expense->liability_id = $request->liability_id ?: null;
-            $expense->unit_id = $request->unit_id ?: null;
-            $expense->expense_type = $request->expense_type;
-            $expense->bank_account_id = $request->account_id;
-            $expense->vendor = $request->vendor ?: null;
-            $expense->reference_no = $request->reference_no ?: null;
-            $expense->amount = $request->amount;
-            $expense->base_amount = $request->base_amount;
-            $expense->vat_amount = $request->vat_amount;
-            $expense->vat_included = $request->vat_included;
+        $expense->date = $request->date;
+        $expense->notes = $request->notes;
+        $expenseSave = $expense->save();
 
-            $expense->date = $request->date;
-            $expense->notes = $request->notes;
-            $expenseSave = $expense->save();
+        if ($expenseSave) {
 
-            if ($expenseSave) {
-
-                $oldAmount = floatval($oldAmount);
-                $newAmount = floatval($request->amount);
-                $amountDifference = $newAmount - $oldAmount;
-            }
+            $oldAmount = floatval($oldAmount);
+            $newAmount = floatval($request->amount);
+            $amountDifference = $newAmount - $oldAmount;
+        }
 
 
-            if ($request->expense_type == '10000') {
+        if ($request->expense_type == '10000') {
 
-                if ((int)$oldLiabiltyId !== (int)$request->liability_id) {
+            if ((int)$oldLiabiltyId !== (int)$request->liability_id) {
 
-                    $oldLiability = Liability::find($oldLiabiltyId);
+                $oldLiability = Liability::find($oldLiabiltyId);
 
-                    $oldLiability->current_amount += $oldAmount;
-                    $oldLiability->save(); // Save the updated liability
+                $oldLiability->current_amount += $oldAmount;
+                $oldLiability->save(); // Save the updated liability
 
-                    $newLiability = Liability::find($request->liability_id);
-                    if ($newLiability) {
-                        // Update both initial and current liability amounts
-                        if ($newLiability->current_amount > 0) {
-                            // Decrease the current amount by the expense amount
-                            $newLiability->current_amount -= $request->amount;
-                            $newLiability->save(); // Save the updated liability
-                        } else {
-                            return redirect()->back()->with('error', __('The liability has already been fully paid.'));
-                        }
-                    }
-                } else {
-
-                    $existingLiability = Liability::find($request->liability_id);
-
-                    if ($existingLiability) {
-
-                        // Update both initial and current liability amounts
-                        if ($existingLiability->current_amount > 0) {
-                            // Decrease the current amount by the expense amount
-                            $existingLiability->current_amount -= $amountDifference;
-                            $existingLiability->save(); // Save the updated liability
-                        } else {
-                            return redirect()->back()->with('error', __('The liability has already been fully paid.'));
-                        }
+                $newLiability = Liability::find($request->liability_id);
+                if ($newLiability) {
+                    // Update both initial and current liability amounts
+                    if ($newLiability->current_amount > 0) {
+                        // Decrease the current amount by the expense amount
+                        $newLiability->current_amount -= $request->amount;
+                        $newLiability->save(); // Save the updated liability
+                    } else {
+                        return redirect()->back()->with('error', __('The liability has already been fully paid.'));
                     }
                 }
-            }
-            // Debugging: Check the values after the calculation
-            if ((int)$oldBankAccountId !== (int)$expense->bank_account_id) {
-                // Reverse the amount from the old bank account
-                $this->updateBankAccountBalance($oldBankAccountId, $oldAmount, 'deposit', expensePrefix() . $expense->id, 'Amount Reversed due to expense updation');
-
-
-                $this->updateBankAccountBalance($expense->bank_account_id, $expense->amount, 'withdrawal', expensePrefix() . $expense->id);
             } else {
 
+                $existingLiability = Liability::find($request->liability_id);
 
-                $bankAccountId = $expense->bank_account_id;
-                $transactionType = $amountDifference > 0 ? 'withdrawal' : 'deposit';
-                $amount = abs($amountDifference);
+                if ($existingLiability) {
 
-                $description = 'Adjustment due to update of expense #' . expensePrefix() . $expense->id;
-
-                // Fetch the last transaction for the bank account
-                $lastTransaction = BankTransaction::where('bank_account_id', $bankAccountId)
-                    ->orderBy('transaction_date', 'desc')
-                    ->orderBy('id', 'desc')
-                    ->first();
-
-                // Determine the opening balance based on the last transaction
-                if ($lastTransaction) {
-                    $openingBalance = $lastTransaction->closing_balance;
-                } else {
-                    // Fetch the initial balance from the bank account if no previous transaction exists
-                    $bankAccount = BankAccount::find($bankAccountId);
-                    $openingBalance = $bankAccount ? $bankAccount->balance : 0;
-                }
-
-                // Calculate the new closing balance based on the transaction type
-                $closingBalance = $transactionType === 'withdrawal'
-                    ? $openingBalance - $amount
-                    : $openingBalance + $amount;
-
-                // Create a new bank transaction entry
-                BankTransaction::create([
-                    'bank_account_id' => $bankAccountId,
-                    'opening_balance' => $openingBalance,
-                    'transaction_amount' => $amount,
-                    'transaction_id' => Str::random(10),
-                    'closing_balance' => $closingBalance,
-                    'transaction_type' => $transactionType,
-                    'transaction_date' => now(),
-                    'reference' => $expense->id, // Using the expense ID as reference
-                    'description' => $description, // Description for the transaction
-                ]);
-
-                // Update the account balance in the BankAccount table
-                $account = BankAccount::find($bankAccountId);
-                if ($account) {
-                    $account->closing_balance = $closingBalance;
-                    $account->save();
+                    // Update both initial and current liability amounts
+                    if ($existingLiability->current_amount > 0) {
+                        // Decrease the current amount by the expense amount
+                        $existingLiability->current_amount -= $amountDifference;
+                        $existingLiability->save(); // Save the updated liability
+                    } else {
+                        return redirect()->back()->with('error', __('The liability has already been fully paid.'));
+                    }
                 }
             }
+        }
+        // Debugging: Check the values after the calculation
+        if ((int)$oldBankAccountId !== (int)$expense->bank_account_id) {
+            // Reverse the amount from the old bank account
+            $this->updateBankAccountBalance($oldBankAccountId, $oldAmount, 'deposit', expensePrefix() . $expense->id, 'Amount Reversed due to expense updation');
 
 
+            $this->updateBankAccountBalance($expense->bank_account_id, $expense->amount, 'withdrawal', expensePrefix() . $expense->id);
+        } else {
 
 
-            return redirect()->back()->with('success', __('Expense successfully updated.'));
-        // } else {
-        //     return redirect()->back()->with('error', __('Permission Denied!'));
-        // }
-    }
-
-
-   
-    public function destroy(Expense $expense)
-    {
-        // if (\Auth::user()->can('delete expense')) {
             $bankAccountId = $expense->bank_account_id;
-            $amount = $expense->amount;
-            $transactionType = 'deposit'; // Since we're reversing the expense, it should be treated as a deposit.
-            $description = 'Reversal due to deletion of expense #' . $expense->id;
+            $transactionType = $amountDifference > 0 ? 'withdrawal' : 'deposit';
+            $amount = abs($amountDifference);
+
+            $description = 'Adjustment due to update of expense #' . expensePrefix() . $expense->id;
 
             // Fetch the last transaction for the bank account
             $lastTransaction = BankTransaction::where('bank_account_id', $bankAccountId)
@@ -527,9 +477,11 @@ class ExpenseController extends Controller
             }
 
             // Calculate the new closing balance based on the transaction type
-            $closingBalance = $openingBalance + $amount;
+            $closingBalance = $transactionType === 'withdrawal'
+                ? $openingBalance - $amount
+                : $openingBalance + $amount;
 
-            // Create a new bank transaction entry for the reversal
+            // Create a new bank transaction entry
             BankTransaction::create([
                 'bank_account_id' => $bankAccountId,
                 'opening_balance' => $openingBalance,
@@ -548,11 +500,89 @@ class ExpenseController extends Controller
                 $account->closing_balance = $closingBalance;
                 $account->save();
             }
+        }
 
-            // Delete the expense
-            $expense->delete();
 
-            return redirect()->back()->with('success', __('Expense successfully deleted.'));
+        $this->logActivity(
+            'Update a new Expense',
+            'Expense Title ' . $expense->title,
+            route('company.finance.expense.index'),
+            'Expense updated successfully',
+            Auth::user()->creatorId(),
+            Auth::user()->id
+        );
+
+
+        return redirect()->back()->with('success', __('Expense successfully updated.'));
+        // } else {
+        //     return redirect()->back()->with('error', __('Permission Denied!'));
+        // }
+    }
+
+
+
+    public function destroy(Expense $expense)
+    {
+        // if (\Auth::user()->can('delete expense')) {
+        $bankAccountId = $expense->bank_account_id;
+        $amount = $expense->amount;
+        $transactionType = 'deposit'; // Since we're reversing the expense, it should be treated as a deposit.
+        $description = 'Reversal due to deletion of expense #' . $expense->id;
+
+        // Fetch the last transaction for the bank account
+        $lastTransaction = BankTransaction::where('bank_account_id', $bankAccountId)
+            ->orderBy('transaction_date', 'desc')
+            ->orderBy('id', 'desc')
+            ->first();
+
+        // Determine the opening balance based on the last transaction
+        if ($lastTransaction) {
+            $openingBalance = $lastTransaction->closing_balance;
+        } else {
+            // Fetch the initial balance from the bank account if no previous transaction exists
+            $bankAccount = BankAccount::find($bankAccountId);
+            $openingBalance = $bankAccount ? $bankAccount->balance : 0;
+        }
+
+        // Calculate the new closing balance based on the transaction type
+        $closingBalance = $openingBalance + $amount;
+
+        // Create a new bank transaction entry for the reversal
+        BankTransaction::create([
+            'bank_account_id' => $bankAccountId,
+            'opening_balance' => $openingBalance,
+            'transaction_amount' => $amount,
+            'transaction_id' => Str::random(10),
+            'closing_balance' => $closingBalance,
+            'transaction_type' => $transactionType,
+            'transaction_date' => now(),
+            'reference' => $expense->id, // Using the expense ID as reference
+            'description' => $description, // Description for the transaction
+        ]);
+
+        // Update the account balance in the BankAccount table
+        $account = BankAccount::find($bankAccountId);
+        if ($account) {
+            $account->closing_balance = $closingBalance;
+            $account->save();
+        }
+
+        // Delete the expense
+        $expense->delete();
+
+
+
+        $this->logActivity(
+            'Delete a new Expense',
+            'Expense Title ' . $expense->title,
+            route('company.finance.expense.index'),
+            'Expense deleted successfully',
+            Auth::user()->creatorId(),
+            Auth::user()->id
+        );
+
+
+        return redirect()->back()->with('success', __('Expense successfully deleted.'));
         // } else {
         //     return redirect()->back()->with('error', __('Permission Denied!'));
         // }

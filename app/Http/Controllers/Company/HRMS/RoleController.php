@@ -11,9 +11,11 @@ use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Controller;
 use Illuminate\Validation\Rule;
 
+use App\Traits\ActivityLogger;
 
 class RoleController extends Controller
 {
+    use ActivityLogger;
     public function index()
     {
         if (Auth::user()->can('manage role')) {
@@ -94,6 +96,15 @@ class RoleController extends Controller
                 $role->givePermissionTo($p);
             }
 
+            $this->logActivity(
+                'Role as Created',
+                'Role Name ' . $role->name,
+                route('admin.roles.index'),
+                'Role Name ' . $role->name . ' is Created successfully',
+                Auth::user()->creatorId(),
+                Auth::user()->id
+            );
+
             return redirect()->back()->with('success', __('Role successfully created.'));
         }
 
@@ -160,6 +171,15 @@ class RoleController extends Controller
             $permissions = Permission::whereIn('id', $request->permissions)->get();
             $role->syncPermissions($permissions);
 
+            $this->logActivity(
+                'Role as Updated',
+                'Role Name ' . $role->name,
+                route('admin.roles.index'),
+                'Role Name ' . $role->name . ' is Updated successfully',
+                Auth::user()->creatorId(),
+                Auth::user()->id
+            );
+
             return redirect()->back()->with('success', __('Role successfully updated.'));
         } else {
             return redirect()->back()->with('error', 'Permission denied.');
@@ -172,6 +192,14 @@ class RoleController extends Controller
         if (Auth::user()->can('delete role')) {
             $role->delete();
 
+            $this->logActivity(
+                'Role as Deleted',
+                'Role Name ' . $role->name,
+                route('admin.roles.index'),
+                'Role Name ' . $role->name . ' is Deleted successfully',
+                Auth::user()->creatorId(),
+                Auth::user()->id
+            );
             return redirect()->route('company.hrms.roles.index')->with(
                 'success',
                 'Role successfully deleted.'

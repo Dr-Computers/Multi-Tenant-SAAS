@@ -23,11 +23,14 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Str;
 use App\Traits\Media\HandlesMediaFolders;
 use Illuminate\Support\Facades\Storage;
+use App\Traits\ActivityLogger;
+
 
 class PropertyController extends Controller
 {
 
     use HandlesMediaFolders;
+    use ActivityLogger;
     public function index()
     {
         $properties = Property::where('company_id', Auth::user()->creatorId())->get();
@@ -150,6 +153,15 @@ class PropertyController extends Controller
             DB::commit();
             Session::flash('success_msg', 'Successfully Created');
 
+            $this->logActivity(
+                'Create a Property',
+                'Property Id ' . $property->id,
+                route('company.realestate.properties.index'),
+                'A Property created successfully',
+                Auth::user()->creatorId(),
+                Auth::user()->id
+            );
+
             return response()->json([
                 'status' => 'success',
                 'message' => 'Successfully Created',
@@ -256,23 +268,23 @@ class PropertyController extends Controller
             $NewdocPath = array_merge($documentPath['filePaths'] ?? [], $request->existingDocx ?? []);
             $NewvideoPath = array_merge($videoPath ?? [], $request->existingVideo ?? []);
 
-            $removedImageList = MediaFile::whereIn('id',$removedImages)->get();
-         
+            $removedImageList = MediaFile::whereIn('id', $removedImages)->get();
+
             foreach ($removedImageList ?? [] as $img) {
-            
+
                 if (Storage::disk($storageDisk)->exists($img->file_url)) {
-                    unlink('storage/'.$img->file_url);
+                    unlink('storage/' . $img->file_url);
                 }
                 MediaFile::where('id', $img->id)->delete();
             }
 
-            
-            $removedDocsList = MediaFile::whereIn('id',$removedDocs)->get();
+
+            $removedDocsList = MediaFile::whereIn('id', $removedDocs)->get();
 
 
             foreach ($removedDocsList ?? [] as $doc) {
                 if (Storage::disk($storageDisk)->exists($doc->file_url)) {
-                    unlink('storage/'.$doc->file_url);
+                    unlink('storage/' . $doc->file_url);
                 }
                 MediaFile::where('id', $doc->id)->delete();
             }
@@ -348,8 +360,18 @@ class PropertyController extends Controller
             $this->landmarks($property, $request->input('landmarks', []));
 
             DB::commit();
-            
+
             Session::flash('success_msg', 'Successfully Updated');
+
+            $this->logActivity(
+                'Update a Property',
+                'Property Id ' . $property->id,
+                route('company.realestate.properties.index'),
+                'A Property updated successfully',
+                Auth::user()->creatorId(),
+                Auth::user()->id
+            );
+
 
             return response()->json([
                 'status' => 'success',
@@ -410,16 +432,16 @@ class PropertyController extends Controller
             $storageDisk = config('filesystems.default');
 
             foreach ($propertyImg ?? [] as $img) {
-            
+
                 if (Storage::disk($storageDisk)->exists($img->file_url)) {
-                    unlink('storage/'.$img->file_url);
+                    unlink('storage/' . $img->file_url);
                 }
                 MediaFile::where('id', $img->id)->delete();
             }
 
             foreach ($propertyDoc ?? [] as $doc) {
                 if (Storage::disk($storageDisk)->exists($doc->file_url)) {
-                    unlink('storage/'.$doc->file_url);
+                    unlink('storage/' . $doc->file_url);
                 }
                 MediaFile::where('id', $doc->id)->delete();
             }
@@ -427,8 +449,17 @@ class PropertyController extends Controller
 
             $property->delete();
             DB::commit();
-            return redirect()->back()->with('success', 'Successfully Deleted.');
 
+            $this->logActivity(
+                'Delete a Property',
+                'Property Id ' . $property->id,
+                route('company.realestate.properties.index'),
+                'A Property deleted successfully',
+                Auth::user()->creatorId(),
+                Auth::user()->id
+            );
+
+            return redirect()->back()->with('success', 'Successfully Deleted.');
         } catch (Exception $e) {
             DB::rollBack();
             return redirect()->back()->with('error', $e->getMessage());

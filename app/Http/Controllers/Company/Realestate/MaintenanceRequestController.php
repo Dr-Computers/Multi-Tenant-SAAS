@@ -20,10 +20,13 @@ use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use App\Traits\ActivityLogger;
 
 class MaintenanceRequestController extends Controller
 {
     use HandlesMediaFolders;
+    use ActivityLogger;
+
     public function index()
     {
         $allRequests = PropertyMaintenanceRequest::where('company_id', Auth::user()->creatorId())->get();
@@ -87,6 +90,16 @@ class MaintenanceRequestController extends Controller
 
             Session::flash('success_msg', 'New request created.');
             DB::commit();
+
+            $this->logActivity(
+                'Create a Maintenance Request',
+                'Request Id ' . $new->id,
+                route('company.realestate.maintenance-requests.index'),
+                'A Maintenance Request created successfully',
+                Auth::user()->creatorId(),
+                Auth::user()->id
+            );
+
             return response()->json([
                 'status' => 'success',
                 'message' => 'New request created.',
@@ -184,6 +197,15 @@ class MaintenanceRequestController extends Controller
 
             Session::flash('success_msg', 'Successfully Updated');
 
+            $this->logActivity(
+                'Update a Maintenance Request',
+                'Request Id ' . $record->id,
+                route('company.realestate.maintenance-requests.index'),
+                'A Maintenance Request updated successfully',
+                Auth::user()->creatorId(),
+                Auth::user()->id
+            );
+
             return response()->json([
                 'status' => 'success',
                 'message' => 'Successfully Updated',
@@ -218,6 +240,16 @@ class MaintenanceRequestController extends Controller
             }
             $Mrequest->maintenanceRequestAttachments()->detach();
             $Mrequest->delete();
+
+            $this->logActivity(
+                'Delete a Maintenance Request',
+                'Request Id ' . $Mrequest->id,
+                route('company.realestate.maintenance-requests.index'),
+                'A Maintenance Request deleted successfully',
+                Auth::user()->creatorId(),
+                Auth::user()->id
+            );
+
             DB::commit();
             return redirect()->back()->with('success', 'Successfully Deleted.');
         } catch (Exception $e) {
@@ -349,6 +381,15 @@ class MaintenanceRequestController extends Controller
             $Mrequest->invoice_id        = $invoice->id;
             $Mrequest->save();
 
+            $this->logActivity(
+                'Create a Maintenance Request Invoice',
+                'Request Id ' . $Mrequest->id,
+                route('company.realestate.maintenance-requests.index'),
+                'A Maintenance Request Invoice created successfully',
+                Auth::user()->creatorId(),
+                Auth::user()->id
+            );
+
             DB::commit();
             return redirect()->back()->with('success', __('Invoice successfully created.'));
         } catch (\Exception $e) {
@@ -358,16 +399,10 @@ class MaintenanceRequestController extends Controller
     }
 
 
-    public function  invoiceEdit($id) {
+    public function  invoiceEdit($id) {}
+    public function invoiceUpdate($id) {}
 
-    }
-    public function invoiceUpdate($id) {
-
-    }
-
-    public function invoiceDownload($id){
-        
-    }
+    public function invoiceDownload($id) {}
 
     protected function storeFiles($files)
     {
@@ -379,7 +414,6 @@ class MaintenanceRequestController extends Controller
             if (!($file instanceof \Illuminate\Http\UploadedFile) || !$file->isValid()) {
                 continue;
             }
-
 
             $folderPath = ['uploads', 'company_' . $company_id, 'maintenance-requests'];
 

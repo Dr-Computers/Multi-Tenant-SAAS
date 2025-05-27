@@ -21,15 +21,16 @@ use App\Traits\Media\HandlesMediaFolders;
 use Illuminate\Support\Facades\Storage;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx\Rels;
 use Illuminate\Support\Str;
+use App\Traits\ActivityLogger;
 
 class UserController extends Controller
 {
     use HandlesMediaFolders;
+    use ActivityLogger;
 
     public function __construct()
     {
         $this->middleware('auth'); // Ensure user is authenticated
-
     }
 
     public function index()
@@ -138,6 +139,17 @@ class UserController extends Controller
                 $smtp_error = __('E-Mail has been not sent due to SMTP configuration');
             }
             DB::commit();
+
+            $this->logActivity(
+                'Create a Staff User',
+                'User Id ' . $user->id,
+                route('company.users.index'),
+                'New Staff User Created successfully',
+                Auth::user()->creatorId(),
+                Auth::user()->id
+            );
+
+
             return redirect()->route('company.hrms.users.index')->with('success', __('User successfully added.') . ((isset($smtp_error)) ? '<br> <span class="text-danger">' . $smtp_error . '</span>' : ''));
         // } else {
         //     DB::rollBack();
@@ -232,6 +244,14 @@ class UserController extends Controller
             $personal->country        =  $request->country;
             $personal->save();
             DB::commit();
+            $this->logActivity(
+                'Update a Staff User',
+                'User Id ' . $user->id,
+                route('company.users.index'),
+                'Staff User Updated successfully',
+                Auth::user()->creatorId(),
+                Auth::user()->id
+            );
             return redirect()->route('company.hrms.users.index')->with(
                 'success',
                 'User successfully updated.'
@@ -249,6 +269,15 @@ class UserController extends Controller
             $user = User::find($id);
 
             if ($user) {
+                $user->delete();
+                $this->logActivity(
+                    'Delete a Staff User',
+                    'User Id ' . $id,
+                    route('company.users.index'),
+                    'Staff User Deleted successfully',
+                    Auth::user()->creatorId(),
+                    Auth::user()->id
+                );
                 return redirect()->route('users.index')->with('success', __('User successfully deleted .'));
             } else {
                 return redirect()->back();
@@ -341,6 +370,15 @@ class UserController extends Controller
             $new_doc->save();
         }
 
+        $this->logActivity(
+            'Staff document uploaded',
+            'User Id ' . $user_id,
+            route('company.users.index'),
+            'Staff document uploaded successfully',
+            Auth::user()->creatorId(),
+            Auth::user()->id
+        );
+
         return response()->json(['success' => true]);
     }
 
@@ -353,6 +391,15 @@ class UserController extends Controller
             $this->softDeleteFile($file);
         }
         $document->delete();
+
+        $this->logActivity(
+            'Staff document deleted',
+            '',
+            route('company.users.index'),
+            'Staff document  Delete successfully',
+            Auth::user()->creatorId(),
+            Auth::user()->id
+        );
         return redirect()->back();
     }
 }

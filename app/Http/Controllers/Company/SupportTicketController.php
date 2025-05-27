@@ -10,10 +10,12 @@ use App\Models\SupportTicket;
 use App\Models\SupportTicketAttachment;
 use Illuminate\Support\Facades\Auth;
 use App\Traits\Media\HandlesMediaFolders;
+use App\Traits\ActivityLogger;
 
 class SupportTicketController extends Controller
 {
 	use HandlesMediaFolders;
+	use ActivityLogger;
 
 	public function index()
 	{
@@ -77,6 +79,16 @@ class SupportTicketController extends Controller
 				$attachment->save();
 			}
 
+
+			$this->logActivity(
+                'Create a Support Ticket',
+                'Ticket Number ' . $ticket->ticket_no,
+                route('company.tickets.index'),
+                'Support Ticket Created Successfully',
+                Auth::user()->creatorId(),
+                Auth::user()->id
+            );
+
 			return response()->json(['success' => true]);
 		} catch (\Exception $e) {
 			return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
@@ -128,6 +140,17 @@ class SupportTicketController extends Controller
 				$attachment->ticket_id = $ticket->id;
 				$attachment->save();
 			}
+
+			$this->logActivity(
+                'Support Ticket Replyed',
+                'Ticket Number ' . $ticket->ticket_no,
+                route('company.tickets.index'),
+                'Support Ticket Replyed Successfully',
+                Auth::user()->creatorId(),
+                Auth::user()->id
+            );
+
+
 
 
 			return response()->json(['success' => true]);

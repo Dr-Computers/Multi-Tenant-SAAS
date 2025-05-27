@@ -17,10 +17,15 @@ use Spatie\Permission\Models\Role;
 use App\Traits\Media\HandlesMediaFolders;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use App\Traits\ActivityLogger;
+use Exception;
+use Illuminate\Support\Facades\DB;
 
 class OwnerController extends Controller
 {
     use HandlesMediaFolders;
+    use ActivityLogger;
+
     public function index()
     {
         $owners = User::where('type', 'owner')->where('parent', Auth::user()->creatorId())->get();
@@ -29,12 +34,12 @@ class OwnerController extends Controller
 
     public function create()
     {
-
         return view('company.realestate.owners.form');
     }
 
     public function store(Request $request)
     {
+        DB::beginTransaction();
         $validator = Validator::make($request->all(), [
             'name'     => 'required|max:100',
             'email'    => 'required|email|unique:users',
@@ -46,42 +51,56 @@ class OwnerController extends Controller
             return redirect()->back()->with('error', $validator->errors()->first());
         }
 
-        $user = new User();
-        $user->name            = $request->name;
-        $user->email           = $request->email;
-        $user->mobile          = $request->mobile;
-        $user->type            = 'owner';
-        $user->is_enable_login = $request->has('password_switch');
-        $user->created_by      = auth()->user()->id;
-        $user->parent          = auth()->user()->creatorId();
-        $user->password        = Hash::make($request->password);
-        $user->is_active       = $request->has('is_active') ? 1 : 0;
+        try {
+            $user = new User();
+            $user->name            = $request->name;
+            $user->email           = $request->email;
+            $user->mobile          = $request->mobile;
+            $user->type            = 'owner';
+            $user->is_enable_login = $request->has('password_switch');
+            $user->created_by      = auth()->user()->id;
+            $user->parent          = auth()->user()->creatorId();
+            $user->password        = Hash::make($request->password);
+            $user->is_active       = $request->has('is_active') ? 1 : 0;
 
-        if ($request->hasFile('profile')) {
-            $file_id = $this->uploadAndSaveFile($request->profile, Auth::user()->creatorId(), 'avatar');
-            $user->avatar = $file_id;
+            if ($request->hasFile('profile')) {
+                $file_id = $this->uploadAndSaveFile($request->profile, Auth::user()->creatorId(), 'avatar');
+                $user->avatar = $file_id;
+            }
+            $user->save();
+
+            $owner = new Owner();
+            $owner->user_id = $user->id;
+            $owner->is_tenants_approval = $request->has('is_tenants_approval');
+            $owner->save();
+
+            $personal               = new PersonalDetail();
+            $personal->user_id        = $user->id;
+            $personal->address        = $request->address;
+            $personal->trn_no        =  $request->trn_no;
+            $personal->city            =  $request->city;
+            $personal->state        =  $request->state;
+            $personal->postal_code    =  $request->postal_code;
+            $personal->country        =  $request->country;
+            $personal->save();
+
+            $role_r = Role::findByName('owner-' . Auth::user()->creatorId());
+            $user->assignRole($role_r);
+
+            $this->logActivity(
+                'Create a Owner User',
+                'User Id ' . $user->id,
+                route('company.realestate.owners.index'),
+                'New Owner User Created successfully',
+                Auth::user()->creatorId(),
+                Auth::user()->id
+            );
+            DB::commit();
+            return redirect()->route('company.realestate.owners.index')->with('success', 'Owner created successfully.');
+        } catch (Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->with('error', $e->getMessage());
         }
-        $user->save();
-
-        $owner = new Owner();
-        $owner->user_id = $user->id;
-        $owner->is_tenants_approval = $request->has('is_tenants_approval');
-        $owner->save();
-
-        $personal               = new PersonalDetail();
-        $personal->user_id        = $user->id;
-        $personal->address        = $request->address;
-        $personal->trn_no        =  $request->trn_no;
-        $personal->city            =  $request->city;
-        $personal->state        =  $request->state;
-        $personal->postal_code    =  $request->postal_code;
-        $personal->country        =  $request->country;
-        $personal->save();
-
-        $role_r = Role::findByName('owner-' . Auth::user()->creatorId());
-        $user->assignRole($role_r);
-
-        return redirect()->route('company.realestate.owners.index')->with('success', 'Owner created successfully.');
     }
 
     public function edit($id)
@@ -93,6 +112,7 @@ class OwnerController extends Controller
 
     public function update(Request $request, User $owner)
     {
+        DB::beginTransaction();
         $validator = Validator::make($request->all(), [
             'name'   => 'required|max:100',
             'email'  => 'required|email|unique:users,email,' . $owner->id,
@@ -103,44 +123,66 @@ class OwnerController extends Controller
             return redirect()->back()->with('error', $validator->errors()->first());
         }
 
-        $owner->name            = $request->name;
-        $owner->email           = $request->email;
-        $owner->mobile          = $request->mobile;
-        // $owner->is_enable_login = $request->has('password_switch');
-        $owner->is_active       = $request->has('is_active') ? 1 : 0;
+        try {
+            $owner->name            = $request->name;
+            $owner->email           = $request->email;
+            $owner->mobile          = $request->mobile;
+            // $owner->is_enable_login = $request->has('password_switch');
+            $owner->is_active       = $request->has('is_active') ? 1 : 0;
 
-        if ($request->hasFile('profile')) {
-            $file_id = $this->uploadAndSaveFile($request->profile, Auth::user()->creatorId(), 'avatar');
-            $owner->avatar = $file_id;
+            if ($request->hasFile('profile')) {
+                $file_id = $this->uploadAndSaveFile($request->profile, Auth::user()->creatorId(), 'avatar');
+                $owner->avatar = $file_id;
+            }
+
+            $owner->save();
+
+            $personal = PersonalDetail::where('user_id', $owner->id)->first();
+            $personal->address        = $request->address;
+            $personal->trn_no        =  $request->trn_no;
+            $personal->city            =  $request->city;
+            $personal->state        =  $request->state;
+            $personal->postal_code    =  $request->postal_code;
+            $personal->country        =  $request->country;
+            $personal->save();
+
+            $personal_owner = Owner::where('user_id', $owner->id)->first();
+            $personal_owner->is_tenants_approval = $request->has('is_tenants_approval');
+            $personal_owner->save();
+
+            if ($owner->getRoleNames()->first() != 'owner') {
+                $role_r = Role::findByName('owner-' . Auth::user()->creatorId());
+                $owner->roles()->sync([$role_r->id]);
+            }
+            DB::commit();
+            $this->logActivity(
+                'Update a Owner User',
+                'User Id ' . $owner->id,
+                route('company.realestate.owners.index'),
+                'Owner User Updated successfully',
+                Auth::user()->creatorId(),
+                Auth::user()->id
+            );
+
+            return redirect()->route('company.realestate.owners.index')->with('success', 'Owner updated successfully.');
+        } catch (Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->with('error', $e->getMessage());
         }
-
-        $owner->save();
-
-        $personal = PersonalDetail::where('user_id', $owner->id)->first();
-        $personal->address        = $request->address;
-        $personal->trn_no        =  $request->trn_no;
-        $personal->city            =  $request->city;
-        $personal->state        =  $request->state;
-        $personal->postal_code    =  $request->postal_code;
-        $personal->country        =  $request->country;
-        $personal->save();
-
-        $personal_owner = Owner::where('user_id', $owner->id)->first();
-        $personal_owner->is_tenants_approval = $request->has('is_tenants_approval');
-        $personal_owner->save();
-
-        if ($owner->getRoleNames()->first() != 'owner') {
-            $role_r = Role::findByName('owner-' . Auth::user()->creatorId());
-            $owner->roles()->sync([$role_r->id]);
-        }
-
-        return redirect()->route('company.realestate.owners.index')->with('success', 'Owner updated successfully.');
     }
 
     public function destroy(User $owner)
     {
         Owner::where('user_id', $owner->id)->delete();
         $owner->delete();
+        $this->logActivity(
+            'Delete a Owner User',
+            'User Id ' . $owner->id,
+            route('company.realestate.owners.index'),
+            'Owner User Deleted successfully',
+            Auth::user()->creatorId(),
+            Auth::user()->id
+        );
         return redirect()->back()->with('success', 'Owner deleted successfully.');
     }
 
@@ -248,6 +290,15 @@ class OwnerController extends Controller
             $new_doc->save();
         }
 
+        $this->logActivity(
+            'Owner document uploaded',
+            'User Id ' . $user_id,
+            route('company.realestate.owners.index'),
+            'Owner document uploaded successfully',
+            Auth::user()->creatorId(),
+            Auth::user()->id
+        );
+
         return response()->json(['success' => true]);
     }
 
@@ -259,6 +310,14 @@ class OwnerController extends Controller
             $this->softDeleteFile($file);
         }
         $document->delete();
+        $this->logActivity(
+            'Owner document deleted',
+            '',
+            route('company.realestate.owners.index'),
+            'Owner document  Delete successfully',
+            Auth::user()->creatorId(),
+            Auth::user()->id
+        );
         return redirect()->back();
     }
 }

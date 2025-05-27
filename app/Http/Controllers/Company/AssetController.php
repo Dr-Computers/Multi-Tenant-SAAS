@@ -7,9 +7,11 @@ use App\Models\Property;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use App\Traits\ActivityLogger;
 
 class AssetController extends Controller
 {
+    use ActivityLogger;
     public function index()
     {
         // if (\Auth::user()->can('manage asset')) {
@@ -87,6 +89,16 @@ class AssetController extends Controller
             'status' => $request->status,
         ]);
 
+        $this->logActivity(
+            'Create a  asset',
+            'Asset name ' . $request->name,
+            route('company.asset.index'),
+            'New Asset Created successfully',
+            Auth::user()->creatorId(),
+            Auth::user()->id
+        );
+
+
         return redirect()->route('company.assets.index')->with('success', __('Assets successfully created.'));
         // } else {
         //     return redirect()->back()->with('error', __('Permission Denied!'));
@@ -157,6 +169,17 @@ class AssetController extends Controller
 
             'status' => $request->status,
         ]);
+
+
+        $this->logActivity(
+            'Update a asset',
+            'Asset name ' . $request->name,
+            route('company.asset.index'),
+            'Asset Updated successfully',
+            Auth::user()->creatorId(),
+            Auth::user()->id
+        );
+
         return redirect()->route('company.assets.index')->with('success', __('Assets successfully Updated.'));
         // } else {
         //     return redirect()->back()->with('error', __('Permission Denied!'));
@@ -168,6 +191,15 @@ class AssetController extends Controller
         // if (\Auth::user()->can('delete asset')) {
         $asset = Asset::find($id);
         $asset->delete();
+
+        $this->logActivity(
+            'Delete a asset',
+            'Asset name ' . $asset->name,
+            route('company.asset.index'),
+            'Asset Deleted successfully',
+            Auth::user()->creatorId(),
+            Auth::user()->id
+        );
         return redirect()->back()->with('success', 'Asset successfully deleted.');
         // } else {
         //     return redirect()->back()->with('error', __('Permission Denied!'));

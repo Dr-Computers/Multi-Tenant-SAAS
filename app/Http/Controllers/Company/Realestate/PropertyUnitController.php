@@ -13,10 +13,12 @@ use Illuminate\Support\Facades\DB;
 use App\Traits\Media\HandlesMediaFolders;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use App\Traits\ActivityLogger;
 
 class PropertyUnitController extends Controller
 {
     use HandlesMediaFolders;
+    use ActivityLogger;
     public function index($id)
     {
         $property = Property::where('id', $id)->first() ?? abort(404);
@@ -95,6 +97,14 @@ class PropertyUnitController extends Controller
         try {
             $unit->save();
             $unit->propertyUnitImages()->sync($imagePath['filePaths'] ?? []);
+            $this->logActivity(
+                'Create a Property Unit',
+                'Unit Id ' . $unit->id,
+                route('company.realestate.property.units.index', $id),
+                'A Property Unit created successfully',
+                Auth::user()->creatorId(),
+                Auth::user()->id
+            );
             DB::commit();
             return redirect()->route('company.realestate.property.units.index', $id)->with('success', 'Property unit created successfully.');
         } catch (Exception $e) {
@@ -208,6 +218,15 @@ class PropertyUnitController extends Controller
             $property_unit->propertyUnitImages()->sync($NewimagePath ?? []);
             DB::commit();
 
+            $this->logActivity(
+                'Update a Property Unit',
+                'Unit Id ' . $unit->id,
+                route('company.realestate.property.units.index', $property_id),
+                'A Property Unit updated successfully',
+                Auth::user()->creatorId(),
+                Auth::user()->id
+            );
+
             return response()->json([
                 'status' => 'success',
                 'message' => 'Property unit updated successfully',
@@ -227,13 +246,23 @@ class PropertyUnitController extends Controller
         $storageDisk = config('filesystems.default');
         $propertyImg = $property_unit->propertyImages;
         foreach ($propertyImg ?? [] as $img) {
-            
+
             if (Storage::disk($storageDisk)->exists($img->file_url)) {
-                unlink('storage/'.$img->file_url);
+                unlink('storage/' . $img->file_url);
             }
             MediaFile::where('id', $img->id)->delete();
         }
         $property_unit->delete();
+
+        $this->logActivity(
+            'Delete a Property Unit',
+            'Unit Id ' . $property_unit->id,
+            route('company.realestate.property.units.index', $property_unit->property_id),
+            'A property unit deleted successfully',
+            Auth::user()->creatorId(),
+            Auth::user()->id
+        );
+
         return redirect()->back()->with('success', 'Property unit deleted successfully.');
     }
 

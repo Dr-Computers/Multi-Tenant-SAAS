@@ -19,10 +19,12 @@ use Spatie\Permission\Models\Role;
 use App\Traits\Media\HandlesMediaFolders;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use App\Traits\ActivityLogger;
 
 class MaintenanceController extends Controller
 {
     use HandlesMediaFolders;
+    use ActivityLogger;
     public function index()
     {
         $maintainers = User::where('type', 'maintainer')->where('parent', Auth::user()->creatorId())->get();
@@ -91,6 +93,14 @@ class MaintenanceController extends Controller
         $role_r = Role::findByName('maintainer-' . Auth::user()->creatorId());
         $user->assignRole($role_r);
 
+        $this->logActivity(
+            'Create a Maintainer User',
+            'User Id ' . $user->id,
+            route('company.realestate.maintainers.index'),
+            'New Maintainer User Created successfully',
+            Auth::user()->creatorId(),
+            Auth::user()->id
+        );
         return redirect()->route('company.realestate.maintainers.index')->with('success', 'Maintainer created successfully.');
     }
 
@@ -150,6 +160,14 @@ class MaintenanceController extends Controller
         $jobType->type_id      = $request->type;
         $jobType->save();
 
+        $this->logActivity(
+            'Update a Maintainer User',
+            'User Id ' . $maintainer->id,
+            route('company.realestate.maintainers.index'),
+            'Maintainer User Updated successfully',
+            Auth::user()->creatorId(),
+            Auth::user()->id
+        );
         return redirect()->route('company.realestate.maintainers.index')->with('success', 'Maintainer updated successfully.');
     }
 
@@ -157,6 +175,14 @@ class MaintenanceController extends Controller
     {
         MaintenanceJob::where('user_id', $maintainer->id)->delete();
         $maintainer->delete();
+        $this->logActivity(
+            'Delete a Maintainer User',
+            'User Id ' . $maintainer->id,
+            route('company.realestate.maintainers.index'),
+            'Maintainer User Deleted successfully',
+            Auth::user()->creatorId(),
+            Auth::user()->id
+        );
         return redirect()->back()->with('success', 'Maintainer deleted successfully.');
     }
 
@@ -265,6 +291,14 @@ class MaintenanceController extends Controller
             $new_doc->save();
         }
 
+        $this->logActivity(
+            'Maintainer document uploaded',
+            'User Id ' . $user_id,
+            route('company.realestate.maintainers.index'),
+            'Maintainer document uploaded successfully',
+            Auth::user()->creatorId(),
+            Auth::user()->id
+        );
         return response()->json(['success' => true]);
     }
 
@@ -277,8 +311,14 @@ class MaintenanceController extends Controller
             $this->softDeleteFile($file);
         }
         $document->delete();
+        $this->logActivity(
+            'Maintainer document deleted',
+            '',
+            route('company.realestate.maintainers.index'),
+            'Maintainer document  Delete successfully',
+            Auth::user()->creatorId(),
+            Auth::user()->id
+        );
         return redirect()->back();
     }
-
-    
 }

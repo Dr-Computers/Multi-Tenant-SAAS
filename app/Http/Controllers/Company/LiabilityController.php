@@ -7,9 +7,11 @@ use App\Models\Property;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use App\Traits\ActivityLogger;
 
 class LiabilityController extends Controller
 {
+    use ActivityLogger;
     public function index()
     {
         // if (\Auth::user()->can('manage liability')) {
@@ -80,6 +82,16 @@ class LiabilityController extends Controller
             'company_id' => $company_id,
         ]);
 
+        $this->logActivity(
+            'Create a Liability',
+            'Liability name ' . $request->name,
+            route('company.liability.index'),
+            'New Liability  Created successfully',
+            Auth::user()->creatorId(),
+            Auth::user()->id
+        );
+
+
         // Redirect to the liabilities index page with a success message
         return redirect()->route('company.liabilities.index')->with('success', __('Liability successfully created.'));
         // } else {
@@ -142,6 +154,17 @@ class LiabilityController extends Controller
             'notes' =>  !empty($request->notes) ? $request->notes : null,
 
         ]);
+
+        $this->logActivity(
+            'Update a Liability',
+            'Liability name ' . $request->name,
+            route('company.liability.index'),
+            'Liability  Updated successfully',
+            Auth::user()->creatorId(),
+            Auth::user()->id
+        );
+
+
         return redirect()->route('company.liabilities.index')->with('success', __('Liability successfully Updated.'));
         // } else {
         //     return redirect()->back()->with('error', __('Permission Denied!'));
@@ -155,6 +178,17 @@ class LiabilityController extends Controller
 
         $liability = Liability::find($id);
         $liability->delete();
+
+        $this->logActivity(
+            'Delete a Liability',
+            'Liability name ' . $liability->name,
+            route('company.liability.index'),
+            'Liability  Deleted successfully',
+            Auth::user()->creatorId(),
+            Auth::user()->id
+        );
+
+
         return redirect()->back()->with('success', 'Liability successfully deleted.');
         // } else {
         //     return redirect()->back()->with('error', __('Permission Denied!'));

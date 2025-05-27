@@ -16,11 +16,13 @@ use Spatie\Permission\Models\Role;
 use App\Traits\Media\HandlesMediaFolders;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use App\Traits\ActivityLogger;
 
 class TenantController extends Controller
 {
     use HandlesMediaFolders;
-    
+    use ActivityLogger;
+
     public function index()
     {
         $tenants = User::where('type', 'tenant')->where('parent', Auth::user()->creatorId())->get();
@@ -40,11 +42,11 @@ class TenantController extends Controller
             'email'    => 'required|email|unique:users',
             'mobile'   => 'required',
             'password' => 'required|min:6',
-            'address'=> 'required',
-            'city'=> 'required',
-            'state'=> 'required',
-            'postal_code'=> 'required',
-            'country'=> 'required',
+            'address' => 'required',
+            'city' => 'required',
+            'state' => 'required',
+            'postal_code' => 'required',
+            'country' => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -81,6 +83,14 @@ class TenantController extends Controller
         $role_r = Role::findByName('tenant-' . Auth::user()->creatorId());
         $user->assignRole($role_r);
 
+        $this->logActivity(
+            'Create a Tenent User',
+            'User Id ' . $user->id,
+            route('company.realestate.tenants.index'),
+            'New Tenent User Created successfully',
+            Auth::user()->creatorId(),
+            Auth::user()->id
+        );
         return redirect()->route('company.realestate.tenants.index')->with('success', 'Tenant created successfully.');
     }
 
@@ -97,11 +107,11 @@ class TenantController extends Controller
             'name'   => 'required|max:100',
             'email'  => 'required|email|unique:users,email,' . $tenant->id,
             'mobile' => 'required',
-            'address'=> 'required',
-            'city'=> 'required',
-            'state'=> 'required',
-            'postal_code'=> 'required',
-            'country'=> 'required',
+            'address' => 'required',
+            'city' => 'required',
+            'state' => 'required',
+            'postal_code' => 'required',
+            'country' => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -120,11 +130,11 @@ class TenantController extends Controller
 
         $tenant->save();
 
-        if($tenant->getRoleNames()->first() != 'tenant'){
+        if ($tenant->getRoleNames()->first() != 'tenant') {
             $role_r = Role::findByName('tenant-' . Auth::user()->creatorId());
             $tenant->roles()->sync([$role_r->id]);
         }
-        
+
 
         $personal = PersonalDetail::where('user_id', $tenant->id)->first();
         $personal->address        = $request->address;
@@ -135,15 +145,32 @@ class TenantController extends Controller
         $personal->country        =  $request->country;
         $personal->save();
 
+        $this->logActivity(
+            'Update a Tenent User',
+            'User Id ' . $tenant->id,
+            route('company.realestate.tenants.index'),
+            'Tenent User Updated successfully',
+            Auth::user()->creatorId(),
+            Auth::user()->id
+        );
+
 
         return redirect()->route('company.realestate.tenants.index')->with('success', 'Tenant updated successfully.');
     }
 
     public function destroy(User $tenant)
     {
-   
+
         PersonalDetail::where('user_id', $tenant->id)->delete();
         $tenant->delete();
+        $this->logActivity(
+            'Delete a Tenent User',
+            'User Id ' . $tenant->id,
+            route('company.realestate.tenants.index'),
+            'Tenent User Deleted successfully',
+            Auth::user()->creatorId(),
+            Auth::user()->id
+        );
         return redirect()->back()->with('success', 'Tenant deleted successfully.');
     }
 
@@ -185,7 +212,7 @@ class TenantController extends Controller
         ]);
 
         $user = User::findOrFail($user_id);
-        $companyId = Auth::user()->creatorId(); 
+        $companyId = Auth::user()->creatorId();
         $disk = env('FILESYSTEM_DISK', 'public');
         $basePath = 'uploads/company_' . $companyId;
 
@@ -251,6 +278,14 @@ class TenantController extends Controller
             $new_doc->save();
         }
 
+        $this->logActivity(
+            'Tenent document uploaded',
+            'User Id ' . $user_id,
+            route('company.realestate.tenants.index'),
+            'Tenent document uploaded successfully',
+            Auth::user()->creatorId(),
+            Auth::user()->id
+        );
         return response()->json(['success' => true]);
     }
 
@@ -263,7 +298,14 @@ class TenantController extends Controller
             $this->softDeleteFile($file);
         }
         $document->delete();
+        $this->logActivity(
+            'Tenent document deleted',
+            '',
+            route('company.realestate.tenants.index'),
+            'Tenent document  Delete successfully',
+            Auth::user()->creatorId(),
+            Auth::user()->id
+        );
         return redirect()->back();
     }
-    
 }
