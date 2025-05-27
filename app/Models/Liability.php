@@ -19,8 +19,9 @@ class Liability extends Model
         'interest_rate',   // Interest Rate (nullable)
         'payment_terms',   // Payment Terms (nullable)
         'notes',           // Additional Notes (nullable)
-        'parent_id',
+        'company_id',
         'status',
+        
     ];
     public function property()
     {

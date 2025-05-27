@@ -52,4 +52,9 @@ class RealestateLease extends Model
     {
         return $this->hasOne(PropertyUnit::class, 'id', 'unit_id');
     }
+
+    public function unitLease()
+    {
+        return $this->hasOne(PropertyUnit::class, 'id', 'unit_id');
+    }
 }

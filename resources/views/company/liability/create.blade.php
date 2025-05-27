@@ -1,9 +1,9 @@
-@extends('layouts.app')
+@extends('layouts.company')
 @section('page-title')
     {{ __('Asset') }}
 @endsection
 @push('script-page')
-    <script src="{{ asset('js/jquery-ui.min.js') }}"></script>
+    {{-- <script src="{{ asset('js/jquery-ui.min.js') }}"></script>
     <script src="{{ asset('js/jquery.repeater.min.js') }}"></script>
     <script>
         $('#property_id').on('change', function() {
@@ -29,10 +29,10 @@
                     });
                 },
             });
-        });
+        }); --}}
 
 
-
+{{-- 
         // Listen for changes in the unit dropdown
         $('#unit').on('change', function() {
             "use strict";
@@ -67,56 +67,56 @@
     </script>
 
     <script>
-        $(document).ready(function() {
-            // Check if there's a previously selected property and trigger change event
-            var oldInvoiceId = '{{ old('invoice_id') }}';
-            var oldUnitId = '{{ old('unit_id') }}';
+        // $(document).ready(function() {
+        //     // Check if there's a previously selected property and trigger change event
+        //     var oldInvoiceId = '{{ old('invoice_id') }}';
+        //     var oldUnitId = '{{ old('unit_id') }}';
 
-            if (oldInvoiceId) {
-                console.log("have id");
-                "use strict";
-                var invoice_id = oldInvoiceId;
-                var unit_id = oldUnitId;
-                var url = '{{ route('unit.invoice', ':id') }}';
-                url = url.replace(':id', unit_id);
+        //     if (oldInvoiceId) {
+        //         console.log("have id");
+        //         "use strict";
+        //         var invoice_id = oldInvoiceId;
+        //         var unit_id = oldUnitId;
+        //         var url = '{{ route('unit.invoice', ':id') }}';
+        //         url = url.replace(':id', unit_id);
 
-                $.ajax({
-                    url: url,
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                    },
-                    type: 'GET',
-                    success: function(data) {
-                        console.log(data);
+        //         $.ajax({
+        //             url: url,
+        //             headers: {
+        //                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        //             },
+        //             type: 'GET',
+        //             success: function(data) {
+        //                 console.log(data);
 
-                        $('.invoice').empty().append(
-                            '<option value="">{{ __('Select Invoice') }}</option>');
+        //                 $('.invoice').empty().append(
+        //                     '<option value="">{{ __('Select Invoice') }}</option>');
 
-                        $.each(data, function(key, value) {
-                            var oldInvoice = '{{ old('invoice_id') }}';
-                            console.log("oldInvoiceId" + oldInvoice);
+        //                 $.each(data, function(key, value) {
+        //                     var oldInvoice = '{{ old('invoice_id') }}';
+        //                     console.log("oldInvoiceId" + oldInvoice);
 
-                            var isSelected = (key == oldInvoice) ? 'selected' :
-                                ''; // Check if it matches old value
-                            var invoiceWithPrefix = '{{ invoicePrefix() }}' + value;
+        //                     var isSelected = (key == oldInvoice) ? 'selected' :
+        //                         ''; // Check if it matches old value
+        //                     var invoiceWithPrefix = '{{ invoicePrefix() }}' + value;
 
-                            $('.invoice').append('<option value="' + key + '" ' + isSelected +
-                                '>' + invoiceWithPrefix + '</option>');
+        //                     $('.invoice').append('<option value="' + key + '" ' + isSelected +
+        //                         '>' + invoiceWithPrefix + '</option>');
 
 
-                            // $('.invoice').append('<option value="' + key + '">' + value +'</option>');
-                        });
+        //                     // $('.invoice').append('<option value="' + key + '">' + value +'</option>');
+        //                 });
 
-                        $('.hidesearch').select2({
-                            minimumResultsForSearch: -1
-                        });
-                    },
-                });
+        //                 $('.hidesearch').select2({
+        //                     minimumResultsForSearch: -1
+        //                 });
+        //             },
+        //         });
 
-                // Set the old property ID and trigger change to load units
+        //         // Set the old property ID and trigger change to load units
 
-            }
-        });
+        //     }
+        // });
     </script>
     <script>
         $(document).ready(function() {
@@ -172,12 +172,12 @@
 
             }
         });
-    </script>
+    </script> --}}
 
 
 
 
-    <script>
+    {{-- <script>
         $(document).ready(function() {
             // Hide or show cheque selection based on the payment method
 
@@ -378,7 +378,7 @@
                 $repeater.setList(value);
             }
         }
-    </script>
+    </script> --}}
     
 @endpush
 @section('breadcrumb')
@@ -389,7 +389,7 @@
             </a>
         </li>
         <li class="breadcrumb-item">
-            <a href="{{ route('assets.index') }}">{{ __('Assets') }}</a>
+            <a href="{{ route('company.assets.index') }}">{{ __('Liabilities') }}</a>
         </li>
         <li class="breadcrumb-item active">
             <a href="#">{{ __('Create') }}</a>
@@ -398,7 +398,7 @@
 @endsection
 
 @section('content')
-{{ Form::open(['url' => route('liabilities.store'), 'method' => 'post', 'id' => 'liability_form', 'enctype' => 'multipart/form-data', 'files' => true]) }}
+{{ Form::open(['url' => route('company.liabilities.store'), 'method' => 'post', 'id' => 'liability_form', 'enctype' => 'multipart/form-data', 'files' => true]) }}
 <div class="row">
     <div class="col-lg-12">
         <div class="card">

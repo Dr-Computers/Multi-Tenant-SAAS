@@ -1,15 +1,15 @@
-@extends('layouts.app')
+@extends('layouts.company')
 @section('page-title')
     {{ __('Asset') }}
 @endsection
 @push('script-page')
     <script src="{{ asset('js/jquery-ui.min.js') }}"></script>
     <script src="{{ asset('js/jquery.repeater.min.js') }}"></script>
-    <script>
+    {{-- <script>
         $('#property_id').on('change', function() {
             "use strict";
             var property_id = $(this).val();
-            var url = '{{ route('property.unit', ':id') }}';
+            var url = '{{ route('company.realestate.maintenance-requests.units', ':id') }}';
             url = url.replace(':id', property_id);
 
             $.ajax({
@@ -34,89 +34,89 @@
 
 
         // Listen for changes in the unit dropdown
-        $('#unit').on('change', function() {
-            "use strict";
-            var unit_id = $(this).val();
-            var url = '{{ route('unit.invoice', ':id') }}';
-            url = url.replace(':id', unit_id);
+        // $('#unit').on('change', function() {
+        //     "use strict";
+        //     var unit_id = $(this).val();
+        //     var url = '{{ route('company.finance.unit.invoice', ':id') }}';
+        //     url = url.replace(':id', unit_id);
 
-            $.ajax({
-                url: url,
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                },
-                type: 'GET',
-                success: function(data) {
-                    $('.invoice').empty().append(
-                        '<option value="">{{ __('Select Invoice') }}</option>');
-                    $.each(data, function(key, value) {
-                        var formattedInvoiceId =
-                            '{{ invoicePrefix() . optional('invoice_id')->invoice_id }}' +
-                            value; // Adjust as necessary
-                        $('.invoice').append('<option value="' + key + '">' +
-                            formattedInvoiceId + '</option>');
-                        // $('.invoice').append('<option value="' + key + '">' + value +'</option>');
-                    });
+        //     $.ajax({
+        //         url: url,
+        //         headers: {
+        //             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        //         },
+        //         type: 'GET',
+        //         success: function(data) {
+        //             $('.invoice').empty().append(
+        //                 '<option value="">{{ __('Select Invoice') }}</option>');
+        //             $.each(data, function(key, value) {
+        //                 var formattedInvoiceId =
+        //                     '{{ invoicePrefix() . optional('invoice_id')->invoice_id }}' +
+        //                     value; // Adjust as necessary
+        //                 $('.invoice').append('<option value="' + key + '">' +
+        //                     formattedInvoiceId + '</option>');
+        //                 // $('.invoice').append('<option value="' + key + '">' + value +'</option>');
+        //             });
 
-                    $('.hidesearch').select2({
-                        minimumResultsForSearch: -1
-                    });
-                },
-            });
-        });
+        //             $('.hidesearch').select2({
+        //                 minimumResultsForSearch: -1
+        //             });
+        //         },
+        //     });
+        // });
     </script>
 
     <script>
-        $(document).ready(function() {
-            // Check if there's a previously selected property and trigger change event
-            var oldInvoiceId = '{{ old('invoice_id') }}';
-            var oldUnitId = '{{ old('unit_id') }}';
+        // $(document).ready(function() {
+        //     // Check if there's a previously selected property and trigger change event
+        //     var oldInvoiceId = '{{ old('invoice_id') }}';
+        //     var oldUnitId = '{{ old('unit_id') }}';
 
-            if (oldInvoiceId) {
-                console.log("have id");
-                "use strict";
-                var invoice_id = oldInvoiceId;
-                var unit_id = oldUnitId;
-                var url = '{{ route('unit.invoice', ':id') }}';
-                url = url.replace(':id', unit_id);
+        //     if (oldInvoiceId) {
+        //         console.log("have id");
+        //         "use strict";
+        //         var invoice_id = oldInvoiceId;
+        //         var unit_id = oldUnitId;
+        //         var url = '{{ route('company.finance.unit.invoice', ':id') }}';
+        //         url = url.replace(':id', unit_id);
 
-                $.ajax({
-                    url: url,
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                    },
-                    type: 'GET',
-                    success: function(data) {
-                        console.log(data);
+        //         $.ajax({
+        //             url: url,
+        //             headers: {
+        //                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        //             },
+        //             type: 'GET',
+        //             success: function(data) {
+        //                 console.log(data);
 
-                        $('.invoice').empty().append(
-                            '<option value="">{{ __('Select Invoice') }}</option>');
+        //                 $('.invoice').empty().append(
+        //                     '<option value="">{{ __('Select Invoice') }}</option>');
 
-                        $.each(data, function(key, value) {
-                            var oldInvoice = '{{ old('invoice_id') }}';
-                            console.log("oldInvoiceId" + oldInvoice);
+        //                 $.each(data, function(key, value) {
+        //                     var oldInvoice = '{{ old('invoice_id') }}';
+        //                     console.log("oldInvoiceId" + oldInvoice);
 
-                            var isSelected = (key == oldInvoice) ? 'selected' :
-                                ''; // Check if it matches old value
-                            var invoiceWithPrefix = '{{ invoicePrefix() }}' + value;
+        //                     var isSelected = (key == oldInvoice) ? 'selected' :
+        //                         ''; // Check if it matches old value
+        //                     var invoiceWithPrefix = '{{ invoicePrefix() }}' + value;
 
-                            $('.invoice').append('<option value="' + key + '" ' + isSelected +
-                                '>' + invoiceWithPrefix + '</option>');
+        //                     $('.invoice').append('<option value="' + key + '" ' + isSelected +
+        //                         '>' + invoiceWithPrefix + '</option>');
 
 
-                            // $('.invoice').append('<option value="' + key + '">' + value +'</option>');
-                        });
+        //                     // $('.invoice').append('<option value="' + key + '">' + value +'</option>');
+        //                 });
 
-                        $('.hidesearch').select2({
-                            minimumResultsForSearch: -1
-                        });
-                    },
-                });
+        //                 $('.hidesearch').select2({
+        //                     minimumResultsForSearch: -1
+        //                 });
+        //             },
+        //         });
 
-                // Set the old property ID and trigger change to load units
+        //         // Set the old property ID and trigger change to load units
 
-            }
-        });
+        //     }
+        // });
     </script>
     <script>
         $(document).ready(function() {
@@ -128,7 +128,7 @@
                 console.log("have id");
                 "use strict";
                 var property_id = oldPropertyId;
-                var url = '{{ route('property.unit', ':id') }}';
+                var url = '{{ route('company.realestate.maintenance-requests.units', ':id') }}';
                 url = url.replace(':id', property_id);
                 $.ajax({
                     url: url,
@@ -172,11 +172,11 @@
 
             }
         });
-    </script>
+    </script> --}}
 
 
 
-
+{{-- 
     <script>
         $(document).ready(function() {
             // Hide or show cheque selection based on the payment method
@@ -192,10 +192,10 @@
                     console.log(invoiceId);
 
                     getChequeDetails(invoiceId);
-                // } else if (paymentMethod === 'bank_transfer') {
-                //     console.log("hello");
+                    // } else if (paymentMethod === 'bank_transfer') {
+                    //     console.log("hello");
 
-                //     getAccountDetails();
+                    //     getAccountDetails();
                 } else {
                     $('#cheque_selection').hide();
                     $('#amount').val('');
@@ -288,7 +288,7 @@
             //         }
             //     });
             // }
-            
+
 
             // Trigger change event to show/hide cheque selection if a method is pre-selected
             $('#payment_method').trigger('change');
@@ -300,11 +300,10 @@
             var chequeAmount = $(this).find('option:selected').data('amount');
             $('#amount').val(chequeAmount);
         });
-
     </script>
     <script>
-         $(document).ready(function() {
-            var url = '{{ route('bank-account.fetchdetails') }}';
+        $(document).ready(function() {
+            var url = '{{ route('company.finance.bank-account.fetchdetails') }}';
             console.log("AJAX call to URL: " + url); // Debugging statement
 
             $.ajax({
@@ -325,7 +324,8 @@
                         $('#cheque_selection').val();
                         $('#account_selection').show();
 
-                        $('.account').append('<option value="' + account.id + '">' + account.account_name + '</option>');
+                        $('.account').append('<option value="' + account.id + '">' + account
+                            .account_name + '</option>');
                     });
 
                     $('.hidesearch').select2({
@@ -337,9 +337,9 @@
                 }
             });
         });
-    </script>
+    </script> --}}
 
-
+{{-- 
     <script>
         var selector = "body";
         if ($(selector + " .repeater").length) {
@@ -385,7 +385,7 @@
 
             if (invoiceId) {
                 $.ajax({
-                    url: '{{ route('invoice.due.amount') }}',
+                    url: '{{ route('company.finance.invoice.due.amount') }}',
                     method: 'POST',
                     data: {
                         invoice_id: invoiceId,
@@ -406,8 +406,8 @@
             console.log("called")
             var amount = parseFloat($(this).val());
             var dueAmount = parseFloat($('#due_amount').val()); // Assume you store the due amount in a hidden input
-console.log(dueAmount);
-console.log(amount);
+            console.log(dueAmount);
+            console.log(amount);
 
 
             // Check if the amount exceeds the due amount
@@ -416,7 +416,7 @@ console.log(amount);
                 $(this).val(''); // Clear the amount field
             }
         });
-    </script>
+    </script> --}}
 @endpush
 @section('breadcrumb')
     <ul class="breadcrumb mb-0">
@@ -426,7 +426,7 @@ console.log(amount);
             </a>
         </li>
         <li class="breadcrumb-item">
-            <a href="{{ route('assets.index') }}">{{ __('Assets') }}</a>
+            <a href="{{ route('company.assets.index') }}">{{ __('Assets') }}</a>
         </li>
         <li class="breadcrumb-item active">
             <a href="#">{{ __('Create') }}</a>
@@ -435,109 +435,112 @@ console.log(amount);
 @endsection
 
 @section('content')
-{{ Form::open(['url' => route('assets.store'), 'method' => 'post', 'id' => 'asset_form', 'enctype' => 'multipart/form-data', 'files' => true]) }}
-<div class="row">
-    <div class="col-lg-12">
-        <div class="card">
-            <div class="card-body">
-                <div class="info-group">
-                    <div class="row">
-                        <div class="form-group col-md-6 col-lg-4">
-                            {{ Form::label('name', __('Asset Name/Description'), ['class' => 'form-label']) }}
-                            <span class="text-danger">*</span>
-                            {{ Form::text('name', null, ['class' => 'form-control', 'required' => 'required', 'placeholder' => __('Enter Asset Name')]) }}
-                        </div>
-                        
-                        <div class="form-group col-md-6 col-lg-4">
-                            {{ Form::label('type', __('Asset Type'), ['class' => 'form-label', 'escape' => false]) }}
-                            <span class="text-danger">*</span>
-                           {{ Form::select('type', [
-                                'fixed_asset' => __('Fixed Asset'), 
-                                'current_asset' => __('Current Asset'), 
-                                'bank' => __('Bank')
-                            ], null, ['class' => 'form-control', 'required' => 'required', 'placeholder' => __('Select Asset Type')]) }}
-                        </div>
-                        
+    {{ Form::open(['url' => route('company.assets.store'), 'method' => 'post', 'id' => 'asset_form', 'enctype' => 'multipart/form-data', 'files' => true]) }}
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="info-group">
+                        <div class="row">
+                            <div class="form-group col-md-6 col-lg-4">
+                                {{ Form::label('name', __('Asset Name/Description'), ['class' => 'form-label']) }}
+                                <span class="text-danger">*</span>
+                                {{ Form::text('name', null, ['class' => 'form-control', 'required' => 'required', 'placeholder' => __('Enter Asset Name')]) }}
+                            </div>
 
-                        <div class="form-group col-md-6 col-lg-4">
-                            {{ Form::label('property_id', __('Property ID'), ['class' => 'form-label']) }}
-                            {{ Form::select('property_id', $properties, null, ['class' => 'form-control hidesearch', 'placeholder' => __('Select Property')]) }}
-                        </div>
+                            <div class="form-group col-md-6 col-lg-4">
+                                {{ Form::label('type', __('Asset Type'), ['class' => 'form-label', 'escape' => false]) }}
+                                <span class="text-danger">*</span>
+                                {{ Form::select(
+                                    'type',
+                                    [
+                                        'fixed_asset' => __('Fixed Asset'),
+                                        'current_asset' => __('Current Asset'),
+                                        'bank' => __('Bank'),
+                                    ],
+                                    null,
+                                    ['class' => 'form-control', 'required' => 'required', 'placeholder' => __('Select Asset Type')],
+                                ) }}
+                            </div>
 
-                        <div class="form-group col-md-6 col-lg-4">
-                            {{ Form::label('location', __('Location'), ['class' => 'form-label']) }}
-                            {{ Form::text('location', null, ['class' => 'form-control', 'placeholder' => __('Enter Location')]) }}
-                        </div>
 
-                        <div class="form-group col-md-6 col-lg-4">
-                            {{ Form::label('purchase_date', __('Purchase Date'), ['class' => 'form-label']) }}
-                            {{ Form::date('purchase_date', null, ['class' => 'form-control']) }}
-                        </div>
+                            <div class="form-group col-md-6 col-lg-4">
+                                {{ Form::label('property_id', __('Property ID'), ['class' => 'form-label']) }}
+                                {{ Form::select('property_id', $properties, null, ['class' => 'form-control hidesearch', 'placeholder' => __('Select Property')]) }}
+                            </div>
 
-                        <div class="form-group col-md-6 col-lg-4">
-                            {{ Form::label('purchase_price', __('Purchase Price'), ['class' => 'form-label']) }}
-                            {{ Form::number('purchase_price', null, ['class' => 'form-control', 'step' => '0.01', 'placeholder' => __('Enter Purchase Price')]) }}
-                        </div>
+                            <div class="form-group col-md-6 col-lg-4">
+                                {{ Form::label('location', __('Location'), ['class' => 'form-label']) }}
+                                {{ Form::text('location', null, ['class' => 'form-control', 'placeholder' => __('Enter Location')]) }}
+                            </div>
 
-                        <div class="form-group col-md-6 col-lg-4">
-                            {{ Form::label('vendor_name', __('Vendor Name'), ['class' => 'form-label']) }}
-                            {{ Form::text('vendor_name', null, ['class' => 'form-control', 'placeholder' => __('Enter Vendor Name')]) }}
-                        </div>
+                            <div class="form-group col-md-6 col-lg-4">
+                                {{ Form::label('purchase_date', __('Purchase Date'), ['class' => 'form-label']) }}
+                                {{ Form::date('purchase_date', null, ['class' => 'form-control']) }}
+                            </div>
 
-                        <div class="form-group col-md-6 col-lg-4">
-                            {{ Form::label('initial_value', __('Initial Value '), ['class' => 'form-label']) }}
-                            <span class="text-danger">*</span>
-                            {{ Form::number('initial_value', null, ['class' => 'form-control', 'required' => 'required', 'step' => '0.01', 'placeholder' => __('Enter Initial Value')]) }}
-                        </div>
+                            <div class="form-group col-md-6 col-lg-4">
+                                {{ Form::label('purchase_price', __('Purchase Price'), ['class' => 'form-label']) }}
+                                {{ Form::number('purchase_price', null, ['class' => 'form-control', 'step' => '0.01', 'placeholder' => __('Enter Purchase Price')]) }}
+                            </div>
 
-                        <div class="form-group col-md-6 col-lg-4">
-                            {{ Form::label('current_market_value', __('Current Market Value'), ['class' => 'form-label']) }}
-                            <span class="text-danger">*</span>
-                            {{ Form::number('current_market_value', null, ['class' => 'form-control', 'step' => '0.01','required' => 'required', 'placeholder' => __('Enter Current Market Value')]) }}
-                        </div>
+                            <div class="form-group col-md-6 col-lg-4">
+                                {{ Form::label('vendor_name', __('Vendor Name'), ['class' => 'form-label']) }}
+                                {{ Form::text('vendor_name', null, ['class' => 'form-control', 'placeholder' => __('Enter Vendor Name')]) }}
+                            </div>
 
-                        <div class="form-group col-md-6 col-lg-4">
-                            {{ Form::label('accumulated_depreciation', __('Accumulated Depreciation'), ['class' => 'form-label']) }}
-                            {{ Form::number('accumulated_depreciation', null, ['class' => 'form-control', 'step' => '0.01', 'placeholder' => __('Enter Accumulated Depreciation')]) }}
-                        </div>
+                            <div class="form-group col-md-6 col-lg-4">
+                                {{ Form::label('initial_value', __('Initial Value '), ['class' => 'form-label']) }}
+                                <span class="text-danger">*</span>
+                                {{ Form::number('initial_value', null, ['class' => 'form-control', 'required' => 'required', 'step' => '0.01', 'placeholder' => __('Enter Initial Value')]) }}
+                            </div>
 
-                        <div class="form-group col-md-6 col-lg-4">
-                            {{ Form::label('owner_name', __('Owner Name'), ['class' => 'form-label']) }}
-                            {{ Form::text('owner_name', null, ['class' => 'form-control', 'placeholder' => __('Enter Owner Name')]) }}
-                        </div>
+                            <div class="form-group col-md-6 col-lg-4">
+                                {{ Form::label('current_market_value', __('Current Market Value'), ['class' => 'form-label']) }}
+                                <span class="text-danger">*</span>
+                                {{ Form::number('current_market_value', null, ['class' => 'form-control', 'step' => '0.01', 'required' => 'required', 'placeholder' => __('Enter Current Market Value')]) }}
+                            </div>
 
-                        <div class="form-group col-md-6 col-lg-4">
-                            {{ Form::label('title_deed_number', __('Title Deed Number'), ['class' => 'form-label']) }}
-                            {{ Form::text('title_deed_number', null, ['class' => 'form-control', 'placeholder' => __('Enter Title Deed Number')]) }}
-                        </div>
+                            <div class="form-group col-md-6 col-lg-4">
+                                {{ Form::label('accumulated_depreciation', __('Accumulated Depreciation'), ['class' => 'form-label']) }}
+                                {{ Form::number('accumulated_depreciation', null, ['class' => 'form-control', 'step' => '0.01', 'placeholder' => __('Enter Accumulated Depreciation')]) }}
+                            </div>
 
-                        <div class="form-group col-md-6 col-lg-4">
-                            {{ Form::label('condition', __('Asset Condition'), ['class' => 'form-label']) }}
-                            {{ Form::text('condition', null, ['class' => 'form-control', 'placeholder' => __('Enter Asset Condition')]) }}
-                        </div>
+                            <div class="form-group col-md-6 col-lg-4">
+                                {{ Form::label('owner_name', __('Owner Name'), ['class' => 'form-label']) }}
+                                {{ Form::text('owner_name', null, ['class' => 'form-control', 'placeholder' => __('Enter Owner Name')]) }}
+                            </div>
 
-                        <div class="form-group col-md-6 col-lg-4">
-                            {{ Form::label('status', __('Status'), ['class' => 'form-label']) }}
-                            {{ Form::select('status', ['active' => 'Active', 'sold' => 'Sold', 'under_maintenance' => 'Under Maintenance'], null, ['class' => 'form-control hidesearch', 'placeholder' => __('Select Status')]) }}
-                        </div>
+                            <div class="form-group col-md-6 col-lg-4">
+                                {{ Form::label('title_deed_number', __('Title Deed Number'), ['class' => 'form-label']) }}
+                                {{ Form::text('title_deed_number', null, ['class' => 'form-control', 'placeholder' => __('Enter Title Deed Number')]) }}
+                            </div>
 
-                        <div class="form-group col-md-6 col-lg-4">
-                            {{ Form::label('notes', __('Additional Notes'), ['class' => 'form-label']) }}
-                            {{ Form::textarea('notes', null, ['class' => 'form-control', 'rows' => 2, 'placeholder' => __('Enter Additional Notes')]) }}
+                            <div class="form-group col-md-6 col-lg-4">
+                                {{ Form::label('condition', __('Asset Condition'), ['class' => 'form-label']) }}
+                                {{ Form::text('condition', null, ['class' => 'form-control', 'placeholder' => __('Enter Asset Condition')]) }}
+                            </div>
+
+                            <div class="form-group col-md-6 col-lg-4">
+                                {{ Form::label('status', __('Status'), ['class' => 'form-label']) }}
+                                {{ Form::select('status', ['active' => 'Active', 'sold' => 'Sold', 'under_maintenance' => 'Under Maintenance'], null, ['class' => 'form-control hidesearch', 'placeholder' => __('Select Status')]) }}
+                            </div>
+
+                            <div class="form-group col-md-6 col-lg-4">
+                                {{ Form::label('notes', __('Additional Notes'), ['class' => 'form-label']) }}
+                                {{ Form::textarea('notes', null, ['class' => 'form-control', 'rows' => 2, 'placeholder' => __('Enter Additional Notes')]) }}
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-    
-    <div class="col-lg-12">
-        <div class="group-button text-end">
-            {{ Form::submit(__('Create Asset'), ['class' => 'btn btn-primary btn-rounded']) }}
+
+        <div class="col-lg-12">
+            <div class="group-button text-end">
+                {{ Form::submit(__('Create Asset'), ['class' => 'btn btn-primary btn-rounded']) }}
+            </div>
         </div>
     </div>
-</div>
-{{ Form::close() }}
-
-
+    {{ Form::close() }}
 @endsection

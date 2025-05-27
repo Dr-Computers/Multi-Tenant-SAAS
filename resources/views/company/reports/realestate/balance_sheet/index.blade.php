@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.company')
 
 @section('page-title')
     {{ __('Balance Sheet') }}

@@ -1,25 +1,21 @@
-@extends('layouts.app')
+@extends('layouts.company')
 @section('page-title')
-    {{__('Securit Deposiot')}}
+    {{ __('Securit Deposiot') }}
 @endsection
 @section('breadcrumb')
     <ul class="breadcrumb mb-0">
         <li class="breadcrumb-item">
-            <a href="{{route('dashboard')}}"><h1>{{__('Dashboard')}}</h1></a>
+            <a href="{{ route('dashboard') }}">
+                <h1>{{ __('Dashboard') }}</h1>
+            </a>
         </li>
         <li class="breadcrumb-item active">
-            <a href="#">{{__('Security Deposit Report')}}</a>
+            <a href="#">{{ __('Security Deposit Report') }}</a>
         </li>
     </ul>
 @endsection
-<script>
-    var base64Image = @json(getBase64Image());
-    console.error(base64Image);
-    if (base64Image) {
-        console.error('Base64 image is done');
-    }
-</script>
-<script>
+
+{{-- <script>
        $('#property_id').on('change', function() {
                 console.log("called fucntion");
 
@@ -66,22 +62,23 @@
                 });
             });
       
-    </script>
-</script>
+    </script> --}}
+
 @section('content')
     <div class="row">
         <div class="col-12">
             <div class="card">
                 <div class="card-body">
-                    <form method="GET" action="{{ route('report.deposit.payments.index') }}">
+                    <form method="GET" action="{{ route('company.report.deposit.payments.index') }}">
                         <div class="row">
                             <!-- Tenant Filter -->
                             <div class="col-md-3">
                                 <select name="tenant_id" class="form-control">
                                     <option value="">Select Tenant</option>
-                                    @foreach($tenants as $tenant)
-                                        <option value="{{ $tenant->id }}" {{ request('tenant_id') == $tenant->id ? 'selected' : '' }}>
-                                            {{ $tenant->user->first_name }} {{ $tenant->user->last_name }}
+                                    @foreach ($tenants as $tenant)
+                                        <option value="{{ $tenant->id }}"
+                                            {{ request('tenant_id') == $tenant->id ? 'selected' : '' }}>
+                                            {{ $tenant->name }}
                                         </option>
                                     @endforeach
                                 </select>
@@ -91,8 +88,9 @@
                             <div class="col-md-3">
                                 <select name="property_id" class="form-control" id="property_id">
                                     <option value="">Select Property</option>
-                                    @foreach($properties as $property)
-                                        <option value="{{ $property->id }}" {{ request('property_id') == $property->id ? 'selected' : '' }}>
+                                    @foreach ($properties as $property)
+                                        <option value="{{ $property->id }}"
+                                            {{ request('property_id') == $property->id ? 'selected' : '' }}>
                                             {{ $property->name }}
                                         </option>
                                     @endforeach
@@ -103,16 +101,17 @@
                             <div class="col-md-3">
                                 <select name="unit_id" class="form-control" id="unit_id">
                                     <option value="">Select Unit</option>
-                                 
+
                                     <option value="">{{ __('Select Unit') }}</option>
-                                  
+
                                 </select>
                             </div>
 
 
                             <!-- Date Filters -->
                             <div class="col-md-3">
-                                <input type="date" name="date_from" class="form-control" value="{{ request('date_from') }}">
+                                <input type="date" name="date_from" class="form-control"
+                                    value="{{ request('date_from') }}">
                             </div>
                             <div class="col-md-3">
                                 <input type="date" name="date_to" class="form-control" value="{{ request('date_to') }}">
@@ -125,38 +124,40 @@
                         </div>
                     </form>
 
-                    <div class="table-responsive mt-3">
-                        <table class="display dataTable cell-border datatbl-advance" data-report-name="Deposit Payment Report">
+                    <div class="table-responsive mt-4">
+                        <table class="table ">
                             <thead>
                                 <tr>
-                                    <th>{{__('Payment Date')}}</th>
-                                    <th>{{__('Amount')}}</th>
-                                    <th>{{__('Type')}}</th>
-                                    <th>{{__('Property')}}</th>
-                                    <th>{{__('Unit')}}</th>
-                                    <th>{{__('Tenant')}}</th>
-                                    <th>{{__('Note')}}</th>
+                                    <th>{{ __('Payment Date') }}</th>
+                                    <th>{{ __('Amount') }}</th>
+                                    <th>{{ __('Type') }}</th>
+                                    <th>{{ __('Property') }}</th>
+                                    <th>{{ __('Unit') }}</th>
+                                    <th>{{ __('Tenant') }}</th>
+                                    <th>{{ __('Note') }}</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach($payments as $payment)
+                                @foreach ($payments as $payment)
                                     <tr>
                                         <td>{{ \Carbon\Carbon::parse($payment->payment_date)->format('Y-m-d') }}</td>
                                         <td>{{ priceFormat($payment->amount) }}</td>
                                         <td>
-                                            @if($payment->payment_type == 'cash')
+                                            @if ($payment->payment_type == 'cash')
                                                 <span class="badge badge-success">Cash</span>
                                             @elseif($payment->payment_type == 'cheque')
                                                 <span class="badge badge-info">Cheque</span>
                                             @elseif($payment->payment_type == 'bank_transfer')
                                                 <span class="badge badge-secondary">Bank Transfer</span>
                                             @else
-                                                <span class="badge badge-light text-dark">{{ $payment->payment_type }}</span>
+                                                <span
+                                                    class="badge badge-light text-dark">{{ $payment->payment_type }}</span>
                                             @endif
                                         </td>
                                         <td>{{ optional($payment->property)->name ?? 'N/A' }}</td>
                                         <td>{{ optional($payment->unit)->name ?? 'N/A' }}</td>
-                                        <td>{{ optional(optional(optional($payment->unit))->tenant)->user->first_name ?? 'N/A' }}</td>
+                                        <td>{{ optional(optional(optional($payment->unit))->tenant)->user->first_name ?? 'N/A' }}
+                                        </td>
                                         <td>{{ $payment->notes ?? 'N/A' }}</td>
                                     </tr>
                                 @endforeach
@@ -174,12 +175,13 @@
                                 </tr>
                             </tfoot>
                         </table>
-                        {{-- <div class="d-flex justify-content-end" style="margin-top: 10px;">
+                    </div>
+                    {{-- <div class="d-flex justify-content-end" style="margin-top: 10px;">
                             {!! $payments->links() !!}
                         </div> --}}
-                    </div>
                 </div>
             </div>
         </div>
+    </div>
     </div>
 @endsection

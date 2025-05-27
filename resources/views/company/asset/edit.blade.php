@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.company')
 @section('page-title')
     {{ __('Invoice') }}
 @endsection
@@ -17,8 +17,8 @@
 @push('script-page')
     <script src="{{ asset('js/jquery-ui.min.js') }}"></script>
     <script src="{{ asset('js/jquery.repeater.min.js') }}"></script>
-    
-
+   
+      
 
     <script>
         var selector = "body";
@@ -59,7 +59,7 @@
             }
         }
     </script>
-  
+   
 @endpush
 <style>
     .readonly-field {
@@ -77,7 +77,7 @@
             </a>
         </li>
         <li class="breadcrumb-item">
-            <a href="{{ route('liabilities.index') }}">{{ __('Liability') }}</a>
+            <a href="{{ route('company.assets.index') }}">{{ __('Assets') }}</a>
         </li>
         <li class="breadcrumb-item active">
             <a href="#">{{ __('Edit') }}</a>
@@ -88,7 +88,7 @@
 @section('content')
 
 
-    {{ Form::model($liability, ['route' => ['liabilities.update', $liability->id], 'method' => 'PUT', 'enctype' => 'multipart/form-data']) }}
+    {{ Form::model($asset, ['route' => ['company.assets.update', $asset->id], 'method' => 'PUT', 'enctype' => 'multipart/form-data']) }}
 
     <div class="row">
         <div class="col-lg-12">
@@ -97,16 +97,21 @@
                     <div class="info-group">
                         <dv class="row">
                             <div class="form-group col-md-6 col-lg-4">
-                                {{ Form::label('liability_name', __('Liability Name/Description '), ['class' => 'form-label']) }}
+                                {{ Form::label('name', __('Asset Name/Description'), ['class' => 'form-label']) }}
                                 <span class="text-danger">*</span>
-                                {{ Form::text('name', null, ['class' => 'form-control', 'required' => 'required', 'placeholder' => __('Enter Liability Name')]) }}
+                                {{ Form::text('name', null, ['class' => 'form-control', 'required' => 'required', 'placeholder' => __('Enter Asset Name')]) }}
                             </div>
-    
+                            
                             <div class="form-group col-md-6 col-lg-4">
-                                {{ Form::label('liability_type', __('Liability Type '), ['class' => 'form-label']) }}
+                                {{ Form::label('type', __('Asset Type'), ['class' => 'form-label', 'escape' => false]) }}
                                 <span class="text-danger">*</span>
-                                {{ Form::text('type', null, ['class' => 'form-control', 'required' => 'required', 'placeholder' => __('Enter Liability Type')]) }}
+                               {{ Form::select('type', [
+                                    'fixed_asset' => __('Fixed Asset'), 
+                                    'current_asset' => __('Current Asset'), 
+                                    'bank' => __('Bank')
+                                ], null, ['class' => 'form-control', 'required' => 'required', 'placeholder' => __('Select Asset Type')]) }}
                             </div>
+                            
     
                             <div class="form-group col-md-6 col-lg-4">
                                 {{ Form::label('property_id', __('Property ID'), ['class' => 'form-label']) }}
@@ -114,15 +119,18 @@
                             </div>
     
                             <div class="form-group col-md-6 col-lg-4">
-                                {{ Form::label('amount', __('Amount '), ['class' => 'form-label']) }}
-                                <span class="text-danger">*</span>
-                                {{ Form::number('amount', null, ['class' => 'form-control', 'required' => 'required', 'step' => '0.01', 'placeholder' => __('Enter Amount')]) }}
+                                {{ Form::label('location', __('Location'), ['class' => 'form-label']) }}
+                                {{ Form::text('location', null, ['class' => 'form-control', 'placeholder' => __('Enter Location')]) }}
                             </div>
     
                             <div class="form-group col-md-6 col-lg-4">
-                                {{ Form::label('due_date', __('Due Date '), ['class' => 'form-label']) }}
-                                <span class="text-danger">*</span>
-                                {{ Form::date('due_date', null, ['class' => 'form-control', 'required' => 'required']) }}
+                                {{ Form::label('purchase_date', __('Purchase Date'), ['class' => 'form-label']) }}
+                                {{ Form::date('purchase_date', null, ['class' => 'form-control']) }}
+                            </div>
+    
+                            <div class="form-group col-md-6 col-lg-4">
+                                {{ Form::label('purchase_price', __('Purchase Price'), ['class' => 'form-label']) }}
+                                {{ Form::number('purchase_price', null, ['class' => 'form-control', 'step' => '0.01', 'placeholder' => __('Enter Purchase Price')]) }}
                             </div>
     
                             <div class="form-group col-md-6 col-lg-4">
@@ -131,19 +139,39 @@
                             </div>
     
                             <div class="form-group col-md-6 col-lg-4">
-                                {{ Form::label('interest_rate', __('Interest Rate (%)'), ['class' => 'form-label']) }}
-                                {{ Form::number('interest_rate', null, ['class' => 'form-control', 'step' => '0.01', 'placeholder' => __('Enter Interest Rate')]) }}
-                            </div>
-                        
-                            <div class="form-group col-md-6 col-lg-4">
-                                {{ Form::label('payment_terms', __('Payment Terms'), ['class' => 'form-label']) }}
-                                {{ Form::text('payment_terms', null, ['class' => 'form-control', 'placeholder' => __('Enter Payment Terms')]) }}
+                                {{ Form::label('initial_value', __('Initial Value '), ['class' => 'form-label']) }}
+                                <span class="text-danger">*</span>
+                                {{ Form::number('initial_value', null, ['class' => 'form-control', 'required' => 'required', 'step' => '0.01', 'placeholder' => __('Enter Initial Value')]) }}
                             </div>
     
                             <div class="form-group col-md-6 col-lg-4">
-                                {{ Form::label('status', __('Status '), ['class' => 'form-label']) }}
-                                <span class="text-danger">*</span>
-                                {{ Form::select('status', ['active' => 'Active', 'paid' => 'Paid', 'overdue' => 'Overdue'], null, ['class' => 'form-control hidesearch', 'required' => 'required', 'placeholder' => __('Select Status')]) }}
+                                {{ Form::label('current_market_value', __('Current Market Value'), ['class' => 'form-label']) }}
+                                {{ Form::number('current_market_value', null, ['class' => 'form-control', 'step' => '0.01', 'placeholder' => __('Enter Current Market Value')]) }}
+                            </div>
+    
+                            <div class="form-group col-md-6 col-lg-4">
+                                {{ Form::label('accumulated_depreciation', __('Accumulated Depreciation'), ['class' => 'form-label']) }}
+                                {{ Form::number('accumulated_depreciation', null, ['class' => 'form-control', 'step' => '0.01', 'placeholder' => __('Enter Accumulated Depreciation')]) }}
+                            </div>
+    
+                            <div class="form-group col-md-6 col-lg-4">
+                                {{ Form::label('owner_name', __('Owner Name'), ['class' => 'form-label']) }}
+                                {{ Form::text('owner_name', null, ['class' => 'form-control', 'placeholder' => __('Enter Owner Name')]) }}
+                            </div>
+    
+                            <div class="form-group col-md-6 col-lg-4">
+                                {{ Form::label('title_deed_number', __('Title Deed Number'), ['class' => 'form-label']) }}
+                                {{ Form::text('title_deed_number', null, ['class' => 'form-control', 'placeholder' => __('Enter Title Deed Number')]) }}
+                            </div>
+    
+                            <div class="form-group col-md-6 col-lg-4">
+                                {{ Form::label('condition', __('Asset Condition'), ['class' => 'form-label']) }}
+                                {{ Form::text('condition', null, ['class' => 'form-control', 'placeholder' => __('Enter Asset Condition')]) }}
+                            </div>
+    
+                            <div class="form-group col-md-6 col-lg-4">
+                                {{ Form::label('status', __('Status'), ['class' => 'form-label']) }}
+                                {{ Form::select('status', ['active' => 'Active', 'sold' => 'Sold', 'under_maintenance' => 'Under Maintenance'], null, ['class' => 'form-control hidesearch', 'placeholder' => __('Select Status')]) }}
                             </div>
     
                             <div class="form-group col-md-6 col-lg-4">

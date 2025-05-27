@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.company')
 @section('page-title')
     {{ __('Invoice') }}
 @endsection
@@ -14,13 +14,7 @@
         </li>
     </ul>
 @endsection
-<script>
-    var base64Image = @json(getBase64Image());
-    console.error(base64Image);
-    if (base64Image) {
-        console.error('Base64 image is done');
-    }
-</script>
+
 @section('content')
     <div class="row">
        
@@ -35,7 +29,7 @@
         </div> --}}
         <div style="display: flex; gap: 20px; align-items: center; flex-wrap: wrap; margin-bottom: 20px;">
             <span style="font-size: 14px; font-weight: bold;">Building:</span>
-            <form method="GET" action="{{ route('reports.lease-expiry') }}">
+            <form method="GET" action="">
             <select id="property" name="property" style="padding: 5px; font-size: 14px;">
                 <option value="" disabled selected>--Select--</option>
                 @foreach($filterProperty as $property)
@@ -47,7 +41,7 @@
             <select id="tenant" name="tenant" style="padding: 5px; font-size: 14px;  min-width: 150px; max-width: 200px; flex-shrink: 0;">
                 <option value="" disabled selected>--Select--</option>
                 @foreach($filterTenant as $tenant)
-                <option value="{{$tenant->id}}" {{ request('tenant') == $tenant->id ? 'selected' : '' }}>{{$tenant->user->first_name . ' ' . $tenant->user->last_name}}</option>
+                <option value="{{$tenant->id}}" {{ request('tenant') == $tenant->id ? 'selected' : '' }}>{{$tenant->name}}</option>
                 @endforeach
             </select>
         
@@ -61,15 +55,15 @@
                 {{ __('Filter') }}
             </button>
             </form>
-            <a href="{{ route('reports.lease-expiry') }}" class="btn btn-secondary btn-sm">
+            <a href="" class="btn btn-secondary btn-sm">
                 {{ __('Clear') }}
             </a>
         </div>
         <div class="col-12">
             <div class="card">
-                <div class="card-body">
+                <div class="card-body ">
                     <div class="table-responsive">
-                        <table class="display dataTable cell-border datatbl-advance transaction-table reports-table" data-report-name="Lease Expiry Report">
+                        <table class="table ">
                             <thead>
                                 <tr>
                                     <th>Lease Expiry Date</th>
@@ -89,9 +83,9 @@
                                     <tr>
                                         <td>{{ \Carbon\Carbon::parse($lease->lease_end_date)->format('Y-m-d') }}
                                         </td>
-                                        <td>{{ $lease->tenant->user->first_name }} {{ $lease->tenant->user->last_name }}
+                                        <td>{{ $lease->tenant->name }}
                                         </td>
-                                        <td>{{ $lease->tenant->user->email }}</td>
+                                        <td>{{ $lease->tenant->email }}</td>
 
                                         <td>{{ optional(optional($lease->unitLease)->properties)->name ?? 'N/A' }}</td>
 

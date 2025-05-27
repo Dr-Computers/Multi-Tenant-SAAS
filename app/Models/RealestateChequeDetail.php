@@ -15,4 +15,8 @@ class RealestateChequeDetail extends Model
     public function chequeImage(){
         return $this->hasOne(MediaFile::class,'id','cheque_image');
     }
+
+    public function tenant(){
+        return $this->hasOne(User::class,'id','tenant_id');
+    }
 }

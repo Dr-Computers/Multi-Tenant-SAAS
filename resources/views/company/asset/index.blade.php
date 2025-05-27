@@ -14,11 +14,11 @@
         </li>
     </ul>
 @endsection
-@section('card-action-btn')
-    @can('create asset')
-        <a class="btn btn-primary btn-sm ml-20" href="{{ route('assets.create') }}"> <i
-                class="ti-plus mr-5"></i>{{ __('Create Asset') }}</a>
-    @endcan
+@section('action-btn')
+    {{-- @can('create asset') --}}
+    <a class="btn btn-primary btn-sm ml-20" href="{{ route('company.assets.create') }}"> <i
+            class="ti ti-plus "></i>{{ __('Create Asset') }}</a>
+    {{-- @endcan --}}
 @endsection
 @section('content')
     <div class="row">
@@ -39,9 +39,9 @@
                                 <th>Market Value</th>
                                 <th>Vendor Name</th>
 
-                                @if (Gate::check('edit asset') || Gate::check('delete asset') || Gate::check('show asset'))
+                                {{-- @if (Gate::check('edit asset') || Gate::check('delete asset') || Gate::check('show asset')) --}}
                                     <th class="text-right">{{ __('Action') }}</th>
-                                @endif
+                                {{-- @endif --}}
                             </tr>
                         </thead>
                         <tbody>
@@ -70,26 +70,26 @@
                                     <td>{{ $asset->current_market_value ? priceFormat($asset->current_market_value) : 'N/A' }}
                                     </td>
                                     <td>{{ $asset->vendor_name ? $asset->vendor_name : 'N/A' }}</td>
-                                    @if (Gate::check('edit asset') || Gate::check('delete asset') || Gate::check('show asset'))
+                                    {{-- @if (Gate::check('edit asset') || Gate::check('delete asset') || Gate::check('show asset')) --}}
                                         <td class="text-right">
                                             <div class="cart-action">
-                                                {!! Form::open(['method' => 'DELETE', 'route' => ['assets.destroy', $asset->id]]) !!}
+                                                {!! Form::open(['method' => 'DELETE', 'route' => ['company.assets.destroy', $asset->id]]) !!}
 
-                                                @can('edit asset')
-                                                    <a class="text-success" href="{{ route('assets.edit', $asset->id) }}"
+                                                {{-- @can('edit asset') --}}
+                                                    <a class="text-success" href="{{ route('company.assets.edit', $asset->id) }}"
                                                         data-bs-toggle="tooltip" data-bs-original-title="{{ __('Edit') }}">
                                                         <i data-feather="edit"></i></a>
-                                                @endcan
-                                                @can('delete asset')
-                                                    <a class=" text-danger confirm_dialog" data-bs-toggle="tooltip"
+                                                {{-- @endcan
+                                                @can('delete asset') --}}
+                                                    <a class=" text-danger bs-pass-para" data-bs-toggle="tooltip"
                                                         data-bs-original-title="{{ __('Detete') }}" href="#"> <i
                                                             data-feather="trash-2"></i></a>
-                                                @endcan
+                                                {{-- @endcan --}}
                                                 {!! Form::close() !!}
                                             </div>
 
                                         </td>
-                                    @endif
+                                    {{-- @endif --}}
                                 </tr>
                                 <?php $count++; ?>
                             @empty

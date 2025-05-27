@@ -1,14 +1,15 @@
 <?php
 
-use App\Http\Controllers\Company\Finance\AssetController;
+use App\Http\Controllers\Company\AssetController;
 use App\Http\Controllers\Company\Realestate\InvoiceController;
 use App\Http\Controllers\Company\Realestate\OtherInvoiceController;
 use App\Http\Controllers\Company\Realestate\PropertyController;
 use App\Http\Controllers\Company\Finance\BankAccountController;
 use App\Http\Controllers\Company\Finance\ExpenseController;
-use App\Http\Controllers\Company\Finance\LiabilityController;
+use App\Http\Controllers\Company\LiabilityController;
 use App\Http\Controllers\Company\Realestate\PaymentController;
 use App\Http\Controllers\Company\Realestate\PaymentPayableController;
+use App\Http\Controllers\Company\Realestate\ReportController;
 use Illuminate\Support\Facades\Route;
 
 Route::group(
@@ -149,21 +150,21 @@ Route::group(
             Route::get('/bank-account/details', [BankAccountController::class, 'getAccountDetails'])->name('bank-account.fetchdetails');
             Route::resource('bank-accounts', BankAccountController::class);
             Route::resource('expense', ExpenseController::class);
-
-            Route::get('asset-list', [AssetController::class, 'index'])->name('assets.index');
-            Route::get('assets/create', [AssetController::class, 'create'])->name('assets.create');
-            Route::post('assets/store', [AssetController::class, 'store'])->name('assets.store');
-            Route::get('assets/{id}/edit', [AssetController::class, 'edit'])->name('assets.edit');
-            Route::put('assets/{id}', [AssetController::class, 'update'])->name('assets.update');
-            Route::delete('assets/{id}', [AssetController::class, 'destroy'])->name('assets.destroy');
-
-            Route::get('liabilities', [LiabilityController::class, 'index'])->name('liabilities.index');
-            Route::get('liabilities/create', [LiabilityController::class, 'create'])->name('liabilities.create');
-            Route::post('liabilities/store', [LiabilityController::class, 'store'])->name('liabilities.store');
-            Route::get('liabilities/{id}/edit', [liabilityController::class, 'edit'])->name('liabilities.edit');
-            Route::put('liabilities/{id}', [LiabilityController::class, 'update'])->name('liabilities.update');
-            Route::delete('liabilities/{id}', [LiabilityController::class, 'destroy'])->name('liabilities.destroy');
         });
+
+        Route::get('asset-list', [AssetController::class, 'index'])->name('assets.index');
+        Route::get('assets/create', [AssetController::class, 'create'])->name('assets.create');
+        Route::post('assets/store', [AssetController::class, 'store'])->name('assets.store');
+        Route::get('assets/{id}/edit', [AssetController::class, 'edit'])->name('assets.edit');
+        Route::put('assets/{id}', [AssetController::class, 'update'])->name('assets.update');
+        Route::delete('assets/{id}', [AssetController::class, 'destroy'])->name('assets.destroy');
+
+        Route::get('liabilities', [LiabilityController::class, 'index'])->name('liabilities.index');
+        Route::get('liabilities/create', [LiabilityController::class, 'create'])->name('liabilities.create');
+        Route::post('liabilities/store', [LiabilityController::class, 'store'])->name('liabilities.store');
+        Route::get('liabilities/{id}/edit', [liabilityController::class, 'edit'])->name('liabilities.edit');
+        Route::put('liabilities/{id}', [LiabilityController::class, 'update'])->name('liabilities.update');
+        Route::delete('liabilities/{id}', [LiabilityController::class, 'destroy'])->name('liabilities.destroy');
 
         //Support Ticket 
         Route::group([
@@ -266,7 +267,7 @@ Route::group(
 
                 // Tenants Report
                 Route::get('reports/tenants', [ReportController::class, 'tenantsIndex'])->name('report.tenants.index');
-                Route::get('/reports/lease-expiry', [ReportController::class, 'leaseExpiryReport'])->name('reports.lease-expiry');
+                Route::get('/reports/lease-expiry', [ReportController::class, 'leaseExpiryReport'])->name('report.lease-expiry.index');
                 // Properties Report
                 Route::get('reports/properties', [ReportController::class, 'propertiesIndex'])->name('report.properties.index');
                 Route::get('reports/download', [ReportController::class, 'downloadPropertyReport'])->name('report.properties.download');
@@ -286,18 +287,18 @@ Route::group(
 
 
                 Route::get('reports/bank-transactions', [ReportController::class, 'transactionsIndex'])->name('report.bank_transactions.index');
-                Route::get('/reports/profit-loss', [ReportController::class, 'profitLossIndex'])->name('report.profit_loss.index')->middleware('can:view profit and loss report');
-                Route::get('/reports/balance-sheet', [ReportController::class, 'balanceSheetIndex'])->name('report.balance_sheet.index')->middleware('can:view balance sheet report');
+                Route::get('/reports/profit-loss', [ReportController::class, 'profitLossIndex'])->name('report.profit_loss.index');
+                Route::get('/reports/balance-sheet', [ReportController::class, 'balanceSheetIndex'])->name('report.balance_sheet.index');
                 Route::get('report/profit_loss/download_pdf', [ReportController::class, 'downloadPdf'])->name('report.profit_loss.download_pdf');
 
                 //Fire And Safety Expiry Report
-                Route::get('/reports/fireandsafety-expiry', [ReportController::class, 'fireandsafetyExpiryReport'])->name('reports.fireandsafety-expiry');
+                Route::get('/reports/fireandsafety-expiry', [ReportController::class, 'fireandsafetyExpiryReport'])->name('report.fireandsafety-expiry.index');
 
                 //Insurance Expiry Report
-                Route::get('/reports/insurance-expiry', [ReportController::class, 'insuranceExpiryReport'])->name('reports.insurance-expiry');
+                Route::get('/reports/insurance-expiry', [ReportController::class, 'insuranceExpiryReport'])->name('report.insurance-expiry.index');
 
                 //Building wise outstanding report
-                Route::get('/reports/invoice-outstanding', [ReportController::class, 'invoiceOutstandingReport'])->name('reports.invoice-outstanding');
+                Route::get('/reports/invoice-outstanding', [ReportController::class, 'invoiceOutstandingReport'])->name('report.invoice-outstanding.index');
 
                 // Route for downloading the Profit and Loss Report as an Excel file
                 Route::get('report/profit_loss/download_excel', [ReportController::class, 'downloadExcel'])->name('report.profit_loss.download_excel');
