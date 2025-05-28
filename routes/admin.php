@@ -33,6 +33,7 @@ Route::group(
 
         Route::post('/permissions-upload', 'PermissionController@upload')->name('permissions.upload');
 
+        Route::any('company-reset-permissions/{id}', 'CompanyController@resetPermissions')->name('company.reset-permissions');
         Route::any('company-reset-password/{id}', 'CompanyController@userPassword')->name('company.reset');
         Route::post('company-reset-password/{id}', 'CompanyController@userPasswordReset')->name('company.password.update');
         Route::post('company-unable', 'CompanyController@UserUnable')->name('company.unable');

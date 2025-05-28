@@ -5,11 +5,13 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\BusinessType;
 use App\Models\Company;
+use App\Models\CompanyPermission;
 use App\Models\CompanySubscription;
 use App\Models\Coupon;
 use App\Models\CustomField;
 use App\Models\Mail\UserCreate;
 use App\Models\Order;
+use App\Models\Permission;
 use App\Models\Plan;
 use App\Models\Role;
 use App\Models\Section;
@@ -29,7 +31,7 @@ use Session;
 use Lab404\Impersonate\Impersonate;
 use App\Traits\Media\HandlesMediaFolders;
 use App\Traits\ActivityLogger;
-
+use Spatie\Permission\PermissionRegistrar;
 
 class  CompanyController extends Controller
 {
@@ -253,6 +255,12 @@ class  CompanyController extends Controller
                 return redirect()->back()->with('error', $messages->first());
             }
 
+            if ($user->roles) {
+                $role_r = Role::findByName('company-' . $user->id);
+                $user->assignRole($role_r);
+       
+            }
+ 
             $input = $request->all();
             $user->fill($input)->save();
 
@@ -786,6 +794,53 @@ class  CompanyController extends Controller
                 'status' => true,
                 'message' => 'Feature removed successfully.'
             ]);
+        } else {
+            return redirect()->back()->with('error', 'Permission denied.');
+        }
+    }
+
+
+    public function resetPermissions(Request $request, $company_id)
+    {
+        if (Auth::user()->can('company details')) {
+            // Find the user associated with this company
+            $user = User::find($company_id); // Assuming $company_id is user ID
+            if (!$user) {
+                return redirect()->back()->with('error', 'User not found.');
+            }
+
+            // Detach all current permissions
+            $user->permissions()->detach();
+        }
+
+
+        // Fetch allowed permission IDs for this company
+        $permissionIds = CompanyPermission::where('company_id', $company_id)->pluck('permission_id');
+        if (!empty($user->roles)) {
+            foreach ($user->roles as $role) {
+                // Optionally, detach all current permissions
+                $role->syncPermissions([]); // This clears existing role permissions
+
+                // Now assign the allowed permissions
+                foreach ($permissionIds as $permissionId) {
+                    $permission = Permission::find($permissionId);
+                    if ($permission) {
+                        $role->givePermissionTo($permission);
+                 
+                    }
+                }
+            }
+
+            // If you need permission names (Spatie expects names), retrieve them:
+            $permissionNames = Permission::whereIn('id', $permissionIds)->pluck('name')->toArray();
+
+            // Assign permissions back to the user
+            $user->givePermissionTo($permissionNames);
+
+            // Clear cached permissions
+            app()[PermissionRegistrar::class]->forgetCachedPermissions();
+
+            return redirect()->back()->with('success', 'Permissions reset successfully.');
         } else {
             return redirect()->back()->with('error', 'Permission denied.');
         }

@@ -68,6 +68,12 @@
                                                             <i class="ti ti-coin"></i>
                                                             {{ __('Upgrade Plan') }}</a>
                                                     @endcan
+                                                    @can('company details')
+                                                        <a href="{{ route('admin.company.reset-permissions', $user->id) }}"
+                                                            class="dropdown-item">
+                                                            <i class="ti ti-refresh"></i>
+                                                            {{ __('Reset Permissions') }}</a>
+                                                    @endcan
                                                     @can('login as company')
                                                         <a href="{{ route('admin.company.login', $user->id) }}"
                                                             class="dropdown-item"
