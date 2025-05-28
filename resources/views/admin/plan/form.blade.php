@@ -140,7 +140,7 @@
                                                     class="form-check-input input-primary pointer"
                                                     value="{{ $section->id }}" id="section_{{ $section->id }}"
                                                     {{ isset($plan) && $plan->module_section && in_array($section->id, $plan->module_section->pluck('section_id')->toArray()) ? 'checked' : '' }}>
-                                                <label class="form-check-label text-sm"
+                                                <label class="form-check-label text-sm text-capitalize"
                                                     for="section_{{ $section->id }}">{{ $section->name }}</label>
                                             </div>
                                         </div>

@@ -126,6 +126,20 @@ class Company extends Model
         $subscriptionOrder->max_storage_capacity = $plan->storage_limit ?? 0;
         $subscriptionOrder->status = 1; // Active
         $subscriptionOrder->save();
+
+        if ($plan) {
+            foreach ($plan->module_section ?? [] as $section) {
+                foreach ($section->section->permissions ?? [] as $permission) {
+                    $companyPermission = CompanyPermission::where('permission_id', $permission->id)->where('company_id', $company_id)->first();
+                    if (!$companyPermission) {
+                        $companyPermission                  = new CompanyPermission();
+                        $companyPermission->permission_id   = $permission->id;
+                        $companyPermission->company_id      = $company_id;
+                        $companyPermission->save();
+                    }
+                }
+            }
+        }
     }
 
 
@@ -172,9 +186,7 @@ class Company extends Model
             } else {
                 // Ensure section_validity is parsed as Carbon
                 $validity = Carbon::parse($subSection->section_validity);
-
                 if ($subSection->status == 1 && $validity->isFuture()) {
-
                     // If active and still valid, extend validity
                     $subSection->section_validity = $validity->addMonth();
                 } else {
@@ -182,8 +194,18 @@ class Company extends Model
                     $subSection->section_validity = Carbon::now()->addMonth();
                 }
             }
-
             $subSection->save();
+            if ($subSection) {
+                foreach ($subSection->section->permissions ?? [] as $permission) {
+                    $companyPermission = CompanyPermission::where('permission_id', $permission->id)->where('company_id', $company_id)->first();
+                    if (!$companyPermission) {
+                        $companyPermission                  = new CompanyPermission();
+                        $companyPermission->permission_id   = $permission->id;
+                        $companyPermission->company_id      = $company_id;
+                        $companyPermission->save();
+                    }
+                }
+            }
         }
 
 

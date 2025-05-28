@@ -11,13 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('sections', function (Blueprint $table) {
+        Schema::create('section_permissions', function (Blueprint $table) {
             $table->id();
-            $table->string('category');
-            $table->string('name');
-            $table->string('price');
-            $table->string('duration')->comment('monthly,yearly')->nullable();
-            $table->timestamps();
+            $table->foreignId('section_id')->constrained('sections')->onDelete('cascade');
+            $table->foreignId('permission_id')->constrained('permissions')->onDelete('cascade');
         });
     }
 
@@ -26,6 +23,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('sections');
+        Schema::dropIfExists('section_permissions');
     }
 };

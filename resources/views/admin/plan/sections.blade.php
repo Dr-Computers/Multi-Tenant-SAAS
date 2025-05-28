@@ -15,6 +15,16 @@
     <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">{{ __('Dashboard') }}</a></li>
     <li class="breadcrumb-item">{{ __('Sections') }}</li>
 @endsection
+@section('action-btn')
+    <div class="d-flex">
+        @can('create permission')
+            <a href="#" data-size="md" data-url="{{ route('admin.plans.sections.create') }}" data-ajax-popup2="true"
+                data-bs-toggle="tooltip" title="{{ __('Import Sections') }}" class="btn btn-sm btn-primary me-2">
+                <i class="ti ti-plus"></i> {{ __('Import Sections') }}
+            </a>
+        @endcan
+    </div>
+@endsection
 @section('content')
     <div class="row">
         <div class="col-sm-12">
@@ -29,6 +39,7 @@
                                         <th>{{ __('Category') }}</th>
                                         <th>{{ __('Name') }}</th>
                                         <th>{{ __('Price') }}</th>
+                                        <th>{{ __('Duration') }}</th>
                                         <th class="text-center">{{ __('Action') }}</th>
                                     </tr>
                                 </thead>
@@ -36,14 +47,15 @@
                                     @foreach ($sections as $key => $section)
                                         <tr>
                                             <td>{{ $key + 1 }}</td>
-                                            <td>{{ $section->category }}</td>
-                                            <td>{{ $section->name }}</td>
+                                            <td class="text-capitalize">{{ $section->category }}</td>
+                                            <td class="text-capitalize">{{ $section->name }}</td>
                                             <td>{{ $section->price . ' ' . $currency_symbol }}</td>
+                                            <td class="text-capitalize">{{ $section->duration }}</td>
                                             <td class="text-center">
                                                 @can('edit section')
-                                                    <a href="#!" data-size="md" 
+                                                    <a href="#!" data-size="xl"
                                                         data-url="{{ route('admin.plans.section-edit', $section->id) }}"
-                                                        data-ajax-popup="true" class="btn-sm btn btn-info"
+                                                        data-ajax-popup2="true" class="btn-sm btn btn-info"
                                                         data-bs-original-title="{{ __('Edit Section') }}">
                                                         <i class="ti ti-pencil"></i>
                                                         <span>{{ __('Edit') }}</span>

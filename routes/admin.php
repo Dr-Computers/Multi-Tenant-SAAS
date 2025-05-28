@@ -91,6 +91,8 @@ Route::group(
         Route::post('company-email-settings', 'SystemController@saveCompanyEmailSetting')->name('company.email.settings');
 
 
+        Route::get('plan/sections/import', 'PlanController@SectionForm')->name('plans.sections.create');
+        Route::post('plan/sections/import', 'PlanController@sectionUpload')->name('plans.sections.import');
 
         Route::get('plan/sections/{id}', 'PlanController@SectionEdit')->name('plans.section-edit');
         Route::put('plan/sections/{id}', 'PlanController@sectionUpdate')->name('plans.section.update');

@@ -1120,77 +1120,77 @@ class Utility extends Model
 
     public static function addNewData()
     {
-        \Artisan::call('cache:forget spatie.permission.cache');
-        \Artisan::call('cache:clear');
-        $usr = \Auth::user();
+        // \Artisan::call('cache:forget spatie.permission.cache');
+        // \Artisan::call('cache:clear');
+        // $usr = \Auth::user();
 
-        $arrPermissions = [
-            'manage budget planner',
-            'create budget planner',
-            'edit budget planner',
-            'delete budget planner',
-            'view budget planner',
-            'stock report',
-            'manage contract',
-            'manage customer contract',
-            'create contract',
-            'edit contract',
-            'delete contract',
-            'show contract',
-            'duplicate contract',
-            'delete attachment',
-            'delete comment',
-            'delete notes',
-            'contract description',
-            'upload attachment',
-            'add comment',
-            'add notes',
-            'send contract mail',
-            'manage retainer',
+        // $arrPermissions = [
+        //     'manage budget planner',
+        //     'create budget planner',
+        //     'edit budget planner',
+        //     'delete budget planner',
+        //     'view budget planner',
+        //     'stock report',
+        //     'manage contract',
+        //     'manage customer contract',
+        //     'create contract',
+        //     'edit contract',
+        //     'delete contract',
+        //     'show contract',
+        //     'duplicate contract',
+        //     'delete attachment',
+        //     'delete comment',
+        //     'delete notes',
+        //     'contract description',
+        //     'upload attachment',
+        //     'add comment',
+        //     'add notes',
+        //     'send contract mail',
+        //     'manage retainer',
 
 
-        ];
-        foreach ($arrPermissions as $ap) {
-            // check if permission is not created then create it.
-            $permission = Permission::where('name', 'LIKE', $ap)->first();
-            if (empty($permission)) {
-                Permission::create(['name' => $ap]);
-            }
-        }
-        $companyRole = Role::where('name', 'LIKE', 'company')->first();
+        // ];
+        // foreach ($arrPermissions as $ap) {
+        //     // check if permission is not created then create it.
+        //     $permission = Permission::where('name', 'LIKE', $ap)->first();
+        //     if (empty($permission)) {
+        //         Permission::create(['name' => $ap]);
+        //     }
+        // }
+        // $companyRole = Role::where('name', 'LIKE', 'company')->first();
 
-        $companyPermissions   = $companyRole->getPermissionNames()->toArray();
-        $companyNewPermission = [
-            'manage budget planner',
-            'create budget planner',
-            'edit budget planner',
-            'delete budget planner',
-            'view budget planner',
-            'stock report',
-            'manage contract',
-            'manage customer contract',
-            'create contract',
-            'edit contract',
-            'delete contract',
-            'show contract',
-            'duplicate contract',
-            'delete attachment',
-            'delete comment',
-            'delete notes',
-            'contract description',
-            'upload attachment',
-            'add comment',
-            'add notes',
-            'send contract mail',
-            'manage retainer',
-        ];
-        foreach ($companyNewPermission as $op) {
-            // check if permission is not assign to owner then assign.
-            if (!in_array($op, $companyPermissions)) {
-                $permission = Permission::findByName($op);
-                $companyRole->givePermissionTo($permission);
-            }
-        }
+        // $companyPermissions   = $companyRole->getPermissionNames()->toArray();
+        // $companyNewPermission = [
+        //     'manage budget planner',
+        //     'create budget planner',
+        //     'edit budget planner',
+        //     'delete budget planner',
+        //     'view budget planner',
+        //     'stock report',
+        //     'manage contract',
+        //     'manage customer contract',
+        //     'create contract',
+        //     'edit contract',
+        //     'delete contract',
+        //     'show contract',
+        //     'duplicate contract',
+        //     'delete attachment',
+        //     'delete comment',
+        //     'delete notes',
+        //     'contract description',
+        //     'upload attachment',
+        //     'add comment',
+        //     'add notes',
+        //     'send contract mail',
+        //     'manage retainer',
+        // ];
+        // foreach ($companyNewPermission as $op) {
+        //     // check if permission is not assign to owner then assign.
+        //     if (!in_array($op, $companyPermissions)) {
+        //         $permission = Permission::findByName($op);
+        //         $companyRole->givePermissionTo($permission);
+        //     }
+        // }
     }
 
     // Twilio Notification

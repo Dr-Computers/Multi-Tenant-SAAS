@@ -819,7 +819,7 @@ class  CompanyController extends Controller
 
             $this->logActivity(
                 'Company Feature Purchasing Completed',
-                'Company Id ' . $user->id,
+                'Company Id ' . $company_id,
                 route('admin.company.index'),
                 'Company Feature Purchasing Completed',
                 Auth::user()->creatorId(),

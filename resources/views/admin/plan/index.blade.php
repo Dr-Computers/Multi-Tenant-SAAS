@@ -61,9 +61,9 @@
 
                                                 <div class="dropdown-menu dropdown-menu-end">
                                                     @can('edit plan')
-                                                        <a href="#!" data-size="md"
+                                                        <a href="#!" data-size="lg"
                                                             data-url="{{ route('admin.plans.edit', $plan->id) }}"
-                                                            data-ajax-popup="true" class="dropdown-item"
+                                                            data-ajax-popup2="true" class="dropdown-item"
                                                             data-bs-original-title="{{ __('Edit Plan') }}">
                                                             <i class="ti ti-pencil"></i>
                                                             <span>{{ __('Edit Plan') }}</span>

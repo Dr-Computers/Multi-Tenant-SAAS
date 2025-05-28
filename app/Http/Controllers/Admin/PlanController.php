@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\BusinessType;
+use App\Models\Permission;
 use App\Models\Plan;
 use App\Models\PlanModuleSection;
 use App\Models\Section;
@@ -14,6 +15,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\File;
 use App\Traits\ActivityLogger;
+use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Str;
 
 class PlanController extends Controller
 {
@@ -26,8 +29,9 @@ class PlanController extends Controller
     public function index()
     {
         if (\Auth::user()->can('plan listing')) {
+
             // Extract unique business types based on relationship
-            $businessTypes = BusinessType::get();;
+            $businessTypes = BusinessType::get();
             $plans                 = Plan::orderBy('price', 'asc')->get();
             $admin_payment_setting = Utility::getAdminPaymentSetting();
             return view('admin.plan.index', compact('plans', 'admin_payment_setting', 'businessTypes'));
@@ -48,6 +52,7 @@ class PlanController extends Controller
             ];
             $business_types  = BusinessType::get();
             $sections        = Section::get();
+
             return view('admin.plan.form', compact('arrDuration', 'business_types', 'sections'));
         } else {
             return redirect()->back()->with('error', 'Permission denied.');
@@ -332,11 +337,82 @@ class PlanController extends Controller
     }
 
 
+    public function SectionForm()
+    {
+        return view('admin.plan.section-form');
+    }
+
+    public function sectionUpload(Request $request)
+    {
+
+        $request->validate([
+            'section_file' => 'required|file|mimes:xlsx,csv,txt',
+        ]);
+
+
+
+        $file = $request->file('section_file');
+        $data = Excel::toArray([], $file)[0]; // Read the first sheet or csv
+
+
+        // Skip header
+        $header = array_map('strtolower', array_map('trim', $data[0]));
+        $rows = array_slice($data, 1);
+
+        foreach ($rows as $row) {
+            if (count($row) < 4) {
+                continue; // skip invalid rows
+            }
+
+            $section = trim($row[0]);
+            $name    = trim($row[1]);
+            $price    = trim($row[2]);
+            $duration    = trim($row[3]);
+            if ($section != null && $name != null) {
+                // Optional: check if exists already
+                $existing = Section::where('category', $section)->where('name', $name)->first();
+                if ($existing) {
+                    // Update existing permission
+                    $existing->update([
+                        'category'    => Str::ucfirst(trim($section)),
+                        'name'  => Str::lower(trim($name)),
+                        'price'    => $price ?? 0,
+                        'duration' => $duration ?? 'monthly',
+                        'updated_at'  => now(),
+                    ]);
+                } else {
+                    // Create new permission
+                    Section::create([
+                        'category'      => Str::ucfirst(trim($section)),
+                        'name'          => Str::lower(trim($name)),
+                        'price'         => $price ?? 0,
+                        'duration'      => $duration ?? 'monthly',
+                        'created_at'    => now(),
+                        'updated_at'    => now(),
+                    ]);
+                }
+            }
+        }
+
+        $this->logActivity(
+            'Section File Imported',
+            'File Imported',
+            route('admin.permissions.index'),
+            'New Section File Imported Successfully',
+            Auth::user()->creatorId(),
+            Auth::user()->id
+        );
+
+        return back()->with('success', 'Section File uploaded successfully!');
+    }
+
+
     public function SectionEdit($id)
     {
         if (\Auth::user()->can('edit section')) {
             $section = Section::where('id', $id)->first() ?? abort(404);
-            return view('admin.plan.sections-edit', compact('section'));
+            $permissions = Permission::where('is_company', 1)->get();
+            return view('admin.plan.sections-edit', compact('section','permissions'));
         } else {
             return redirect()->back()->with('error', 'Permission denied.');
         }
@@ -353,10 +429,12 @@ class PlanController extends Controller
                 $section->name     =  $request->name;
                 $section->save();
 
+                $section->permissions()->sync($request->input('permissions', []));
+
                 $this->logActivity(
                     'Feature Section as Updated',
-                    'Feature Section  ' . $plan->name,
-                    route('admin.plans.index'),
+                    'Feature Section  ' . $section->name,
+                    route('admin.plans.sections'),
                     'Feature Sectionas Updated successfully',
                     Auth::user()->creatorId(),
                     Auth::user()->id
