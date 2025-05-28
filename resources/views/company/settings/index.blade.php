@@ -1123,7 +1123,6 @@
                         </form>
                     </div>
                     @endcan
-                    @can('')
                     <!-- Reset Role based allowed permission-->
                     <div id="useradd-7" class="card">
 
