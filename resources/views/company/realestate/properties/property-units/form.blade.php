@@ -25,532 +25,534 @@
 @endsection
 
 @section('content')
-    <div class="row">
-        <div class="col-md-12">
-            <form x-data="formHandler()" @submit.prevent="submitForm($event)" id="propertyFrom"
-                action="{{ $unit->exists ? route('company.realestate.property.units.update', ['property_id' => $property->id, 'unit' => $unit->id]) : route('company.realestate.property.units.store', $property->id) }}"
-                method="POST" enctype="multipart/form-data">
-                @csrf
-                @if ($unit->exists)
-                    @method('PUT')
-                @endif
-                <div class="card">
-                    <div class="card-body row">
+    @canany(['create a unit', 'edit a unit'])
+        <div class="row">
+            <div class="col-md-12">
+                <form x-data="formHandler()" @submit.prevent="submitForm($event)" id="propertyFrom"
+                    action="{{ $unit->exists ? route('company.realestate.property.units.update', ['property_id' => $property->id, 'unit' => $unit->id]) : route('company.realestate.property.units.store', $property->id) }}"
+                    method="POST" enctype="multipart/form-data">
+                    @csrf
+                    @if ($unit->exists)
+                        @method('PUT')
+                    @endif
+                    <div class="card">
+                        <div class="card-body row">
 
-                        <div x-show="showToast" x-transition
-                            :class="toastType === 'success' ? 'bg-success text-light' : 'bg-danger text-light'"
-                            class="fixed top-5 text-white p-3 rounded shadow-lg transition">
-                            <p x-html="toastMessage"></p>
+                            <div x-show="showToast" x-transition
+                                :class="toastType === 'success' ? 'bg-success text-light' : 'bg-danger text-light'"
+                                class="fixed top-5 text-white p-3 rounded shadow-lg transition">
+                                <p x-html="toastMessage"></p>
 
-                        </div>
-                        <div id="loader" class="loader-overlay hidden">
-                            <div class="spinner"></div>
-                        </div>
-                        <!-- Name -->
-                        <div class="form-group col-md-6">
-                            <label for="name">{{ __('Name') }}<sup class="text-danger fs-6 d-none">*</sup></label>
-                            <input form="propertyFrom" type="text" name="name" autocomplete="off"
-                                value="{{ old('name', $unit->name) }}" class="form-control" required>
-                        </div>
-                        <!-- Registration No -->
-                        <div class="form-group col-md-6">
-                            <label for="registration_no">{{ __('Registration No') }}</label>
-                            <input form="propertyFrom" type="text" name="registration_no" autocomplete="off"
-                                value="{{ old('registration_no', $unit->registration_no) }}" class="form-control">
-                        </div>
-                        <div id="room-section" class="mb-3">
-                            <div class="row">
-                                {{-- === Bedrooms Section === --}}
-                                <div class="section col-lg-6 mb-2" x-data="createRoomOptionHandler('bed_room')">
-                                    <label class="mt-3">No. of Bedrooms <sup
-                                            class="text-danger fs-6 d-none">*</sup></label>
-                                    <div class="mt-3">
-                                        <ul class="flex flex-wrap gap-3">
-                                            @for ($i = 1; $i < 5; $i++)
-                                                <li class="relative mb-1">
-                                                    <input class="sr-only peer" form="propertyFrom"
-                                                        @if ($i == 1 || $i == $unit->bed_rooms) checked @endif type="radio"
-                                                        value="{{ $i }}" name="bed_rooms"
-                                                        id="bed_room_{{ $i }}">
-                                                    <label
-                                                        class="mx-1 px-3 py-1 bg-white border border-gray-300 rounded-5 cursor-pointer hover:bg-gray-50 peer-checked:ring-green-500 peer-checked:ring-2 peer-checked:border-transparent"
-                                                        for="bed_room_{{ $i }}">{{ $i }}</label>
-                                                </li>
-                                            @endfor
-
-                                            @if ($unit->bed_rooms > 4)
-                                                <li class="relative mb-1">
-                                                    <input form="propertyFrom" class="sr-only peer" checked type="radio"
-                                                        value="{{ $unit->bed_rooms }}" name="bed_rooms"
-                                                        id="room_{{ $unit->bed_rooms }}">
-                                                    <label
-                                                        class="mx-1 px-3 py-1 bg-white border border-gray-300 rounded-5 cursor-pointer focus:outline-none hover:bg-gray-50 peer-checked:ring-green-500 peer-checked:ring-2 peer-checked:border-transparent"
-                                                        for="room_{{ $unit->bed_rooms }}">{{ $unit->bed_rooms }}</label>
-                                                </li>
-                                            @endif
-
-                                            {{-- Add Other --}}
-                                            <li class="relative mb-1">
-                                                <template x-if="!showInput && !addedOption">
-                                                    <label @click="showInput = true"
-                                                        class="mx-1 px-3 flex items-center py-1 bg-white border border-gray-300 rounded-5 cursor-pointer hover:bg-gray-50">
-                                                        <svg xmlns="http://www.w3.org/2000/svg" width="16"
-                                                            height="16" fill="currentColor" class="bi bi-plus"
-                                                            viewBox="0 0 16 16">
-                                                            <path
-                                                                d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4" />
-                                                        </svg>
-                                                        Add Other
-                                                    </label>
-                                                </template>
-
-                                                <template x-if="showInput">
-                                                    <div class="flex items-center gap-2">
-                                                        <input type="number" x-model="newOption" placeholder="Enter value"
-                                                            class="border border-gray-300 p-2 rounded-md w-20 text-sm focus:ring-blue-500 focus:border-blue-500">
-                                                        <button @click="addOption"
-                                                            class="px-3 py-1 bg-green-500 text-white text-sm rounded-md hover:bg-green-600">Done</button>
-                                                    </div>
-                                                </template>
-
-                                                <template x-if="addedOption">
-                                                    <div class="flex items-center gap-2 relative mb-1">
-                                                        <input class="sr-only peer" type="radio"
-                                                            x-bind:value="addedOption" name="bed_rooms"
-                                                            id="bed_room_other" checked>
-                                                        <label x-text="addedOption"
+                            </div>
+                            <div id="loader" class="loader-overlay hidden">
+                                <div class="spinner"></div>
+                            </div>
+                            <!-- Name -->
+                            <div class="form-group col-md-6">
+                                <label for="name">{{ __('Name') }}<sup class="text-danger fs-6 d-none">*</sup></label>
+                                <input form="propertyFrom" type="text" name="name" autocomplete="off"
+                                    value="{{ old('name', $unit->name) }}" class="form-control" required>
+                            </div>
+                            <!-- Registration No -->
+                            <div class="form-group col-md-6">
+                                <label for="registration_no">{{ __('Registration No') }}</label>
+                                <input form="propertyFrom" type="text" name="registration_no" autocomplete="off"
+                                    value="{{ old('registration_no', $unit->registration_no) }}" class="form-control">
+                            </div>
+                            <div id="room-section" class="mb-3">
+                                <div class="row">
+                                    {{-- === Bedrooms Section === --}}
+                                    <div class="section col-lg-6 mb-2" x-data="createRoomOptionHandler('bed_room')">
+                                        <label class="mt-3">No. of Bedrooms <sup
+                                                class="text-danger fs-6 d-none">*</sup></label>
+                                        <div class="mt-3">
+                                            <ul class="flex flex-wrap gap-3">
+                                                @for ($i = 1; $i < 5; $i++)
+                                                    <li class="relative mb-1">
+                                                        <input class="sr-only peer" form="propertyFrom"
+                                                            @if ($i == 1 || $i == $unit->bed_rooms) checked @endif type="radio"
+                                                            value="{{ $i }}" name="bed_rooms"
+                                                            id="bed_room_{{ $i }}">
+                                                        <label
                                                             class="mx-1 px-3 py-1 bg-white border border-gray-300 rounded-5 cursor-pointer hover:bg-gray-50 peer-checked:ring-green-500 peer-checked:ring-2 peer-checked:border-transparent"
-                                                            for="bed_room_other"></label>
-                                                        <span class="text-blue-500 cursor-pointer" @click="editOption"><i
-                                                                class="fas fa-edit"></i></span>
-                                                    </div>
-                                                </template>
-                                            </li>
-                                        </ul>
+                                                            for="bed_room_{{ $i }}">{{ $i }}</label>
+                                                    </li>
+                                                @endfor
+
+                                                @if ($unit->bed_rooms > 4)
+                                                    <li class="relative mb-1">
+                                                        <input form="propertyFrom" class="sr-only peer" checked type="radio"
+                                                            value="{{ $unit->bed_rooms }}" name="bed_rooms"
+                                                            id="room_{{ $unit->bed_rooms }}">
+                                                        <label
+                                                            class="mx-1 px-3 py-1 bg-white border border-gray-300 rounded-5 cursor-pointer focus:outline-none hover:bg-gray-50 peer-checked:ring-green-500 peer-checked:ring-2 peer-checked:border-transparent"
+                                                            for="room_{{ $unit->bed_rooms }}">{{ $unit->bed_rooms }}</label>
+                                                    </li>
+                                                @endif
+
+                                                {{-- Add Other --}}
+                                                <li class="relative mb-1">
+                                                    <template x-if="!showInput && !addedOption">
+                                                        <label @click="showInput = true"
+                                                            class="mx-1 px-3 flex items-center py-1 bg-white border border-gray-300 rounded-5 cursor-pointer hover:bg-gray-50">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="16"
+                                                                height="16" fill="currentColor" class="bi bi-plus"
+                                                                viewBox="0 0 16 16">
+                                                                <path
+                                                                    d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4" />
+                                                            </svg>
+                                                            Add Other
+                                                        </label>
+                                                    </template>
+
+                                                    <template x-if="showInput">
+                                                        <div class="flex items-center gap-2">
+                                                            <input type="number" x-model="newOption" placeholder="Enter value"
+                                                                class="border border-gray-300 p-2 rounded-md w-20 text-sm focus:ring-blue-500 focus:border-blue-500">
+                                                            <button @click="addOption"
+                                                                class="px-3 py-1 bg-green-500 text-white text-sm rounded-md hover:bg-green-600">Done</button>
+                                                        </div>
+                                                    </template>
+
+                                                    <template x-if="addedOption">
+                                                        <div class="flex items-center gap-2 relative mb-1">
+                                                            <input class="sr-only peer" type="radio"
+                                                                x-bind:value="addedOption" name="bed_rooms"
+                                                                id="bed_room_other" checked>
+                                                            <label x-text="addedOption"
+                                                                class="mx-1 px-3 py-1 bg-white border border-gray-300 rounded-5 cursor-pointer hover:bg-gray-50 peer-checked:ring-green-500 peer-checked:ring-2 peer-checked:border-transparent"
+                                                                for="bed_room_other"></label>
+                                                            <span class="text-blue-500 cursor-pointer" @click="editOption"><i
+                                                                    class="fas fa-edit"></i></span>
+                                                        </div>
+                                                    </template>
+                                                </li>
+                                            </ul>
+                                        </div>
                                     </div>
-                                </div>
 
-                                {{-- === Bathrooms Section === --}}
-                                <div class="section col-lg-6 mb-2" x-data="createRoomOptionHandler('bath_rooms')">
-                                    <label class="mt-3">No. of Bathrooms <sup
-                                            class="text-danger fs-6 d-none">*</sup></label>
-                                    <div class="mt-3">
-                                        <ul class="flex flex-wrap gap-3">
-                                            @for ($i = 1; $i < 5; $i++)
-                                                <li class="relative mb-1">
-                                                    <input class="sr-only peer" form="propertyFrom"
-                                                        @if ($i == 1 || $i == $unit->bath_rooms) checked @endif type="radio"
-                                                        value="{{ $i }}" name="bath_rooms"
-                                                        id="bath_rooms_{{ $i }}">
-                                                    <label
-                                                        class="mx-1 px-3 py-1 bg-white border border-gray-300 rounded-5 cursor-pointer hover:bg-gray-50 peer-checked:ring-green-500 peer-checked:ring-2 peer-checked:border-transparent"
-                                                        for="bath_rooms_{{ $i }}">{{ $i }}</label>
-                                                </li>
-                                            @endfor
-                                            @if ($property->bath_rooms > 4)
-                                                <li class="relative mb-1">
-                                                    <input form="propertyFrom" class="sr-only peer" checked
-                                                        type="radio" value="{{ $property->bath_rooms }}"
-                                                        name="bath_rooms" id="bath_rooms_{{ $property->bath_rooms }}">
-                                                    <label
-                                                        class="mx-1 px-3 py-1 bg-white border border-gray-300 rounded-5 cursor-pointer focus:outline-none hover:bg-gray-50 peer-checked:ring-green-500 peer-checked:ring-2 peer-checked:border-transparent"
-                                                        for="bath_rooms_{{ $property->bath_rooms }}">{{ $property->bath_rooms }}</label>
-                                                </li>
-                                            @endif
-
-                                            <li class="relative mb-1">
-                                                <template x-if="!showInput && !addedOption">
-                                                    <label @click="showInput = true"
-                                                        class="mx-1 px-3 flex items-center py-1 bg-white border border-gray-300 rounded-5 cursor-pointer hover:bg-gray-50">
-                                                        <svg xmlns="http://www.w3.org/2000/svg" width="16"
-                                                            height="16" fill="currentColor" class="bi bi-plus"
-                                                            viewBox="0 0 16 16">
-                                                            <path
-                                                                d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4" />
-                                                        </svg>
-                                                        Add Other
-                                                    </label>
-                                                </template>
-
-                                                <template x-if="showInput">
-                                                    <div class="flex items-center gap-2">
-                                                        <input type="number" x-model="newOption"
-                                                            placeholder="Enter value"
-                                                            class="border border-gray-300 p-2 rounded-md w-20 text-sm focus:ring-blue-500 focus:border-blue-500">
-                                                        <button @click="addOption"
-                                                            class="px-3 py-1 bg-green-500 text-white text-sm rounded-md hover:bg-green-600">Done</button>
-                                                    </div>
-                                                </template>
-
-                                                <template x-if="addedOption">
-                                                    <div class="flex items-center gap-2 relative mb-1">
-                                                        <input class="sr-only peer" type="radio"
-                                                            x-bind:value="addedOption" name="bath_rooms"
-                                                            id="bath_rooms_other" checked>
-                                                        <label x-text="addedOption"
+                                    {{-- === Bathrooms Section === --}}
+                                    <div class="section col-lg-6 mb-2" x-data="createRoomOptionHandler('bath_rooms')">
+                                        <label class="mt-3">No. of Bathrooms <sup
+                                                class="text-danger fs-6 d-none">*</sup></label>
+                                        <div class="mt-3">
+                                            <ul class="flex flex-wrap gap-3">
+                                                @for ($i = 1; $i < 5; $i++)
+                                                    <li class="relative mb-1">
+                                                        <input class="sr-only peer" form="propertyFrom"
+                                                            @if ($i == 1 || $i == $unit->bath_rooms) checked @endif type="radio"
+                                                            value="{{ $i }}" name="bath_rooms"
+                                                            id="bath_rooms_{{ $i }}">
+                                                        <label
                                                             class="mx-1 px-3 py-1 bg-white border border-gray-300 rounded-5 cursor-pointer hover:bg-gray-50 peer-checked:ring-green-500 peer-checked:ring-2 peer-checked:border-transparent"
-                                                            for="bath_rooms_other"></label>
-                                                        <span class="text-blue-500 cursor-pointer" @click="editOption"><i
-                                                                class="fas fa-edit"></i></span>
-                                                    </div>
-                                                </template>
-                                            </li>
-                                        </ul>
+                                                            for="bath_rooms_{{ $i }}">{{ $i }}</label>
+                                                    </li>
+                                                @endfor
+                                                @if ($property->bath_rooms > 4)
+                                                    <li class="relative mb-1">
+                                                        <input form="propertyFrom" class="sr-only peer" checked
+                                                            type="radio" value="{{ $property->bath_rooms }}"
+                                                            name="bath_rooms" id="bath_rooms_{{ $property->bath_rooms }}">
+                                                        <label
+                                                            class="mx-1 px-3 py-1 bg-white border border-gray-300 rounded-5 cursor-pointer focus:outline-none hover:bg-gray-50 peer-checked:ring-green-500 peer-checked:ring-2 peer-checked:border-transparent"
+                                                            for="bath_rooms_{{ $property->bath_rooms }}">{{ $property->bath_rooms }}</label>
+                                                    </li>
+                                                @endif
+
+                                                <li class="relative mb-1">
+                                                    <template x-if="!showInput && !addedOption">
+                                                        <label @click="showInput = true"
+                                                            class="mx-1 px-3 flex items-center py-1 bg-white border border-gray-300 rounded-5 cursor-pointer hover:bg-gray-50">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="16"
+                                                                height="16" fill="currentColor" class="bi bi-plus"
+                                                                viewBox="0 0 16 16">
+                                                                <path
+                                                                    d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4" />
+                                                            </svg>
+                                                            Add Other
+                                                        </label>
+                                                    </template>
+
+                                                    <template x-if="showInput">
+                                                        <div class="flex items-center gap-2">
+                                                            <input type="number" x-model="newOption"
+                                                                placeholder="Enter value"
+                                                                class="border border-gray-300 p-2 rounded-md w-20 text-sm focus:ring-blue-500 focus:border-blue-500">
+                                                            <button @click="addOption"
+                                                                class="px-3 py-1 bg-green-500 text-white text-sm rounded-md hover:bg-green-600">Done</button>
+                                                        </div>
+                                                    </template>
+
+                                                    <template x-if="addedOption">
+                                                        <div class="flex items-center gap-2 relative mb-1">
+                                                            <input class="sr-only peer" type="radio"
+                                                                x-bind:value="addedOption" name="bath_rooms"
+                                                                id="bath_rooms_other" checked>
+                                                            <label x-text="addedOption"
+                                                                class="mx-1 px-3 py-1 bg-white border border-gray-300 rounded-5 cursor-pointer hover:bg-gray-50 peer-checked:ring-green-500 peer-checked:ring-2 peer-checked:border-transparent"
+                                                                for="bath_rooms_other"></label>
+                                                            <span class="text-blue-500 cursor-pointer" @click="editOption"><i
+                                                                    class="fas fa-edit"></i></span>
+                                                        </div>
+                                                    </template>
+                                                </li>
+                                            </ul>
+                                        </div>
                                     </div>
-                                </div>
 
-                                {{-- === Balconies Section === --}}
-                                <div class="section col-lg-6 mb-2" x-data="createRoomOptionHandler('balconies')">
-                                    <label class="mt-3">Balconies <sup class="text-danger fs-6 d-none">*</sup></label>
-                                    <div class="mt-3">
-                                        <ul class="flex flex-wrap gap-3">
-                                            @for ($i = 0; $i < 4; $i++)
-                                                <li class="relative mb-1">
-                                                    <input class="sr-only peer" form="propertyFrom"
-                                                        @if ($i == 0 || $i == $unit->balconies) checked @endif type="radio"
-                                                        value="{{ $i }}" name="balconies"
-                                                        id="balconies_{{ $i }}">
-                                                    <label
-                                                        class="mx-1 px-3 py-1 bg-white border border-gray-300 rounded-5 cursor-pointer hover:bg-gray-50 peer-checked:ring-green-500 peer-checked:ring-2 peer-checked:border-transparent"
-                                                        for="balconies_{{ $i }}">{{ $i }}</label>
-                                                </li>
-                                            @endfor
-                                            @if ($property->balconies > 4)
-                                                <li class="relative mb-1">
-                                                    <input form="propertyFrom" class="sr-only peer" checked
-                                                        type="radio" value="{{ $property->balconies }}"
-                                                        name="balconies" id="balconies_{{ $property->balconies }}">
-                                                    <label
-                                                        class="mx-1 px-3 py-1 bg-white border border-gray-300 rounded-5 cursor-pointer focus:outline-none hover:bg-gray-50 peer-checked:ring-green-500 peer-checked:ring-2 peer-checked:border-transparent"
-                                                        for="balconies_{{ $property->balconies }}">{{ $property->balconies }}</label>
-                                                </li>
-                                            @endif
-
-                                            <li class="relative mb-1">
-                                                <template x-if="!showInput && !addedOption">
-                                                    <label @click="showInput = true"
-                                                        class="mx-1 px-3 flex items-center py-1 bg-white border border-gray-300 rounded-5 cursor-pointer hover:bg-gray-50">
-                                                        <svg xmlns="http://www.w3.org/2000/svg" width="16"
-                                                            height="16" fill="currentColor" class="bi bi-plus"
-                                                            viewBox="0 0 16 16">
-                                                            <path
-                                                                d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4" />
-                                                        </svg>
-                                                        Add Other
-                                                    </label>
-                                                </template>
-
-                                                <template x-if="showInput">
-                                                    <div class="flex items-center gap-2">
-                                                        <input type="number" x-model="newOption"
-                                                            placeholder="Enter value"
-                                                            class="border border-gray-300 p-2 rounded-md w-20 text-sm focus:ring-blue-500 focus:border-blue-500">
-                                                        <button @click="addOption"
-                                                            class="px-3 py-1 bg-green-500 text-white text-sm rounded-md hover:bg-green-600">Done</button>
-                                                    </div>
-                                                </template>
-
-                                                <template x-if="addedOption">
-                                                    <div class="flex items-center gap-2 relative mb-1">
-                                                        <input class="sr-only peer" type="radio"
-                                                            x-bind:value="addedOption" name="balconies"
-                                                            id="balconies_other" checked>
-                                                        <label x-text="addedOption"
+                                    {{-- === Balconies Section === --}}
+                                    <div class="section col-lg-6 mb-2" x-data="createRoomOptionHandler('balconies')">
+                                        <label class="mt-3">Balconies <sup class="text-danger fs-6 d-none">*</sup></label>
+                                        <div class="mt-3">
+                                            <ul class="flex flex-wrap gap-3">
+                                                @for ($i = 0; $i < 4; $i++)
+                                                    <li class="relative mb-1">
+                                                        <input class="sr-only peer" form="propertyFrom"
+                                                            @if ($i == 0 || $i == $unit->balconies) checked @endif type="radio"
+                                                            value="{{ $i }}" name="balconies"
+                                                            id="balconies_{{ $i }}">
+                                                        <label
                                                             class="mx-1 px-3 py-1 bg-white border border-gray-300 rounded-5 cursor-pointer hover:bg-gray-50 peer-checked:ring-green-500 peer-checked:ring-2 peer-checked:border-transparent"
-                                                            for="balconies_other"></label>
-                                                        <span class="text-blue-500 cursor-pointer" @click="editOption"><i
-                                                                class="fas fa-edit"></i></span>
-                                                    </div>
-                                                </template>
-                                            </li>
-                                        </ul>
+                                                            for="balconies_{{ $i }}">{{ $i }}</label>
+                                                    </li>
+                                                @endfor
+                                                @if ($property->balconies > 4)
+                                                    <li class="relative mb-1">
+                                                        <input form="propertyFrom" class="sr-only peer" checked
+                                                            type="radio" value="{{ $property->balconies }}"
+                                                            name="balconies" id="balconies_{{ $property->balconies }}">
+                                                        <label
+                                                            class="mx-1 px-3 py-1 bg-white border border-gray-300 rounded-5 cursor-pointer focus:outline-none hover:bg-gray-50 peer-checked:ring-green-500 peer-checked:ring-2 peer-checked:border-transparent"
+                                                            for="balconies_{{ $property->balconies }}">{{ $property->balconies }}</label>
+                                                    </li>
+                                                @endif
+
+                                                <li class="relative mb-1">
+                                                    <template x-if="!showInput && !addedOption">
+                                                        <label @click="showInput = true"
+                                                            class="mx-1 px-3 flex items-center py-1 bg-white border border-gray-300 rounded-5 cursor-pointer hover:bg-gray-50">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="16"
+                                                                height="16" fill="currentColor" class="bi bi-plus"
+                                                                viewBox="0 0 16 16">
+                                                                <path
+                                                                    d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4" />
+                                                            </svg>
+                                                            Add Other
+                                                        </label>
+                                                    </template>
+
+                                                    <template x-if="showInput">
+                                                        <div class="flex items-center gap-2">
+                                                            <input type="number" x-model="newOption"
+                                                                placeholder="Enter value"
+                                                                class="border border-gray-300 p-2 rounded-md w-20 text-sm focus:ring-blue-500 focus:border-blue-500">
+                                                            <button @click="addOption"
+                                                                class="px-3 py-1 bg-green-500 text-white text-sm rounded-md hover:bg-green-600">Done</button>
+                                                        </div>
+                                                    </template>
+
+                                                    <template x-if="addedOption">
+                                                        <div class="flex items-center gap-2 relative mb-1">
+                                                            <input class="sr-only peer" type="radio"
+                                                                x-bind:value="addedOption" name="balconies"
+                                                                id="balconies_other" checked>
+                                                            <label x-text="addedOption"
+                                                                class="mx-1 px-3 py-1 bg-white border border-gray-300 rounded-5 cursor-pointer hover:bg-gray-50 peer-checked:ring-green-500 peer-checked:ring-2 peer-checked:border-transparent"
+                                                                for="balconies_other"></label>
+                                                            <span class="text-blue-500 cursor-pointer" @click="editOption"><i
+                                                                    class="fas fa-edit"></i></span>
+                                                        </div>
+                                                    </template>
+                                                </li>
+                                            </ul>
+                                        </div>
                                     </div>
-                                </div>
 
-                                {{-- === Kitchen Section === --}}
-                                <div class="section col-lg-6 mb-2" x-data="createRoomOptionHandler('kitchen')">
-                                    <label class="mt-3">Kitchen <sup class="text-danger fs-6 d-none">*</sup></label>
-                                    <div class="mt-3">
-                                        <ul class="flex flex-wrap gap-3">
-                                            @for ($i = 0; $i < 4; $i++)
-                                                <li class="relative mb-1">
-                                                    <input class="sr-only peer" form="propertyFrom"
-                                                        @if ($i == 0 || $i == $unit->kitchen) checked @endif type="radio"
-                                                        value="{{ $i }}" name="kitchen"
-                                                        id="kitchen_{{ $i }}">
-                                                    <label
-                                                        class="mx-1 px-3 py-1 bg-white border border-gray-300 rounded-5 cursor-pointer hover:bg-gray-50 peer-checked:ring-green-500 peer-checked:ring-2 peer-checked:border-transparent"
-                                                        for="kitchen_{{ $i }}">{{ $i }}</label>
-                                                </li>
-                                            @endfor
-
-                                            @if ($property->kitchen > 4)
-                                                <li class="relative mb-1">
-                                                    <input form="propertyFrom" class="sr-only peer" checked
-                                                        type="radio" value="{{ $property->kitchen }}" name="kitchen"
-                                                        id="kitchen_{{ $property->kitchen }}">
-                                                    <label
-                                                        class="mx-1 px-3 py-1 bg-white border border-gray-300 rounded-5 cursor-pointer focus:outline-none hover:bg-gray-50 peer-checked:ring-green-500 peer-checked:ring-2 peer-checked:border-transparent"
-                                                        for="kitchen_{{ $property->kitchen }}">{{ $property->kitchen }}</label>
-                                                </li>
-                                            @endif
-                                            <li class="relative mb-1">
-                                                <template x-if="!showInput && !addedOption">
-                                                    <label @click="showInput = true"
-                                                        class="mx-1 px-3 flex items-center py-1 bg-white border border-gray-300 rounded-5 cursor-pointer hover:bg-gray-50">
-                                                        <svg xmlns="http://www.w3.org/2000/svg" width="16"
-                                                            height="16" fill="currentColor" class="bi bi-plus"
-                                                            viewBox="0 0 16 16">
-                                                            <path
-                                                                d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4" />
-                                                        </svg>
-                                                        Add Other
-                                                    </label>
-                                                </template>
-
-                                                <template x-if="showInput">
-                                                    <div class="flex items-center gap-2">
-                                                        <input type="number" x-model="newOption"
-                                                            placeholder="Enter value"
-                                                            class="border border-gray-300 p-2 rounded-md w-20 text-sm focus:ring-blue-500 focus:border-blue-500">
-                                                        <button @click="addOption"
-                                                            class="px-3 py-1 bg-green-500 text-white text-sm rounded-md hover:bg-green-600">Done</button>
-                                                    </div>
-                                                </template>
-
-                                                <template x-if="addedOption">
-                                                    <div class="flex items-center gap-2 relative mb-1">
-                                                        <input class="sr-only peer" type="radio"
-                                                            x-bind:value="addedOption" name="kitchen" id="kitchen_other"
-                                                            checked>
-                                                        <label x-text="addedOption"
+                                    {{-- === Kitchen Section === --}}
+                                    <div class="section col-lg-6 mb-2" x-data="createRoomOptionHandler('kitchen')">
+                                        <label class="mt-3">Kitchen <sup class="text-danger fs-6 d-none">*</sup></label>
+                                        <div class="mt-3">
+                                            <ul class="flex flex-wrap gap-3">
+                                                @for ($i = 0; $i < 4; $i++)
+                                                    <li class="relative mb-1">
+                                                        <input class="sr-only peer" form="propertyFrom"
+                                                            @if ($i == 0 || $i == $unit->kitchen) checked @endif type="radio"
+                                                            value="{{ $i }}" name="kitchen"
+                                                            id="kitchen_{{ $i }}">
+                                                        <label
                                                             class="mx-1 px-3 py-1 bg-white border border-gray-300 rounded-5 cursor-pointer hover:bg-gray-50 peer-checked:ring-green-500 peer-checked:ring-2 peer-checked:border-transparent"
-                                                            for="kitchen_other"></label>
-                                                        <span class="text-blue-500 cursor-pointer" @click="editOption"><i
-                                                                class="fas fa-edit"></i></span>
-                                                    </div>
-                                                </template>
-                                            </li>
-                                        </ul>
+                                                            for="kitchen_{{ $i }}">{{ $i }}</label>
+                                                    </li>
+                                                @endfor
+
+                                                @if ($property->kitchen > 4)
+                                                    <li class="relative mb-1">
+                                                        <input form="propertyFrom" class="sr-only peer" checked
+                                                            type="radio" value="{{ $property->kitchen }}" name="kitchen"
+                                                            id="kitchen_{{ $property->kitchen }}">
+                                                        <label
+                                                            class="mx-1 px-3 py-1 bg-white border border-gray-300 rounded-5 cursor-pointer focus:outline-none hover:bg-gray-50 peer-checked:ring-green-500 peer-checked:ring-2 peer-checked:border-transparent"
+                                                            for="kitchen_{{ $property->kitchen }}">{{ $property->kitchen }}</label>
+                                                    </li>
+                                                @endif
+                                                <li class="relative mb-1">
+                                                    <template x-if="!showInput && !addedOption">
+                                                        <label @click="showInput = true"
+                                                            class="mx-1 px-3 flex items-center py-1 bg-white border border-gray-300 rounded-5 cursor-pointer hover:bg-gray-50">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="16"
+                                                                height="16" fill="currentColor" class="bi bi-plus"
+                                                                viewBox="0 0 16 16">
+                                                                <path
+                                                                    d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4" />
+                                                            </svg>
+                                                            Add Other
+                                                        </label>
+                                                    </template>
+
+                                                    <template x-if="showInput">
+                                                        <div class="flex items-center gap-2">
+                                                            <input type="number" x-model="newOption"
+                                                                placeholder="Enter value"
+                                                                class="border border-gray-300 p-2 rounded-md w-20 text-sm focus:ring-blue-500 focus:border-blue-500">
+                                                            <button @click="addOption"
+                                                                class="px-3 py-1 bg-green-500 text-white text-sm rounded-md hover:bg-green-600">Done</button>
+                                                        </div>
+                                                    </template>
+
+                                                    <template x-if="addedOption">
+                                                        <div class="flex items-center gap-2 relative mb-1">
+                                                            <input class="sr-only peer" type="radio"
+                                                                x-bind:value="addedOption" name="kitchen" id="kitchen_other"
+                                                                checked>
+                                                            <label x-text="addedOption"
+                                                                class="mx-1 px-3 py-1 bg-white border border-gray-300 rounded-5 cursor-pointer hover:bg-gray-50 peer-checked:ring-green-500 peer-checked:ring-2 peer-checked:border-transparent"
+                                                                for="kitchen_other"></label>
+                                                            <span class="text-blue-500 cursor-pointer" @click="editOption"><i
+                                                                    class="fas fa-edit"></i></span>
+                                                        </div>
+                                                    </template>
+                                                </li>
+                                            </ul>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
 
 
 
-                        <!-- Rent Type -->
-                        <div class="form-group col-md-6">
-                            <label for="rent_type">{{ __('Rent Type') }}</label>
-                            <select name="rent_type" class="form-control" form="propertyFrom">
-                                <option value="">{{ __('Select Rent Type') }}</option>
-                                <option value="monthly"
-                                    {{ old('rent_type', $unit->rent_type) == 'monthly' ? 'selected' : '' }}>Monthly
-                                </option>
-                                <option value="yearly"
-                                    {{ old('rent_type', $unit->rent_type) == 'yearly' ? 'selected' : '' }}>Yearly</option>
-                            </select>
-                        </div>
+                            <!-- Rent Type -->
+                            <div class="form-group col-md-6">
+                                <label for="rent_type">{{ __('Rent Type') }}</label>
+                                <select name="rent_type" class="form-control" form="propertyFrom">
+                                    <option value="">{{ __('Select Rent Type') }}</option>
+                                    <option value="monthly"
+                                        {{ old('rent_type', $unit->rent_type) == 'monthly' ? 'selected' : '' }}>Monthly
+                                    </option>
+                                    <option value="yearly"
+                                        {{ old('rent_type', $unit->rent_type) == 'yearly' ? 'selected' : '' }}>Yearly</option>
+                                </select>
+                            </div>
 
 
 
-                        <!-- Deposit Type -->
-                        <div class="form-group col-md-6">
-                            <label for="deposite_type">{{ __('Deposit Type') }}</label>
-                            <select name="deposite_type" class="form-control" form="propertyFrom">
-                                <option value="">{{ __('Select Type') }}</option>
-                                <option value="fixed"
-                                    {{ old('deposite_type', $unit->deposite_type) == 'fixed' ? 'selected' : '' }}>Fixed
-                                </option>
-                                <option value="percentage"
-                                    {{ old('deposite_type', $unit->deposite_type) == 'percentage' ? 'selected' : '' }}>
-                                    Percentage</option>
-                            </select>
-                        </div>
+                            <!-- Deposit Type -->
+                            <div class="form-group col-md-6">
+                                <label for="deposite_type">{{ __('Deposit Type') }}</label>
+                                <select name="deposite_type" class="form-control" form="propertyFrom">
+                                    <option value="">{{ __('Select Type') }}</option>
+                                    <option value="fixed"
+                                        {{ old('deposite_type', $unit->deposite_type) == 'fixed' ? 'selected' : '' }}>Fixed
+                                    </option>
+                                    <option value="percentage"
+                                        {{ old('deposite_type', $unit->deposite_type) == 'percentage' ? 'selected' : '' }}>
+                                        Percentage</option>
+                                </select>
+                            </div>
 
-                        <!-- Deposit Amount -->
-                        <div class="form-group col-md-6">
-                            <label for="deposite_amount">{{ __('Deposit Amount') }}</label>
-                            <input type="number" step="0.01" form="propertyFrom" autocomplete="off"
-                                name="deposite_amount" value="{{ old('deposite_amount', $unit->deposite_amount) }}"
-                                class="form-control">
-                        </div>
+                            <!-- Deposit Amount -->
+                            <div class="form-group col-md-6">
+                                <label for="deposite_amount">{{ __('Deposit Amount') }}</label>
+                                <input type="number" step="0.01" form="propertyFrom" autocomplete="off"
+                                    name="deposite_amount" value="{{ old('deposite_amount', $unit->deposite_amount) }}"
+                                    class="form-control">
+                            </div>
 
-                        <!-- Late Fee Type -->
-                        <div class="form-group col-md-6">
-                            <label for="late_fee_type">{{ __('Late Fee Type') }}</label>
-                            <select name="late_fee_type" class="form-control" form="propertyFrom">
-                                <option value="">{{ __('Select Type') }}</option>
-                                <option value="fixed"
-                                    {{ old('late_fee_type', $unit->late_fee_type) == 'fixed' ? 'selected' : '' }}>Fixed
-                                </option>
-                                <option value="percentage"
-                                    {{ old('late_fee_type', $unit->late_fee_type) == 'percentage' ? 'selected' : '' }}>
-                                    Percentage</option>
-                            </select>
-                        </div>
+                            <!-- Late Fee Type -->
+                            <div class="form-group col-md-6">
+                                <label for="late_fee_type">{{ __('Late Fee Type') }}</label>
+                                <select name="late_fee_type" class="form-control" form="propertyFrom">
+                                    <option value="">{{ __('Select Type') }}</option>
+                                    <option value="fixed"
+                                        {{ old('late_fee_type', $unit->late_fee_type) == 'fixed' ? 'selected' : '' }}>Fixed
+                                    </option>
+                                    <option value="percentage"
+                                        {{ old('late_fee_type', $unit->late_fee_type) == 'percentage' ? 'selected' : '' }}>
+                                        Percentage</option>
+                                </select>
+                            </div>
 
-                        <!-- Late Fee Amount -->
-                        <div class="form-group col-md-6">
-                            <label for="late_fee_amount">{{ __('Late Fee Amount') }}</label>
-                            <input type="number" form="propertyFrom" autocomplete="off" step="0.01"
-                                name="late_fee_amount" value="{{ old('late_fee_amount', $unit->late_fee_amount) }}"
-                                class="form-control">
-                        </div>
+                            <!-- Late Fee Amount -->
+                            <div class="form-group col-md-6">
+                                <label for="late_fee_amount">{{ __('Late Fee Amount') }}</label>
+                                <input type="number" form="propertyFrom" autocomplete="off" step="0.01"
+                                    name="late_fee_amount" value="{{ old('late_fee_amount', $unit->late_fee_amount) }}"
+                                    class="form-control">
+                            </div>
 
-                        <!-- Incident Receipt -->
-                        <div class="form-group col-md-6">
-                            <label for="incident_reicept_amount">{{ __('Incident Receipt Amount') }}</label>
-                            <input type="number" form="propertyFrom" autocomplete="off" step="0.01"
-                                name="incident_reicept_amount"
-                                value="{{ old('incident_reicept_amount', $unit->incident_reicept_amount) }}"
-                                class="form-control">
-                        </div>
+                            <!-- Incident Receipt -->
+                            <div class="form-group col-md-6">
+                                <label for="incident_reicept_amount">{{ __('Incident Receipt Amount') }}</label>
+                                <input type="number" form="propertyFrom" autocomplete="off" step="0.01"
+                                    name="incident_reicept_amount"
+                                    value="{{ old('incident_reicept_amount', $unit->incident_reicept_amount) }}"
+                                    class="form-control">
+                            </div>
 
-                        <!-- Price -->
-                        <div class="form-group col-md-6">
-                            <label for="price">{{ __('Price') }}</label>
-                            <input type="number" form="propertyFrom" autocomplete="off" name="price" step="0.01"
-                                oninput="convertToWords()" placeholder="Enter price" max="999999999" type="number"
-                                id="priceInput" value="{{ old('price', $unit->price) }}" class="form-control">
-                            <p class="mt-4 text-dark-700">Price in words: <span id="priceInWords"></span></p>
+                            <!-- Price -->
+                            <div class="form-group col-md-6">
+                                <label for="price">{{ __('Price') }}</label>
+                                <input type="number" form="propertyFrom" autocomplete="off" name="price" step="0.01"
+                                    oninput="convertToWords()" placeholder="Enter price" max="999999999" type="number"
+                                    id="priceInput" value="{{ old('price', $unit->price) }}" class="form-control">
+                                <p class="mt-4 text-dark-700">Price in words: <span id="priceInWords"></span></p>
 
-                        </div>
+                            </div>
 
-                        <div class="mb-5 ">
-                            <div class="section">
-                                <label for="images">{{ __('Unit Images') }}</label>
-                                <div class="mt-3 border-dashed border-2 border-gray-300 rounded-lg p-3  bg-gray-100">
+                            <div class="mb-5 ">
+                                <div class="section">
+                                    <label for="images">{{ __('Unit Images') }}</label>
+                                    <div class="mt-3 border-dashed border-2 border-gray-300 rounded-lg p-3  bg-gray-100">
 
-                                    <div x-data="imageUploader()" class="mx-auto bg-white shadow rounded-lg space-y-6">
-                                        <!-- Image Preview Grid -->
-                                        <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
-                                            @foreach ($unit->propertyUnitImages ?? [] as $key => $image)
-                                                @php
-                                                    $isImage2 = Str::startsWith($image->mime_type, 'image/');
-                                                    $icon2 = match (true) {
-                                                        Str::contains($image->mime_type, 'pdf')
-                                                            => '/assets/icons/pdf-icon.png',
-                                                        Str::contains($image->mime_type, 'msword'),
-                                                        Str::contains($image->mime_type, 'wordprocessingml')
-                                                            => '/assets/icons/docx-icon.png',
-                                                        default => '/assets/icons/file-icon.png',
-                                                    };
-                                                    $thumbnail2 = $isImage2
-                                                        ? asset('storage/' . $image->file_url)
-                                                        : asset($icon);
-                                                @endphp
-                                                <div class="flex flex-col relative existing-data-box">
-                                                    <div
-                                                        class="relative text-center group border rounded-lg overflow-hidden ">
-                                                        <img src="{{ $thumbnail2 }}"
-                                                            alt="{{ $image->alt ?? $image->name }}"
-                                                            class="w-auto object-cover mx-auto mb-2 rounded"
-                                                            style="height: 100px;width: 100%;">
-                                                        <span title="{{ $image->name }}">{{ $image->name }}</span>
-                                                        <input type="hidden" form="propertyFrom"
-                                                            value="{{ $image->id }}" name="existingImage[]" />
-                                                        <button type="button" onclick="removeExistingRow(this)"
-                                                            class="absolute bg-white p-1 right-0 top-0 rounded-full">
-                                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4"
-                                                                fill="red" viewBox="0 0 20 20">
-                                                                <path fill-rule="evenodd"
-                                                                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 011.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                                                                    clip-rule="evenodd" />
-                                                            </svg>
-                                                        </button>
-                                                    </div>
-                                                    <div class="mb-2">
-                                                        <label
-                                                            class="flex items-center space-x-2 text-dark cursor-pointer ">
-                                                            <input type="radio" name="exCoverImage" form="propertyFrom"
-                                                                value="{{ $image->id }}"
-                                                                @change="setCoverImage({{ $key + 200 }})"
-                                                                {{ $unit->thumbnail_image == $image->id ? 'checked' : '' }}>
-                                                            <span>Make Cover Photo</span>
-                                                        </label>
-                                                        <span x-show="currentCover === {{ $key + 200 }}"
-                                                            class="absolute top-0 left-0 p-2 text-white bg-black opacity-50">Cover</span>
-                                                    </div>
-
-                                                </div>
-                                            @endforeach
-
-                                            <!-- Existing Images -->
-                                            <template x-for="(image, index) in images" :key="index">
-                                                <div class="flex flex-col relative">
-                                                    <div class="relative group border rounded-lg overflow-hidden">
-                                                        <!-- Image -->
-                                                        <img :src="image.url" style="height: 100px;"
-                                                            alt="Uploaded Image" class="w-30 h-30 object-cover">
-
-                                                        <!-- Overlay with Cover Option -->
+                                        <div x-data="imageUploader()" class="mx-auto bg-white shadow rounded-lg space-y-6">
+                                            <!-- Image Preview Grid -->
+                                            <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+                                                @foreach ($unit->propertyUnitImages ?? [] as $key => $image)
+                                                    @php
+                                                        $isImage2 = Str::startsWith($image->mime_type, 'image/');
+                                                        $icon2 = match (true) {
+                                                            Str::contains($image->mime_type, 'pdf')
+                                                                => '/assets/icons/pdf-icon.png',
+                                                            Str::contains($image->mime_type, 'msword'),
+                                                            Str::contains($image->mime_type, 'wordprocessingml')
+                                                                => '/assets/icons/docx-icon.png',
+                                                            default => '/assets/icons/file-icon.png',
+                                                        };
+                                                        $thumbnail2 = $isImage2
+                                                            ? asset('storage/' . $image->file_url)
+                                                            : asset($icon);
+                                                    @endphp
+                                                    <div class="flex flex-col relative existing-data-box">
                                                         <div
-                                                            class="absolute flex flex-col inset-0 group-hover:opacity-100 space-y-2 transition">
-                                                            <!-- Remove Image -->
-                                                            <button @click="removeImage(index)"
-                                                                class="absolute bg-white p-1 right-0 rounded-full top-0">
+                                                            class="relative text-center group border rounded-lg overflow-hidden ">
+                                                            <img src="{{ $thumbnail2 }}"
+                                                                alt="{{ $image->alt ?? $image->name }}"
+                                                                class="w-auto object-cover mx-auto mb-2 rounded"
+                                                                style="height: 100px;width: 100%;">
+                                                            <span title="{{ $image->name }}">{{ $image->name }}</span>
+                                                            <input type="hidden" form="propertyFrom"
+                                                                value="{{ $image->id }}" name="existingImage[]" />
+                                                            <button type="button" onclick="removeExistingRow(this)"
+                                                                class="absolute bg-white p-1 right-0 top-0 rounded-full">
                                                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4"
-                                                                    viewBox="0 0 20 20" fill="red">
+                                                                    fill="red" viewBox="0 0 20 20">
                                                                     <path fill-rule="evenodd"
                                                                         d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 011.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
                                                                         clip-rule="evenodd" />
                                                                 </svg>
                                                             </button>
                                                         </div>
-                                                    </div>
-                                                    <label class="flex items-center space-x-2 text-dark cursor-pointer ">
-                                                        <input type="radio" name="coverImage" class=""
-                                                            form="propertyFrom" :value="image.name"
-                                                            @change="setCoverImage(index)"
-                                                            :checked="currentCover === index" />
-                                                        <span>Make Cover Photo</span>
-                                                    </label>
-                                                    <span x-show="currentCover === index"
-                                                        class="absolute top-0 left-0 p-2 text-white bg-black opacity-50">Cover</span>
-                                                </div>
-                                            </template>
+                                                        <div class="mb-2">
+                                                            <label
+                                                                class="flex items-center space-x-2 text-dark cursor-pointer ">
+                                                                <input type="radio" name="exCoverImage" form="propertyFrom"
+                                                                    value="{{ $image->id }}"
+                                                                    @change="setCoverImage({{ $key + 200 }})"
+                                                                    {{ $unit->thumbnail_image == $image->id ? 'checked' : '' }}>
+                                                                <span>Make Cover Photo</span>
+                                                            </label>
+                                                            <span x-show="currentCover === {{ $key + 200 }}"
+                                                                class="absolute top-0 left-0 p-2 text-white bg-black opacity-50">Cover</span>
+                                                        </div>
 
-                                            <!-- Upload New Images -->
-                                            <div class="flex flex-col col-auto text-center">
-                                                <div class="relative group border rounded-lg p-2 overflow-hidden"
-                                                    @click="triggerFileInput()"
-                                                    x-bind:class="{ 'border-blue-500': isDragging }">
-                                                    <img src="/assets/icons/upload-icon.png" class="w-50 mx-auto">
-                                                    <input name="images[]" type="file" accept="image/*"
-                                                        form="propertyFrom" id="fileInput" class="hidden" multiple
-                                                        @change="addImages($event)">
-                                                    <p class="text-dark-600">
-                                                        click to upload your images here.</p>
-                                                    <p class="text-sm text-blue-500 font-medium hidden">Upload up to 30
-                                                        images</p>
+                                                    </div>
+                                                @endforeach
+
+                                                <!-- Existing Images -->
+                                                <template x-for="(image, index) in images" :key="index">
+                                                    <div class="flex flex-col relative">
+                                                        <div class="relative group border rounded-lg overflow-hidden">
+                                                            <!-- Image -->
+                                                            <img :src="image.url" style="height: 100px;"
+                                                                alt="Uploaded Image" class="w-30 h-30 object-cover">
+
+                                                            <!-- Overlay with Cover Option -->
+                                                            <div
+                                                                class="absolute flex flex-col inset-0 group-hover:opacity-100 space-y-2 transition">
+                                                                <!-- Remove Image -->
+                                                                <button @click="removeImage(index)"
+                                                                    class="absolute bg-white p-1 right-0 rounded-full top-0">
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4"
+                                                                        viewBox="0 0 20 20" fill="red">
+                                                                        <path fill-rule="evenodd"
+                                                                            d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 011.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                                                            clip-rule="evenodd" />
+                                                                    </svg>
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                        <label class="flex items-center space-x-2 text-dark cursor-pointer ">
+                                                            <input type="radio" name="coverImage" class=""
+                                                                form="propertyFrom" :value="image.name"
+                                                                @change="setCoverImage(index)"
+                                                                :checked="currentCover === index" />
+                                                            <span>Make Cover Photo</span>
+                                                        </label>
+                                                        <span x-show="currentCover === index"
+                                                            class="absolute top-0 left-0 p-2 text-white bg-black opacity-50">Cover</span>
+                                                    </div>
+                                                </template>
+
+                                                <!-- Upload New Images -->
+                                                <div class="flex flex-col col-auto text-center">
+                                                    <div class="relative group border rounded-lg p-2 overflow-hidden"
+                                                        @click="triggerFileInput()"
+                                                        x-bind:class="{ 'border-blue-500': isDragging }">
+                                                        <img src="/assets/icons/upload-icon.png" class="w-50 mx-auto">
+                                                        <input name="images[]" type="file" accept="image/*"
+                                                            form="propertyFrom" id="fileInput" class="hidden" multiple
+                                                            @change="addImages($event)">
+                                                        <p class="text-dark-600">
+                                                            click to upload your images here.</p>
+                                                        <p class="text-sm text-blue-500 font-medium hidden">Upload up to 30
+                                                            images</p>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
 
+                                    </div>
+                                </div>
+
+                                <div class="mt-3">
+                                    <label for="images">{{ __('Description Notes') }}</label>
+                                    <textarea name="unique_info" form="propertyFrom" rows="4" autocomplete="off"
+                                        class="block w-full mt-2 p-2 border rounded-lg" placeholder="Write your thoughts here...">{{ $unit ? $unit->notes : '' }}</textarea>
+                                </div>
+
+
+                                <!-- Submit Button -->
+                                <div class="form-group col-md-12 mt-4">
+                                    <button type="submit"
+                                        class="btn btn-primary">{{ $unit->exists ? __('Update') : __('Create') }}</button>
+                                    <a href="{{ route('company.realestate.property.units.index', $property->id) }}"
+                                        class="btn btn-secondary">{{ __('Cancel') }}</a>
                                 </div>
                             </div>
-
-                            <div class="mt-3">
-                                <label for="images">{{ __('Description Notes') }}</label>
-                                <textarea name="unique_info" form="propertyFrom" rows="4" autocomplete="off"
-                                    class="block w-full mt-2 p-2 border rounded-lg" placeholder="Write your thoughts here...">{{ $unit ? $unit->notes : '' }}</textarea>
-                            </div>
-
-
-                            <!-- Submit Button -->
-                            <div class="form-group col-md-12 mt-4">
-                                <button type="submit"
-                                    class="btn btn-primary">{{ $unit->exists ? __('Update') : __('Create') }}</button>
-                                <a href="{{ route('company.realestate.property.units.index', $property->id) }}"
-                                    class="btn btn-secondary">{{ __('Cancel') }}</a>
-                            </div>
                         </div>
-                    </div>
-            </form>
+                </form>
+            </div>
         </div>
-    </div>
+    @endcanany
 @endsection
 
 @push('footer')

@@ -1,9 +1,11 @@
 <div class="my-2 text-end">
-    <button href="#" data-size="lg" data-url="{{ route('company.realestate.owners.create-documents', $owner->id) }}"
-        data-ajax-popup2="true" data-bs-toggle="tooltip" title="{{ __('Upload new document') }}"
-        class="btn btn-sm btn-primary me-2">
-        <i class="ti ti-cloud-upload"></i> Upload new one
-    </button>
+    @can('upload owner documents')
+        <button href="#" data-size="lg" data-url="{{ route('company.realestate.owners.create-documents', $owner->id) }}"
+            data-ajax-popup2="true" data-bs-toggle="tooltip" title="{{ __('Upload new document') }}"
+            class="btn btn-sm btn-primary me-2">
+            <i class="ti ti-cloud-upload"></i> Upload new one
+        </button>
+    @endcan
 </div>
 
 <div class="row">
@@ -20,7 +22,9 @@
                                 <th>{{ __('File Format') }}</th>
                                 <th class="text-center">{{ __('Size') }}</th>
                                 <th class="text-center">{{ __('Created at') }}</th>
-                                <th>{{ __('Action') }}</th>
+                                @can('upload owner documents')
+                                    <th>{{ __('Action') }}</th>
+                                @endcan
 
                             </tr>
                         </thead>
@@ -29,14 +33,14 @@
                                 <tr>
                                     <td>{{ $key + 1 }}</td>
                                     <td>
-                                        <a href="{{ asset('storage/'.$document->file->file_url) }}" target="_blank">
+                                        <a href="{{ asset('storage/' . $document->file->file_url) }}" target="_blank">
                                             <span class="fw-bold text-dark">{{ $document->document_type }}</span>
                                         </a>
                                     </td>
                                     <td>
-                                        <a href="{{ asset('storage/'.$document->file->file_url) }}" target="_blank" <span
-                                            class="text-dark truncate" title="{{ $document->file->name }}">
-                                            {{ $document->file->name }}</span>
+                                        <a href="{{ asset('storage/' . $document->file->file_url) }}" target="_blank">
+                                            <span class="text-dark truncate" title="{{ $document->file->name }}">
+                                                {{ $document->file->name }}</span>
                                         </a>
                                     </td>
                                     <td><span class="text-dark truncate"
@@ -49,32 +53,30 @@
                                         <span
                                             class="fw-bold text-primary">{{ dateTimeFormat($document->created_at) }}</span>
                                     </td>
+                                    @can('upload owner documents')
+                                        <td>
+                                            <div class="action-btn me-2">
+                                                <a class="mx-3 btn btn-sm d-inline-flex align-items-center bg-info"
+                                                    href="{{ asset('storage/' . $document->file->file_url) }}"
+                                                    target="_blank">
+                                                    <span> <i class="ti ti-eye text-white"></i></span>
+                                                </a>
+                                            </div>
+                                            <div class="action-btn">
+                                                {!! Form::open([
+                                                    'method' => 'DELETE',
+                                                    'route' => ['company.realestate.owners.documents.destroy', $document->id],
+                                                    'id' => 'delete-form-' . $document->id,
+                                                ]) !!}
+                                                <a href="#"
+                                                    class="mx-4 btn btn-sm  align-items-center bs-pass-para bg-danger"
+                                                    data-bs-toggle="tooltip" title="{{ __('Delete') }}">
+                                                    <i class="ti ti-trash text-white text-white "></i></a>
 
-
-                                    <td>
-
-                                        <div class="action-btn me-2">
-                                            <a class="mx-3 btn btn-sm d-inline-flex align-items-center bg-info"
-                                                href="{{ asset('storage/'.$document->file->file_url) }}" target="_blank">
-                                                <span> <i class="ti ti-eye text-white"></i></span>
-                                            </a>
-                                        </div>
-                                        <div class="action-btn">
-                                            {!! Form::open([
-                                                'method' => 'DELETE',
-                                                'route' => ['company.realestate.owners.documents.destroy', $document->id],
-                                                'id' => 'delete-form-' . $document->id,
-                                            ]) !!}
-                                            <a href="#"
-                                                class="mx-4 btn btn-sm  align-items-center bs-pass-para bg-danger"
-                                                data-bs-toggle="tooltip" title="{{ __('Delete') }}">
-                                                <i class="ti ti-trash text-white text-white "></i></a>
-
-                                            {!! Form::close() !!}
-                                        </div>
-
-
-                                    </td>
+                                                {!! Form::close() !!}
+                                            </div>
+                                        </td>
+                                    @endcan
                                 </tr>
                             @empty
                                 <tr>

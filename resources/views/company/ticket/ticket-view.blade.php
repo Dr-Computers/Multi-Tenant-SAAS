@@ -42,9 +42,10 @@
                                             {{ $tickets != null ? dateTimeFormat($ticketFirst->created_at) : '--' }}
                                         </span><br>
                                         <span class="mb-3 fw-bold">Type :
-                                           <span class="badge bg-info text-capitalize"> {{ $tickets != null ? $ticketFirst->type : '--' }}</span>
+                                            <span class="badge bg-info text-capitalize">
+                                                {{ $tickets != null ? $ticketFirst->type : '--' }}</span>
                                         </span>
-                                        
+
                                     </div>
 
                                     @foreach ($tickets as $ticket)
@@ -78,80 +79,83 @@
                                             @endif
                                         </div>
                                     @endforeach
-                                    @if ($ticket && $ticket->status == 1)
-                                        <div class="card-footer">
-                                            <form class=""
-                                                action="{{ route('company.tickets.reply', $ticket->ticket_no) }}"
-                                                method="post" @submit.prevent="submitForm" enctype="multipart/form-data"
-                                                id="ticketFrom">
-                                                <div class="form-group my-2">
+                                    @can('reply ticket')
+                                        @if ($ticket && $ticket->status == 1)
+                                            <div class="card-footer">
+                                                <form class=""
+                                                    action="{{ route('company.tickets.reply', $ticket->ticket_no) }}"
+                                                    method="post" @submit.prevent="submitForm" enctype="multipart/form-data"
+                                                    id="ticketFrom">
+                                                    <div class="form-group my-2">
 
-                                                    <label class="mb-2">Content</label>
-                                                    <textarea class="form-control" rows="4" placeholder="Reply" required name="body"></textarea>
-                                                </div>
-                                                <div class="section">
-                                                    <h6 class="mt-3 font-bold text-black ">Add Attachment</h6>
-                                                    <div
-                                                        class="mt-3 border-dashed border-2 border-gray-300 rounded-lg p-3  bg-gray-100">
-                                                        <div x-data="documentUploader()"
-                                                            class="mx-auto bg-white shadow rounded-lg space-y-6">
-                                                            <!-- Document Preview Grid -->
-                                                            <div class="grid grid-cols-2 md:grid-cols-6 gap-4">
+                                                        <label class="mb-2">Content</label>
+                                                        <textarea class="form-control" rows="4" placeholder="Reply" required name="body"></textarea>
+                                                    </div>
+                                                    <div class="section">
+                                                        <h6 class="mt-3 font-bold text-black ">Add Attachment</h6>
+                                                        <div
+                                                            class="mt-3 border-dashed border-2 border-gray-300 rounded-lg p-3  bg-gray-100">
+                                                            <div x-data="documentUploader()"
+                                                                class="mx-auto bg-white shadow rounded-lg space-y-6">
+                                                                <!-- Document Preview Grid -->
+                                                                <div class="grid grid-cols-2 md:grid-cols-6 gap-4">
 
-                                                                <!-- Existing Documents -->
-                                                                <template x-for="(document, index) in documents"
-                                                                    :key="index">
-                                                                    <div class="flex flex-col relative">
-                                                                        <div
-                                                                            class="relative group border rounded-lg overflow-hidden">
-                                                                            <!-- Document -->
-                                                                            <img :src="document.url"
-                                                                                style="height: 100px;"
-                                                                                alt="Uploaded Document"
-                                                                                class="w-30 h-30 object-cover">
-                                                                            <!-- Overlay with Cover Option -->
+                                                                    <!-- Existing Documents -->
+                                                                    <template x-for="(document, index) in documents"
+                                                                        :key="index">
+                                                                        <div class="flex flex-col relative">
                                                                             <div
-                                                                                class="absolute flex flex-col inset-0 group-hover:opacity-100 space-y-2 transition">
-                                                                                <!-- Remove Document -->
-                                                                                <button @click="removeDocument(index)"
-                                                                                    class="absolute bg-white p-1 right-0 rounded-full top-0">
-                                                                                    <svg xmlns="http://www.w3.org/2000/svg"
-                                                                                        class="h-4 w-4" viewBox="0 0 20 20"
-                                                                                        fill="red">
-                                                                                        <path fill-rule="evenodd"
-                                                                                            d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 011.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                                                                                            clip-rule="evenodd" />
-                                                                                    </svg>
-                                                                                </button>
+                                                                                class="relative group border rounded-lg overflow-hidden">
+                                                                                <!-- Document -->
+                                                                                <img :src="document.url"
+                                                                                    style="height: 100px;"
+                                                                                    alt="Uploaded Document"
+                                                                                    class="w-30 h-30 object-cover">
+                                                                                <!-- Overlay with Cover Option -->
+                                                                                <div
+                                                                                    class="absolute flex flex-col inset-0 group-hover:opacity-100 space-y-2 transition">
+                                                                                    <!-- Remove Document -->
+                                                                                    <button @click="removeDocument(index)"
+                                                                                        class="absolute bg-white p-1 right-0 rounded-full top-0">
+                                                                                        <svg xmlns="http://www.w3.org/2000/svg"
+                                                                                            class="h-4 w-4" viewBox="0 0 20 20"
+                                                                                            fill="red">
+                                                                                            <path fill-rule="evenodd"
+                                                                                                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 011.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                                                                                clip-rule="evenodd" />
+                                                                                        </svg>
+                                                                                    </button>
+                                                                                </div>
                                                                             </div>
                                                                         </div>
-                                                                    </div>
-                                                                </template>
-                                                                <!-- Upload New Documents -->
-                                                                <div class="flex flex-col col-auto text-center p-2 ">
-                                                                    <div class="relative group border rounded-lg p-2 overflow-hidden"
-                                                                        @click="triggerFileInput()"
-                                                                        x-bind:class="{ 'border-blue-500': isDragging }">
-                                                                        <img src="/assets/icons/upload-icon.png"
-                                                                            class="w-50 mx-auto">
-                                                                        <input name="documents[]" type="file"
-                                                                            accept=".pdf,.docx,image/*" id="fileDocInput"
-                                                                            class="hidden" multiple
-                                                                            @change="addDocuments($event)">
-                                                                        <p class="text-gray-600">
-                                                                            click to upload here.</p>
+                                                                    </template>
+                                                                    <!-- Upload New Documents -->
+                                                                    <div class="flex flex-col col-auto text-center p-2 ">
+                                                                        <div class="relative group border rounded-lg p-2 overflow-hidden"
+                                                                            @click="triggerFileInput()"
+                                                                            x-bind:class="{ 'border-blue-500': isDragging }">
+                                                                            <img src="/assets/icons/upload-icon.png"
+                                                                                class="w-50 mx-auto">
+                                                                            <input name="documents[]" type="file"
+                                                                                accept=".pdf,.docx,image/*" id="fileDocInput"
+                                                                                class="hidden" multiple
+                                                                                @change="addDocuments($event)">
+                                                                            <p class="text-gray-600">
+                                                                                click to upload here.</p>
+                                                                        </div>
                                                                     </div>
                                                                 </div>
                                                             </div>
                                                         </div>
                                                     </div>
-                                                </div>
-                                                <div class="col-lg-12 text-end mt-4">
-                                                    <button type="submit" class="btn btn-primary">Reply</button>
-                                                </div>
-                                            </form>
-                                        </div>
-                                    @endif
+
+                                                    <div class="col-lg-12 text-end mt-4">
+                                                        <button type="submit" class="btn btn-primary">Reply</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        @endif
+                                    @endcan
                                 </div>
                             </div>
                         </div>

@@ -1,60 +1,61 @@
-{{ Form::open(['route' => 'company.finance.expense.store', 'method' => 'post', 'enctype' => 'multipart/form-data']) }}
-<div class="modal-body">
-    <div class="row">
-        <div class="form-group  col-md-12 col-lg-12">
-            {{ Form::label('title', __('Expense Title'), ['class' => 'form-label']) }}
-            {{ Form::text('title', null, ['class' => 'form-control', 'placeholder' => __('Enter Expense Title')]) }}
-        </div>
-        <div class="form-group col-md-6 col-lg-6">
-            {{ Form::label('expense_id', __('Expense Number'), ['class' => 'form-label']) }}
-            <div class="input-group">
-                <span class="input-group-text ">
-                    {{ expensePrefix() }}
-                </span>
-                {{ Form::text('expense_id', $billNumber, ['class' => 'form-control', 'placeholder' => __('Enter Expense Number')]) }}
+@can('create a expense')
+    {{ Form::open(['route' => 'company.finance.expense.store', 'method' => 'post', 'enctype' => 'multipart/form-data']) }}
+    <div class="modal-body">
+        <div class="row">
+            <div class="form-group  col-md-12 col-lg-12">
+                {{ Form::label('title', __('Expense Title'), ['class' => 'form-label']) }}
+                {{ Form::text('title', null, ['class' => 'form-control', 'placeholder' => __('Enter Expense Title')]) }}
             </div>
-        </div>
-        <div class="form-group col-md-6 col-lg-6">
-            {{ Form::label('reference_no', __('Reference No'), ['class' => 'form-label']) }}
-            {{ Form::text('reference_no', null, ['class' => 'form-control', 'placeholder' => __('Enter reference number')]) }}
-        </div>
-        <div class="form-group col-md-6 col-lg-6">
-            {{ Form::label('vendor', __('Vender'), ['class' => 'form-label']) }}
-            {{ Form::text('vendor', null, ['class' => 'form-control', 'placeholder' => __('Enter vendor name')]) }}
-        </div>
+            <div class="form-group col-md-6 col-lg-6">
+                {{ Form::label('expense_id', __('Expense Number'), ['class' => 'form-label']) }}
+                <div class="input-group">
+                    <span class="input-group-text ">
+                        {{ expensePrefix() }}
+                    </span>
+                    {{ Form::text('expense_id', $billNumber, ['class' => 'form-control', 'placeholder' => __('Enter Expense Number')]) }}
+                </div>
+            </div>
+            <div class="form-group col-md-6 col-lg-6">
+                {{ Form::label('reference_no', __('Reference No'), ['class' => 'form-label']) }}
+                {{ Form::text('reference_no', null, ['class' => 'form-control', 'placeholder' => __('Enter reference number')]) }}
+            </div>
+            <div class="form-group col-md-6 col-lg-6">
+                {{ Form::label('vendor', __('Vender'), ['class' => 'form-label']) }}
+                {{ Form::text('vendor', null, ['class' => 'form-control', 'placeholder' => __('Enter vendor name')]) }}
+            </div>
 
-       
-        {{-- <div class="form-group col-md-6 col-lg-6">
+
+            {{-- <div class="form-group col-md-6 col-lg-6">
             {{ Form::label('expense_type', __('Expense Type'), ['class' => 'form-label']) }}
             {{ Form::select('expense_type', ['0' => 'Property'] + $types->toArray(), null, ['class' => 'form-control hidesearch', 'id' => 'expense_type', 'onchange' => 'toggleFields()']) }}
         </div> --}}
 
-        <div class="form-group col-md-6 col-lg-6">
-            {{ Form::label('expense_type', __('Expense Type'), ['class' => 'form-label']) }}
-            {{ Form::select('expense_type', ['0' => 'Property', '10000' => 'Liability', '10001' => 'Tax'] + $types->toArray(), null, ['class' => 'form-control hidesearch', 'id' => 'expense_type', 'onchange' => 'toggleFields()']) }}
-        </div>
-
-        <!-- Liability Field (Initially Hidden) -->
-        <div id="liability_field" class="form-group col-md-6 col-lg-6" style="display: none;">
-            {{ Form::label('liability_id', __('Liability'), ['class' => 'form-label']) }}
-            {{ Form::select('liability_id', ['' => __('Select Liability')] + $liabilities->pluck('name', 'id')->toArray(), null, ['class' => 'form-control hidesearch', 'id' => 'liability']) }}
-        </div>
-
-        <div class="form-group col-md-6 col-lg-6" id="propertyField">
-            {{ Form::label('property_id', __('Property'), ['class' => 'form-label']) }}
-            {{ Form::select('property_id', $property, null, ['class' => 'form-control hidesearch', 'id' => 'property_id']) }}
-        </div>
-
-        <div class="form-group col-lg-6 col-md-6" id="unitField">
-            {{ Form::label('unit_id', __('Unit'), ['class' => 'form-label']) }}
-            <div class="unit_div">
-                <select class="form-control hidesearch unit" id="unit_id" name="unit_id">
-                    <option value="">{{ __('Select Unit') }}</option>
-                </select>
+            <div class="form-group col-md-6 col-lg-6">
+                {{ Form::label('expense_type', __('Expense Type'), ['class' => 'form-label']) }}
+                {{ Form::select('expense_type', ['0' => 'Property', '10000' => 'Liability', '10001' => 'Tax'] + $types->toArray(), null, ['class' => 'form-control hidesearch', 'id' => 'expense_type', 'onchange' => 'toggleFields()']) }}
             </div>
-        </div>
 
-        {{-- <script>
+            <!-- Liability Field (Initially Hidden) -->
+            <div id="liability_field" class="form-group col-md-6 col-lg-6" style="display: none;">
+                {{ Form::label('liability_id', __('Liability'), ['class' => 'form-label']) }}
+                {{ Form::select('liability_id', ['' => __('Select Liability')] + $liabilities->pluck('name', 'id')->toArray(), null, ['class' => 'form-control hidesearch', 'id' => 'liability']) }}
+            </div>
+
+            <div class="form-group col-md-6 col-lg-6" id="propertyField">
+                {{ Form::label('property_id', __('Property'), ['class' => 'form-label']) }}
+                {{ Form::select('property_id', $property, null, ['class' => 'form-control hidesearch', 'id' => 'property_id']) }}
+            </div>
+
+            <div class="form-group col-lg-6 col-md-6" id="unitField">
+                {{ Form::label('unit_id', __('Unit'), ['class' => 'form-label']) }}
+                <div class="unit_div">
+                    <select class="form-control hidesearch unit" id="unit_id" name="unit_id">
+                        <option value="">{{ __('Select Unit') }}</option>
+                    </select>
+                </div>
+            </div>
+
+            {{-- <script>
             function toggleFields() {
                 var selectedValue = document.getElementById('expense_type').value;
                 console.log("Selected value: " + selectedValue);  // Debug log
@@ -74,76 +75,77 @@
         </script> --}}
 
 
-        <div class="form-group col-md-6 col-lg-6" id="account_selection">
-            {{ Form::label('account_id', __('Select Bank Account'), ['class' => 'form-label', 'onchange' => 'getAccountDetails()']) }}
-            <div class="cheque_div">
-                <select class="form-control hidesearch account" id="account" name="account_id">
-                    <option value="">{{ __('Select Bank Account') }}</option>
+            <div class="form-group col-md-6 col-lg-6" id="account_selection">
+                {{ Form::label('account_id', __('Select Bank Account'), ['class' => 'form-label', 'onchange' => 'getAccountDetails()']) }}
+                <div class="cheque_div">
+                    <select class="form-control hidesearch account" id="account" name="account_id">
+                        <option value="">{{ __('Select Bank Account') }}</option>
 
-                </select>
+                    </select>
+                </div>
             </div>
-        </div>
 
-        <div class="form-group  col-md-6 col-lg-6">
-            {{ Form::label('date', __('Date'), ['class' => 'form-label']) }}
-            {{ Form::date('date', null, ['class' => 'form-control']) }}
-        </div>
-        {{-- <div class="form-group  col-md-6 col-lg-6">
+            <div class="form-group  col-md-6 col-lg-6">
+                {{ Form::label('date', __('Date'), ['class' => 'form-label']) }}
+                {{ Form::date('date', null, ['class' => 'form-control']) }}
+            </div>
+            {{-- <div class="form-group  col-md-6 col-lg-6">
             {{Form::label('amount',__('Amount'),array('class'=>'form-label'))}}
             {{Form::number('amount',null,array('class'=>'form-control','placeholder'=>__('Enter Expense Amount'),'step' => '0.01'))}}
         </div> --}}
-        <div class="form-group col-md-6 col-lg-6">
-            {{ Form::label('vat_included', __('Tax Inclusion'), ['class' => 'form-label']) }}
-            <div>
-                <label>
-                    <input type="radio" name="vat_included" value="included" onchange="calculateTax()" checked>
-                    {{ __('Tax Included') }}
-                </label>
-                <label style="margin-left: 15px;">
-                    <input type="radio" name="vat_included" value="excluded" onchange="calculateTax()">
-                    {{ __('Tax Excluded') }}
-                </label>
+            <div class="form-group col-md-6 col-lg-6">
+                {{ Form::label('vat_included', __('Tax Inclusion'), ['class' => 'form-label']) }}
+                <div>
+                    <label>
+                        <input type="radio" name="vat_included" value="included" onchange="calculateTax()" checked>
+                        {{ __('Tax Included') }}
+                    </label>
+                    <label style="margin-left: 15px;">
+                        <input type="radio" name="vat_included" value="excluded" onchange="calculateTax()">
+                        {{ __('Tax Excluded') }}
+                    </label>
+                </div>
+            </div>
+
+            <!-- Amount -->
+            <div class="form-group col-md-6 col-lg-6">
+                {{ Form::label('base_amount', __('Amount'), ['class' => 'form-label']) }}
+                {{ Form::number('base_amount', null, [
+                    'class' => 'form-control',
+                    'placeholder' => __('Enter Expense Amount'),
+                    'step' => '0.01',
+                    'oninput' => 'calculateTax()',
+                    'id' => 'amount',
+                ]) }}
+            </div>
+
+            <!-- Tax Amount -->
+            <div class="form-group col-md-6 col-lg-6">
+                {{ Form::label('vat_amount', __('Tax Amount'), ['class' => 'form-label']) }}
+                {{ Form::text('vat_amount', null, ['class' => 'form-control', 'readonly', 'id' => 'tax_amount']) }}
+            </div>
+
+            <!-- Total Amount -->
+            <div class="form-group col-md-6 col-lg-6">
+                {{ Form::label('amount', __('Total Amount'), ['class' => 'form-label']) }}
+                {{ Form::text('amount', null, ['class' => 'form-control', 'readonly', 'id' => 'total_amount']) }}
+            </div>
+            <div class="form-group  col-md-12 col-lg-12">
+                {{ Form::label('receipt', __('Receipt'), ['class' => 'form-label']) }}
+                {{ Form::file('receipt', ['class' => 'form-control']) }}
+            </div>
+            <div class="form-group  col-md-12 col-lg-12">
+                {{ Form::label('notes', __('Notes'), ['class' => 'form-label']) }}
+                {{ Form::textarea('notes', null, ['class' => 'form-control', 'rows' => 3]) }}
             </div>
         </div>
-
-        <!-- Amount -->
-        <div class="form-group col-md-6 col-lg-6">
-            {{ Form::label('base_amount', __('Amount'), ['class' => 'form-label']) }}
-            {{ Form::number('base_amount', null, [
-                'class' => 'form-control',
-                'placeholder' => __('Enter Expense Amount'),
-                'step' => '0.01',
-                'oninput' => 'calculateTax()',
-                'id' => 'amount',
-            ]) }}
-        </div>
-
-        <!-- Tax Amount -->
-        <div class="form-group col-md-6 col-lg-6">
-            {{ Form::label('vat_amount', __('Tax Amount'), ['class' => 'form-label']) }}
-            {{ Form::text('vat_amount', null, ['class' => 'form-control', 'readonly', 'id' => 'tax_amount']) }}
-        </div>
-
-        <!-- Total Amount -->
-        <div class="form-group col-md-6 col-lg-6">
-            {{ Form::label('amount', __('Total Amount'), ['class' => 'form-label']) }}
-            {{ Form::text('amount', null, ['class' => 'form-control', 'readonly', 'id' => 'total_amount']) }}
-        </div>
-        <div class="form-group  col-md-12 col-lg-12">
-            {{ Form::label('receipt', __('Receipt'), ['class' => 'form-label']) }}
-            {{ Form::file('receipt', ['class' => 'form-control']) }}
-        </div>
-        <div class="form-group  col-md-12 col-lg-12">
-            {{ Form::label('notes', __('Notes'), ['class' => 'form-label']) }}
-            {{ Form::textarea('notes', null, ['class' => 'form-control', 'rows' => 3]) }}
-        </div>
     </div>
-</div>
-<div class="modal-footer">
-    <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">{{ __('Close') }}</button>
-    {{ Form::submit(__('Create'), ['class' => 'btn btn-primary btn-rounded']) }}
-</div>
-{{ Form::close() }}
+    <div class="modal-footer">
+        <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">{{ __('Close') }}</button>
+        {{ Form::submit(__('Create'), ['class' => 'btn btn-primary btn-rounded']) }}
+    </div>
+    {{ Form::close() }}
+@endcan
 @php
     $settings = App\Models\Utility::settings();
     $taxRate = 5;
@@ -177,7 +179,8 @@
 
                 // Loop through response data (which is an array of unit objects)
                 $.each(data, function(index, unit) {
-                    $('.unit').append('<option value="' + unit.id + '">' + unit.name + '</option>');
+                    $('.unit').append('<option value="' + unit.id + '">' + unit.name +
+                        '</option>');
                 });
 
                 $('.hidesearch').select2({
@@ -246,7 +249,8 @@
                     $('#account_selection').show();
 
                     $.each(data, function(index, unit) {
-                        $('.account').append('<option value="' + account.id + '">' + account.holder_name + '</option>');
+                        $('.account').append('<option value="' + account.id + '">' +
+                            account.holder_name + '</option>');
                     });
 
                 });

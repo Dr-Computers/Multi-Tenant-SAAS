@@ -139,404 +139,554 @@
 @endsection
 
 @section('content')
-    <div x-data="stepper()" class="container bg-white rounded-lg shadow-lg p-lg-6 p-2.5 mt-5">
-        <div class="pb-1" x-data="formHandler()">
+    @can('edit a property')
+        <div x-data="stepper()" class="container bg-white rounded-lg shadow-lg p-lg-6 p-2.5 mt-5">
+            <div class="pb-1" x-data="formHandler()">
 
-            <form method="POST" @submit.prevent="submitForm" id="propertyFrom"
-                action="{{ route('company.realestate.properties.store') }}" enctype="multipart/form-data">
-                @method('PUT')
-                @csrf
-            </form>
+                <form method="POST" @submit.prevent="submitForm" id="propertyFrom"
+                    action="{{ route('company.realestate.properties.store') }}" enctype="multipart/form-data">
+                    @method('PUT')
+                    @csrf
+                </form>
 
-            <div x-show="showToast" x-transition
-                :class="toastType === 'success' ? 'bg-success text-light' : 'bg-danger text-light'"
-                class="fixed top-5 right-5 text-white p-3 rounded shadow-lg transition">
+                <div x-show="showToast" x-transition
+                    :class="toastType === 'success' ? 'bg-success text-light' : 'bg-danger text-light'"
+                    class="fixed top-5 right-5 text-white p-3 rounded shadow-lg transition">
 
-                <p x-html="toastMessage"></p>
+                    <p x-html="toastMessage"></p>
 
+                </div>
             </div>
-        </div>
-        <div id="loader" class="loader-overlay hidden">
-            <div class="spinner"></div>
-        </div>
-        <!-- Responsive Stepper -->
-        <div class="flex flex-col lg:flex-col">
-            <!-- Stepper Navigation -->
-            {{-- lg:w-1/4  lg:border-r border-gray-200 lg:pr-6 mb-6 lg:mb-0 lg:sticky lg:top-0  z-10 bg-white --}}
-            <div class="w-full   border-gray-200 mb-0 sticky top-0  z-10 bg-white">
-                <ul class="flex flex-wrap justify-center justify-content-around lg:flex-row lg:justify-start lg:space-x-0 lg:space-y-8 overflow-auto position-sticky top-0"
-                    style="z-index: 99999999" {{-- class="flex justify-center lg:flex-col lg:justify-start lg:space-x-0 lg:space-y-8 overflow-auto position-sticky space-x-4 top-0 z-1000" --}}>
-                    <template x-for="(step, index) in steps" :key="index">
-                        <li role="button" class="flex items-center lg:relative mt-2 step-items" @click="jumpToStep(index)">
-                            <!-- Step Circle -->
-                            <div class="px-4 py-1 step-circle flex items-center justify-center h-5 w-5 border-2 rounded-full z-10"
-                                :class="{
-                                    'active border-white-500 bg-theme text-white': index <= currentStep,
-                                    'border-gray-300 bg-vk-lt text-gray-500': index > currentStep
-                                }">
-                                <!-- Add click event to jump to specific step -->
-                                <span x-text="index + 1"></span>
-                            </div>
-
-                            <!-- Step Titles -->
-                            <div class="ms-2 lg:ml-0 lg:mt-4">
-                                <p class="text-sm font-medium mb-3"
-                                    :class="{ 'text-blue-500': index === currentStep, 'text-gray-600': index !== currentStep }"
-                                    x-text="step.title"></p>
-                            </div>
-                        </li>
-                    </template>
-
-
-                </ul>
+            <div id="loader" class="loader-overlay hidden">
+                <div class="spinner"></div>
             </div>
+            <!-- Responsive Stepper -->
+            <div class="flex flex-col lg:flex-col">
+                <!-- Stepper Navigation -->
+                {{-- lg:w-1/4  lg:border-r border-gray-200 lg:pr-6 mb-6 lg:mb-0 lg:sticky lg:top-0  z-10 bg-white --}}
+                <div class="w-full   border-gray-200 mb-0 sticky top-0  z-10 bg-white">
+                    <ul class="flex flex-wrap justify-center justify-content-around lg:flex-row lg:justify-start lg:space-x-0 lg:space-y-8 overflow-auto position-sticky top-0"
+                        style="z-index: 99999999" {{-- class="flex justify-center lg:flex-col lg:justify-start lg:space-x-0 lg:space-y-8 overflow-auto position-sticky space-x-4 top-0 z-1000" --}}>
+                        <template x-for="(step, index) in steps" :key="index">
+                            <li role="button" class="flex items-center lg:relative mt-2 step-items" @click="jumpToStep(index)">
+                                <!-- Step Circle -->
+                                <div class="px-4 py-1 step-circle flex items-center justify-center h-5 w-5 border-2 rounded-full z-10"
+                                    :class="{
+                                        'active border-white-500 bg-theme text-white': index <= currentStep,
+                                        'border-gray-300 bg-vk-lt text-gray-500': index > currentStep
+                                    }">
+                                    <!-- Add click event to jump to specific step -->
+                                    <span x-text="index + 1"></span>
+                                </div>
 
-            <!-- Step Content -->
-            {{-- lg:pl-6 --}}
-            <div class=" w-full ">
+                                <!-- Step Titles -->
+                                <div class="ms-2 lg:ml-0 lg:mt-4">
+                                    <p class="text-sm font-medium mb-3"
+                                        :class="{ 'text-blue-500': index === currentStep, 'text-gray-600': index !==
+                                            currentStep }"
+                                        x-text="step.title"></p>
+                                </div>
+                            </li>
+                        </template>
 
-                <!-- Progress Bar -->
-                {{-- <div class="w-full bg-gray-200 shadow-sm h-1 mb-1 rounded">
+
+                    </ul>
+                </div>
+
+                <!-- Step Content -->
+                {{-- lg:pl-6 --}}
+                <div class=" w-full ">
+
+                    <!-- Progress Bar -->
+                    {{-- <div class="w-full bg-gray-200 shadow-sm h-1 mb-1 rounded">
                     <div class="h-full bg-theme border-1 rounded" :style="'width: ' + progressBarWidth + '%'" x-transition>
                     </div>
                 </div> --}}
-                <div class="space-y-8">
-                    <!-- Step 1 -->
-                    <div x-show="currentStep === 0" class="mt-2">
-                        <!-- Stepper Navigation -->
+                    <div class="space-y-8">
+                        <!-- Step 1 -->
+                        <div x-show="currentStep === 0" class="mt-2">
+                            <!-- Stepper Navigation -->
 
-                        <div x-data="propertyForm()" x-init="init()" class="p-2 space-y-2">
-                            <!-- Mode Selection -->
-                            <div>
-                                <h6 class="mb-3 mt-3 font-medium">I'm looking to<sup class="text-danger fs-4">*</sup></h6>
-                                <ul class="grid gap-x-5">
-                                    <li class="relative">
-                                        <input form="propertyFrom" class="sr-only peer" type="radio" id="sell"
-                                            name="mode" value="sell" @change="updateMode('sell')"
-                                            {{ isset($property) && $property->mode == 'sell' ? 'checked' : '' }}>
-                                        <label for="sell"
-                                            class="mx-1 px-3 py-1 bg-white border border-gray-300 rounded-5 cursor-pointer focus:outline-none hover:bg-gray-50 peer-checked:ring-green-500 peer-checked:ring-2 peer-checked:border-transparent">Sell</label>
-                                    </li>
-                                    <li class="relative">
-                                        <input form="propertyFrom" class="sr-only peer" type="radio" id="rent"
-                                            name="mode" value="rent" @change="updateMode('rent')"
-                                            {{ isset($property) && $property->mode == 'rent' ? 'checked' : '' }}>
-                                        <label for="rent"
-                                            class="mx-1 px-3 py-1 bg-white border border-gray-300 rounded-5 cursor-pointer focus:outline-none hover:bg-gray-50 peer-checked:ring-green-500 peer-checked:ring-2 peer-checked:border-transparent">Rent/Lease</label>
-                                    </li>
-
-                                </ul>
-                            </div>
-
-                            <!-- Type Selection -->
-                            <div class="">
-                                <h6 class="mb-3 mt-3 font-medium">What kind of property do you have?<sup
-                                        class="text-danger fs-4">*</sup></h6>
-                                <div class="flex flex-wrap ">
-                                    <template x-for="type in types" :key="type">
-                                        <div class="flex items-center me-4">
-                                            <input form="propertyFrom" type="radio" :id="type.toLowerCase() + '-radio'"
-                                                :value="type" name="type" x-model="currentType"
-                                                @change="updateCategories()"
-                                                class="w-4 h-4 text-green-600 bg-gray-100 focus:ring-green-500 dark:focus:ring-green-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-                                            <label :for="type.toLowerCase() + '-radio'"
-                                                class="ms-2 text-sm font-medium text-gray dark:text-gray"
-                                                x-text="type"></label>
-                                        </div>
-                                    </template>
-                                </div>
-                            </div>
-
-                            <!-- Categories -->
-                            <div>
-                                <h6 class="mb-3 mt-3 font-medium">Choose a Category<sup class="text-danger fs-4">*</sup>
-                                </h6>
-                                <ul class="flex flex-wrap">
-                                    <template x-for="category in categories" :key="category.id">
-                                        <li class="relative mb-3">
-                                            <input form="propertyFrom" class="sr-only peer" type="radio"
-                                                @change="selectedCategory(category.name)" :id="'category_' + category.id"
-                                                :value="category.id" name="category" x-model="currentCategory">
-                                            <label :for="'category_' + category.id"
-                                                class="mx-1 px-3 py-1 bg-white border border-gray-300 rounded-5 cursor-pointer focus:outline-none hover:bg-gray-50 peer-checked:ring-green-500 peer-checked:ring-2 peer-checked:border-transparent"
-                                                x-text="category.name"></label>
+                            <div x-data="propertyForm()" x-init="init()" class="p-2 space-y-2">
+                                <!-- Mode Selection -->
+                                <div>
+                                    <h6 class="mb-3 mt-3 font-medium">I'm looking to<sup class="text-danger fs-4">*</sup></h6>
+                                    <ul class="grid gap-x-5">
+                                        <li class="relative">
+                                            <input form="propertyFrom" class="sr-only peer" type="radio" id="sell"
+                                                name="mode" value="sell" @change="updateMode('sell')"
+                                                {{ isset($property) && $property->mode == 'sell' ? 'checked' : '' }}>
+                                            <label for="sell"
+                                                class="mx-1 px-3 py-1 bg-white border border-gray-300 rounded-5 cursor-pointer focus:outline-none hover:bg-gray-50 peer-checked:ring-green-500 peer-checked:ring-2 peer-checked:border-transparent">Sell</label>
                                         </li>
-                                    </template>
-                                </ul>
+                                        <li class="relative">
+                                            <input form="propertyFrom" class="sr-only peer" type="radio" id="rent"
+                                                name="mode" value="rent" @change="updateMode('rent')"
+                                                {{ isset($property) && $property->mode == 'rent' ? 'checked' : '' }}>
+                                            <label for="rent"
+                                                class="mx-1 px-3 py-1 bg-white border border-gray-300 rounded-5 cursor-pointer focus:outline-none hover:bg-gray-50 peer-checked:ring-green-500 peer-checked:ring-2 peer-checked:border-transparent">Rent/Lease</label>
+                                        </li>
+
+                                    </ul>
+                                </div>
+
+                                <!-- Type Selection -->
+                                <div class="">
+                                    <h6 class="mb-3 mt-3 font-medium">What kind of property do you have?<sup
+                                            class="text-danger fs-4">*</sup></h6>
+                                    <div class="flex flex-wrap ">
+                                        <template x-for="type in types" :key="type">
+                                            <div class="flex items-center me-4">
+                                                <input form="propertyFrom" type="radio" :id="type.toLowerCase() + '-radio'"
+                                                    :value="type" name="type" x-model="currentType"
+                                                    @change="updateCategories()"
+                                                    class="w-4 h-4 text-green-600 bg-gray-100 focus:ring-green-500 dark:focus:ring-green-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                                <label :for="type.toLowerCase() + '-radio'"
+                                                    class="ms-2 text-sm font-medium text-gray dark:text-gray"
+                                                    x-text="type"></label>
+                                            </div>
+                                        </template>
+                                    </div>
+                                </div>
+
+                                <!-- Categories -->
+                                <div>
+                                    <h6 class="mb-3 mt-3 font-medium">Choose a Category<sup class="text-danger fs-4">*</sup>
+                                    </h6>
+                                    <ul class="flex flex-wrap">
+                                        <template x-for="category in categories" :key="category.id">
+                                            <li class="relative mb-3">
+                                                <input form="propertyFrom" class="sr-only peer" type="radio"
+                                                    @change="selectedCategory(category.name)" :id="'category_' + category.id"
+                                                    :value="category.id" name="category" x-model="currentCategory">
+                                                <label :for="'category_' + category.id"
+                                                    class="mx-1 px-3 py-1 bg-white border border-gray-300 rounded-5 cursor-pointer focus:outline-none hover:bg-gray-50 peer-checked:ring-green-500 peer-checked:ring-2 peer-checked:border-transparent"
+                                                    x-text="category.name"></label>
+                                            </li>
+                                        </template>
+                                    </ul>
+                                </div>
+
+
+
                             </div>
-
-
-
                         </div>
-                    </div>
 
-                    <!-- Step 2 -->
-                    <div x-show="currentStep === 1" class="space-y-4 mt-2">
+                        <!-- Step 2 -->
+                        <div x-show="currentStep === 1" class="space-y-4 mt-2">
 
-                        <div x-data="locationForm()" x-init="init2()" class="mb-5">
+                            <div x-data="locationForm()" x-init="init2()" class="mb-5">
 
-                            <!-- Location form header -->
-                            <div class="col-lg-12 mb-3 mx-2">
-                                <h1 class="my-1 fw-bold fs-1 mt-2">Where is your property located?</h1>
-                                <h4 class="fw-bold text-dark fs-3 mt-2">An accurate location helps you connect with the
-                                    right buyers
-                                </h4>
-                            </div>
-
-                            <div x-data="{ isModalOpen2: false }" class="section mt-5">
-                                <div class="mx-1 mb-5">
-                                    <label for="city-input" class="block mb-2 text-sm font-medium text-gray-500">
-                                        Enter Location/Address<sup class="text-danger fs-4">*</sup></label>
-                                    <div class="relative z-0 w-full mb-5 group">
-                                        <div class="flex">
-                                            <input type="text" id="location" form="propertyFrom"
-                                                name="location_info" autocomplete="off"
-                                                value="{{ $property ? $property->location : '' }}"
-                                                class="bg-gray-50 text-dark border border-gray-300 text-sm rounded-s-md focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
-                                        </div>
-                                    </div>
+                                <!-- Location form header -->
+                                <div class="col-lg-12 mb-3 mx-2">
+                                    <h1 class="my-1 fw-bold fs-1 mt-2">Where is your property located?</h1>
+                                    <h4 class="fw-bold text-dark fs-3 mt-2">An accurate location helps you connect with the
+                                        right buyers
+                                    </h4>
                                 </div>
 
-                                <div class="col-lg-12">
-                                    <div class="row">
-                                        <div class="col-lg-6">
-                                            <!-- City Input -->
-                                            <div class="relative z-0 w-full mb-5 group">
-                                                <input form="propertyFrom" name="city" type="text" id="auto_city"
-                                                    autocomplete="off" value="{{ $property ? $property->city : '' }}"
-                                                    class="block px-2.5  w-full text-sm text-gray-900 bg-transparent rounded-lg border-1 pt-3 pb-2 appearance-none   dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-                                                    placeholder=" " />
-                                                <label for="auto_city"
-                                                    class="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-gray-900 px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto start-1">
-                                                    City<sup class="text-danger fs-4">*</sup></label>
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-6">
-
-                                            <!-- Locality Input -->
-                                            <div class="relative z-0 w-full mb-5 group">
-                                                <input form="propertyFrom" name="locality" type="text"
-                                                    id="auto_locality" autocomplete="off"
-                                                    value="{{ $property ? $property->locality : '' }}"
-                                                    class="block px-2.5 w-full text-sm text-gray-900 bg-transparent rounded-lg border-1 pt-3 pb-2 appearance-none  dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-                                                    placeholder=" " />
-                                                <label for="auto_locality"
-                                                    class="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-gray-900 px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto start-1">
-                                                    Locality<sup class="text-danger fs-4">*</sup>
-                                                </label>
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-6">
-                                            <!-- Sub Locality Input -->
-                                            <div class="relative z-0 w-full mb-5 group">
-                                                <input form="propertyFrom" name="sub_locality" type="text"
-                                                    id="auto_subLocality" autocomplete="off"
-                                                    value="{{ $property ? $property->sub_locality : '' }}"
-                                                    class="block px-2.5  w-full text-sm text-gray-900 bg-transparent rounded-lg border-1 pt-3 pb-2 appearance-none   dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-                                                    placeholder=" " />
-                                                <label for="auto_subLocality"
-                                                    class="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-gray-900 px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto start-1">
-                                                    Sub Locality (Optional)</label>
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-6 d-none">
-                                            <!-- Landmark Input -->
-                                            <div class="relative z-0 w-full mb-5 group">
-                                                <input form="propertyFrom" name="landmark" type="text"
-                                                    id="auto_landmark" autocomplete="off"
-                                                    value="{{ $property ? $property->landmark : '' }}"
-                                                    class="block px-2.5  w-full text-sm text-gray-900 bg-transparent rounded-lg border-1 pt-3 pb-2 appearance-none   dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-                                                    placeholder=" " />
-                                                <label for="auto_landmark"
-                                                    class="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-gray-900 px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto start-1">Landmark
-                                                    (Optional)</label>
-                                            </div>
-                                        </div>
-
-                                    </div>
-
-
-                                </div>
-
-
-                                <div class="col-lg-12">
-                                    <div class="row">
-                                        <div class="col-lg-6">
-                                            <!-- Latitude Input -->
-                                            <div class="relative z-0 w-full mb-5 group">
-                                                <input form="propertyFrom" name="latitude" type="text"
-                                                    id="auto_latitude" autocomplete="off"
-                                                    value="{{ $property ? $property->latitude : '' }}"
-                                                    class="block px-2.5  w-full text-sm text-gray-900 bg-transparent rounded-lg border-1 pt-3 pb-2 appearance-none   dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-                                                    placeholder=" " />
-                                                <label for="auto_latitude"
-                                                    class="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-gray-900 px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto start-1">Latitude
-                                                </label>
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-6">
-                                            <!-- longitude Input -->
-                                            <div class="relative z-0 w-full mb-5 group">
-                                                <input form="propertyFrom" name="longitude" type="text"
-                                                    id="auto_longitude" autocomplete="off"
-                                                    value="{{ $property ? $property->longitude : '' }}"
-                                                    class="block px-2.5 w-full text-sm text-gray-900 bg-transparent rounded-lg border-1 pt-3 pb-2 appearance-none  dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-                                                    placeholder=" " />
-                                                <label for="auto_longitude"
-                                                    class="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-gray-900 px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto start-1">Longitude</label>
+                                <div x-data="{ isModalOpen2: false }" class="section mt-5">
+                                    <div class="mx-1 mb-5">
+                                        <label for="city-input" class="block mb-2 text-sm font-medium text-gray-500">
+                                            Enter Location/Address<sup class="text-danger fs-4">*</sup></label>
+                                        <div class="relative z-0 w-full mb-5 group">
+                                            <div class="flex">
+                                                <input type="text" id="location" form="propertyFrom"
+                                                    name="location_info" autocomplete="off"
+                                                    value="{{ $property ? $property->location : '' }}"
+                                                    class="bg-gray-50 text-dark border border-gray-300 text-sm rounded-s-md focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                            </div>
 
-                        </div>
-                    </div>
-
-                    <!-- Step 3 -->
-                    <div x-show="currentStep === 2" class="space-y-4 mt-2">
-                        <div class="col-lg-12">
-                            <div class="col-lg-12 mb-3 mx-2">
-                                <h1 class="my-1 fw-bold fs-1 mt-2">
-                                    Tell us about your property
-                                </h1>
-
-                            </div>
-                            <div class="col-lg-12">
-                                <div class="row">
                                     <div class="col-lg-12">
-                                        <div class="mx-2 mb-5">
-                                            <div class="row">
-
-                                                <div class="col-lg-6">
-                                                    <!-- Property Name -->
-                                                    <div class="relative z-0 w-full mb-3 group">
-                                                        <input form="propertyFrom" name="property_name" type="text"
-                                                            autocomplete="off" id="name"
-                                                            value="{{ $property ? $property->name : '' }}"
-                                                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 "
-                                                            placeholder=" " />
-                                                        <label for="name" id="property_heighlight_name"
-                                                            class="absolute fs-3 text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-gray-900 px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto start-1">
-                                                            Property heighlight name</label>
-                                                    </div>
-                                                </div>
-
-                                                <div class="col-lg-6 HideUnwantedSectionsInPlot ">
-                                                    <div class="relative z-0 w-full mb-3 group ">
-                                                        <input form="propertyFrom" name="building_no" type="text"
-                                                            autocomplete="off" id="building_no"
-                                                            value="{{ $property ? $property->building_no : '' }}"
-                                                            class="block px-2.5 w-full text-sm text-gray-900 bg-transparent rounded-lg border-1 pt-3 pb-2 appearance-none dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer" />
-                                                        <label for="building_no"
-                                                            class="absolute fs-3 text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-gray-900 px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto start-1">
-                                                            Flat/Villa/Building No</label>
-                                                    </div>
-                                                </div>
-
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-lg-6 mb-3 HideUnwantedSectionsInPlot">
-                                                    <!-- Property Name -->
-                                                    <div class="relative z-0 w-full mb-3 group">
-
-                                                        <input form="propertyFrom" name="fire_safty_start_date"
-                                                            value="{{ $property ? $property->fire_safty_start_date : '' }}"
-                                                            type="date" autocomplete="off" id="fire_safty_start_date"
-                                                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 "
-                                                            placeholder="" />
-                                                        <label for="fire_safty_start_date"
-                                                            class="absolute fs-3 text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-gray-900 px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto start-1">
-                                                            Fire safty start date</label>
-                                                    </div>
-                                                </div>
-                                                <div class="col-lg-6 mb-3 HideUnwantedSectionsInPlot">
-                                                    <!-- Property Name -->
-                                                    <div class="relative z-0 w-full mb-3 group">
-
-                                                        <input form="propertyFrom" name="fire_safty_end_date"
-                                                            value="{{ $property ? $property->fire_safty_end_date : '' }}"
-                                                            type="date" autocomplete="off" id="fire_safty_end_date"
-                                                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 "
-                                                            placeholder=" " />
-                                                        <label for="fire_safty_end_date"
-                                                            class="absolute fs-3 text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-gray-900 px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto start-1">
-                                                            Fire safty end date</label>
-                                                    </div>
-                                                </div>
-                                                <div class="col-lg-6 mb-3">
-                                                    <!-- Property Name -->
-                                                    <div class="relative z-0 w-full mb-3 group">
-
-                                                        <input form="propertyFrom" name="insurance_start_date"
-                                                            value="{{ $property ? $property->insurance_start_date : '' }}"
-                                                            type="date" autocomplete="off" id="insurance_start_date"
-                                                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 "
-                                                            placeholder="" />
-                                                        <label for="insurance_start_date" id="insurance_start_date"
-                                                            class="absolute fs-3 text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-gray-900 px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto start-1">
-                                                            Insurance start date</label>
-                                                    </div>
-                                                </div>
-                                                <div class="col-lg-6 mb-3">
-                                                    <!-- Property Name -->
-                                                    <div class="relative z-0 w-full mb-3 group">
-
-                                                        <input form="propertyFrom" name="insurance_end_date"
-                                                            value="{{ $property ? $property->insurance_end_date : '' }}"
-                                                            type="date" autocomplete="off" id="insurance_end_date"
-                                                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 "
-                                                            placeholder=" " />
-                                                        <label for="insurance_end_date"
-                                                            class="absolute fs-3 text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-gray-900 px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto start-1">
-                                                            Insurance end date</label>
-                                                    </div>
+                                        <div class="row">
+                                            <div class="col-lg-6">
+                                                <!-- City Input -->
+                                                <div class="relative z-0 w-full mb-5 group">
+                                                    <input form="propertyFrom" name="city" type="text" id="auto_city"
+                                                        autocomplete="off" value="{{ $property ? $property->city : '' }}"
+                                                        class="block px-2.5  w-full text-sm text-gray-900 bg-transparent rounded-lg border-1 pt-3 pb-2 appearance-none   dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                                                        placeholder=" " />
+                                                    <label for="auto_city"
+                                                        class="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-gray-900 px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto start-1">
+                                                        City<sup class="text-danger fs-4">*</sup></label>
                                                 </div>
                                             </div>
-                                            <div
-                                                class="grid grid-cols-1 md:grid-cols-5 lg:grid-cols-2 gap-2 HideUnwantedSectionsInPlot">
+                                            <div class="col-lg-6">
 
-                                                <!-- Total Floor -->
-                                                <div class="mb-2">
-                                                    <div class="relative flex">
-                                                        <input form="propertyFrom" name="total_floor" type="number"
-                                                            autocomplete="off" id="total_floor"
-                                                            value="{{ $property ? $property->total_floor : '' }}"
-                                                            oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*?)\..*/g, '$1');"
-                                                            class="bg-gray-50 text-dark border border-gray-300 text-sm rounded-s-md focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 peer"
-                                                            placeholder=" " />
-                                                        <label for="total_floor"
-                                                            class="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-gray-900 px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto start-1">Total
-                                                            Floor</label>
-
-                                                    </div>
+                                                <!-- Locality Input -->
+                                                <div class="relative z-0 w-full mb-5 group">
+                                                    <input form="propertyFrom" name="locality" type="text"
+                                                        id="auto_locality" autocomplete="off"
+                                                        value="{{ $property ? $property->locality : '' }}"
+                                                        class="block px-2.5 w-full text-sm text-gray-900 bg-transparent rounded-lg border-1 pt-3 pb-2 appearance-none  dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                                                        placeholder=" " />
+                                                    <label for="auto_locality"
+                                                        class="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-gray-900 px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto start-1">
+                                                        Locality<sup class="text-danger fs-4">*</sup>
+                                                    </label>
                                                 </div>
                                             </div>
-                                            <div id="property-area-section ">
-                                                <div class="section">
-                                                    <h5 class="mt-3 fs-3 text-black fw-bold ">
-                                                        Area Details
-                                                    </h5>
-                                                    <div class="mt-3">
-                                                        <div class="ShowWantedSectionsInPlot " style="display: none">
-                                                            <div class="row">
-                                                                <!-- Plot Area Input -->
-                                                                <div class="mb-2 col-lg-6">
-                                                                    <div class="mb-2 ">
-                                                                        <label for="projects"
-                                                                            class="mt-3 font-medium mb-2 ">
-                                                                            Plot Area </label>
+                                            <div class="col-lg-6">
+                                                <!-- Sub Locality Input -->
+                                                <div class="relative z-0 w-full mb-5 group">
+                                                    <input form="propertyFrom" name="sub_locality" type="text"
+                                                        id="auto_subLocality" autocomplete="off"
+                                                        value="{{ $property ? $property->sub_locality : '' }}"
+                                                        class="block px-2.5  w-full text-sm text-gray-900 bg-transparent rounded-lg border-1 pt-3 pb-2 appearance-none   dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                                                        placeholder=" " />
+                                                    <label for="auto_subLocality"
+                                                        class="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-gray-900 px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto start-1">
+                                                        Sub Locality (Optional)</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-6 d-none">
+                                                <!-- Landmark Input -->
+                                                <div class="relative z-0 w-full mb-5 group">
+                                                    <input form="propertyFrom" name="landmark" type="text"
+                                                        id="auto_landmark" autocomplete="off"
+                                                        value="{{ $property ? $property->landmark : '' }}"
+                                                        class="block px-2.5  w-full text-sm text-gray-900 bg-transparent rounded-lg border-1 pt-3 pb-2 appearance-none   dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                                                        placeholder=" " />
+                                                    <label for="auto_landmark"
+                                                        class="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-gray-900 px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto start-1">Landmark
+                                                        (Optional)</label>
+                                                </div>
+                                            </div>
+
+                                        </div>
+
+
+                                    </div>
+
+
+                                    <div class="col-lg-12">
+                                        <div class="row">
+                                            <div class="col-lg-6">
+                                                <!-- Latitude Input -->
+                                                <div class="relative z-0 w-full mb-5 group">
+                                                    <input form="propertyFrom" name="latitude" type="text"
+                                                        id="auto_latitude" autocomplete="off"
+                                                        value="{{ $property ? $property->latitude : '' }}"
+                                                        class="block px-2.5  w-full text-sm text-gray-900 bg-transparent rounded-lg border-1 pt-3 pb-2 appearance-none   dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                                                        placeholder=" " />
+                                                    <label for="auto_latitude"
+                                                        class="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-gray-900 px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto start-1">Latitude
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-6">
+                                                <!-- longitude Input -->
+                                                <div class="relative z-0 w-full mb-5 group">
+                                                    <input form="propertyFrom" name="longitude" type="text"
+                                                        id="auto_longitude" autocomplete="off"
+                                                        value="{{ $property ? $property->longitude : '' }}"
+                                                        class="block px-2.5 w-full text-sm text-gray-900 bg-transparent rounded-lg border-1 pt-3 pb-2 appearance-none  dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                                                        placeholder=" " />
+                                                    <label for="auto_longitude"
+                                                        class="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-gray-900 px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto start-1">Longitude</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <!-- Step 3 -->
+                        <div x-show="currentStep === 2" class="space-y-4 mt-2">
+                            <div class="col-lg-12">
+                                <div class="col-lg-12 mb-3 mx-2">
+                                    <h1 class="my-1 fw-bold fs-1 mt-2">
+                                        Tell us about your property
+                                    </h1>
+
+                                </div>
+                                <div class="col-lg-12">
+                                    <div class="row">
+                                        <div class="col-lg-12">
+                                            <div class="mx-2 mb-5">
+                                                <div class="row">
+
+                                                    <div class="col-lg-6">
+                                                        <!-- Property Name -->
+                                                        <div class="relative z-0 w-full mb-3 group">
+                                                            <input form="propertyFrom" name="property_name" type="text"
+                                                                autocomplete="off" id="name"
+                                                                value="{{ $property ? $property->name : '' }}"
+                                                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 "
+                                                                placeholder=" " />
+                                                            <label for="name" id="property_heighlight_name"
+                                                                class="absolute fs-3 text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-gray-900 px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto start-1">
+                                                                Property heighlight name</label>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="col-lg-6 HideUnwantedSectionsInPlot ">
+                                                        <div class="relative z-0 w-full mb-3 group ">
+                                                            <input form="propertyFrom" name="building_no" type="text"
+                                                                autocomplete="off" id="building_no"
+                                                                value="{{ $property ? $property->building_no : '' }}"
+                                                                class="block px-2.5 w-full text-sm text-gray-900 bg-transparent rounded-lg border-1 pt-3 pb-2 appearance-none dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer" />
+                                                            <label for="building_no"
+                                                                class="absolute fs-3 text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-gray-900 px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto start-1">
+                                                                Flat/Villa/Building No</label>
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-lg-6 mb-3 HideUnwantedSectionsInPlot">
+                                                        <!-- Property Name -->
+                                                        <div class="relative z-0 w-full mb-3 group">
+
+                                                            <input form="propertyFrom" name="fire_safty_start_date"
+                                                                value="{{ $property ? $property->fire_safty_start_date : '' }}"
+                                                                type="date" autocomplete="off" id="fire_safty_start_date"
+                                                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 "
+                                                                placeholder="" />
+                                                            <label for="fire_safty_start_date"
+                                                                class="absolute fs-3 text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-gray-900 px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto start-1">
+                                                                Fire safty start date</label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-6 mb-3 HideUnwantedSectionsInPlot">
+                                                        <!-- Property Name -->
+                                                        <div class="relative z-0 w-full mb-3 group">
+
+                                                            <input form="propertyFrom" name="fire_safty_end_date"
+                                                                value="{{ $property ? $property->fire_safty_end_date : '' }}"
+                                                                type="date" autocomplete="off" id="fire_safty_end_date"
+                                                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 "
+                                                                placeholder=" " />
+                                                            <label for="fire_safty_end_date"
+                                                                class="absolute fs-3 text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-gray-900 px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto start-1">
+                                                                Fire safty end date</label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-6 mb-3">
+                                                        <!-- Property Name -->
+                                                        <div class="relative z-0 w-full mb-3 group">
+
+                                                            <input form="propertyFrom" name="insurance_start_date"
+                                                                value="{{ $property ? $property->insurance_start_date : '' }}"
+                                                                type="date" autocomplete="off" id="insurance_start_date"
+                                                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 "
+                                                                placeholder="" />
+                                                            <label for="insurance_start_date" id="insurance_start_date"
+                                                                class="absolute fs-3 text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-gray-900 px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto start-1">
+                                                                Insurance start date</label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-6 mb-3">
+                                                        <!-- Property Name -->
+                                                        <div class="relative z-0 w-full mb-3 group">
+
+                                                            <input form="propertyFrom" name="insurance_end_date"
+                                                                value="{{ $property ? $property->insurance_end_date : '' }}"
+                                                                type="date" autocomplete="off" id="insurance_end_date"
+                                                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 "
+                                                                placeholder=" " />
+                                                            <label for="insurance_end_date"
+                                                                class="absolute fs-3 text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-gray-900 px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto start-1">
+                                                                Insurance end date</label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div
+                                                    class="grid grid-cols-1 md:grid-cols-5 lg:grid-cols-2 gap-2 HideUnwantedSectionsInPlot">
+
+                                                    <!-- Total Floor -->
+                                                    <div class="mb-2">
+                                                        <div class="relative flex">
+                                                            <input form="propertyFrom" name="total_floor" type="number"
+                                                                autocomplete="off" id="total_floor"
+                                                                value="{{ $property ? $property->total_floor : '' }}"
+                                                                oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*?)\..*/g, '$1');"
+                                                                class="bg-gray-50 text-dark border border-gray-300 text-sm rounded-s-md focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 peer"
+                                                                placeholder=" " />
+                                                            <label for="total_floor"
+                                                                class="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-gray-900 px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto start-1">Total
+                                                                Floor</label>
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div id="property-area-section ">
+                                                    <div class="section">
+                                                        <h5 class="mt-3 fs-3 text-black fw-bold ">
+                                                            Area Details
+                                                        </h5>
+                                                        <div class="mt-3">
+                                                            <div class="ShowWantedSectionsInPlot " style="display: none">
+                                                                <div class="row">
+                                                                    <!-- Plot Area Input -->
+                                                                    <div class="mb-2 col-lg-6">
+                                                                        <div class="mb-2 ">
+                                                                            <label for="projects"
+                                                                                class="mt-3 font-medium mb-2 ">
+                                                                                Plot Area </label>
+                                                                            <div class="relative">
+
+
+                                                                                <input form="propertyFrom" name="plot_area"
+                                                                                    autocomplete="off" type="text"
+                                                                                    id="plot_area"
+                                                                                    value="{{ $property ? $property->plot_area : '' }}"
+                                                                                    oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*?)\..*/g, '$1');"
+                                                                                    class="bg-gray-50 text-dark border border-gray-300 text-sm rounded-s-md focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 peer"
+                                                                                    placeholder=" " />
+
+                                                                                <div
+                                                                                    class="absolute inset-y-0 end-0 flex items-center pointer-events-none z-20 pe-4">
+                                                                                    Sq.ft
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="mb-2 col-lg-6">
+                                                                        <div class="mb-2 ">
+                                                                            <div class="relative">
+                                                                                <label for="projects"
+                                                                                    class="mt-3 font-medium mb-2 ">
+                                                                                    Plot Type </label>
+                                                                                <select form="propertyFrom" name="plot_type"
+                                                                                    id="plot_type"
+                                                                                    class="bg-gray-50 border border-gray-300 text-dark-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 ">
+                                                                                    <option value="" selected>None of the
+                                                                                        below
+                                                                                    </option>
+                                                                                    <option class="ResidentialAllowed"
+                                                                                        {{ $property->plot_type == 'Independent plots' ? 'selected' : '' }}
+                                                                                        value="Independent plots">Independent
+                                                                                        plots</option>
+                                                                                    <option class="ResidentialAllowed"
+                                                                                        {{ $property->plot_type == 'Villa,Bungalow,Row houses' ? 'selected' : '' }}
+                                                                                        value="Villa,Bungalow,Row houses">
+                                                                                        Villa,Bungalow,Row houses</option>
+                                                                                    <option class="ResidentialAllowed"
+                                                                                        {{ $property->plot_type == 'Builder Floor appartments' ? 'selected' : '' }}
+                                                                                        value="Builder Floor appartments">
+                                                                                        Builder Floor appartments</option>
+
+                                                                                    <option class="CommercialAllowed"
+                                                                                        {{ $property->plot_type == 'Agricultural/Farm Land' ? 'selected' : '' }}
+                                                                                        value="Agricultural/Farm Land">
+                                                                                        Agricultural/Farm Land</option>
+                                                                                    <option class="CommercialAllowed"
+                                                                                        {{ $property->plot_type == 'WareHouse plots' ? 'selected' : '' }}
+                                                                                        value="Warehouse Plots">WareHouse Plots
+                                                                                    </option>
+                                                                                    <option class="CommercialAllowed"
+                                                                                        {{ $property->plot_type == 'Industrial Spaces' ? 'selected' : '' }}
+                                                                                        value="Industrial Spaces">Industrial
+                                                                                        Spaces</option>
+                                                                                    <option class="CommercialAllowed"
+                                                                                        {{ $property->plot_type == 'Retail Plots' ? 'selected' : '' }}
+                                                                                        value="Retail Plots">Retail Plots
+                                                                                    </option>
+                                                                                    <option class="CommercialAllowed"
+                                                                                        {{ $property->plot_type == 'Corporate Plot' ? 'selected' : '' }}
+                                                                                        value="Corporate Plot">Corporate Plot
+                                                                                    </option>
+                                                                                </select>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="mb-2 col-lg-6 mt-3">
+                                                                        <h5 class="mt-3 fs-3 text-black font-bold">Boundary
+                                                                            Wall
+                                                                        </h5>
+                                                                        <!-- Open Sides  -->
+                                                                        <div
+                                                                            class="mb-2 flex gap-3 mt-3 justify-content-between  ">
+                                                                            <label for="city"
+                                                                                class="block mb-2 text-sm font-medium text-gray-500">
+                                                                                No of Open Sides</label>
+                                                                            <div x-data="{ count: `{{ $property->open_sides }}` }"
+                                                                                class="flex items-center space-x-2">
+                                                                                <!-- Minus Button -->
+                                                                                <button @click="if (count > 1) count--"
+                                                                                    class="border fw-bold px-2 rounded rounded-5 text-theme">
+                                                                                    -
+                                                                                </button>
+
+                                                                                <!-- Display Counter -->
+                                                                                <span class="text-md font-bold"
+                                                                                    x-text="count"></span>
+                                                                                <input type="hidden" form="propertyFrom"
+                                                                                    :value="count" name="open_sides">
+
+                                                                                <!-- Plus Button -->
+                                                                                <button @click="count++"
+                                                                                    class="border fw-bold px-2 rounded rounded-5 text-theme">
+                                                                                    +
+                                                                                </button>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+
+                                                            </div>
+                                                            <div class="col-lg-12 HideUnwantedSectionsInPlot ">
+                                                                <div class="row">
+                                                                    <!-- Carpet Area Input -->
+                                                                    <div class="mb-2 col-lg-6">
                                                                         <div class="relative">
-
-
-                                                                            <input form="propertyFrom" name="plot_area"
+                                                                            <input form="propertyFrom" name="carpet_area"
                                                                                 autocomplete="off" type="text"
-                                                                                id="plot_area"
-                                                                                value="{{ $property ? $property->plot_area : '' }}"
+                                                                                id="carpet_area"
+                                                                                value="{{ $property->carpet_area ?? 0 }}"
                                                                                 oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*?)\..*/g, '$1');"
                                                                                 class="bg-gray-50 text-dark border border-gray-300 text-sm rounded-s-md focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 peer"
                                                                                 placeholder=" " />
+                                                                            <label for="carpet_area"
+                                                                                class="absolute text-sm text-dark-500 dark:text-dark-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-gray-900 px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto start-1">
+                                                                                Carpet
+                                                                                Area<sup
+                                                                                    class="text-danger fs-4">*</sup></label>
+                                                                            <div
+                                                                                class="absolute inset-y-0 end-0 flex items-center pointer-events-none z-20 pe-4">
+                                                                                Sq.ft
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
 
+                                                                    <!-- Built-up Area Input -->
+                                                                    <div class="mb-2 d-none col-lg-6">
+                                                                        <div class="relative">
+                                                                            <input form="propertyFrom" name="built_up_area"
+                                                                                autocomplete="off" type="text"
+                                                                                id="built_up_area"
+                                                                                value="{{ $property->built_up_area ?? 0 }}"
+                                                                                oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*?)\..*/g, '$1');"
+                                                                                class="bg-gray-50 text-dark border border-gray-300 text-sm rounded-s-md focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 peer"
+                                                                                placeholder=" " />
+                                                                            <label for="built_up_area"
+                                                                                class="absolute text-sm text-dark-500 dark:text-dark-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-gray-900 px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto start-1">
+                                                                                Built-up Area</label>
+                                                                            <div
+                                                                                class="absolute inset-y-0 end-0 flex items-center pointer-events-none z-20 pe-4">
+                                                                                Sq.ft
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+
+                                                                    <!-- Super Built-up Area Input -->
+                                                                    <div class="mb-2 col-lg-6">
+                                                                        <div class="relative">
+                                                                            <input form="propertyFrom"
+                                                                                name="super_built_up_area" autocomplete="off"
+                                                                                type="text" id="super_built_up_area"
+                                                                                value="{{ $property->square ?? 0 }}"
+                                                                                oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*?)\..*/g, '$1');"
+                                                                                class="bg-gray-50 text-dark border border-gray-300 text-sm rounded-s-md focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 peer"
+                                                                                placeholder=" " />
+                                                                            <label for="super_built_up_area"
+                                                                                class="absolute text-sm text-dark-500 dark:text-dark-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-gray-900 px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto start-1">Super
+                                                                                Built-up Area</label>
                                                                             <div
                                                                                 class="absolute inset-y-0 end-0 flex items-center pointer-events-none z-20 pe-4">
                                                                                 Sq.ft
@@ -544,219 +694,72 @@
                                                                         </div>
                                                                     </div>
                                                                 </div>
-                                                                <div class="mb-2 col-lg-6">
-                                                                    <div class="mb-2 ">
-                                                                        <div class="relative">
-                                                                            <label for="projects"
-                                                                                class="mt-3 font-medium mb-2 ">
-                                                                                Plot Type </label>
-                                                                            <select form="propertyFrom" name="plot_type"
-                                                                                id="plot_type"
-                                                                                class="bg-gray-50 border border-gray-300 text-dark-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 ">
-                                                                                <option value="" selected>None of the
-                                                                                    below
-                                                                                </option>
-                                                                                <option class="ResidentialAllowed"
-                                                                                    {{ $property->plot_type == 'Independent plots' ? 'selected' : '' }}
-                                                                                    value="Independent plots">Independent
-                                                                                    plots</option>
-                                                                                <option class="ResidentialAllowed"
-                                                                                    {{ $property->plot_type == 'Villa,Bungalow,Row houses' ? 'selected' : '' }}
-                                                                                    value="Villa,Bungalow,Row houses">
-                                                                                    Villa,Bungalow,Row houses</option>
-                                                                                <option class="ResidentialAllowed"
-                                                                                    {{ $property->plot_type == 'Builder Floor appartments' ? 'selected' : '' }}
-                                                                                    value="Builder Floor appartments">
-                                                                                    Builder Floor appartments</option>
-
-                                                                                <option class="CommercialAllowed"
-                                                                                    {{ $property->plot_type == 'Agricultural/Farm Land' ? 'selected' : '' }}
-                                                                                    value="Agricultural/Farm Land">
-                                                                                    Agricultural/Farm Land</option>
-                                                                                <option class="CommercialAllowed"
-                                                                                    {{ $property->plot_type == 'WareHouse plots' ? 'selected' : '' }}
-                                                                                    value="Warehouse Plots">WareHouse Plots
-                                                                                </option>
-                                                                                <option class="CommercialAllowed"
-                                                                                    {{ $property->plot_type == 'Industrial Spaces' ? 'selected' : '' }}
-                                                                                    value="Industrial Spaces">Industrial
-                                                                                    Spaces</option>
-                                                                                <option class="CommercialAllowed"
-                                                                                    {{ $property->plot_type == 'Retail Plots' ? 'selected' : '' }}
-                                                                                    value="Retail Plots">Retail Plots
-                                                                                </option>
-                                                                                <option class="CommercialAllowed"
-                                                                                    {{ $property->plot_type == 'Corporate Plot' ? 'selected' : '' }}
-                                                                                    value="Corporate Plot">Corporate Plot
-                                                                                </option>
-                                                                            </select>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="mb-2 col-lg-6 mt-3">
-                                                                    <h5 class="mt-3 fs-3 text-black font-bold">Boundary
-                                                                        Wall
-                                                                    </h5>
-                                                                    <!-- Open Sides  -->
-                                                                    <div
-                                                                        class="mb-2 flex gap-3 mt-3 justify-content-between  ">
-                                                                        <label for="city"
-                                                                            class="block mb-2 text-sm font-medium text-gray-500">
-                                                                            No of Open Sides</label>
-                                                                        <div x-data="{ count: `{{ $property->open_sides }}` }"
-                                                                            class="flex items-center space-x-2">
-                                                                            <!-- Minus Button -->
-                                                                            <button @click="if (count > 1) count--"
-                                                                                class="border fw-bold px-2 rounded rounded-5 text-theme">
-                                                                                -
-                                                                            </button>
-
-                                                                            <!-- Display Counter -->
-                                                                            <span class="text-md font-bold"
-                                                                                x-text="count"></span>
-                                                                            <input type="hidden" form="propertyFrom"
-                                                                                :value="count" name="open_sides">
-
-                                                                            <!-- Plus Button -->
-                                                                            <button @click="count++"
-                                                                                class="border fw-bold px-2 rounded rounded-5 text-theme">
-                                                                                +
-                                                                            </button>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-
-                                                        </div>
-                                                        <div class="col-lg-12 HideUnwantedSectionsInPlot ">
-                                                            <div class="row">
-                                                                <!-- Carpet Area Input -->
-                                                                <div class="mb-2 col-lg-6">
-                                                                    <div class="relative">
-                                                                        <input form="propertyFrom" name="carpet_area"
-                                                                            autocomplete="off" type="text"
-                                                                            id="carpet_area"
-                                                                            value="{{ $property->carpet_area ?? 0 }}"
-                                                                            oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*?)\..*/g, '$1');"
-                                                                            class="bg-gray-50 text-dark border border-gray-300 text-sm rounded-s-md focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 peer"
-                                                                            placeholder=" " />
-                                                                        <label for="carpet_area"
-                                                                            class="absolute text-sm text-dark-500 dark:text-dark-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-gray-900 px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto start-1">
-                                                                            Carpet
-                                                                            Area<sup
-                                                                                class="text-danger fs-4">*</sup></label>
-                                                                        <div
-                                                                            class="absolute inset-y-0 end-0 flex items-center pointer-events-none z-20 pe-4">
-                                                                            Sq.ft
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-
-                                                                <!-- Built-up Area Input -->
-                                                                <div class="mb-2 d-none col-lg-6">
-                                                                    <div class="relative">
-                                                                        <input form="propertyFrom" name="built_up_area"
-                                                                            autocomplete="off" type="text"
-                                                                            id="built_up_area"
-                                                                            value="{{ $property->built_up_area ?? 0 }}"
-                                                                            oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*?)\..*/g, '$1');"
-                                                                            class="bg-gray-50 text-dark border border-gray-300 text-sm rounded-s-md focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 peer"
-                                                                            placeholder=" " />
-                                                                        <label for="built_up_area"
-                                                                            class="absolute text-sm text-dark-500 dark:text-dark-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-gray-900 px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto start-1">
-                                                                            Built-up Area</label>
-                                                                        <div
-                                                                            class="absolute inset-y-0 end-0 flex items-center pointer-events-none z-20 pe-4">
-                                                                            Sq.ft
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-
-                                                                <!-- Super Built-up Area Input -->
-                                                                <div class="mb-2 col-lg-6">
-                                                                    <div class="relative">
-                                                                        <input form="propertyFrom"
-                                                                            name="super_built_up_area" autocomplete="off"
-                                                                            type="text" id="super_built_up_area"
-                                                                            value="{{ $property->square ?? 0 }}"
-                                                                            oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*?)\..*/g, '$1');"
-                                                                            class="bg-gray-50 text-dark border border-gray-300 text-sm rounded-s-md focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 peer"
-                                                                            placeholder=" " />
-                                                                        <label for="super_built_up_area"
-                                                                            class="absolute text-sm text-dark-500 dark:text-dark-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-gray-900 px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto start-1">Super
-                                                                            Built-up Area</label>
-                                                                        <div
-                                                                            class="absolute inset-y-0 end-0 flex items-center pointer-events-none z-20 pe-4">
-                                                                            Sq.ft
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
                                                             </div>
                                                         </div>
-                                                    </div>
-                                                    <div id="parking" class="mt-3 ">
+                                                        <div id="parking" class="mt-3 ">
 
-                                                        <div class="col-lg-12 HideUnwantedSectionsInPlot ">
-                                                            <h5 class="mt-3 fs-3 text-black font-bold">Reserved Parking
-                                                            </h5>
-                                                            <div class="row1">
-                                                                <div class="mb-2 col-lg-6">
+                                                            <div class="col-lg-12 HideUnwantedSectionsInPlot ">
+                                                                <h5 class="mt-3 fs-3 text-black font-bold">Reserved Parking
+                                                                </h5>
+                                                                <div class="row1">
+                                                                    <div class="mb-2 col-lg-6">
 
-                                                                    <div
-                                                                        class="mb-2 flex gap-3 mt-3 justify-content-between ">
-                                                                        <label for="city"
-                                                                            class="block mb-2 text-sm font-medium text-gray-500">Covered
-                                                                            Parking</label>
-                                                                        <div x-data="{ count: `{{ $property->closed_parking }}` }"
-                                                                            class="flex items-center space-x-2">
-                                                                            <!-- Minus Button -->
-                                                                            <button @click="if (count > 0) count--"
-                                                                                class="border fw-bold px-2 rounded rounded-5 text-theme">
-                                                                                -
-                                                                            </button>
+                                                                        <div
+                                                                            class="mb-2 flex gap-3 mt-3 justify-content-between ">
+                                                                            <label for="city"
+                                                                                class="block mb-2 text-sm font-medium text-gray-500">Covered
+                                                                                Parking</label>
+                                                                            <div x-data="{ count: `{{ $property->closed_parking }}` }"
+                                                                                class="flex items-center space-x-2">
+                                                                                <!-- Minus Button -->
+                                                                                <button @click="if (count > 0) count--"
+                                                                                    class="border fw-bold px-2 rounded rounded-5 text-theme">
+                                                                                    -
+                                                                                </button>
 
-                                                                            <!-- Display Counter -->
-                                                                            <span class="text-md font-bold"
-                                                                                x-text="count"></span>
-                                                                            <input type="hidden" form="propertyFrom"
-                                                                                :value="count"
-                                                                                name="covered_parking">
-                                                                            <!-- Plus Button -->
-                                                                            <button @click="count++"
-                                                                                class="border fw-bold px-2 rounded rounded-5 text-theme">
-                                                                                +
-                                                                            </button>
+                                                                                <!-- Display Counter -->
+                                                                                <span class="text-md font-bold"
+                                                                                    x-text="count"></span>
+                                                                                <input type="hidden" form="propertyFrom"
+                                                                                    :value="count"
+                                                                                    name="covered_parking">
+                                                                                <!-- Plus Button -->
+                                                                                <button @click="count++"
+                                                                                    class="border fw-bold px-2 rounded rounded-5 text-theme">
+                                                                                    +
+                                                                                </button>
+                                                                            </div>
+
                                                                         </div>
-
                                                                     </div>
-                                                                </div>
-                                                                <div class="mb-2 col-lg-6">
-                                                                    <!-- Parking Area -->
-                                                                    <div
-                                                                        class="mb-2 flex gap-3 mt-3 justify-content-between  ">
-                                                                        <label for="city"
-                                                                            class="block mb-2 text-sm font-medium text-gray-500">Open
-                                                                            Parking</label>
-                                                                        <div x-data="{ count: `{{ $property->open_parking }}` }"
-                                                                            class="flex items-center space-x-2">
-                                                                            <!-- Minus Button -->
-                                                                            <button @click="if (count > 0) count--"
-                                                                                class="border fw-bold px-2 rounded rounded-5 text-theme">
-                                                                                -
-                                                                            </button>
+                                                                    <div class="mb-2 col-lg-6">
+                                                                        <!-- Parking Area -->
+                                                                        <div
+                                                                            class="mb-2 flex gap-3 mt-3 justify-content-between  ">
+                                                                            <label for="city"
+                                                                                class="block mb-2 text-sm font-medium text-gray-500">Open
+                                                                                Parking</label>
+                                                                            <div x-data="{ count: `{{ $property->open_parking }}` }"
+                                                                                class="flex items-center space-x-2">
+                                                                                <!-- Minus Button -->
+                                                                                <button @click="if (count > 0) count--"
+                                                                                    class="border fw-bold px-2 rounded rounded-5 text-theme">
+                                                                                    -
+                                                                                </button>
 
-                                                                            <!-- Display Counter -->
-                                                                            <span class="text-md font-bold"
-                                                                                x-text="count"></span>
-                                                                            <input type="hidden" form="propertyFrom"
-                                                                                :value="count"
-                                                                                name="open_parking">
+                                                                                <!-- Display Counter -->
+                                                                                <span class="text-md font-bold"
+                                                                                    x-text="count"></span>
+                                                                                <input type="hidden" form="propertyFrom"
+                                                                                    :value="count"
+                                                                                    name="open_parking">
 
-                                                                            <!-- Plus Button -->
-                                                                            <button @click="count++"
-                                                                                class="border fw-bold px-2 rounded rounded-5 text-theme">
-                                                                                +
-                                                                            </button>
+                                                                                <!-- Plus Button -->
+                                                                                <button @click="count++"
+                                                                                    class="border fw-bold px-2 rounded rounded-5 text-theme">
+                                                                                    +
+                                                                                </button>
+                                                                            </div>
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -766,13 +769,12 @@
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
-                                    <div class=" col-lg-12">
-                                        <div class="">
-                                            <div class="mb-5 mx-2">
-                                                <div class="section">
+                                        <div class=" col-lg-12">
+                                            <div class="">
+                                                <div class="mb-5 mx-2">
+                                                    <div class="section">
 
-                                                    {{-- <div id="MoreaboutDetails"
+                                                        {{-- <div id="MoreaboutDetails"
                                                         class="HideUnwantedSectionsInPlot ">
                                                         <h5 class="mt-3 font-bold text-black fs-3">More about details
                                                             <small>(optional)</small>
@@ -805,588 +807,590 @@
 
                                                     
                                                     </div> --}}
-                                                    <div x-data="{ furnishingStatus: '{{ $property->furnishing_status }}' }" id="furnishing"
-                                                        class="HideUnwantedSectionsInPlot">
-                                                        <h5 class="mt-3 font-bold text-black fs-3">Furnishing Details</h5>
-                                                        <div class="mt-3 card p-3">
-                                                            <!-- Radio Buttons for Furnishing Status -->
-                                                            <div class="mt-3 ">
-
+                                                        <div x-data="{ furnishingStatus: '{{ $property->furnishing_status }}' }" id="furnishing"
+                                                            class="HideUnwantedSectionsInPlot">
+                                                            <h5 class="mt-3 font-bold text-black fs-3">Furnishing Details</h5>
+                                                            <div class="mt-3 card p-3">
                                                                 <!-- Radio Buttons for Furnishing Status -->
-                                                                <div class="flex flex-wrap">
-                                                                    <div class="flex items-center me-4 mb-2">
-                                                                        <input form="propertyFrom" type="radio"
-                                                                            onclick="selectAllFurnishingItems('unfurnished')"
-                                                                            value="unfurnished" name="furnishing_status"
-                                                                            x-model="furnishingStatus"
-                                                                            id="unfurnished-radio"
-                                                                            class="w-4 h-4 text-green-600 bg-gray-100 focus:ring-green-500 dark:focus:ring-green-600">
-                                                                        <label for="unfurnished-radio"
-                                                                            class="ms-2 text-sm font-medium text-dark dark:text-dark">Unfurnished</label>
+                                                                <div class="mt-3 ">
+
+                                                                    <!-- Radio Buttons for Furnishing Status -->
+                                                                    <div class="flex flex-wrap">
+                                                                        <div class="flex items-center me-4 mb-2">
+                                                                            <input form="propertyFrom" type="radio"
+                                                                                onclick="selectAllFurnishingItems('unfurnished')"
+                                                                                value="unfurnished" name="furnishing_status"
+                                                                                x-model="furnishingStatus"
+                                                                                id="unfurnished-radio"
+                                                                                class="w-4 h-4 text-green-600 bg-gray-100 focus:ring-green-500 dark:focus:ring-green-600">
+                                                                            <label for="unfurnished-radio"
+                                                                                class="ms-2 text-sm font-medium text-dark dark:text-dark">Unfurnished</label>
+                                                                        </div>
+                                                                        <div class="flex items-center me-4 mb-2">
+                                                                            <input form="propertyFrom" type="radio"
+                                                                                onclick="selectAllFurnishingItems('semi-furnished')"
+                                                                                value="semi-furnished"
+                                                                                name="furnishing_status"
+                                                                                x-model="furnishingStatus"
+                                                                                id="semi-furnished-radio"
+                                                                                class="w-4 h-4 text-green-600 bg-gray-100 focus:ring-green-500 dark:focus:ring-green-600">
+                                                                            <label for="semi-furnished-radio"
+                                                                                class="ms-2 text-sm font-medium text-dark dark:text-dark">Semi-Furnished</label>
+                                                                        </div>
+                                                                        <div class="flex items-center me-4 mb-2">
+                                                                            <input form="propertyFrom" type="radio"
+                                                                                onclick="selectAllFurnishingItems('furnished')"
+                                                                                value="furnished" name="furnishing_status"
+                                                                                x-model="furnishingStatus"
+                                                                                id="furnished-radio"
+                                                                                class="w-4 h-4 text-green-600 bg-gray-100 focus:ring-green-500 dark:focus:ring-green-600">
+                                                                            <label for="furnished-radio"
+                                                                                class="ms-2 text-sm font-medium text-dark dark:text-dark">Furnished</label>
+                                                                        </div>
                                                                     </div>
-                                                                    <div class="flex items-center me-4 mb-2">
-                                                                        <input form="propertyFrom" type="radio"
-                                                                            onclick="selectAllFurnishingItems('semi-furnished')"
-                                                                            value="semi-furnished"
-                                                                            name="furnishing_status"
-                                                                            x-model="furnishingStatus"
-                                                                            id="semi-furnished-radio"
-                                                                            class="w-4 h-4 text-green-600 bg-gray-100 focus:ring-green-500 dark:focus:ring-green-600">
-                                                                        <label for="semi-furnished-radio"
-                                                                            class="ms-2 text-sm font-medium text-dark dark:text-dark">Semi-Furnished</label>
-                                                                    </div>
-                                                                    <div class="flex items-center me-4 mb-2">
-                                                                        <input form="propertyFrom" type="radio"
-                                                                            onclick="selectAllFurnishingItems('furnished')"
-                                                                            value="furnished" name="furnishing_status"
-                                                                            x-model="furnishingStatus"
-                                                                            id="furnished-radio"
-                                                                            class="w-4 h-4 text-green-600 bg-gray-100 focus:ring-green-500 dark:focus:ring-green-600">
-                                                                        <label for="furnished-radio"
-                                                                            class="ms-2 text-sm font-medium text-dark dark:text-dark">Furnished</label>
-                                                                    </div>
-                                                                </div>
-                                                                <!-- Conditionally Display Content for Furnishing Status -->
-                                                                <div x-show="furnishingStatus === 'furnished' || furnishingStatus === 'semi-furnished'"
-                                                                    class="mt-2 border-top bg-body card p-3">
-                                                                    <div class="row mt-3 ">
-                                                                        @foreach ($furnishings ?? [] as $key_0 => $furnish_items)
-                                                                            <div class="col-lg-4">
-                                                                                <div class="flex items-center mb-4">
-                                                                                    <input name="furnishing[]"
-                                                                                        type="checkbox"
-                                                                                        @if (in_array($furnish_items->id, $property->furnishing->pluck('id')->toArray())) checked @endif
-                                                                                        value="{{ $furnish_items->id }}"
-                                                                                        id="furnish_checkbox_{{ $key_0 }}"
-                                                                                        form="propertyFrom"
-                                                                                        class="w-3 h-3 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500">
-                                                                                    <label
-                                                                                        for="furnish_checkbox_{{ $key_0 }}"
-                                                                                        class="ms-2 text-sm text-capitalize font-medium text-dark d-flex gap-2">
-                                                                                        {{-- <img src="{{ $furnish_items->image_url }}"
+                                                                    <!-- Conditionally Display Content for Furnishing Status -->
+                                                                    <div x-show="furnishingStatus === 'furnished' || furnishingStatus === 'semi-furnished'"
+                                                                        class="mt-2 border-top bg-body card p-3">
+                                                                        <div class="row mt-3 ">
+                                                                            @foreach ($furnishings ?? [] as $key_0 => $furnish_items)
+                                                                                <div class="col-lg-4">
+                                                                                    <div class="flex items-center mb-4">
+                                                                                        <input name="furnishing[]"
+                                                                                            type="checkbox"
+                                                                                            @if (in_array($furnish_items->id, $property->furnishing->pluck('id')->toArray())) checked @endif
+                                                                                            value="{{ $furnish_items->id }}"
+                                                                                            id="furnish_checkbox_{{ $key_0 }}"
+                                                                                            form="propertyFrom"
+                                                                                            class="w-3 h-3 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500">
+                                                                                        <label
+                                                                                            for="furnish_checkbox_{{ $key_0 }}"
+                                                                                            class="ms-2 text-sm text-capitalize font-medium text-dark d-flex gap-2">
+                                                                                            {{-- <img src="{{ $furnish_items->image_url }}"
                                                                                             class="w-4 h-4"> --}}
-                                                                                        {{ $furnish_items->name }}
-                                                                                    </label>
+                                                                                            {{ $furnish_items->name }}
+                                                                                        </label>
+                                                                                    </div>
                                                                                 </div>
-                                                                            </div>
-                                                                        @endforeach
+                                                                            @endforeach
+                                                                        </div>
+                                                                    </div>
+
+                                                                    <div x-show="furnishingStatus === 'unfurnished'"
+                                                                        class="mt-3">
+                                                                        <!-- Add specific content for unfurnished if needed -->
                                                                     </div>
                                                                 </div>
 
-                                                                <div x-show="furnishingStatus === 'unfurnished'"
-                                                                    class="mt-3">
-                                                                    <!-- Add specific content for unfurnished if needed -->
+
+                                                            </div>
+                                                        </div>
+
+                                                        <div id="amenities">
+                                                            <h5 class="mt-3 font-bold text-black fs-3">Amenities</h5>
+                                                            <div class="mt-3 card bg-body p-3">
+                                                                <div class="row mt-3">
+                                                                    @foreach ($amenities ?? [] as $amenity_item)
+                                                                        <div class="col-lg-4">
+                                                                            <div class="flex items-center  mb-4">
+                                                                                <input name="amenities[]" form="propertyFrom"
+                                                                                    type="checkbox"
+                                                                                    value="{{ $amenity_item->id }}"
+                                                                                    @if (in_array($amenity_item->id, $property->amenities->pluck('id')->toArray())) checked @endif
+                                                                                    id="amenity_{{ $amenity_item->id }}"
+                                                                                    class="w-3 h-3 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500">
+                                                                                <label for="amenity_{{ $amenity_item->id }}"
+                                                                                    class="ms-2 text-sm font-medium text-dark d-flex gap-2">
+                                                                                    {{-- <img src="{{ $amenity_item->image_url }}"
+                                                                                    class="w-4 h-4"> --}}
+                                                                                    {{ $amenity_item->name }}
+                                                                                </label>
+                                                                            </div>
+                                                                        </div>
+                                                                    @endforeach
                                                                 </div>
                                                             </div>
-
-
                                                         </div>
-                                                    </div>
 
-                                                    <div id="amenities">
-                                                        <h5 class="mt-3 font-bold text-black fs-3">Amenities</h5>
-                                                        <div class="mt-3 card bg-body p-3">
-                                                            <div class="row mt-3">
-                                                                @foreach ($amenities ?? [] as $amenity_item)
-                                                                    <div class="col-lg-4">
-                                                                        <div class="flex items-center  mb-4">
-                                                                            <input name="amenities[]" form="propertyFrom"
-                                                                                type="checkbox"
-                                                                                value="{{ $amenity_item->id }}"
-                                                                                @if (in_array($amenity_item->id, $property->amenities->pluck('id')->toArray())) checked @endif
-                                                                                id="amenity_{{ $amenity_item->id }}"
-                                                                                class="w-3 h-3 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500">
-                                                                            <label for="amenity_{{ $amenity_item->id }}"
-                                                                                class="ms-2 text-sm font-medium text-dark d-flex gap-2">
-                                                                                {{-- <img src="{{ $amenity_item->image_url }}"
-                                                                                    class="w-4 h-4"> --}}
-                                                                                {{ $amenity_item->name }}
-                                                                            </label>
+
+                                                        <div id="NearestLandmarks">
+                                                            <h5 class="mt-3 font-bold text-black fs-3">Nearest Landmarks</h5>
+                                                            <div class="mt-3 bg-body card p-3 " x-data="{
+                                                                landmarks: [{ id: '', distance: '' }],
+                                                                addlandmark() {
+                                                                    this.landmarks.push({ id: '', distance: '' });
+                                                                },
+                                                                removelandmark(index) {
+                                                                    {{-- if (this.landmarks.length > 1) { --}}
+                                                                    this.landmarks.splice(index, 1);
+                                                                    {{-- } --}}
+                                                                }
+                                                            }">
+                                                                @foreach ($property->landmarks ?? [] as $keyFac => $exFacility)
+                                                                    <div class="col-lg-12 items-center  mb-4"
+                                                                        id="1000{{ $keyFac }}">
+                                                                        <div class="row">
+                                                                            <!-- Facility Select Box -->
+                                                                            <div class="col-lg-6 mb-2">
+                                                                                <select form="propertyFrom"
+                                                                                    name="facilities[100{{ $keyFac }}][id]"
+                                                                                    class="w-full p-2 bg-gray-100 border border-gray-300 rounded-md">
+                                                                                    <option value="">Select Landmark
+                                                                                    </option>
+                                                                                    @foreach ($landmarks ?? [] as $landmark_item)
+                                                                                        <option
+                                                                                            {{ $exFacility['id'] == $landmark_item->id ? 'selected' : '' }}
+                                                                                            value="{{ $landmark_item->id }}">
+                                                                                            {{ $landmark_item->name }}</option>
+                                                                                    @endforeach
+                                                                                </select>
+                                                                            </div>
+
+                                                                            <!-- Custom Facility Input Box -->
+                                                                            <div class="col-lg-6 mb-2">
+                                                                                <input type="text"
+                                                                                    name="facilities[100{{ $keyFac }}][distance]"
+                                                                                    value="{{ $exFacility->pivot->landmark_value }}"
+                                                                                    autocomplete="off" form="propertyFrom"
+                                                                                    class="w-full p-2 mt-1 border border-gray-300 rounded-md"
+                                                                                    placeholder="Enter custom facility distance">
+                                                                            </div>
+
+                                                                        </div>
+                                                                        <!-- Remove Icon Button -->
+                                                                        <div class="position-absolute right-2">
+                                                                            <button
+                                                                                @click="removeFieldParentDiv(1000{{ $keyFac }})"
+                                                                                class="text-red-600 font-medium">
+                                                                                <svg xmlns="http://www.w3.org/2000/svg"
+                                                                                    width="16" height="16"
+                                                                                    fill="currentColor" class="bi bi-x-circle"
+                                                                                    viewBox="0 0 16 16">
+                                                                                    <path
+                                                                                        d="M11.742 4.742a1 1 0 1 0-1.414-1.414L8 6.586 5.672 4.258a1 1 0 1 0-1.414 1.414L6.586 8l-2.328 2.328a1 1 0 1 0 1.414 1.414L8 9.414l2.328 2.328a1 1 0 1 0 1.414-1.414L9.414 8l2.328-2.328z" />
+                                                                                </svg>
+                                                                            </button>
                                                                         </div>
                                                                     </div>
                                                                 @endforeach
+                                                                <!-- Dynamic landmark List -->
+                                                                <template x-for="(landmark, index) in landmarks"
+                                                                    :key="index">
+                                                                    <div class="col-lg-12 items-center  mb-4">
+                                                                        <div class="row">
+                                                                            <!-- landmark Select Box -->
+                                                                            <div class="col-lg-6 mb-2">
+                                                                                <select form="propertyFrom"
+                                                                                    :name="'landmarks[' + index + '][id]'"
+                                                                                    x-model="landmark.id"
+                                                                                    class="w-full p-2 bg-gray-100 border border-gray-300 rounded-md">
+                                                                                    <option value="">Select Landmark
+                                                                                    </option>
+                                                                                    @foreach ($landmarks ?? [] as $landmark_item)
+                                                                                        <option
+                                                                                            value="{{ $landmark_item->id }}">
+                                                                                            {{ $landmark_item->name }}</option>
+                                                                                    @endforeach
+                                                                                </select>
+                                                                            </div>
+
+                                                                            <!-- Custom landmark Input Box -->
+                                                                            <div class="col-lg-6 mb-2">
+                                                                                <input type="text"
+                                                                                    :name="'facilities[' + index +
+                                                                                        '][distance]'"
+                                                                                    autocomplete="off" form="propertyFrom"
+                                                                                    x-model="landmark.distance"
+                                                                                    class="w-full p-2 mt-1 border border-gray-300 rounded-md"
+                                                                                    placeholder="Enter custom landmark distance">
+                                                                            </div>
+
+                                                                        </div>
+                                                                        <!-- Remove Icon Button -->
+                                                                        <div class="position-absolute right-2">
+                                                                            <button @click="removeLandmark(index)"
+                                                                                class="text-red-600 font-medium">
+                                                                                <svg xmlns="http://www.w3.org/2000/svg"
+                                                                                    width="16" height="16"
+                                                                                    fill="currentColor" class="bi bi-x-circle"
+                                                                                    viewBox="0 0 16 16">
+                                                                                    <path
+                                                                                        d="M11.742 4.742a1 1 0 1 0-1.414-1.414L8 6.586 5.672 4.258a1 1 0 1 0-1.414 1.414L6.586 8l-2.328 2.328a1 1 0 1 0 1.414 1.414L8 9.414l2.328 2.328a1 1 0 1 0 1.414-1.414L9.414 8l2.328-2.328z" />
+                                                                                </svg>
+                                                                            </button>
+                                                                        </div>
+                                                                    </div>
+                                                                </template>
+
+
+                                                                <!-- Add Another landmark Button -->
+                                                                <div class="mt-4 text-end">
+                                                                    <button @click="addlandmark"
+                                                                        class="bg-gray-500 px-2 py-1 rounded-2xl text-dark text-sm">
+                                                                        <i class="fa fa-plus me-2"></i>Add Another
+                                                                    </button>
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
+                        <!-- Step 4 -->
 
-                                                    <div id="NearestLandmarks">
-                                                        <h5 class="mt-3 font-bold text-black fs-3">Nearest Landmarks</h5>
-                                                        <div class="mt-3 bg-body card p-3 " x-data="{
-                                                            landmarks: [{ id: '', distance: '' }],
-                                                            addlandmark() {
-                                                                this.landmarks.push({ id: '', distance: '' });
-                                                            },
-                                                            removelandmark(index) {
-                                                                {{-- if (this.landmarks.length > 1) { --}}
-                                                                this.landmarks.splice(index, 1);
-                                                                {{-- } --}}
-                                                            }
-                                                        }">
-                                                            @foreach ($property->landmarks ?? [] as $keyFac => $exFacility)
-                                                                <div class="col-lg-12 items-center  mb-4"
-                                                                    id="1000{{ $keyFac }}">
-                                                                    <div class="row">
-                                                                        <!-- Facility Select Box -->
-                                                                        <div class="col-lg-6 mb-2">
-                                                                            <select form="propertyFrom"
-                                                                                name="facilities[100{{ $keyFac }}][id]"
-                                                                                class="w-full p-2 bg-gray-100 border border-gray-300 rounded-md">
-                                                                                <option value="">Select Landmark
-                                                                                </option>
-                                                                                @foreach ($landmarks ?? [] as $landmark_item)
-                                                                                    <option
-                                                                                        {{ $exFacility['id'] == $landmark_item->id ? 'selected' : '' }}
-                                                                                        value="{{ $landmark_item->id }}">
-                                                                                        {{ $landmark_item->name }}</option>
-                                                                                @endforeach
-                                                                            </select>
-                                                                        </div>
+                        <div x-show="currentStep === 3" class="space-y-4 mt-2">
+                            <div class="mb-5 mx-2">
 
-                                                                        <!-- Custom Facility Input Box -->
-                                                                        <div class="col-lg-6 mb-2">
-                                                                            <input type="text"
-                                                                                name="facilities[100{{ $keyFac }}][distance]"
-                                                                                value="{{ $exFacility->pivot->landmark_value }}"
-                                                                                autocomplete="off" form="propertyFrom"
-                                                                                class="w-full p-2 mt-1 border border-gray-300 rounded-md"
-                                                                                placeholder="Enter custom facility distance">
-                                                                        </div>
+                                <div class="section">
+                                    <h5 class="mt-3 font-bold text-black fs-3">Add Documents of your property</h5>
 
-                                                                    </div>
-                                                                    <!-- Remove Icon Button -->
-                                                                    <div class="position-absolute right-2">
-                                                                        <button
-                                                                            @click="removeFieldParentDiv(1000{{ $keyFac }})"
-                                                                            class="text-red-600 font-medium">
-                                                                            <svg xmlns="http://www.w3.org/2000/svg"
-                                                                                width="16" height="16"
-                                                                                fill="currentColor" class="bi bi-x-circle"
-                                                                                viewBox="0 0 16 16">
-                                                                                <path
-                                                                                    d="M11.742 4.742a1 1 0 1 0-1.414-1.414L8 6.586 5.672 4.258a1 1 0 1 0-1.414 1.414L6.586 8l-2.328 2.328a1 1 0 1 0 1.414 1.414L8 9.414l2.328 2.328a1 1 0 1 0 1.414-1.414L9.414 8l2.328-2.328z" />
-                                                                            </svg>
-                                                                        </button>
-                                                                    </div>
-                                                                </div>
-                                                            @endforeach
-                                                            <!-- Dynamic landmark List -->
-                                                            <template x-for="(landmark, index) in landmarks"
-                                                                :key="index">
-                                                                <div class="col-lg-12 items-center  mb-4">
-                                                                    <div class="row">
-                                                                        <!-- landmark Select Box -->
-                                                                        <div class="col-lg-6 mb-2">
-                                                                            <select form="propertyFrom"
-                                                                                :name="'landmarks[' + index + '][id]'"
-                                                                                x-model="landmark.id"
-                                                                                class="w-full p-2 bg-gray-100 border border-gray-300 rounded-md">
-                                                                                <option value="">Select Landmark
-                                                                                </option>
-                                                                                @foreach ($landmarks ?? [] as $landmark_item)
-                                                                                    <option
-                                                                                        value="{{ $landmark_item->id }}">
-                                                                                        {{ $landmark_item->name }}</option>
-                                                                                @endforeach
-                                                                            </select>
-                                                                        </div>
-
-                                                                        <!-- Custom landmark Input Box -->
-                                                                        <div class="col-lg-6 mb-2">
-                                                                            <input type="text"
-                                                                                :name="'facilities[' + index + '][distance]'"
-                                                                                autocomplete="off" form="propertyFrom"
-                                                                                x-model="landmark.distance"
-                                                                                class="w-full p-2 mt-1 border border-gray-300 rounded-md"
-                                                                                placeholder="Enter custom landmark distance">
-                                                                        </div>
-
-                                                                    </div>
-                                                                    <!-- Remove Icon Button -->
-                                                                    <div class="position-absolute right-2">
-                                                                        <button @click="removeLandmark(index)"
-                                                                            class="text-red-600 font-medium">
-                                                                            <svg xmlns="http://www.w3.org/2000/svg"
-                                                                                width="16" height="16"
-                                                                                fill="currentColor" class="bi bi-x-circle"
-                                                                                viewBox="0 0 16 16">
-                                                                                <path
-                                                                                    d="M11.742 4.742a1 1 0 1 0-1.414-1.414L8 6.586 5.672 4.258a1 1 0 1 0-1.414 1.414L6.586 8l-2.328 2.328a1 1 0 1 0 1.414 1.414L8 9.414l2.328 2.328a1 1 0 1 0 1.414-1.414L9.414 8l2.328-2.328z" />
-                                                                            </svg>
-                                                                        </button>
-                                                                    </div>
-                                                                </div>
-                                                            </template>
-
-
-                                                            <!-- Add Another landmark Button -->
-                                                            <div class="mt-4 text-end">
-                                                                <button @click="addlandmark"
-                                                                    class="bg-gray-500 px-2 py-1 rounded-2xl text-dark text-sm">
-                                                                    <i class="fa fa-plus me-2"></i>Add Another
+                                    <div class="mt-3 border-dashed border-2 border-gray-300 rounded-lg p-3  bg-gray-100">
+                                        <div x-data="documentUploader()" class="mx-auto bg-white shadow rounded-lg space-y-6">
+                                            <!-- Document Preview Grid -->
+                                            <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+                                                @foreach ($property->propertyDocuments ?? [] as $key => $document)
+                                                    @php
+                                                        $isImage = Str::startsWith($document->mime_type, 'image/');
+                                                        $icon = match (true) {
+                                                            Str::contains($document->mime_type, 'pdf')
+                                                                => '/assets/icons/pdf-icon.png',
+                                                            Str::contains($document->mime_type, 'msword'),
+                                                            Str::contains($document->mime_type, 'wordprocessingml')
+                                                                => '/assets/icons/docx-icon.png',
+                                                            default => '/assets/icons/file-icon.png',
+                                                        };
+                                                        $thumbnail = $isImage
+                                                            ? asset('storage/' . $document->file_url)
+                                                            : asset($icon);
+                                                    @endphp
+                                                    <div class="flex flex-col relative existing-data-box">
+                                                        <div
+                                                            class="relative text-center group border rounded-lg overflow-hidden ">
+                                                            <img src="{{ $thumbnail }}"
+                                                                alt="{{ $document->alt ?? $document->name }}"
+                                                                class="w-auto  object-cover mx-auto mb-2 py-3 rounded"
+                                                                style="height: 100px;width: 100%;">
+                                                            <span title="{{ $document->name }}">{{ $document->name }}</span>
+                                                            <input type="hidden" form="propertyFrom"
+                                                                value="{{ $document->id }}" name="existingDocx[]" />
+                                                            <button type="button" onclick="removeExistingRow(this)"
+                                                                class="absolute bg-white p-1 right-0 top-0 rounded-full">
+                                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4"
+                                                                    fill="red" viewBox="0 0 20 20">
+                                                                    <path fill-rule="evenodd"
+                                                                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 011.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                                                        clip-rule="evenodd" />
+                                                                </svg>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                @endforeach
+                                                <!-- Existing Documents -->
+                                                <template x-for="(document, index) in documents" :key="index">
+                                                    <div class="flex flex-col relative">
+                                                        <div class="relative group border rounded-lg overflow-hidden">
+                                                            <!-- Document -->
+                                                            <img :src="document.url" style="height: 100px;"
+                                                                alt="Uploaded Document" class="w-30 h-30 object-cover">
+                                                            <!-- Overlay with Cover Option -->
+                                                            <div
+                                                                class="absolute flex flex-col inset-0 group-hover:opacity-100 space-y-2 transition">
+                                                                <!-- Remove Document -->
+                                                                <button @click="removeDocument(index)"
+                                                                    class="absolute bg-white p-1 right-0 rounded-full top-0">
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4"
+                                                                        viewBox="0 0 20 20" fill="red">
+                                                                        <path fill-rule="evenodd"
+                                                                            d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 011.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                                                            clip-rule="evenodd" />
+                                                                    </svg>
                                                                 </button>
                                                             </div>
                                                         </div>
                                                     </div>
+                                                </template>
+
+                                                <!-- Upload New Documents -->
+                                                <div class="flex flex-col col-auto text-center">
+                                                    <div class="relative group border rounded-lg p-2 overflow-hidden"
+                                                        @click="triggerFileInput()"
+                                                        x-bind:class="{ 'border-blue-500': isDragging }">
+                                                        <img src="/assets/icons/upload-icon.png" class="w-50 mx-auto">
+                                                        <input name="documents[]" form="propertyFrom" type="file"
+                                                            accept=".pdf,.docx,image/*" id="fileDocInput" class="hidden"
+                                                            multiple @change="addDocuments($event)">
+                                                        <p class="text-gray-600">
+                                                            click to upload your documents here.</p>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
+
                                     </div>
                                 </div>
-                            </div>
-                        </div>
-                    </div>
 
-                    <!-- Step 4 -->
+                                <div class="section mb-4">
+                                    <h5 class="mt-3 font-bold text-black fs-3">Add photos of your property</h5>
 
-                    <div x-show="currentStep === 3" class="space-y-4 mt-2">
-                        <div class="mb-5 mx-2">
 
-                            <div class="section">
-                                <h5 class="mt-3 font-bold text-black fs-3">Add Documents of your property</h5>
+                                    <div class="mt-3 border-dashed border-2 border-gray-300 rounded-lg p-3  bg-gray-100">
+                                        <div x-data="imageUploader()" class="mx-auto bg-white shadow rounded-lg space-y-6">
+                                            <!-- Image Preview Grid -->
+                                            <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
 
-                                <div class="mt-3 border-dashed border-2 border-gray-300 rounded-lg p-3  bg-gray-100">
-                                    <div x-data="documentUploader()" class="mx-auto bg-white shadow rounded-lg space-y-6">
-                                        <!-- Document Preview Grid -->
-                                        <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
-                                            @foreach ($property->propertyDocuments ?? [] as $key => $document)
-                                                @php
-                                                    $isImage = Str::startsWith($document->mime_type, 'image/');
-                                                    $icon = match (true) {
-                                                        Str::contains($document->mime_type, 'pdf')
-                                                            => '/assets/icons/pdf-icon.png',
-                                                        Str::contains($document->mime_type, 'msword'),
-                                                        Str::contains($document->mime_type, 'wordprocessingml')
-                                                            => '/assets/icons/docx-icon.png',
-                                                        default => '/assets/icons/file-icon.png',
-                                                    };
-                                                    $thumbnail = $isImage
-                                                        ? asset('storage/' . $document->file_url)
-                                                        : asset($icon);
-                                                @endphp
-                                                <div class="flex flex-col relative existing-data-box">
-                                                    <div
-                                                        class="relative text-center group border rounded-lg overflow-hidden ">
-                                                        <img src="{{ $thumbnail }}"
-                                                            alt="{{ $document->alt ?? $document->name }}"
-                                                            class="w-auto  object-cover mx-auto mb-2 py-3 rounded"
-                                                            style="height: 100px;width: 100%;">
-                                                        <span title="{{ $document->name }}">{{ $document->name }}</span>
-                                                        <input type="hidden" form="propertyFrom"
-                                                            value="{{ $document->id }}" name="existingDocx[]" />
-                                                        <button type="button" onclick="removeExistingRow(this)"
-                                                            class="absolute bg-white p-1 right-0 top-0 rounded-full">
-                                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4"
-                                                                fill="red" viewBox="0 0 20 20">
-                                                                <path fill-rule="evenodd"
-                                                                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 011.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                                                                    clip-rule="evenodd" />
-                                                            </svg>
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            @endforeach
-                                            <!-- Existing Documents -->
-                                            <template x-for="(document, index) in documents" :key="index">
-                                                <div class="flex flex-col relative">
-                                                    <div class="relative group border rounded-lg overflow-hidden">
-                                                        <!-- Document -->
-                                                        <img :src="document.url" style="height: 100px;"
-                                                            alt="Uploaded Document" class="w-30 h-30 object-cover">
-                                                        <!-- Overlay with Cover Option -->
+                                                @foreach ($property->propertyImages ?? [] as $key => $image)
+                                                    @php
+                                                        $isImage2 = Str::startsWith($image->mime_type, 'image/');
+                                                        $icon2 = match (true) {
+                                                            Str::contains($image->mime_type, 'pdf')
+                                                                => '/assets/icons/pdf-icon.png',
+                                                            Str::contains($image->mime_type, 'msword'),
+                                                            Str::contains($image->mime_type, 'wordprocessingml')
+                                                                => '/assets/icons/docx-icon.png',
+                                                            default => '/assets/icons/file-icon.png',
+                                                        };
+                                                        $thumbnail2 = $isImage2
+                                                            ? asset('storage/' . $image->file_url)
+                                                            : asset($icon);
+                                                    @endphp
+                                                    <div class="flex flex-col relative existing-data-box">
                                                         <div
-                                                            class="absolute flex flex-col inset-0 group-hover:opacity-100 space-y-2 transition">
-                                                            <!-- Remove Document -->
-                                                            <button @click="removeDocument(index)"
-                                                                class="absolute bg-white p-1 right-0 rounded-full top-0">
+                                                            class="relative text-center group border rounded-lg overflow-hidden ">
+                                                            <img src="{{ $thumbnail2 }}"
+                                                                alt="{{ $image->alt ?? $image->name }}"
+                                                                class="w-auto object-cover mx-auto mb-2 rounded"
+                                                                style="height: 100px;width: 100%;">
+                                                            <span title="{{ $image->name }}">{{ $image->name }}</span>
+                                                            <input type="hidden" form="propertyFrom"
+                                                                value="{{ $image->id }}" name="existingImage[]" />
+                                                            <button type="button" onclick="removeExistingRow(this)"
+                                                                class="absolute bg-white p-1 right-0 top-0 rounded-full">
                                                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4"
-                                                                    viewBox="0 0 20 20" fill="red">
+                                                                    fill="red" viewBox="0 0 20 20">
                                                                     <path fill-rule="evenodd"
                                                                         d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 011.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
                                                                         clip-rule="evenodd" />
                                                                 </svg>
                                                             </button>
                                                         </div>
+                                                        <div class="mb-2">
+                                                            <label
+                                                                class="flex items-center space-x-2 text-dark cursor-pointer ">
+                                                                <input type="radio" name="coverImage" form="propertyFrom"
+                                                                    value="{{ $image->id }}"
+                                                                    @change="setCoverImage({{ $key + 200 }})"
+                                                                    {{ $property->thumbnail_image == $image->id ? 'checked' : '' }}>
+                                                                <span>Make Cover Photo</span>
+                                                            </label>
+                                                            <span x-show="currentCover === {{ $key + 200 }}"
+                                                                class="absolute top-0 left-0 p-2 text-white bg-black opacity-50">Cover</span>
+                                                        </div>
+
                                                     </div>
-                                                </div>
-                                            </template>
+                                                @endforeach
 
-                                            <!-- Upload New Documents -->
-                                            <div class="flex flex-col col-auto text-center">
-                                                <div class="relative group border rounded-lg p-2 overflow-hidden"
-                                                    @click="triggerFileInput()"
-                                                    x-bind:class="{ 'border-blue-500': isDragging }">
-                                                    <img src="/assets/icons/upload-icon.png" class="w-50 mx-auto">
-                                                    <input name="documents[]" form="propertyFrom" type="file"
-                                                        accept=".pdf,.docx,image/*" id="fileDocInput" class="hidden"
-                                                        multiple @change="addDocuments($event)">
-                                                    <p class="text-gray-600">
-                                                        click to upload your documents here.</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
+                                                <!-- Existing Images -->
+                                                <template x-for="(image, index) in images" :key="index">
+                                                    <div class="flex flex-col relative">
+                                                        <div class="relative group border rounded-lg overflow-hidden">
+                                                            <!-- Image -->
+                                                            <img :src="image.url" style="height: 100px;"
+                                                                alt="Uploaded Image" class="w-30 h-30 object-cover">
 
-                                </div>
-                            </div>
-
-                            <div class="section mb-4">
-                                <h5 class="mt-3 font-bold text-black fs-3">Add photos of your property</h5>
-
-
-                                <div class="mt-3 border-dashed border-2 border-gray-300 rounded-lg p-3  bg-gray-100">
-                                    <div x-data="imageUploader()" class="mx-auto bg-white shadow rounded-lg space-y-6">
-                                        <!-- Image Preview Grid -->
-                                        <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
-
-                                            @foreach ($property->propertyImages ?? [] as $key => $image)
-                                                @php
-                                                    $isImage2 = Str::startsWith($image->mime_type, 'image/');
-                                                    $icon2 = match (true) {
-                                                        Str::contains($image->mime_type, 'pdf')
-                                                            => '/assets/icons/pdf-icon.png',
-                                                        Str::contains($image->mime_type, 'msword'),
-                                                        Str::contains($image->mime_type, 'wordprocessingml')
-                                                            => '/assets/icons/docx-icon.png',
-                                                        default => '/assets/icons/file-icon.png',
-                                                    };
-                                                    $thumbnail2 = $isImage2
-                                                        ? asset('storage/' . $image->file_url)
-                                                        : asset($icon);
-                                                @endphp
-                                                <div class="flex flex-col relative existing-data-box">
-                                                    <div
-                                                        class="relative text-center group border rounded-lg overflow-hidden ">
-                                                        <img src="{{ $thumbnail2 }}"
-                                                            alt="{{ $image->alt ?? $image->name }}"
-                                                            class="w-auto object-cover mx-auto mb-2 rounded"
-                                                            style="height: 100px;width: 100%;">
-                                                        <span title="{{ $image->name }}">{{ $image->name }}</span>
-                                                        <input type="hidden" form="propertyFrom"
-                                                            value="{{ $image->id }}" name="existingImage[]" />
-                                                        <button type="button" onclick="removeExistingRow(this)"
-                                                            class="absolute bg-white p-1 right-0 top-0 rounded-full">
-                                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4"
-                                                                fill="red" viewBox="0 0 20 20">
-                                                                <path fill-rule="evenodd"
-                                                                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 011.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                                                                    clip-rule="evenodd" />
-                                                            </svg>
-                                                        </button>
-                                                    </div>
-                                                    <div class="mb-2">
-                                                        <label
-                                                            class="flex items-center space-x-2 text-dark cursor-pointer ">
+                                                            <!-- Overlay with Cover Option -->
+                                                            <div
+                                                                class="absolute flex flex-col inset-0 group-hover:opacity-100 space-y-2 transition">
+                                                                <!-- Remove Image -->
+                                                                <button @click="removeImage(index)"
+                                                                    class="absolute bg-white p-1 right-0 rounded-full top-0">
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4"
+                                                                        viewBox="0 0 20 20" fill="red">
+                                                                        <path fill-rule="evenodd"
+                                                                            d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 011.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                                                            clip-rule="evenodd" />
+                                                                    </svg>
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                        <label class="flex items-center space-x-2 text-dark cursor-pointer ">
                                                             <input type="radio" name="coverImage" form="propertyFrom"
-                                                                value="{{ $image->id }}"
-                                                                @change="setCoverImage({{ $key + 200 }})"
-                                                                {{ $property->thumbnail_image == $image->id ? 'checked' : '' }}>
+                                                                class="" :value="image.name"
+                                                                @change="setCoverImage(index)"
+                                                                :checked="currentCover === index" />
                                                             <span>Make Cover Photo</span>
                                                         </label>
-                                                        <span x-show="currentCover === {{ $key + 200 }}"
+                                                        <span x-show="currentCover === index"
                                                             class="absolute top-0 left-0 p-2 text-white bg-black opacity-50">Cover</span>
                                                     </div>
+                                                </template>
 
-                                                </div>
-                                            @endforeach
-
-                                            <!-- Existing Images -->
-                                            <template x-for="(image, index) in images" :key="index">
-                                                <div class="flex flex-col relative">
-                                                    <div class="relative group border rounded-lg overflow-hidden">
-                                                        <!-- Image -->
-                                                        <img :src="image.url" style="height: 100px;"
-                                                            alt="Uploaded Image" class="w-30 h-30 object-cover">
-
-                                                        <!-- Overlay with Cover Option -->
-                                                        <div
-                                                            class="absolute flex flex-col inset-0 group-hover:opacity-100 space-y-2 transition">
-                                                            <!-- Remove Image -->
-                                                            <button @click="removeImage(index)"
-                                                                class="absolute bg-white p-1 right-0 rounded-full top-0">
-                                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4"
-                                                                    viewBox="0 0 20 20" fill="red">
-                                                                    <path fill-rule="evenodd"
-                                                                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 011.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                                                                        clip-rule="evenodd" />
-                                                                </svg>
-                                                            </button>
-                                                        </div>
+                                                <!-- Upload New Images -->
+                                                <div class="flex flex-col col-auto text-center">
+                                                    <div class="relative group border rounded-lg p-2 overflow-hidden"
+                                                        @click="triggerFileInput()"
+                                                        x-bind:class="{ 'border-blue-500': isDragging }">
+                                                        <img src="/assets/icons/upload-icon.png" class="w-50 mx-auto">
+                                                        <input name="images[]" form="propertyFrom" type="file"
+                                                            accept="image/*" id="fileInput" class="hidden" multiple
+                                                            @change="addImages($event)">
+                                                        <p class="text-gray-600">
+                                                            click to upload your images here.</p>
+                                                        <p class="text-sm text-blue-500 font-medium hidden">Upload up to 30
+                                                            images</p>
                                                     </div>
-                                                    <label class="flex items-center space-x-2 text-dark cursor-pointer ">
-                                                        <input type="radio" name="coverImage" form="propertyFrom"
-                                                            class="" :value="image.name"
-                                                            @change="setCoverImage(index)"
-                                                            :checked="currentCover === index" />
-                                                        <span>Make Cover Photo</span>
-                                                    </label>
-                                                    <span x-show="currentCover === index"
-                                                        class="absolute top-0 left-0 p-2 text-white bg-black opacity-50">Cover</span>
-                                                </div>
-                                            </template>
-
-                                            <!-- Upload New Images -->
-                                            <div class="flex flex-col col-auto text-center">
-                                                <div class="relative group border rounded-lg p-2 overflow-hidden"
-                                                    @click="triggerFileInput()"
-                                                    x-bind:class="{ 'border-blue-500': isDragging }">
-                                                    <img src="/assets/icons/upload-icon.png" class="w-50 mx-auto">
-                                                    <input name="images[]" form="propertyFrom" type="file"
-                                                        accept="image/*" id="fileInput" class="hidden" multiple
-                                                        @change="addImages($event)">
-                                                    <p class="text-gray-600">
-                                                        click to upload your images here.</p>
-                                                    <p class="text-sm text-blue-500 font-medium hidden">Upload up to 30
-                                                        images</p>
                                                 </div>
                                             </div>
                                         </div>
+
                                     </div>
-
                                 </div>
-                            </div>
 
 
 
-                            <div class="mt-2">
-                                <h6 class="my-3 font-bold text-black fs-3">Property Owner </h6>
-                                <select form="propertyFrom" name="owner" id="owners"
-                                    class="bg-gray-50 border border-gray-300 text-dark-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 ">
-                                    <option value="" selected>None of the below
-                                    </option>
-                                    @foreach ($owners ?? [] as $owner)
-                                        <option value="{{ $owner->id }}"
-                                            {{ $owner->id == $property->owner_id ? 'selected' : '' }}>
-                                            {{ $owner->name }}
+                                <div class="mt-2">
+                                    <h6 class="my-3 font-bold text-black fs-3">Property Owner </h6>
+                                    <select form="propertyFrom" name="owner" id="owners"
+                                        class="bg-gray-50 border border-gray-300 text-dark-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 ">
+                                        <option value="" selected>None of the below
                                         </option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div class="mt-5">
-                                <h6 class="mt-3 font-bold text-black fs-3">Ownership</h6>
-                                <ul class="flex gap-5 mt-3 flex-wrap">
-                                    <li class="relative">
-                                        <input form="propertyFrom" class="sr-only peer" checked type="radio"
-                                            {{ $property->ownership == 'freehold' ? 'checked' : '' }} value="freehold"
-                                            name="ownership" id="freehold">
-                                        <label for="freehold"
-                                            class="mx-1 px-3 py-1 bg-white border rounded-lg cursor-pointer peer-checked:ring-2 peer-checked:ring-green-500">
-                                            Freehold
-                                        </label>
-                                    </li>
-                                    <li class="relative">
-                                        <input form="propertyFrom" class="sr-only peer" type="radio"
-                                            {{ $property->ownership == 'co-operative_society' ? 'checked' : '' }}
-                                            value="co-operative_society" name="ownership" id="co_operative_society">
-                                        <label for="co_operative_society"
-                                            class="mx-1 px-3 py-1 bg-white border rounded-lg cursor-pointer peer-checked:ring-2 peer-checked:ring-green-500">
-                                            Co-operative Society
-                                        </label>
-                                    </li>
-                                    <li class="relative">
-                                        <input form="propertyFrom" class="sr-only peer" type="radio"
-                                            {{ $property->ownership == 'power_of_attorney' ? 'checked' : '' }}
-                                            value="power_of_attorney" name="ownership" id="power_of_attorney">
-                                        <label for="power_of_attorney"
-                                            class="mx-1 px-3 py-1 bg-white border rounded-lg cursor-pointer peer-checked:ring-2 peer-checked:ring-green-500">
-                                            Power of Attorney
-                                        </label>
-                                    </li>
-                                </ul>
-                            </div>
-                            <div class="mt-5">
-                                <h6 class="mt-3 font-bold text-black fs-3">What makes your property unique?</h6>
-                                <textarea form="propertyFrom" name="unique_info" rows="4" autocomplete="off"
-                                    class="block w-full mt-2 p-2 border rounded-lg" placeholder="Write your thoughts here...">{{ $property->unique_info }}</textarea>
-                            </div>
+                                        @foreach ($owners ?? [] as $owner)
+                                            <option value="{{ $owner->id }}"
+                                                {{ $owner->id == $property->owner_id ? 'selected' : '' }}>
+                                                {{ $owner->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="mt-5">
+                                    <h6 class="mt-3 font-bold text-black fs-3">Ownership</h6>
+                                    <ul class="flex gap-5 mt-3 flex-wrap">
+                                        <li class="relative">
+                                            <input form="propertyFrom" class="sr-only peer" checked type="radio"
+                                                {{ $property->ownership == 'freehold' ? 'checked' : '' }} value="freehold"
+                                                name="ownership" id="freehold">
+                                            <label for="freehold"
+                                                class="mx-1 px-3 py-1 bg-white border rounded-lg cursor-pointer peer-checked:ring-2 peer-checked:ring-green-500">
+                                                Freehold
+                                            </label>
+                                        </li>
+                                        <li class="relative">
+                                            <input form="propertyFrom" class="sr-only peer" type="radio"
+                                                {{ $property->ownership == 'co-operative_society' ? 'checked' : '' }}
+                                                value="co-operative_society" name="ownership" id="co_operative_society">
+                                            <label for="co_operative_society"
+                                                class="mx-1 px-3 py-1 bg-white border rounded-lg cursor-pointer peer-checked:ring-2 peer-checked:ring-green-500">
+                                                Co-operative Society
+                                            </label>
+                                        </li>
+                                        <li class="relative">
+                                            <input form="propertyFrom" class="sr-only peer" type="radio"
+                                                {{ $property->ownership == 'power_of_attorney' ? 'checked' : '' }}
+                                                value="power_of_attorney" name="ownership" id="power_of_attorney">
+                                            <label for="power_of_attorney"
+                                                class="mx-1 px-3 py-1 bg-white border rounded-lg cursor-pointer peer-checked:ring-2 peer-checked:ring-green-500">
+                                                Power of Attorney
+                                            </label>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div class="mt-5">
+                                    <h6 class="mt-3 font-bold text-black fs-3">What makes your property unique?</h6>
+                                    <textarea form="propertyFrom" name="unique_info" rows="4" autocomplete="off"
+                                        class="block w-full mt-2 p-2 border rounded-lg" placeholder="Write your thoughts here...">{{ $property->unique_info }}</textarea>
+                                </div>
 
-                            <div class="col-md-12 my-3">
-                                <div class="card shadow">
-                                    <div class="card-body">
+                                <div class="col-md-12 my-3">
+                                    <div class="card shadow">
+                                        <div class="card-body">
 
-                                        <div class="">
-                                            <strong class="mb-3">Status:</strong>
-                                            <div class="d-flex gap-4 mt-3 flex-wrap">
-                                                <div class="form-check">
-                                                    <input type="radio" id="statusUnread" name="moderation_status"
-                                                        value="draft" class="form-check-input"
-                                                        {{ $property->moderation_status === 'draft' ? 'checked' : '' }}>
-                                                    <label for="statusUnread" class="form-check-label">Draft</label>
-                                                </div>
-                                                <div class="form-check">
-                                                    <input type="radio" id="statusSuspended" name="moderation_status"
-                                                        value="suspended" class="form-check-input"
-                                                        {{ $property->moderation_status === 'suspended' ? 'checked' : '' }}>
-                                                    <label for="statusSuspended"
-                                                        class="form-check-label">Suspended</label>
-                                                </div>
-                                                <div class="form-check">
-                                                    <input type="radio" id="statusApproved" name="moderation_status"
-                                                        value="approved" class="form-check-input"
-                                                        {{ $property->moderation_status === 'approved' ? 'checked' : '' }}>
-                                                    <label for="statusApproved" class="form-check-label">Approved</label>
-                                                </div>
-                                                @if ($property->type == 'rent')
+                                            <div class="">
+                                                <strong class="mb-3">Status:</strong>
+                                                <div class="d-flex gap-4 mt-3 flex-wrap">
                                                     <div class="form-check">
-                                                        <input type="radio" id="statusRenting" name="moderation_status"
-                                                            value="renting" class="form-check-input"
-                                                            {{ $property->moderation_status === 'renting' ? 'checked' : '' }}>
-                                                        <label for="statusRenting"
-                                                            class="form-check-label">Renting</label>
+                                                        <input type="radio" id="statusUnread" name="moderation_status"
+                                                            value="draft" class="form-check-input"
+                                                            {{ $property->moderation_status === 'draft' ? 'checked' : '' }}>
+                                                        <label for="statusUnread" class="form-check-label">Draft</label>
                                                     </div>
+                                                    <div class="form-check">
+                                                        <input type="radio" id="statusSuspended" name="moderation_status"
+                                                            value="suspended" class="form-check-input"
+                                                            {{ $property->moderation_status === 'suspended' ? 'checked' : '' }}>
+                                                        <label for="statusSuspended"
+                                                            class="form-check-label">Suspended</label>
+                                                    </div>
+                                                    <div class="form-check">
+                                                        <input type="radio" id="statusApproved" name="moderation_status"
+                                                            value="approved" class="form-check-input"
+                                                            {{ $property->moderation_status === 'approved' ? 'checked' : '' }}>
+                                                        <label for="statusApproved" class="form-check-label">Approved</label>
+                                                    </div>
+                                                    @if ($property->type == 'rent')
+                                                        <div class="form-check">
+                                                            <input type="radio" id="statusRenting" name="moderation_status"
+                                                                value="renting" class="form-check-input"
+                                                                {{ $property->moderation_status === 'renting' ? 'checked' : '' }}>
+                                                            <label for="statusRenting"
+                                                                class="form-check-label">Renting</label>
+                                                        </div>
 
-                                                    <div class="form-check">
-                                                        <input type="radio" id="statusRented" name="moderation_status"
-                                                            value="rented" class="form-check-input"
-                                                            {{ $property->moderation_status === 'rented' ? 'checked' : '' }}>
-                                                        <label for="statusRented" class="form-check-label">Rented</label>
-                                                    </div>
-                                                @else
-                                                    <div class="form-check">
-                                                        <input type="radio" id="statusSelling" name="moderation_status"
-                                                            value="selling" class="form-check-input"
-                                                            {{ $property->moderation_status === 'selling' ? 'checked' : '' }}>
-                                                        <label for="statusSelling"
-                                                            class="form-check-label">Selling</label>
-                                                    </div>
-                                                    <div class="form-check">
-                                                        <input type="radio" id="statusSold" name="moderation_status"
-                                                            value="sold" class="form-check-input"
-                                                            {{ $property->moderation_status === 'sold' ? 'checked' : '' }}>
-                                                        <label for="statusSold" class="form-check-label">Sold</label>
-                                                    </div>
-                                                @endif
+                                                        <div class="form-check">
+                                                            <input type="radio" id="statusRented" name="moderation_status"
+                                                                value="rented" class="form-check-input"
+                                                                {{ $property->moderation_status === 'rented' ? 'checked' : '' }}>
+                                                            <label for="statusRented" class="form-check-label">Rented</label>
+                                                        </div>
+                                                    @else
+                                                        <div class="form-check">
+                                                            <input type="radio" id="statusSelling" name="moderation_status"
+                                                                value="selling" class="form-check-input"
+                                                                {{ $property->moderation_status === 'selling' ? 'checked' : '' }}>
+                                                            <label for="statusSelling"
+                                                                class="form-check-label">Selling</label>
+                                                        </div>
+                                                        <div class="form-check">
+                                                            <input type="radio" id="statusSold" name="moderation_status"
+                                                                value="sold" class="form-check-input"
+                                                                {{ $property->moderation_status === 'sold' ? 'checked' : '' }}>
+                                                            <label for="statusSold" class="form-check-label">Sold</label>
+                                                        </div>
+                                                    @endif
+
+                                                </div>
 
                                             </div>
-
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
+
+                    <!-- Navigation Buttons -->
+                    <div class="flex justify-end mt-2">
+                        <button type="button" @click="prevStep"
+                            class="px-6 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400" x-show="currentStep > 0">
+                            Back
+                        </button>
+                        <button type="button" @click="nextStep"
+                            class="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600" x-show="currentStep < 3">
+                            Next
+                        </button>
+                        <button type="submit" form="propertyFrom"
+                            class="px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
+                            x-show="currentStep === 3">
+                            Submit
+                        </button>
+                    </div>
                 </div>
 
-                <!-- Navigation Buttons -->
-                <div class="flex justify-end mt-2">
-                    <button type="button" @click="prevStep"
-                        class="px-6 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400" x-show="currentStep > 0">
-                        Back
-                    </button>
-                    <button type="button" @click="nextStep"
-                        class="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600" x-show="currentStep < 3">
-                        Next
-                    </button>
-                    <button type="submit" form="propertyFrom"
-                        class="px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
-                        x-show="currentStep === 3">
-                        Submit
-                    </button>
-                </div>
             </div>
-
         </div>
-    </div>
+    @endcan
 @endsection
 
 @push('footer')

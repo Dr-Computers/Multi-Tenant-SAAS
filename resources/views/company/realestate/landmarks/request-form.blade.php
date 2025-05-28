@@ -1,3 +1,4 @@
+@can('manage landmark request')
 {{ Form::open([
     'route' => 'company.realestate.landmarks.store',
     'method' => 'post',
@@ -37,3 +38,4 @@
 </div>
 {{ Form::close() }}
 
+@endcan

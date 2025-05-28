@@ -7,136 +7,152 @@
     <li class="breadcrumb-item">{{ __('Bank Accounts') }}</li>
 @endsection
 @section('action-btn')
-    <div class="d-flex">
-        <a href="{{ route('company.finance.bank-accounts.create') }}" class="btn btn-sm btn-primary" data-bs-toggle="tooltip"
-            title="{{ __('Add Bank Account') }}">
-            <i class="ti ti-plus"></i>
-        </a>
-    </div>
+    @can('create a bank account')
+        <div class="d-flex">
+            <a href="{{ route('company.finance.bank-accounts.create') }}" class="btn btn-sm btn-primary" data-bs-toggle="tooltip"
+                title="{{ __('Add Bank Account') }}">
+                <i class="ti ti-plus"></i>
+            </a>
+        </div>
+    @endcan
 @endsection
 
 @section('content')
     <div class="row">
-        <div class="col-12">
-            <div class="row">
-                @forelse ($bankAccounts as $account)
-                    <div class="col-xl-4 col-lg-4 col-md-6 mb-4">
-                        <div class="card bank-card h-100">
-                            <div class="card-header bg-primary text-white py-2">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <h6 class="mb-0 text-white text-truncate">{{ $account->bank_name ?? __('Unnamed Bank') }}</h6>
-                                    <span class="badge bg-white text-primary">{{ ucfirst($account->account_type) }}</span>
+        @can('bank account lising')
+            <div class="col-12">
+                <div class="row">
+                    @forelse ($bankAccounts as $account)
+                        <div class="col-xl-4 col-lg-4 col-md-6 mb-4">
+                            <div class="card bank-card h-100">
+                                <div class="card-header bg-primary text-white py-2">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <h6 class="mb-0 text-white text-truncate">
+                                            {{ $account->bank_name ?? __('Unnamed Bank') }}</h6>
+                                        <span class="badge bg-white text-primary">{{ ucfirst($account->account_type) }}</span>
+                                    </div>
                                 </div>
+
+                                <div class="card-body p-2">
+                                    <ul class="list-group list-group-flush">
+                                        <li class="list-group-item d-flex align-items-center px-2 py-1 mb-1">
+                                            <i class="ti ti-user text-primary me-2" style="font-size: 1rem;"></i>
+                                            <div class="text-truncate"><span class="me-1">Holder:</span>
+                                                <span>{{ $account->holder_name }}</span>
+                                            </div>
+                                        </li>
+
+                                        <li class="list-group-item d-flex align-items-center px-2 py-1 mb-1">
+                                            <i class="ti ti-home text-primary me-2" style="font-size: 1rem;"></i>
+                                            <div class="text-truncate"><span class="me-1">Bank:</span>
+                                                <span>{{ $account->bank_name }}</span>
+                                            </div>
+                                        </li>
+
+                                        <li class="list-group-item d-flex align-items-center px-2 py-1 mb-1">
+                                            <i class="ti ti-map text-primary me-2" style="font-size: 1rem;"></i>
+                                            <div class="text-truncate"><span class="me-1">Branch:</span>
+                                                <span>{{ $account->bank_branch }}</span>
+                                            </div>
+                                        </li>
+
+                                        <li class="list-group-item d-flex align-items-center px-2 py-1 mb-1">
+                                            <i class="ti ti-credit-card text-primary me-2" style="font-size: 1rem;"></i>
+                                            <div class="text-truncate"><span class="me-1">Account No:</span>
+                                                <span>{{ $account->account_number }}</span>
+                                            </div>
+                                        </li>
+
+                                        <li class="list-group-item d-flex align-items-center px-2 py-1 mb-1">
+                                            <i class="ti ti-wallet text-primary me-2" style="font-size: 1rem;"></i>
+                                            <div class="text-truncate"><span class="me-1">Open Bal:</span>
+                                                <span>{{ $account->opening_balance }}</span>
+                                            </div>
+                                        </li>
+
+                                        <li class="list-group-item d-flex align-items-center px-2 py-1 mb-1">
+                                            <i class="ti ti-wallet text-primary me-2" style="font-size: 1rem;"></i>
+                                            <div class="text-truncate"><span class="me-1">Close Bal:</span>
+                                                <span>{{ $account->closing_balance }}</span>
+                                            </div>
+                                        </li>
+
+                                        <li class="list-group-item d-flex align-items-center px-2 py-1 mb-1">
+                                            <i class="ti ti-phone text-primary me-2" style="font-size: 1rem;"></i>
+                                            <div class="text-truncate"><span class="me-1">Contact:</span>
+                                                <span>{{ $account->contact_number }}</span>
+                                            </div>
+                                        </li>
+
+                                        <li class="list-group-item d-flex align-items-center px-2 py-1 mb-1">
+                                            <i class="ti ti-device-mobile text-primary me-2" style="font-size: 1rem;"></i>
+                                            <div class="text-truncate"><span class="me-1">Phone:</span>
+                                                <span>{{ $account->phone }}</span>
+                                            </div>
+                                        </li>
+
+                                        <li class="list-group-item d-flex align-items-center px-2 py-1 mb-1">
+                                            <i class="ti ti-mail text-primary me-2" style="font-size: 1rem;"></i>
+                                            <div class="text-truncate"><span class="me-1">Email:</span>
+                                                <span>{{ $account->email }}</span>
+                                            </div>
+                                        </li>
+
+                                        <li class="list-group-item d-flex align-items-center px-2 py-1">
+                                            <i class="ti ti-map-pin text-primary me-2" style="font-size: 1rem;"></i>
+                                            <div class="text-truncate"><span class="me-1">Address:</span>
+                                                <span>{{ $account->bank_address }}</span>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </div>
+
+                                <div class="card-footer bg-transparent p-2">
+                                    <div class="d-flex justify-content-between">
+                                        @can('edit a bank account')
+                                            <!-- Edit Button -->
+                                            <a href="{{ route('company.finance.bank-accounts.edit', $account->id) }}"
+                                                class="btn btn-sm btn-outline-secondary" data-bs-toggle="tooltip"
+                                                title="{{ __('Edit') }}">
+                                                <i class="ti ti-pencil"></i>
+                                            </a>
+                                        @endcan
+                                        @can('delete a bank account')
+                                            <!-- Delete Button -->
+                                            {!! Form::open([
+                                                'method' => 'DELETE',
+                                                'route' => ['company.finance.bank-accounts.destroy', $account->id],
+                                                'id' => 'delete-form-' . $account->id,
+                                            ]) !!}
+                                            <a href="#"
+                                                class="mx-4 btn btn-sm btn-outline-danger align-items-center bs-pass-para"
+                                                data-bs-toggle="tooltip" title="{{ __('Delete') }}">
+                                                <i class="ti ti-trash text-black "></i></a>
+
+                                            {!! Form::close() !!}
+                                        @endcan
+
+                                    </div>
+                                </div>
+
                             </div>
-
-                            <div class="card-body p-2">
-                                <ul class="list-group list-group-flush">
-                                    <li class="list-group-item d-flex align-items-center px-2 py-1 mb-1">
-                                        <i class="ti ti-user text-primary me-2" style="font-size: 1rem;"></i>
-                                        <div class="text-truncate"><span class="me-1">Holder:</span>
-                                        <span>{{ $account->holder_name }}</span></div>
-                                    </li>
-
-                                    <li class="list-group-item d-flex align-items-center px-2 py-1 mb-1">
-                                        <i class="ti ti-home text-primary me-2" style="font-size: 1rem;"></i>
-                                        <div class="text-truncate"><span class="me-1">Bank:</span>
-                                        <span>{{ $account->bank_name }}</span></div>
-                                    </li>
-
-                                    <li class="list-group-item d-flex align-items-center px-2 py-1 mb-1">
-                                        <i class="ti ti-map text-primary me-2" style="font-size: 1rem;"></i>
-                                        <div class="text-truncate"><span class="me-1">Branch:</span>
-                                        <span>{{ $account->bank_branch }}</span></div>
-                                    </li>
-
-                                    <li class="list-group-item d-flex align-items-center px-2 py-1 mb-1">
-                                        <i class="ti ti-credit-card text-primary me-2" style="font-size: 1rem;"></i>
-                                        <div class="text-truncate"><span class="me-1">Account No:</span>
-                                        <span>{{ $account->account_number }}</span></div>
-                                    </li>
-
-                                    <li class="list-group-item d-flex align-items-center px-2 py-1 mb-1">
-                                        <i class="ti ti-wallet text-primary me-2" style="font-size: 1rem;"></i>
-                                        <div class="text-truncate"><span class="me-1">Open Bal:</span>
-                                        <span>{{ $account->opening_balance }}</span></div>
-                                    </li>
-
-                                    <li class="list-group-item d-flex align-items-center px-2 py-1 mb-1">
-                                        <i class="ti ti-wallet text-primary me-2" style="font-size: 1rem;"></i>
-                                        <div class="text-truncate"><span class="me-1">Close Bal:</span>
-                                        <span>{{ $account->closing_balance }}</span></div>
-                                    </li>
-
-                                    <li class="list-group-item d-flex align-items-center px-2 py-1 mb-1">
-                                        <i class="ti ti-phone text-primary me-2" style="font-size: 1rem;"></i>
-                                        <div class="text-truncate"><span class="me-1">Contact:</span>
-                                        <span>{{ $account->contact_number }}</span></div>
-                                    </li>
-
-                                    <li class="list-group-item d-flex align-items-center px-2 py-1 mb-1">
-                                        <i class="ti ti-device-mobile text-primary me-2" style="font-size: 1rem;"></i>
-                                        <div class="text-truncate"><span class="me-1">Phone:</span>
-                                        <span>{{ $account->phone }}</span></div>
-                                    </li>
-
-                                    <li class="list-group-item d-flex align-items-center px-2 py-1 mb-1">
-                                        <i class="ti ti-mail text-primary me-2" style="font-size: 1rem;"></i>
-                                        <div class="text-truncate"><span class="me-1">Email:</span>
-                                        <span>{{ $account->email }}</span></div>
-                                    </li>
-
-                                    <li class="list-group-item d-flex align-items-center px-2 py-1">
-                                        <i class="ti ti-map-pin text-primary me-2" style="font-size: 1rem;"></i>
-                                        <div class="text-truncate"><span class="me-1">Address:</span>
-                                        <span>{{ $account->bank_address }}</span></div>
-                                    </li>
-                                </ul>
-                            </div>
-
-                            <div class="card-footer bg-transparent p-2">
-                                <div class="d-flex justify-content-between">
-                                    
-                                    <!-- Edit Button -->
-                                    <a href="{{ route('company.finance.bank-accounts.edit', $account->id) }}"
-                                       class="btn btn-sm btn-outline-secondary"
-                                       data-bs-toggle="tooltip" title="{{ __('Edit') }}">
-                                        <i class="ti ti-pencil"></i>
+                        </div>
+                    @empty
+                        <div class="col-md-12">
+                            <div class="card">
+                                <div class="card-body text-center py-5">
+                                    <i class="ti ti-bank-off text-muted" style="font-size: 48px;"></i>
+                                    <h5 class="mt-3">{{ __('No Bank Accounts Found') }}</h5>
+                                    <p class="text-muted">{{ __('Add your first bank account to get started') }}</p>
+                                    <a href="{{ route('company.finance.bank-accounts.create') }}" class="btn btn-primary mt-3">
+                                        <i class="ti ti-plus me-2"></i>{{ __('Add Bank Account') }}
                                     </a>
-                            
-                                    <!-- Delete Button -->
-                                    {!! Form::open([
-                                        'method' => 'DELETE',
-                                        'route' => ['company.finance.bank-accounts.destroy', $account->id],
-                                        'id' => 'delete-form-' . $account->id,
-                                    ]) !!}
-                                    <a href="#"
-                                        class="mx-4 btn btn-sm btn-outline-danger align-items-center bs-pass-para"
-                                        data-bs-toggle="tooltip" title="{{ __('Delete') }}">
-                                        <i class="ti ti-trash text-black "></i></a>
-
-                                    {!! Form::close() !!}
-
-                            
                                 </div>
                             </div>
-                            
                         </div>
-                    </div>
-                @empty
-                    <div class="col-md-12">
-                        <div class="card">
-                            <div class="card-body text-center py-5">
-                                <i class="ti ti-bank-off text-muted" style="font-size: 48px;"></i>
-                                <h5 class="mt-3">{{ __('No Bank Accounts Found') }}</h5>
-                                <p class="text-muted">{{ __('Add your first bank account to get started') }}</p>
-                                <a href="{{ route('company.finance.bank-accounts.create') }}" class="btn btn-primary mt-3">
-                                    <i class="ti ti-plus me-2"></i>{{ __('Add Bank Account') }}
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                @endforelse
-            </div>
+                    @endforelse
+                </div>
+            @endcan
         </div>
     </div>
 @endsection
@@ -158,7 +174,7 @@
 
         .card-header {
             border-radius: 8px 8px 0 0 !important;
-            padding: 1rem  0.8rem;
+            padding: 1rem 0.8rem;
         }
 
         .list-group-item {
@@ -184,20 +200,20 @@
             padding: 0.3rem 0.6rem;
             font-size: 0.85rem;
         }
-        
+
         .card-body {
             padding: 0.6rem;
         }
-        
+
         .card-footer {
             padding: 0.6rem;
         }
-        
+
         h6 {
             font-size: 1rem;
             margin-bottom: 0;
         }
-        
+
         .text-truncate {
             white-space: nowrap;
             overflow: hidden;
@@ -206,7 +222,7 @@
             display: inline-block;
             font-size: 0.95rem;
         }
-        
+
         .mb-1 {
             margin-bottom: 0.3rem !important;
         }

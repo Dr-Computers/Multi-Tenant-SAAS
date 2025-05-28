@@ -9,7 +9,8 @@
 @endsection
 @section('action-btn')
     <div class="d-flex">
-        <a  href="{{ route('company.realestate.tenants.index') }}"  title="{{ __('Back to Tenants') }}" class="btn btn-sm btn-primary me-2">
+        <a href="{{ route('company.realestate.tenants.index') }}" title="{{ __('Back to Tenants') }}"
+            class="btn btn-sm btn-primary me-2">
             <i class="ti ti-arrow-left"></i>
         </a>
     </div>
@@ -20,50 +21,58 @@
     <div class="row">
         <div class="col-sm-12">
             <div class="card">
-                <div class="card-body">
-                   
+                @can('edit a bank account')
+                    <div class="card-body">
 
-                    {{-- Tabs --}}
-                    <ul class="nav nav-tabs" id="tenantTabs">
-                        @php
-                            $tab = request()->get('tab', 'overview');
-                        @endphp
-                        <li class="nav-item">
-                            <a class="nav-link {{ $tab == 'overview' ? 'active' : '' }}"
-                                href="{{ route('company.realestate.tenants.show', $tenant->id) }}?tab=overview">Overview</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link {{ $tab == 'properties' ? 'active' : '' }}"
-                                href="{{ route('company.realestate.tenants.show', $tenant->id) }}?tab=properties">Properties</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link {{ $tab == 'requests' ? 'active' : '' }}"
-                                href="{{ route('company.realestate.tenants.show', $tenant->id) }}?tab=requests">Requests for
-                                Approval</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link {{ $tab == 'settlements' ? 'active' : '' }}"
-                                href="{{ route('company.realestate.tenants.show', $tenant->id) }}?tab=settlements">Settlement</a>
-                        </li>
-                    </ul>
 
-                    {{-- Tab Content --}}
-                    <div class="tab-content p-4 border border-top-0 rounded-bottom">
-                        @if ($tab == 'overview')
-                            @include('company.realestate.tenants.partials._overview', ['tenant' => $tenant])
-                        @elseif($tab == 'properties')
-                            @include('company.realestate.tenants.partials._properties', ['tenant' => $tenant])
-                        @elseif($tab == 'requests')
-                            @include('company.realestate.tenants.partials._requests', ['tenant' => $tenant])
-                        @elseif($tab == 'settlements')
-                            @include('company.realestate.tenants.partials._settlements', [
-                                'tenant' => $tenant,
-                            ])
-                        @endif
+                        {{-- Tabs --}}
+                        <ul class="nav nav-tabs" id="tenantTabs">
+                            @php
+                                $tab = request()->get('tab', 'overview');
+                            @endphp
+                            <li class="nav-item">
+                                <a class="nav-link {{ $tab == 'overview' ? 'active' : '' }}"
+                                    href="{{ route('company.realestate.tenants.show', $tenant->id) }}?tab=overview">Overview</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link {{ $tab == 'properties' ? 'active' : '' }}"
+                                    href="{{ route('company.realestate.tenants.show', $tenant->id) }}?tab=properties">Properties</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link {{ $tab == 'requests' ? 'active' : '' }}"
+                                    href="{{ route('company.realestate.tenants.show', $tenant->id) }}?tab=requests">Requests
+                                    for
+                                    Approval</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link {{ $tab == 'settlements' ? 'active' : '' }}"
+                                    href="{{ route('company.realestate.tenants.show', $tenant->id) }}?tab=settlements">Settlement</a>
+                            </li>
+                        </ul>
+
+                        {{-- Tab Content --}}
+                        <div class="tab-content p-4 border border-top-0 rounded-bottom">
+                            @if ($tab == 'overview')
+                                @include('company.realestate.tenants.partials._overview', [
+                                    'tenant' => $tenant,
+                                ])
+                            @elseif($tab == 'properties')
+                                @include('company.realestate.tenants.partials._properties', [
+                                    'tenant' => $tenant,
+                                ])
+                            @elseif($tab == 'requests')
+                                @include('company.realestate.tenants.partials._requests', [
+                                    'tenant' => $tenant,
+                                ])
+                            @elseif($tab == 'settlements')
+                                @include('company.realestate.tenants.partials._settlements', [
+                                    'tenant' => $tenant,
+                                ])
+                            @endif
+                        </div>
                     </div>
-                </div>
+                @endcan
             </div>
-
         </div>
     </div>
 @endsection

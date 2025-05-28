@@ -15,62 +15,86 @@ class  LandmarkController extends Controller
     use ActivityLogger;
     public function index()
     {
-        $landmarks = RealestateLandmark::get();
-        return view('company.realestate.landmarks.index', compact('landmarks'));
+        if (Auth::user()->can('landmark listing')) {
+            $landmarks = RealestateLandmark::get();
+            return view('company.realestate.landmarks.index', compact('landmarks'));
+        } else {
+            return redirect()->back()->with('error', 'Permission denied.');
+        }
     }
 
     public function create()
     {
 
-        return view('company.realestate.landmarks.request-form');
+        if (Auth::user()->can('manage landmark request')) {
+            return view('company.realestate.landmarks.request-form');
+        } else {
+            return redirect()->back()->with('error', 'Permission denied.');
+        }
     }
 
     public function store(Request $request)
     {
-        $landmark                   = new RealestateAddonRequest();
-        $landmark->company_id       = Auth::user()->creatorId();
-        $landmark->requesting_type  = 'landmark';
-        $landmark->request_for      = $request->name;
-        $landmark->verified_by      = null;
-        $landmark->notes            = $request->notes;
-        $landmark->status           = 0;
-        $landmark->save();
-        $this->logActivity(
-            'Requested a New Landmark Name',
-            'Landmark Name: ' . $request->name,
-            route('company.realestate.landmarks.index'),
-            'Requested a New Landmark Name successfully',
-            Auth::user()->creatorId(),
-            Auth::user()->id
-        );
-        return redirect()->back()->with('success', 'New Landmark Request submited.');
+        if (Auth::user()->can('manage landmark request')) {
+            $landmark                   = new RealestateAddonRequest();
+            $landmark->company_id       = Auth::user()->creatorId();
+            $landmark->requesting_type  = 'landmark';
+            $landmark->request_for      = $request->name;
+            $landmark->verified_by      = null;
+            $landmark->notes            = $request->notes;
+            $landmark->status           = 0;
+            $landmark->save();
+            $this->logActivity(
+                'Requested a New Landmark Name',
+                'Landmark Name: ' . $request->name,
+                route('company.realestate.landmarks.index'),
+                'Requested a New Landmark Name successfully',
+                Auth::user()->creatorId(),
+                Auth::user()->id
+            );
+            return redirect()->back()->with('success', 'New Landmark Request submited.');
+        } else {
+            return redirect()->back()->with('error', 'Permission denied.');
+        }
     }
 
 
     public function destroy(RealestateAddonRequest $landmark)
     {
-        $landmark->delete();
-        $this->logActivity(
-            'Requested a Landmark deleted',
-            'Landmark Name: ' . $landmark->request_for,
-            route('company.realestate.landmarks.index'),
-            'Requested a Landmark deleted successfully',
-            Auth::user()->creatorId(),
-            Auth::user()->id
-        );
-        return redirect()->back()->with('success', 'Landmark Request Deleted.');
+        if (Auth::user()->can('manage landmark request')) {
+            $landmark->delete();
+            $this->logActivity(
+                'Requested a Landmark deleted',
+                'Landmark Name: ' . $landmark->request_for,
+                route('company.realestate.landmarks.index'),
+                'Requested a Landmark deleted successfully',
+                Auth::user()->creatorId(),
+                Auth::user()->id
+            );
+            return redirect()->back()->with('success', 'Landmark Request Deleted.');
+        } else {
+            return redirect()->back()->with('error', 'Permission denied.');
+        }
     }
 
     public function edit(RealestateAddonRequest $landmark)
     {
-        return view('company.realestate.landmarks.request-show', compact('landmark'));
+        if (Auth::user()->can('manage landmark request')) {
+            return view('company.realestate.landmarks.request-show', compact('landmark'));
+        } else {
+            return redirect()->back()->with('error', 'Permission denied.');
+        }
     }
 
 
     public function show()
     {
-        $landmarks =  RealestateAddonRequest::where('requesting_type', 'landmark')->where('company_id', Auth::user()->creatorId())->get();
+        if (Auth::user()->can('manage landmark request')) {
+            $landmarks =  RealestateAddonRequest::where('requesting_type', 'landmark')->where('company_id', Auth::user()->creatorId())->get();
 
-        return view('company.realestate.landmarks.requests', compact('landmarks'));
+            return view('company.realestate.landmarks.requests', compact('landmarks'));
+        } else {
+            return redirect()->back()->with('error', 'Permission denied.');
+        }
     }
 }

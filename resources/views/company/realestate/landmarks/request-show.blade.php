@@ -1,3 +1,4 @@
+@can('manage landmark request')
 <div class="row">
     <div class="col-sm-12">
         <div class="card">
@@ -44,3 +45,4 @@
         </div>
     </div>
 </div>
+@endcan

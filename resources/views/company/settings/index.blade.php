@@ -291,30 +291,43 @@
                 <div class="col-xl-3">
                     <div class="card sticky-top" style="top:30px">
                         <div class="list-group list-group-flush" id="useradd-sidenav">
+                            @can('brand settings')
                             <a href="#useradd-1"
                                 class="list-group-item list-group-item-action border-0">{{ __('Brand Settings') }}
                                 <div class="float-end"><i class="ti ti-chevron-right"></i></div>
                             </a>
+                            @endcan
+                            @can('system settings')
                             <a href="#useradd-2"
                                 class="list-group-item list-group-item-action border-0">{{ __('System Settings') }}
                                 <div class="float-end"><i class="ti ti-chevron-right"></i></div>
                             </a>
+                            @endcan
+                            @can('company settings')
                             <a href="#useradd-3"
                                 class="list-group-item list-group-item-action border-0">{{ __('Company Settings') }}
                                 <div class="float-end"><i class="ti ti-chevron-right"></i></div>
                             </a>
+                            @endcan
+                            @can('set default invoices')
                             <a href="#useradd-4"
                                 class="list-group-item list-group-item-action border-0">{{ __('Invoice Template Settings') }}
                                 <div class="float-end"><i class="ti ti-chevron-right"></i></div>
                             </a>
+                            @endcan
+                            @can('set default letterpad')
                             <a href="#useradd-5"
                                 class="list-group-item list-group-item-action border-0">{{ __('Letter Pad Template Settings') }}
                                 <div class="float-end"><i class="ti ti-chevron-right"></i></div>
                             </a>
+                            @endcan
+                            @can('set default estimate')
                             <a href="#useradd-6"
                                 class="list-group-item list-group-item-action border-0">{{ __('Estimate Templete Settings') }}
                                 <div class="float-end"><i class="ti ti-chevron-right"></i></div>
                             </a>
+                            @endcan
+                        
                             <a href="#useradd-7"
                                 class="list-group-item list-group-item-action border-0">{{ __('Reset Permissions') }}
                                 <div class="float-end"><i class="ti ti-chevron-right"></i></div>
@@ -326,7 +339,8 @@
 
 
                 <div class="col-xl-9">
-
+               
+                    @can('brand settings')
                     <!--Business Setting-->
                     <div id="useradd-1" class="card">
 
@@ -560,7 +574,8 @@
                         {{ Form::close() }}
 
                     </div>
-
+                    @endcan
+                    @can('system settings')
                     <!--System Setting-->
                     <div id="useradd-2" class="card">
                         <div class="card-header">
@@ -651,7 +666,8 @@
                         </div>
                         {{ Form::close() }}
                     </div>
-
+                    @endcan
+                    @can('company settings')
                     <!--Company Setting-->
                     <div id="useradd-3" class="card">
                         <div class="card-header">
@@ -934,7 +950,8 @@
                         </div>
                         {{ Form::close() }}
                     </div>
-
+                    @endcan
+                    @can('set default invoices')
 
                     <!--Choose Invoice Template & Settings-->
                     <div id="useradd-4" class="card">
@@ -1001,7 +1018,8 @@
                             </div>
                         </form>
                     </div>
-
+                    @endcan
+                    @can('set default letterpad')
                     <!--Choose Letter Pad Template & Settings-->
                     <div id="useradd-5" class="card">
                         <form action="{{ route('company.letter-pad.template.settings.store') }}" method="POST"
@@ -1051,7 +1069,8 @@
                         </form>
 
                     </div>
-
+                    @endcan
+                    @can('set default estimate')
                     <!--Choose Estimate Template & Settings-->
                     <div id="useradd-6" class="card">
                         <form action="{{ route('company.estimate.template.settings.store') }}" method="POST"
@@ -1103,6 +1122,8 @@
                             </div>
                         </form>
                     </div>
+                    @endcan
+                    @can('')
                     <!-- Reset Role based allowed permission-->
                     <div id="useradd-7" class="card">
 

@@ -18,7 +18,7 @@ class RoleController extends Controller
     use ActivityLogger;
     public function index()
     {
-        if (Auth::user()->can('manage role')) {
+        if (Auth::user()->can('role listing')) {
             $roles = Role::where('created_by', '=', Auth::user()->creatorId())->get();
             return view('company.hrms.role.index')->with('roles', $roles);
         } else {
@@ -31,7 +31,7 @@ class RoleController extends Controller
         if (Auth::user()->can('create role')) {
             $user_id = Auth::user()->creatorId();
             $permissions = Permission::whereHas('company_permissions', function ($query) use ($user_id) {
-                $query->where('company_id', 'LIKE', '%' . $user_id . '%');
+                $query->where('company_id', $user_id);
             })->get();
 
             return view('company.hrms.role.form', ['permissions' => $permissions]);
@@ -42,10 +42,14 @@ class RoleController extends Controller
 
     public function show($id)
     {
-        $role = Role::with('permissions')->where('created_by', '=', Auth::user()->creatorId())->findOrFail($id);
-        $allPermissions = Permission::all();
+        if (Auth::user()->can('role details')) {
+            $role = Role::with('permissions')->where('created_by', '=', Auth::user()->creatorId())->findOrFail($id);
+            $allPermissions = Permission::all();
 
-        return view('company.hrms.role.show', compact('role', 'allPermissions'));
+            return view('company.hrms.role.show', compact('role', 'allPermissions'));
+        } else {
+            return redirect()->back()->with('error', 'Permission denied.');
+        }
     }
 
     public function store(Request $request)
@@ -99,16 +103,16 @@ class RoleController extends Controller
             $this->logActivity(
                 'Role as Created',
                 'Role Name ' . $role->name,
-                route('admin.roles.index'),
+                route('company.hrms.roles.index'),
                 'Role Name ' . $role->name . ' is Created successfully',
                 Auth::user()->creatorId(),
                 Auth::user()->id
             );
 
             return redirect()->back()->with('success', __('Role successfully created.'));
+        } else {
+            return redirect()->back()->with('error', 'Permission denied.');
         }
-
-        return redirect()->back()->with('error', 'Permission denied.');
     }
 
 
@@ -174,7 +178,7 @@ class RoleController extends Controller
             $this->logActivity(
                 'Role as Updated',
                 'Role Name ' . $role->name,
-                route('admin.roles.index'),
+                route('company.hrms.roles.index'),
                 'Role Name ' . $role->name . ' is Updated successfully',
                 Auth::user()->creatorId(),
                 Auth::user()->id
@@ -195,7 +199,7 @@ class RoleController extends Controller
             $this->logActivity(
                 'Role as Deleted',
                 'Role Name ' . $role->name,
-                route('admin.roles.index'),
+                route('company.hrms.roles.index'),
                 'Role Name ' . $role->name . ' is Deleted successfully',
                 Auth::user()->creatorId(),
                 Auth::user()->id

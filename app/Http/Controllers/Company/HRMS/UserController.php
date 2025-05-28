@@ -35,31 +35,31 @@ class UserController extends Controller
 
     public function index()
     {
-        // if (Auth::user()->can('staff user listing')) {
+        if (Auth::user()->can('staff user listing')) {
             $users = User::where('parent', Auth::user()->creatorId())->where('type', 'company-staff')->get();
             return view('company.hrms.user.index')->with('users', $users);
-        // } else {
-        //     return redirect()->back()->with('error', 'Permission denied.');
-        // }
+        } else {
+            return redirect()->back()->with('error', 'Permission denied.');
+        }
     }
 
 
     public function create()
     {
-        // if (Auth::user()->can('create staff user')) {
+        if (Auth::user()->can('create staff user')) {
             $customFields = CustomField::where('created_by', '=', Auth::user()->creatorId())->where('module', '=', 'user')->get();
             $user         = Auth::user();
             $roles  = Role::where('created_by', Auth::user()->creatorId())->where('is_deletable', 1)->get();
 
             return view('company.hrms.user.form', compact('customFields', 'roles'));
-        // } else {
-        //     return redirect()->back()->with('error', 'Permission denied.');
-        // }
+        } else {
+            return redirect()->back()->with('error', 'Permission denied.');
+        }
     }
 
     public function store(Request $request)
     {
-        // if (Auth::user()->can('create staff user')) {
+        if (Auth::user()->can('create staff user')) {
             DB::beginTransaction();
             $default_language = DB::table('settings')->select('value')->where('name', 'default_language')->first();
             $userpassword               = $request->input('password');
@@ -151,18 +151,23 @@ class UserController extends Controller
 
 
             return redirect()->route('company.hrms.users.index')->with('success', __('User successfully added.') . ((isset($smtp_error)) ? '<br> <span class="text-danger">' . $smtp_error . '</span>' : ''));
-        // } else {
-        //     DB::rollBack();
-        //     return redirect()->back()->with('error', 'Permission denied.');
-        // }
+        } else {
+            DB::rollBack();
+            return redirect()->back()->with('error', 'Permission denied.');
+        }
     }
 
     public function show(User $user)
     {
-        $companyId = Auth::user()->creatorId();
-        $documents = Document::where('company_id', $companyId)->where('user_id', $user->id)->get();
-        $activity_logs = ActivityLog::where('company_id', $companyId)->where('user_id', $user->id)->get();
-        return view('company.hrms.user.show', compact('user', 'documents', 'activity_logs'));
+        if (Auth::user()->can('staff user details')) {
+            $companyId = Auth::user()->creatorId();
+            $documents = Document::where('company_id', $companyId)->where('user_id', $user->id)->get();
+            $activity_logs = ActivityLog::where('company_id', $companyId)->where('user_id', $user->id)->get();
+            return view('company.hrms.user.show', compact('user', 'documents', 'activity_logs'));
+        } else {
+
+            return redirect()->back()->with('error', 'Permission denied.');
+        }
     }
 
     public function resetPasswordForm(User $user)
@@ -172,7 +177,7 @@ class UserController extends Controller
 
     public function edit($id)
     {
-        // if (Auth::user()->can('edit staff user')) {
+        if (Auth::user()->can('edit staff user')) {
             $user  = Auth::user();
             $user              = User::findOrFail($id);
             $user->customField = CustomField::getData($user, 'user');
@@ -180,9 +185,9 @@ class UserController extends Controller
             $customFields      = CustomField::where('created_by', '=', Auth::user()->creatorId())->where('module', '=', 'user')->get();
 
             return view('company.hrms.user.form', compact('user', 'customFields', 'roles'));
-        // } else {
-        //     return redirect()->back()->with('error', 'Permission denied.');
-        // }
+        } else {
+            return redirect()->back()->with('error', 'Permission denied.');
+        }
     }
 
     public function resetPassword(Request $request, User $user)
@@ -200,7 +205,7 @@ class UserController extends Controller
 
     public function update(Request $request, $id)
     {
-        // if (Auth::user()->can('edit staff user')) {
+        if (Auth::user()->can('edit staff user')) {
             DB::beginTransaction();
             $user = User::findOrFail($id);
 
@@ -256,16 +261,16 @@ class UserController extends Controller
                 'success',
                 'User successfully updated.'
             );
-        // } else {
-        //     DB::rollBack();
-        //     return redirect()->back()->with('error', 'Permission denied.');
-        // }
+        } else {
+            DB::rollBack();
+            return redirect()->back()->with('error', 'Permission denied.');
+        }
     }
 
 
     public function destroy($id)
     {
-        // if (Auth::user()->can('delete staff user')) {
+        if (Auth::user()->can('delete staff user')) {
             $user = User::find($id);
 
             if ($user) {
@@ -282,9 +287,9 @@ class UserController extends Controller
             } else {
                 return redirect()->back();
             }
-        // } else {
-        //     return redirect()->back()->with('error', 'Permission denied.');
-        // }
+        } else {
+            return redirect()->back()->with('error', 'Permission denied.');
+        }
     }
 
 

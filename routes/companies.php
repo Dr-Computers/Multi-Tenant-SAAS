@@ -81,12 +81,12 @@ Route::group(
             Route::post('tenants/create/documents/{user_id}', 'TenantController@uploadDocuments')->name('tenants.upload-documents');
             Route::delete('tenants/documents/delete/{document}', 'TenantController@deleteDocument')->name('tenants.documents.destroy');
 
-            Route::resource('maintainers', 'MaintenanceController')->names('maintainers');
-            Route::get('maintainers/{user}/reset-password', 'MaintenanceController@resetPasswordForm')->name('maintainers.reset.form');
-            Route::post('maintainers/{user}/reset-password', 'MaintenanceController@resetPassword')->name('maintainers.reset.update');
-            Route::get('maintainers/create/documents/{user_id}', 'MaintenanceController@createDocuments')->name('maintainers.create-documents');
-            Route::post('maintainers/create/documents/{user_id}', 'MaintenanceController@uploadDocuments')->name('maintainers.upload-documents');
-            Route::delete('maintainers/documents/delete/{document}', 'MaintenanceController@deleteDocument')->name('maintainers.documents.destroy');
+            Route::resource('maintainers', 'MaintainerController')->names('maintainers');
+            Route::get('maintainers/{user}/reset-password', 'MaintainerController@resetPasswordForm')->name('maintainers.reset.form');
+            Route::post('maintainers/{user}/reset-password', 'MaintainerController@resetPassword')->name('maintainers.reset.update');
+            Route::get('maintainers/create/documents/{user_id}', 'MaintainerController@createDocuments')->name('maintainers.create-documents');
+            Route::post('maintainers/create/documents/{user_id}', 'MaintainerController@uploadDocuments')->name('maintainers.upload-documents');
+            Route::delete('maintainers/documents/delete/{document}', 'MaintainerController@deleteDocument')->name('maintainers.documents.destroy');
 
             Route::get('maintenance-requests/units/{id}', 'MaintenanceRequestController@getUnits')->name('maintenance-requests.units');
 

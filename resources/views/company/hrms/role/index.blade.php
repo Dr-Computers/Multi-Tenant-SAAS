@@ -24,7 +24,7 @@
         <div class="col-xl-12">
             <div class="card">
                 <div class="card-body table-border-style">
-                    <h5></h5>
+                    @can('role listing')
                     <div class="table-responsive">
                         <table class="table datatable">
                             <thead>
@@ -95,6 +95,7 @@
                             </tbody>
                         </table>
                     </div>
+                    @endcan
                 </div>
             </div>
         </div>
