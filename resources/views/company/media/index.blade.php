@@ -42,12 +42,12 @@
                                         <span> <i class="ti ti-lock text-dark"></i>
                                             {{ __('Upload from local') }}</span>
                                     </button>
-                                    <button href="#" class="dropdown-item" data-bs-toggle="tooltip"
+                                    {{-- <button href="#" class="dropdown-item" data-bs-toggle="tooltip"
                                         title="{{ __('Reset Password') }}" data-url="#" data-size="xl"
                                         data-ajax-popup="true" data-original-title="{{ __('Reset Password') }}">
                                         <span> <i class="ti ti-lock text-dark"></i>
                                             {{ __('Upload from URL') }}</span>
-                                    </button>
+                                    </button> --}}
                                 </div>
                             </div>
                             <button href="#" data-size="md"
@@ -56,9 +56,9 @@
                                 class="btn btn-sm btn-primary text-white px-4 py-2 rounded me-2">
                                 <i class="ti ti-plus"></i> Create Folder
                             </button>
-                            <button href="#" class="btn btn-sm btn-danger text-white px-4 py-2 rounded me-2">
+                            {{-- <button href="#" class="btn btn-sm btn-danger text-white px-4 py-2 rounded me-2">
                                 <i class="ti ti-trash"></i> Trash
-                            </button>
+                            </button> --}}
                         </div>
                     </div>
 

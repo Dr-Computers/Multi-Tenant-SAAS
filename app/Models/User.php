@@ -129,7 +129,8 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasOne(PersonalDetail::class, 'user_id', 'id');
     }
 
-    public function activityLogs(){
+    public function activityLogs()
+    {
         return $this->hasMany(ActivityLog::class, 'id', 'user_id');
     }
 
@@ -641,8 +642,24 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function totalCompanyUser($id)
     {
-        return User::where('created_by', '=', $id)->count();
+        return  User::where('created_by', '=', $id)->where('type', 'company-staff')->count();
     }
+
+    public function totalTenantUser($id)
+    {
+        return  User::where('created_by', '=', $id)->where('type', 'tenant')->count();
+    }
+
+    public function totalOwnerUser($id)
+    {
+        return  User::where('created_by', '=', $id)->where('type', 'owner')->count();
+    }
+
+    public function totalMaintainerUser($id)
+    {
+        return  User::where('created_by', '=', $id)->where('type', 'maintainer')->count();
+    }
+
 
     public function totalCompanyCustomer($id)
     {
@@ -2662,8 +2679,6 @@ class User extends Authenticatable implements MustVerifyEmail
                 ],
 
             ],
-
-
         ];
 
         $email = EmailTemplate::all();
@@ -2698,5 +2713,11 @@ class User extends Authenticatable implements MustVerifyEmail
             })->sum();
 
         return $ReferralTransaction - $paidAmount;
+    }
+
+    public function getRoleNameAttribute()
+    {
+        $rolename = $this->getRoleNames()->first() ? preg_replace('/[-\d~]/', '',  $this->getRoleNames()->first()) : null;
+        return $rolename;
     }
 }

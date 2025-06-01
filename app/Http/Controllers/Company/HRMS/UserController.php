@@ -9,6 +9,7 @@ use App\Models\Document;
 use App\Models\MediaFile;
 use App\Models\MediaFolder;
 use App\Models\PersonalDetail;
+use App\Models\Role;
 use App\Models\User;
 use App\Models\Utility;
 use Illuminate\Http\Request;
@@ -16,7 +17,6 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
-use Spatie\Permission\Models\Role;
 use App\Traits\Media\HandlesMediaFolders;
 use Illuminate\Support\Facades\Storage;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx\Rels;
@@ -143,7 +143,7 @@ class UserController extends Controller
             $this->logActivity(
                 'Create a Staff User',
                 'User Id ' . $user->id,
-                route('company.users.index'),
+                route('company.hrms.users.index'),
                 'New Staff User Created successfully',
                 Auth::user()->creatorId(),
                 Auth::user()->id
@@ -252,7 +252,7 @@ class UserController extends Controller
             $this->logActivity(
                 'Update a Staff User',
                 'User Id ' . $user->id,
-                route('company.users.index'),
+                route('company.hrms.users.index'),
                 'Staff User Updated successfully',
                 Auth::user()->creatorId(),
                 Auth::user()->id
@@ -278,7 +278,7 @@ class UserController extends Controller
                 $this->logActivity(
                     'Delete a Staff User',
                     'User Id ' . $id,
-                    route('company.users.index'),
+                    route('company.hrms.users.index'),
                     'Staff User Deleted successfully',
                     Auth::user()->creatorId(),
                     Auth::user()->id

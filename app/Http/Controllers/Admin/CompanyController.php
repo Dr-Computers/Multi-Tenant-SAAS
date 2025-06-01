@@ -86,7 +86,7 @@ class  CompanyController extends Controller
                     'email' => 'required|email|unique:users',
                     'bussiness_type' => 'required|max:120',
                     'address' => 'required|max:250',
-                    'landmark' => 'required|max:250',
+                    'landmark' => 'nullable|max:250',
                     'postalcode' => 'required|max:250',
                     'city' => 'required|max:250',
                     'identify_code' => 'required|max:10',
@@ -258,9 +258,8 @@ class  CompanyController extends Controller
             if ($user->roles) {
                 $role_r = Role::findByName('company-' . $user->id);
                 $user->assignRole($role_r);
-       
             }
- 
+
             $input = $request->all();
             $user->fill($input)->save();
 
@@ -627,10 +626,11 @@ class  CompanyController extends Controller
 
     public function ExitCompany(Request $request)
     {
+
         Auth::user()->leaveImpersonation($request->user());
         $this->logActivity(
             'Company Account Existed',
-            'Company Id ' . $user->id,
+            'Company Account Existed',
             route('admin.company.index'),
             'Company Account Existed successfully',
             Auth::user()->creatorId(),
@@ -811,36 +811,36 @@ class  CompanyController extends Controller
 
             // Detach all current permissions
             $user->permissions()->detach();
-        }
 
 
-        // Fetch allowed permission IDs for this company
-        $permissionIds = CompanyPermission::where('company_id', $company_id)->pluck('permission_id');
-        if (!empty($user->roles)) {
-            foreach ($user->roles as $role) {
-                // Optionally, detach all current permissions
-                $role->syncPermissions([]); // This clears existing role permissions
 
-                // Now assign the allowed permissions
-                foreach ($permissionIds as $permissionId) {
-                    $permission = Permission::find($permissionId);
-                    if ($permission) {
-                        $role->givePermissionTo($permission);
-                 
+            // Fetch allowed permission IDs for this company
+            $permissionIds = CompanyPermission::where('company_id', $company_id)->pluck('permission_id');
+            if (!empty($user->roles)) {
+                foreach ($user->roles as $role) {
+                    // Optionally, detach all current permissions
+                    $role->syncPermissions([]); // This clears existing role permissions
+
+                    // Now assign the allowed permissions
+                    foreach ($permissionIds as $permissionId) {
+                        $permission = Permission::find($permissionId);
+                        if ($permission) {
+                            $role->givePermissionTo($permission);
+                        }
                     }
                 }
+
+                // If you need permission names (Spatie expects names), retrieve them:
+                $permissionNames = Permission::whereIn('id', $permissionIds)->pluck('name')->toArray();
+
+                // Assign permissions back to the user
+                $user->givePermissionTo($permissionNames);
+
+                // Clear cached permissions
+                app()[PermissionRegistrar::class]->forgetCachedPermissions();
+
+                return redirect()->back()->with('success', 'Permissions reset successfully.');
             }
-
-            // If you need permission names (Spatie expects names), retrieve them:
-            $permissionNames = Permission::whereIn('id', $permissionIds)->pluck('name')->toArray();
-
-            // Assign permissions back to the user
-            $user->givePermissionTo($permissionNames);
-
-            // Clear cached permissions
-            app()[PermissionRegistrar::class]->forgetCachedPermissions();
-
-            return redirect()->back()->with('success', 'Permissions reset successfully.');
         } else {
             return redirect()->back()->with('error', 'Permission denied.');
         }

@@ -89,18 +89,18 @@ trait Emails
         ]));
 
         // To admin
-        self::email(new Email([
-            'emailClass' => 'DefaultMail',
-            'to' => env('ADMIN_EMAIL'),
-            'bccStatus' => false,
-            'subject' => 'New Order Created - Order No : ' . $order->order_id,
-            'contents'    => view('pdf.invoices.partial.admin-invoice', [
-                'adminTemplate' => $adminTemplate,
-                'order'    => $order
-            ])->render(),
-            // 'files' => [$absolutePath],
-            'files' => [asset('storage/uploads/invoices/invoice-' . $order->order_id . '.pdf')],
-        ]));
+        // self::email(new Email([
+        //     'emailClass' => 'DefaultMail',
+        //     'to' => env('ADMIN_EMAIL'),
+        //     'bccStatus' => false,
+        //     'subject' => 'New Order Created - Order No : ' . $order->order_id,
+        //     'contents'    => view('pdf.invoices.partial.admin-invoice', [
+        //         'adminTemplate' => $adminTemplate,
+        //         'order'    => $order
+        //     ])->render(),
+        //     // 'files' => [$absolutePath],
+        //     'files' => [asset('storage/uploads/invoices/invoice-' . $order->order_id . '.pdf')],
+        // ]));
 
         unlink($absolutePath);
     }

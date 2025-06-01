@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\ValidationException;
+use App\Traits\ActivityLogger;
 
 class AuthenticatedSessionController extends Controller
 {
@@ -27,6 +28,8 @@ class AuthenticatedSessionController extends Controller
      *
      * @return \Illuminate\View\View
      */
+
+     use ActivityLogger;
 
     public function __construct()
     {
@@ -68,13 +71,13 @@ class AuthenticatedSessionController extends Controller
 
         $user = User::where('email', $request->email)->first();
 
-        $allowedTypes = ['company', 'super admin', 'admin staff', 'company staff', 'owner', 'tenant'];
+        $allowedTypes = ['company', 'super admin', 'admin staff', 'company staff', 'owner', 'tenant', 'maintainer'];
 
         if ($user != null && $user->is_disable == 0 && !in_array($user->type, $allowedTypes)) {
             return redirect()->back()->with('status', __('Your Account is disable,please contact your Administrator.'));
         }
 
-        if ($user != null && $user->is_enable_login == 0 && $user->type != 'super admin' && $user->type != 'admin staff' && $user->type != 'company') {
+        if ($user != null && $user->is_enable_login == 0) {
             return redirect()->back()->with('status', __('Your Account is disable from company.'));
         }
 
@@ -115,14 +118,18 @@ class AuthenticatedSessionController extends Controller
 
         $user = Auth::user();
 
-
-        if ($user->delete_status == 0) {
-            auth()->logout();
+        if (!$user) {
+            return redirect()->back()->with('error', __('Something went wrong.'));
         }
 
-        if ($user->is_active == 0) {
-            auth()->logout();
-        }
+
+        // if ($user->delete_status == 0) {
+        //     auth()->logout();
+        // }
+
+        // if ($user->is_active == 0 || $user->is_enable_login == 0) {
+        //     auth()->logout();
+        // }
 
         if ($user->is_disable == 0) {
             return redirect()->back()->with('status', 'Your Account is disable,please contact your Administrate.');
@@ -164,108 +171,111 @@ class AuthenticatedSessionController extends Controller
             }
         }
 
-        if ($user->type == 'company' || $user->type == 'company staff') {
-            $plan = Plan::find($user->plan);
-            if (!empty($plan)) {
-                if ($user->plan != $plan->id) {
-                    if (date('Y-m-d') > $user->plan_expire_date) {
-                        $user->plan             = $plan->id;
-                        $user->plan_expire_date = null;
-                        $user->save();
+        // if ($user->type == 'company' || $user->type == 'company staff' || $user->type == 'owner' || $user->type == 'tenant' || $user->type ==  'maintainer') {
 
-                        $users     = User::where('created_by', '=', \Auth::user()->creatorId())->get();
-                        $customers = Customer::where('created_by', '=', \Auth::user()->creatorId())->get();
-                        $venders   = Vender::where('created_by', '=', \Auth::user()->creatorId())->get();
+        //     $plan = Plan::find($user->plan);
+        //     if (!empty($plan)) {
+        //         if ($user->plan != $plan->id) {
+        //             if (date('Y-m-d') > $user->plan_expire_date) {
+        //                 $user->plan             = $plan->id;
+        //                 $user->plan_expire_date = null;
+        //                 $user->save();
 
-                        if ($plan->max_users == -1) {
-                            foreach ($users as $user) {
-                                $user->is_active = 1;
-                                $user->save();
-                            }
-                        } else {
-                            $userCount = 0;
-                            foreach ($users as $user) {
-                                $userCount++;
-                                if ($userCount <= $plan->max_users) {
-                                    $user->is_active = 1;
-                                    $user->save();
-                                } else {
-                                    $user->is_active = 0;
-                                    $user->save();
-                                }
-                            }
-                        }
+        //                 $users     = User::where('created_by', '=', \Auth::user()->creatorId())->get();
+        //                 $customers = Customer::where('created_by', '=', \Auth::user()->creatorId())->get();
+        //                 $venders   = Vender::where('created_by', '=', \Auth::user()->creatorId())->get();
+
+        //                 if ($plan->max_users == -1) {
+        //                     foreach ($users as $user) {
+        //                         $user->is_active = 1;
+        //                         $user->save();
+        //                     }
+        //                 } else {
+        //                     $userCount = 0;
+        //                     foreach ($users as $user) {
+        //                         $userCount++;
+        //                         if ($userCount <= $plan->max_users) {
+        //                             $user->is_active = 1;
+        //                             $user->save();
+        //                         } else {
+        //                             $user->is_active = 0;
+        //                             $user->save();
+        //                         }
+        //                     }
+        //                 }
 
 
-                        if ($plan->max_customers == -1) {
-                            foreach ($customers as $customer) {
-                                $customer->is_active = 1;
-                                $customer->save();
-                            }
-                        } else {
-                            $customerCount = 0;
-                            foreach ($customers as $customer) {
-                                $customerCount++;
-                                if ($customerCount <= $plan->max_customers) {
-                                    $customer->is_active = 1;
-                                    $customer->save();
-                                } else {
-                                    $customer->is_active = 0;
-                                    $customer->save();
-                                }
-                            }
-                        }
+        //                 if ($plan->max_customers == -1) {
+        //                     foreach ($customers as $customer) {
+        //                         $customer->is_active = 1;
+        //                         $customer->save();
+        //                     }
+        //                 } else {
+        //                     $customerCount = 0;
+        //                     foreach ($customers as $customer) {
+        //                         $customerCount++;
+        //                         if ($customerCount <= $plan->max_customers) {
+        //                             $customer->is_active = 1;
+        //                             $customer->save();
+        //                         } else {
+        //                             $customer->is_active = 0;
+        //                             $customer->save();
+        //                         }
+        //                     }
+        //                 }
 
-                        if ($plan->max_venders == -1) {
-                            foreach ($venders as $vender) {
-                                $vender->is_active = 1;
-                                $vender->save();
-                            }
-                        } else {
-                            $venderCount = 0;
-                            foreach ($venders as $vender) {
-                                $venderCount++;
-                                if ($venderCount <= $plan->max_venders) {
-                                    $vender->is_active = 1;
-                                    $vender->save();
-                                } else {
-                                    $vender->is_active = 0;
-                                    $vender->save();
-                                }
-                            }
-                        }
+        //                 if ($plan->max_venders == -1) {
+        //                     foreach ($venders as $vender) {
+        //                         $vender->is_active = 1;
+        //                         $vender->save();
+        //                     }
+        //                 } else {
+        //                     $venderCount = 0;
+        //                     foreach ($venders as $vender) {
+        //                         $venderCount++;
+        //                         if ($venderCount <= $plan->max_venders) {
+        //                             $vender->is_active = 1;
+        //                             $vender->save();
+        //                         } else {
+        //                             $vender->is_active = 0;
+        //                             $vender->save();
+        //                         }
+        //                     }
+        //                 }
 
-                        if ($plan) {
-                            if ($plan->duration != 'lifetime') {
-                                $datetime1 = new \DateTime($user->plan_expire_date);
-                                $datetime2 = new \DateTime(date('Y-m-d'));
-                                //                    $interval  = $datetime1->diff($datetime2);
-                                $interval = $datetime2->diff($datetime1);
-                                $days     = $interval->format('%r%a');
-                                if ($days <= 0) {
-                                    $user->assignPlan(1);
+        //                 if ($plan) {
+        //                     if ($plan->duration != 'lifetime') {
+        //                         $datetime1 = new \DateTime($user->plan_expire_date);
+        //                         $datetime2 = new \DateTime(date('Y-m-d'));
+        //                         //                    $interval  = $datetime1->diff($datetime2);
+        //                         $interval = $datetime2->diff($datetime1);
+        //                         $days     = $interval->format('%r%a');
+        //                         if ($days <= 0) {
+        //                             $user->assignPlan(1);
 
-                                    return redirect()->intended(RouteServiceProvider::HOME)->with('error', __('Your Plan is expired.'));
-                                }
-                            }
+        //                             return redirect()->intended(RouteServiceProvider::HOME)->with('error', __('Your Plan is expired.'));
+        //                         }
+        //                     }
 
-                            if ($user->trial_expire_date != null) {
-                                if (\Auth::user()->trial_expire_date > date('Y-m-d')) {
-                                    $user->assignPlan(1);
+        //                     if ($user->trial_expire_date != null) {
+        //                         if (\Auth::user()->trial_expire_date > date('Y-m-d')) {
+        //                             $user->assignPlan(1);
 
-                                    return redirect()->intended(RouteServiceProvider::HOME)->with('error', __('Your Trial plan Expired.'));
-                                }
-                            }
-                        }
+        //                             return redirect()->intended(RouteServiceProvider::HOME)->with('error', __('Your Trial plan Expired.'));
+        //                         }
+        //                     }
+        //                 }
 
-                        return redirect()->route('dashboard')->with('error', 'Your plan expired limit is over, please upgrade your plan');
-                    }
-                }
-            } else {
-                return redirect()->back()->with('error', __('Something went wrong.'));
-            }
-        }
+        //                 return redirect()->route('dashboard')->with('error', 'Your plan expired limit is over, please upgrade your plan');
+        //             }
+        //         }
+        //     } else {
+        //         return redirect()->back()->with('error', __('Something went wrong.'));
+        //     }
+        // }
 
+
+    
 
 
         if ($user->type == 'admin' || $user->type == 'admin staff') {

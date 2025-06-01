@@ -57,11 +57,14 @@ class Email implements ShouldQueue
      
          $email = new $this->mailClass($details);
      
+      
          $mailer = Mail::to($this->to);
      
          if (!empty($this->bccStatus) && !empty($this->bcc)) {
              $mailer->bcc($this->bcc);
          }
+
+
      
          
          $mailer->send($email);

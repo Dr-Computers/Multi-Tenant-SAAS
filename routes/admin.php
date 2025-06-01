@@ -100,12 +100,12 @@ Route::group(
         Route::get('plan/sections', 'PlanController@Sections')->name('plans.sections');
 
 
-        Route::get('plan/section-request', 'SectionRequestController@index')->name('plans.section_request');
+        Route::get('plan/section-request', 'SectionRequestController@index')->name('plans.section_request.index');
 
         Route::get('plan/plan-trial/{id}', 'PlanController@PlanTrial')->name('plan.trial');
         Route::resource('plans', 'PlanController');
         Route::post('plan-disable', 'PlanController@planDisable')->name('plan.disable');
-        Route::get('plan_request', 'PlanRequestController@index')->name('plan_request.index');
+        Route::get('plan_request', 'PlanRequestController@index')->name('plans.plan_request.index');
 
         Route::get('order', 'OrderController@index')->name('order.index');
         Route::get('order/send-email/{order}', 'OrderController@sendEmail')->name('order.send.email');

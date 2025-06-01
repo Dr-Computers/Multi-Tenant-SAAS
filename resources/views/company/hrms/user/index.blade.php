@@ -53,7 +53,7 @@
                                             <td><a class="text-dark truncate" title="{{ $user->mobile }}"
                                                     href="tel:{{ $user->mobile }}">{{ $user->mobile }}</a< /td>
                                             <td class="text-center">
-                                                <span class="fw-bold text-primary">{{ $user->getRoleNames()->first() }}</span>
+                                                <span class="fw-bold text-primary">{{ $user->role_name }}</span>
                                             </td>
                                             <td>
                                                 @if ($user->is_active == 1)

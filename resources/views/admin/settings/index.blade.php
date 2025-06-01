@@ -1466,7 +1466,7 @@
                                                     <div>
                                                         <div class="my-2">
                                                             <img src="{{ asset('storage/' . $InvTemplate->image) }}"
-                                                                class="img-fluid" style="height: 100px;">
+                                                                class="img-fluid mx-auto" style="height: 100px;">
                                                         </div>
                                                         <div class="my-2 fw-bold">
                                                             {{ $InvTemplate->name }}
@@ -1532,7 +1532,7 @@
                                                     <div>
                                                         <div class="my-2">
                                                             <img src="{{ asset('storage/' . $letterTemplate->image) }}"
-                                                                class="img-fluid" style="height: 100px;">
+                                                                class="img-fluid mx-auto" style="height: 100px;">
                                                         </div>
                                                         <div class="my-2 fw-bold">
                                                             {{ $letterTemplate->name }}
@@ -1796,19 +1796,7 @@
                             </div>
                             <div class="card-body">
                                 <div class="row">
-                                    @if ($enable_chatgpt)
-                                        <div>
-                                            <a href="javascript:void(0)" data-size="md" data-ajax-popup-over="true"
-                                                data-url="{{ route('generate', ['seo settings']) }}"
-                                                data-bs-toggle="tooltip" data-bs-placement="top"
-                                                title="{{ __('Generate') }}"
-                                                data-title="{{ __('Generate content with AI') }}"
-                                                class="btn btn-primary btn-sm float-end">
-                                                <i class="fas fa-robot"></i>
-                                                {{ __('Generate with AI') }}
-                                            </a>
-                                        </div>
-                                    @endif
+                                  
                                     <div class="col-lg-6">
                                         <div class="form-group">
                                             {{ Form::label('meta_keywords', __('Meta Keywords'), ['class' => 'col-form-label']) }}
@@ -1895,18 +1883,7 @@
                             <div
                                 class="card-body cookieDiv {{ $settings['enable_cookie'] == 'off' ? 'disabledCookie ' : '' }}">
                                 <div class="row ">
-                                    @if ($enable_chatgpt)
-                                        <div>
-                                            <a href="javascript:void(0)" data-size="md" data-ajax-popup-over="true"
-                                                data-url="{{ route('generate', ['cookie']) }}" data-bs-toggle="tooltip"
-                                                data-bs-placement="top" title="{{ __('Generate') }}"
-                                                data-title="{{ __('Generate content with AI') }}"
-                                                class="btn btn-primary btn-sm float-end">
-                                                <i class="fas fa-robot"></i>
-                                                {{ __('Generate with AI') }}
-                                            </a>
-                                        </div>
-                                    @endif
+                                  
                                     <div class="col-md-6">
                                         <div class="form-check form-switch custom-switch-v1" id="cookie_log">
                                             <input type="checkbox" name="cookie_logging"
@@ -1965,14 +1942,14 @@
                             <div
                                 class="card-footer d-flex align-items-center gap-2 flex-sm-column flex-lg-row justify-content-between">
                                 <div>
-                                    @if (isset($settings['cookie_logging']) && $settings['cookie_logging'] == 'on')
+                                    {{-- @if (isset($settings['cookie_logging']) && $settings['cookie_logging'] == 'on')
                                         <label for="file"
                                             class="form-label">{{ __('Download cookie accepted data') }}</label>
                                         <a href="{{ asset(Storage::url('uploads/sample')) . '/data.csv' }}"
                                             class="btn btn-primary mr-2 ">
                                             <i class="ti ti-download"></i>
                                         </a>
-                                    @endif
+                                    @endif --}}
                                 </div>
                                 <input type="submit" class="btn-submit btn btn-primary m-r-10"
                                     value="{{ __('Save Changes') }}" class="btn btn-primary">

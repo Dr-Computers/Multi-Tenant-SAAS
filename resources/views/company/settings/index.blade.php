@@ -978,7 +978,7 @@
                                                 <div>
                                                     <div class="my-2">
                                                         <img src="{{ asset('storage/' . $InvTemplate->image) }}"
-                                                            class="img-fluid" style="height: 100px;">
+                                                            class="img-fluid mx-auto" style="height: 100px;">
                                                     </div>
                                                     <div class="my-2 fw-bold">
                                                         {{ $InvTemplate->name }}
@@ -1044,7 +1044,7 @@
                                                 <div>
                                                     <div class="my-2">
                                                         <img src="{{ asset('storage/' . $letterTemplate->image) }}"
-                                                            class="img-fluid" style="height: 100px;">
+                                                            class="img-fluid mx-auto" style="height: 100px;">
                                                     </div>
                                                     <div class="my-2 fw-bold">
                                                         {{ $letterTemplate->name }}
@@ -1098,7 +1098,7 @@
                                                 <div>
                                                     <div class="my-2">
                                                         <img src="{{ asset('storage/' . $estimateTemplate->image) }}"
-                                                            class="img-fluid" style="height: 100px;">
+                                                            class="img-fluid mx-auto" style="height: 100px;">
                                                     </div>
                                                     <div class="my-2 fw-bold">
                                                         {{ $estimateTemplate->name }}

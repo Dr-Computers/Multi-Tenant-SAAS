@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Company;
 
 use App\Http\Controllers\Controller;
 use App\Models\Company;
+use App\Models\CompanyPermission;
+use App\Models\CompanySubscription;
 use App\Models\EstimateSettings;
 use App\Models\EstimateTemplate;
 use App\Models\InvoiceSetting;
@@ -804,13 +806,43 @@ class SystemController extends Controller
         // Remove all existing permissions
         $user->permissions()->detach();
 
-        $roles = $user->roles;
+        $company_id = Auth::user()->creatorId();
+        
+        // $companySubscriptions = CompanySubscription::where('company_id',$company_id)->where('status',1)->get();
 
+        $permissionIds = CompanyPermission::where('company_id', $company_id)->pluck('permission_id');
+        if (!empty($user->roles)) {
+            foreach ($user->roles as $role) {
+                // Optionally, detach all current permissions
+                $role->syncPermissions([]); // This clears existing role permissions
 
-        foreach ($roles as $role) {
-            // Detach all permissions from the role
-            $role->syncPermissions([]);
+                // Now assign the allowed permissions
+                foreach ($permissionIds as $permissionId) {
+                    $permission = Permission::find($permissionId);
+                    if ($permission) {
+                        $role->givePermissionTo($permission);
+                 
+                    }
+                }
+            }
         }
+
+            // If you need permission names (Spatie expects names), retrieve them:
+            $permissionNames = Permission::whereIn('id', $permissionIds)->pluck('name')->toArray();
+
+            // Assign permissions back to the user
+            $user->givePermissionTo($permissionNames);
+
+            // Clear cached permissions
+            app()[PermissionRegistrar::class]->forgetCachedPermissions();
+
+        // $roles = $user->roles;
+
+
+        // foreach ($roles as $role) {
+        //     // Detach all permissions from the role
+        //     $role->syncPermissions([]);
+        // }
 
 
 

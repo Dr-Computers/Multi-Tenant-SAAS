@@ -78,7 +78,7 @@
                     <div class="form-group">
                         <label for="password" class="form-label">Password</label>
                         <input type="password" autocomplete="new-password" name="password" class="form-control"
-                            placeholder="Enter Company Password" minlength="6">
+                            placeholder="Enter Password" minlength="6">
                         @error('password')
                             <small class="text-danger">{{ $message }}</small>
                         @enderror
@@ -89,7 +89,7 @@
                     <div class="form-group">
                         <label for="mobile" class="form-label">Mobile No</label><x-required></x-required>
                         <input type="text" name="mobile" value="{{ old('mobile', $user->mobile ?? '') }}"
-                            class="form-control" placeholder="Enter Company Mobile" autocomplete="off" required>
+                            class="form-control" placeholder="Enter Mobile" autocomplete="off" required>
                         @error('mobile')
                             <small class="text-danger">{{ $message }}</small>
                         @enderror

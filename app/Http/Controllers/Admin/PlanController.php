@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\File;
 use App\Traits\ActivityLogger;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Validator;
 
 class PlanController extends Controller
 {
@@ -65,14 +66,15 @@ class PlanController extends Controller
 
         if (\Auth::user()->can('create plan')) {
             $validation = [
-                'name' => 'required|unique:plans',
-                'price' => 'required|numeric|min:0',
-                'duration' => 'required',
-                'max_users' => 'required|numeric',
+                'name'          => 'required|unique:plans',
+                'price'         => 'required|numeric|min:0',
+                'duration'      => 'required',
+                'max_users'     => 'required|numeric',
                 'max_customers' => 'required|numeric',
-                'max_venders' => 'required|numeric',
+                'max_venders'   => 'required|numeric',
                 'storage_limit' => 'required|numeric',
                 'business_type' => 'required',
+                'description'   => 'nullable',
             ];
 
             $request->validate($validation);
@@ -143,22 +145,46 @@ class PlanController extends Controller
 
     public function update(Request $request, $plan_id)
     {
+
+
         if (Auth::user()->can('edit plan')) {
             $admin_payment_setting = Utility::getAdminPaymentSetting();
             $plan = Plan::find($plan_id);
+
             if (!empty($plan)) {
-                $validation                  = [];
-                $validation['name']          = 'required|unique:plans,name,' . $plan_id;
-                $validation['duration']      = 'required';
-                $validation['max_users']     = 'required|numeric';
-                $validation['max_owners'] = 'required|numeric';
-                $validation['max_tenants']   = 'required|numeric';
-                $validation['storage_limit'] = 'required|numeric';
-                $validation['business_type'] = 'required';
+                // $validation                  = [];
+                // $validation['name']          = 
+                // $validation['duration']      = 'required';
+                // $validation['max_users']     = 'required|numeric';
+                // $validation['max_owners'] = 'required|numeric';
+                // $validation['max_tenants']   = 'required|numeric';
+                // $validation['storage_limit'] = 'required|numeric';
+                // $validation['business_type'] = 'required';
+                // $validation['description']   = 'nullable';
 
-                $request->validate($validation);
+                // $request->validate($validation);
 
-                $post = $request->all();
+                $validator = Validator::make(
+                $request->all(),
+                [
+                    'name' => 'required|unique:plans,name,' . $plan_id,
+                    'duration' => 'required',
+                    'max_users' => 'required|numeric',
+                    'max_owners' => 'required|numeric',
+                    'max_tenants' => 'nullable|numeric',
+                    'storage_limit' => 'required|numeric',
+                    'business_type' => 'required',
+                    'description' => 'nullable',
+                ]
+            );
+            if ($validator->fails()) {
+                $messages = $validator->getMessageBag();
+
+                return redirect()->back()->with('error', $messages->first());
+            }
+
+                $post = $request->all();     
+
                 if (array_key_exists('enable_chatgpt', $post)) {
                     $post['enable_chatgpt'] = 'on';
                 } else {
@@ -192,6 +218,7 @@ class PlanController extends Controller
 
                     $post['image'] = $fileNameToStore;
                 }
+
 
                 if ($plan->update($post)) {
                     PlanModuleSection::where('plan_id', $plan->id)->delete();
@@ -412,7 +439,7 @@ class PlanController extends Controller
         if (\Auth::user()->can('edit section')) {
             $section = Section::where('id', $id)->first() ?? abort(404);
             $permissions = Permission::where('is_company', 1)->get();
-            return view('admin.plan.sections-edit', compact('section','permissions'));
+            return view('admin.plan.sections-edit', compact('section', 'permissions'));
         } else {
             return redirect()->back()->with('error', 'Permission denied.');
         }

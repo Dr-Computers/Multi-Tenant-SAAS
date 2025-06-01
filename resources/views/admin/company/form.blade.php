@@ -55,7 +55,7 @@
                     <div class="form-group">
                         <label for="email" class="form-label">Email ID</label><x-required></x-required>
                         <input type="email" name="email" value="{{ old('email', $user->email ?? '') }}"
-                            class="form-control" placeholder="Enter Company Email" autocomplete="off" required>
+                            class="form-control" placeholder="Email Id" autocomplete="off" required>
                         @error('email')
                             <small class="text-danger">{{ $message }}</small>
                         @enderror
@@ -91,7 +91,7 @@
                     <div class="form-group">
                         <label for="mobile" class="form-label">Mobile No</label><x-required></x-required>
                         <input type="text" name="mobile" value="{{ old('mobile', $user->mobile ?? '') }}"
-                            class="form-control" placeholder="Enter Company Mobile" autocomplete="off" required>
+                            class="form-control" placeholder="Mobile Number" autocomplete="off" required>
                         @error('mobile')
                             <small class="text-danger">{{ $message }}</small>
                         @enderror
@@ -113,7 +113,7 @@
                         <label for="landmark" class="form-label">Landmark</label>
                         <input type="text" name="landmark"
                             value="{{ old('landmark', $user->company->landmark ?? '') }}" class="form-control"
-                            placeholder="Enter Company Landmark">
+                            placeholder="Enter Landmark">
                         @error('landmark')
                             <small class="text-danger">{{ $message }}</small>
                         @enderror
@@ -166,7 +166,7 @@
                     </div>
                 </div>
                 @if (!isset($user))
-                    <hr>
+                    <hr class="my-2">
                     {{-- Allowed Sections --}}
                     <div class="form-group col-md-12">
                         <label class="form-label mb-3">{{ __('Select plan') }}</label><x-required></x-required>
@@ -175,13 +175,18 @@
                                 style="display: none">
                                 <div class="card-body">
                                     <div class="row">
-                                        @forelse ($plans->where('business_type', $business_type->id) as $section)
+                                        @forelse ($plans->where('business_type', $business_type->id) as $ar => $section)
                                             <div class="col-md-6 mb-2">
-                                                <div class="form-check form-switch custom-switch-v1">
+                                                <div class="form-check form-switch1 custom-switch-v1">
                                                     <input type="radio" name="plan"
                                                         class="form-check-input input-primary pointer"
                                                         value="{{ $section->id }}" id="section_{{ $section->id }}"
-                                                        {{ isset($plan) && $plan->module_section && in_array($section->id, $plan->module_section->pluck('section_id')->toArray()) ? 'checked' : '' }}>
+                                                        @if(isset($user))
+                                                        {{ isset($user) && $plan->module_section && in_array($section->id, $plan->module_section->pluck('section_id')->toArray()) ? 'checked' : '' }}
+                                                        @elseif($ar == 1)
+                                                        
+                                                            {{ 'checked' }}
+                                                        @endif>
                                                     <label class="form-check-label text-sm"
                                                         for="section_{{ $section->id }}">{{ $section->name }}</label>
                                                 </div>
@@ -211,7 +216,6 @@
         </div>
 
         <div class="modal-footer">
-            <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
             <button type="submit" class="btn btn-primary">Create</button>
         </div>
     </form>

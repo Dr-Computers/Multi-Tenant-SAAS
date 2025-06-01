@@ -172,7 +172,7 @@ class Company extends Model
         foreach ($features ?? [] as $section) {
             $subSection = CompanySubscription::where('section_id', $section)
                 ->where('company_id', $company_id)
-                ->whereNull('plan_id')
+                // ->whereNull('plan_id')
                 ->first();
 
             if (!$subSection) {
@@ -195,6 +195,7 @@ class Company extends Model
                 }
             }
             $subSection->save();
+
             if ($subSection) {
                 foreach ($subSection->section->permissions ?? [] as $permission) {
                     $companyPermission = CompanyPermission::where('permission_id', $permission->id)->where('company_id', $company_id)->first();

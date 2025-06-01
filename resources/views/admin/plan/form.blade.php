@@ -80,7 +80,7 @@
                 <div class="form-group col-md-6">
                     <label for="max_customers" class="form-label">{{ __('Max Tenants') }}</label><x-required></x-required>
                     <input type="number" name="max_customers" class="form-control" autocomplete="off"
-                        value="{{ isset($plan) ? $plan->max_customers : old('max_customers') }}" required>
+                        value="{{ isset($plan) ? $plan->max_tenants : old('max_customers') }}" required>
                     <span class="small">{{ __('Note: "-1" for Unlimited') }}</span>
                     @error('max_customers')
                         <small class="text-danger">{{ $message }}</small>
@@ -90,8 +90,8 @@
                 {{-- Max Customers --}}
                 <div class="form-group col-md-6">
                     <label for="max_venders" class="form-label">{{ __('Max Owners') }}</label><x-required></x-required>
-                    <input type="number" name="max_venders" class="form-control" autocomplete="off"
-                        value="{{ isset($plan) ? $plan->max_venders : old('max_venders') }}" required>
+                    <input type="number" name="max_owners" class="form-control" autocomplete="off"
+                        value="{{ isset($plan) ? $plan->max_owners : old('max_venders') }}" required>
                     <span class="small">{{ __('Note: "-1" for Unlimited') }}</span>
                     @error('max_venders')
                         <small class="text-danger">{{ $message }}</small>

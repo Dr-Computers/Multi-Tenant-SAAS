@@ -197,6 +197,19 @@ Route::group(
             Route::post('/upload', 'MediaController@uploadFiles')->name('file.upload');
         });
 
+
+        Route::group([
+            'prefix' => 'media',
+            'as' => 'subcriptions.',
+        ], function () {
+            Route::get('plans/features', 'MediaController@showFileUploadForm')->name('plans.sections');
+            Route::resource('plans', 'SupportTicketController')->names('plans');
+            Route::resource('orders', 'SupportTicketController')->names('orders');
+            Route::resource('plan-requests', 'MediaController@showFileUploadForm')->names('plan_request');
+            Route::resource('section-requests', 'MediaController@showFileUploadForm')->names('section_request');
+        });
+
+
         //Settingd
         Route::resource('settings', 'SystemController');
         Route::post('company-settings', 'SystemController@saveCompanySettings')->name('company-settings');

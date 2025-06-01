@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Jobs\Email;
 use App\Models\CompanySubscription;
 use App\Models\Coupon;
 use App\Models\Customer;
@@ -78,6 +79,7 @@ class OrderController extends Controller
 
     public function sendEmailProcess(Order $order, Request $request)
     {
+      
         $this->sendOrderInvoice($order, $request->email);
         $this->logActivity(
             'Order Invoice sent to email', 

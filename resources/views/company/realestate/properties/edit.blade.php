@@ -128,7 +128,7 @@
             {{ __('Properties') }}
         </a>
     </li>
-    <li class="breadcrumb-item">{{ __('Property Create') }}</li>
+    <li class="breadcrumb-item">{{ __('Property Edit') }}</li>
 @endsection
 
 

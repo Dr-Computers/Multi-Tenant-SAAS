@@ -35,28 +35,7 @@
                     @enderror
                 </div>
             </div>
-            <div class="col-md-12">
-                <div class="form-group">
-                    {{ Form::label('header', __('Header'), ['class' => 'form-label']) }}<x-required></x-required>
-                    {{ Form::textarea('header', isset($template) ? $template->name : null, ['class' => 'form-control', 'autocomplete' => 'off', 'placeholder' => __('Enter  header script'), 'required' => 'required']) }}
-                    @error('header')
-                        <small class="invalid-name" template="alert">
-                            <strong class="text-danger">{{ $message }}</strong>
-                        </small>
-                    @enderror
-                </div>
-            </div>
-            <div class="col-md-12">
-                <div class="form-group">
-                    {{ Form::label('footer', __('Footer'), ['class' => 'form-label']) }}<x-required></x-required>
-                    {{ Form::textarea('footer', isset($template) ? $template->name : null, ['class' => 'form-control', 'autocomplete' => 'off', 'placeholder' => __('Enter  footer script')]) }}
-                    @error('footer')
-                        <small class="invalid-name" template="alert">
-                            <strong class="text-danger">{{ $message }}</strong>
-                        </small>
-                    @enderror
-                </div>
-            </div>
+           
         </div>
 
     </div>

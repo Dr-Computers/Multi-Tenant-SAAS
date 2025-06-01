@@ -43,6 +43,7 @@ class DashboardController extends Controller
      */
     public function index()
     {
+
         if (Auth::check()) {
 
             $data['total_staff_users']      = User::where('parent', Auth::user()->creatorId())->count();

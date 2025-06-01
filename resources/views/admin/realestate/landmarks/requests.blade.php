@@ -35,18 +35,18 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach ($categoryRequests as $key => $category)
+                                    @foreach ($landmarkRequests as $key => $landmark)
                                         <tr class="font-style">
-                                            <td class="category text-capitalize">{{ $key + 1 }}</td>
-                                            <td>{{ $category->company->name }}</td>
+                                            <td class="landmark text-capitalize">{{ $key + 1 }}</td>
+                                            <td>{{ $landmark->company->name }}</td>
                                             <td>
-                                                {{ $category->request_for }}
+                                                {{ $landmark->request_for }}
                                             </td>
                                             <td>
-                                                @if ($category->status == 0)
+                                                @if ($landmark->status == 0)
                                                     <span class="badge bg-warning p-1 px-2 rounded">
                                                         {{ ucfirst('Pending') }}</span>
-                                                @elseif ($category->status == 1)
+                                                @elseif ($landmark->status == 1)
                                                     <span class="badge bg-success p-1 px-2 rounded">
                                                         {{ ucfirst('Accepted') }}</span>
                                                 @else
@@ -60,7 +60,7 @@
                                                     <a href="#"
                                                         class="mx-3 btn btn-sm d-inline-flex align-items-center bg-info"
                                                         data-bs-toggle="tooltip" title="{{ __('Show Request') }}"
-                                                        data-url="{{ route('admin.realestate.landmarks.request-single', $category->id) }}"
+                                                        data-url="{{ route('admin.realestate.landmarks.request-single', $landmark->id) }}"
                                                         data-size="xl" data-ajax-popup="true"
                                                         data-original-title="{{ __('Show') }}">
                                                         <span> <i class="ti ti-eye text-white"></i></span>

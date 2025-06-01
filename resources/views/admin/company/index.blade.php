@@ -35,9 +35,18 @@
                                 <div class="card-header border-0 pb-0">
                                     <div class="d-flex justify-content-between align-items-center">
                                         <h6 class="mb-0">
-                                            <div class="badge bg-primary p-2 px-3 ">
+                                            <div class="badge bg-primary rounded p-2 px-3 ">
                                                 {{ !empty($user->currentPlan) && $user->currentPlan->plan ? $user->currentPlan->plan->name : '' }}
                                             </div>
+                                            @if ($user->is_enable_login == 1)
+                                                <div class="badge bg-success rounded p-2 px-3 ">
+                                                    Login Enabled
+                                                </div>
+                                            @else
+                                                <div class="badge bg-danger rounded p-2 px-3 ">
+                                                    Login Disabled
+                                                </div>
+                                            @endif
                                         </h6>
                                     </div>
                                     <div class="card-header-right">
@@ -92,25 +101,25 @@
                                                         </a>
                                                     @endcan
                                                     @can('login company disable')
-                                                    @if ($user->is_enable_login == 1)
-                                                        <a href="{{ route('admin.company.login_fn', \Crypt::encrypt($user->id)) }}"
-                                                            class="dropdown-item">
-                                                            <i class="ti ti-road-sign"></i>
-                                                            <span class="text-danger"> {{ __('Login Disable') }}</span>
-                                                        </a>
-                                                    @elseif ($user->is_enable_login == 0 && $user->password == null)
-                                                        <a href="{{ route('admin.company.login_fn', \Crypt::encrypt($user->id)) }}"
-                                                            class="dropdown-item">
-                                                            <i class="ti ti-road-sign"></i>
-                                                            <span class="text-success"> {{ __('Login Enable') }}</span>
-                                                        </a>
-                                                    @else
-                                                        <a href="{{ route('admin.company.login_fn', \Crypt::encrypt($user->id)) }}"
-                                                            class="dropdown-item">
-                                                            <i class="ti ti-road-sign"></i>
-                                                            <span class="text-success"> {{ __('Login Enable') }}</span>
-                                                        </a>
-                                                    @endif
+                                                        @if ($user->is_enable_login == 1)
+                                                            <a href="{{ route('admin.company.login_fn', \Crypt::encrypt($user->id)) }}"
+                                                                class="dropdown-item">
+                                                                <i class="ti ti-road-sign"></i>
+                                                                <span class="text-danger"> {{ __('Login Disable') }}</span>
+                                                            </a>
+                                                        @elseif ($user->is_enable_login == 0 && $user->password == null)
+                                                            <a href="{{ route('admin.company.login_fn', \Crypt::encrypt($user->id)) }}"
+                                                                class="dropdown-item">
+                                                                <i class="ti ti-road-sign"></i>
+                                                                <span class="text-success"> {{ __('Login Enable') }}</span>
+                                                            </a>
+                                                        @else
+                                                            <a href="{{ route('admin.company.login_fn', \Crypt::encrypt($user->id)) }}"
+                                                                class="dropdown-item">
+                                                                <i class="ti ti-road-sign"></i>
+                                                                <span class="text-success"> {{ __('Login Enable') }}</span>
+                                                            </a>
+                                                        @endif
                                                     @endcan
                                                     @can('edit company')
                                                         <a href="#!" data-size="md"
@@ -158,45 +167,51 @@
                                     <div class="text-center" data-bs-toggle="tooltip" title="{{ __('Last Login') }}">
                                         {{ !empty($user->last_login_at) ? $user->last_login_at : '' }}
                                     </div>
-                                    @if (\Auth::user()->type == 'super admin')
-                                        <div class="mt-1">
-                                            <div class="row justify-content-between align-items-center">
 
-                                                <div class="col-12 text-center pb-2">
-                                                    <span class="text-dark text-xs">{{ __('Plan Expired : ') }}
-                                                        {{ !empty($user->plan_expire_date) ? \Auth::user()->dateFormat($user->plan_expire_date) : __('Lifetime') }}</span>
-                                                </div>
+                                    <div class="mt-1">
+                                        <div class="row justify-content-between align-items-center">
+
+                                            <div class="col-12 text-center pb-2">
+                                                <span class="text-dark text-xs">{{ __('Plan Expired : ') }}
+                                                    {{ !empty($user->plan_expire_date) ? \Auth::user()->dateFormat($user->plan_expire_date) : __('Lifetime') }}</span>
                                             </div>
                                         </div>
-                                        <div class="row mt-1">
-                                            <div class="col-12 col-sm-12">
-                                                <div class="card mb-0">
-                                                    <div class="card-body p-3">
-                                                        <div class="row">
-                                                            <div class="col-4">
-                                                                <p class="text-muted text-sm mb-0" data-bs-toggle="tooltip"
-                                                                    title="{{ __('Users') }}"><i
-                                                                        class="ti ti-users card-icon-text-space"></i>{{ $user->totalCompanyUser($user->id) }}
-                                                                </p>
-                                                            </div>
-                                                            <div class="col-4">
-                                                                <p class="text-muted text-sm mb-0" data-bs-toggle="tooltip"
-                                                                    title="{{ __('Tenants') }}"><i
-                                                                        class="ti ti-users card-icon-text-space"></i>{{ $user->totalCompanyCustomer($user->id) }}
-                                                                </p>
-                                                            </div>
-                                                            <div class="col-4">
-                                                                <p class="text-muted text-sm mb-0" data-bs-toggle="tooltip"
-                                                                    title="{{ __('Owners') }}"><i
-                                                                        class="ti ti-users card-icon-text-space"></i>{{ $user->totalCompanyVender($user->id) }}
-                                                                </p>
-                                                            </div>
+                                    </div>
+                                    <div class="row mt-1">
+                                        <div class="col-12 col-sm-12">
+                                            <div class="card mb-0">
+                                                <div class="card-body p-3">
+                                                    <div class="row">
+                                                        <div class="col-3">
+                                                            <p class="text-muted text-sm mb-0" data-bs-toggle="tooltip"
+                                                                title="{{ __('Users') }}"><i
+                                                                    class="ti ti-users card-icon-text-space me-1"></i>{{ $user->totalCompanyUser($user->company->user_id) }}
+                                                            </p>
+                                                        </div>
+                                                        <div class="col-3">
+                                                            <p class="text-muted text-sm mb-0" data-bs-toggle="tooltip"
+                                                                title="{{ __('Owners') }}"><i
+                                                                    class="ti ti-users card-icon-text-space me-1"></i>{{ $user->totalOwnerUser($user->company->user_id) }}
+                                                            </p>
+                                                        </div>
+                                                        <div class="col-3">
+                                                            <p class="text-muted text-sm mb-0" data-bs-toggle="tooltip"
+                                                                title="{{ __('Tenants') }}"><i
+                                                                    class="ti ti-users card-icon-text-space me-1"></i>{{ $user->totalTenantUser($user->company->user_id) }}
+                                                            </p>
+                                                        </div>
+                                                        <div class="col-3">
+                                                            <p class="text-muted text-sm mb-0" data-bs-toggle="tooltip"
+                                                                title="{{ __('Maintainer') }}"><i
+                                                                    class="ti ti-users card-icon-text-space me-1"></i>{{ $user->totalMaintainerUser($user->company->user_id) }}
+                                                            </p>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
-                                    @endif
+                                    </div>
+
                                 </div>
                             </div>
                         </div>
