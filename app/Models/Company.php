@@ -235,44 +235,44 @@ class Company extends Model
         $role_c->is_deletable = 0;
         $role_c->save();
 
-        $companyPermissions = Permission::where('is_company', '1')->get();
-        $role_c->givePermissionTo($companyPermissions);
+        // $companyPermissions = Permission::where('is_company', '1')->get();
+        // $role_c->givePermissionTo($companyPermissions);
 
         // Create tenant role
         $role_t       = new Role();
         $role_t->name = 'tenant-' . $company_id;
         $role_t->guard_name = 'web';
-        $role_c->created_by = $company_id;
-        $role_c->is_editable = 1;
-        $role_c->is_deletable = 0;
+        $role_t->created_by = $company_id;
+        $role_t->is_editable = 1;
+        $role_t->is_deletable = 0;
         $role_t->save();
 
-        $tenantPermissions = Permission::where('is_tenant', '1')->get();
-        $role_t->givePermissionTo($tenantPermissions);
+        // $tenantPermissions = Permission::where('is_tenant', '1')->get();
+        // $role_t->givePermissionTo($tenantPermissions);
 
         // Create owner role
         $role_o       = new Role();
         $role_o->name = 'owner-' . $company_id;
         $role_o->guard_name = 'web';
-        $role_c->created_by = $company_id;
-        $role_c->is_editable = 1;
-        $role_c->is_deletable = 0;
+        $role_o->created_by = $company_id;
+        $role_o->is_editable = 1;
+        $role_o->is_deletable = 0;
         $role_o->save();
 
-        $ownerPermissions = Permission::where('is_owner', '1')->get();
-        $role_o->givePermissionTo($ownerPermissions);
+        // $ownerPermissions = Permission::where('is_owner', '1')->get();
+        // $role_o->givePermissionTo($ownerPermissions);
 
 
         // Create maintainer role
-        $role_o       = new Role();
-        $role_o->name = 'maintainer-' . $company_id;
-        $role_o->guard_name = 'web';
-        $role_c->created_by = $company_id;
-        $role_c->is_editable = 1;
-        $role_c->is_deletable = 0;
-        $role_o->save();
+        $role_m       = new Role();
+        $role_m->name = 'maintainer-' . $company_id;
+        $role_m->guard_name = 'web';
+        $role_m->created_by = $company_id;
+        $role_m->is_editable = 1;
+        $role_m->is_deletable = 0;
+        $role_m->save();
 
-        $maintainerPermissions = Permission::where('is_maintainer', '1')->get();
-        $role_o->givePermissionTo($maintainerPermissions);
+        // $maintainerPermissions = Permission::where('is_maintainer', '1')->get();
+        // $role_m->givePermissionTo($maintainerPermissions);
     }
 }

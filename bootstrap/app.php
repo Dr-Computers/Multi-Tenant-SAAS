@@ -37,6 +37,11 @@ return Application::configure(basePath: dirname(__DIR__))
             'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
             'XSS' => \App\Http\Middleware\XSS::class,
             'revalidate' => \App\Http\Middleware\RevalidateBackHistory::class,
+            'admin_panel' => \App\Http\Middleware\AdminPanel::class,
+            'company_panel' => \App\Http\Middleware\CompanyPanel::class,
+            'tenant_panel' => \App\Http\Middleware\TenantPanel::class,
+            'owner_panel' => \App\Http\Middleware\OwnerPanel::class,
+            'maintainer_panel' => \App\Http\Middleware\MaintainerPanel::class,
         ]);
 
         // middlewareGroups / Group Middleware
@@ -53,8 +58,8 @@ return Application::configure(basePath: dirname(__DIR__))
 
         // Append middleware to the 'api' group
         $middleware->appendToGroup('api', [
-             'throttle:api',
-             \Illuminate\Routing\Middleware\SubstituteBindings::class,
+            'throttle:api',
+            \Illuminate\Routing\Middleware\SubstituteBindings::class,
         ]);
 
         // Exclude specific routes from CSRF protection

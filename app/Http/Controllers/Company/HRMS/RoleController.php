@@ -119,11 +119,23 @@ class RoleController extends Controller
     public function edit(Role $role)
     {
         if (Auth::user()->can('edit role')) {
-
             $user_id = Auth::user()->creatorId();
             $permissions = Permission::whereHas('company_permissions', function ($query) use ($user_id) {
                 $query->where('company_id', 'LIKE', '%' . $user_id . '%');
-            })->get();
+            });
+
+            if ('owner-' . $user_id) {
+                $permissions = $permissions->where('is_owner', 1);
+            } else if ('tenant-' . $user_id) {
+                $permissions = $permissions->where('is_tenant', 1);
+            } else if ('maintainer-' . $user_id) {
+                $permissions = $permissions->where('is_maintainer', 1);
+            }
+
+            $permissions = $permissions->get();
+
+
+
             return view('company.hrms.role.form', compact('role', 'permissions'));
         } else {
             return redirect()->back()->with('error', 'Permission denied.');
@@ -133,7 +145,7 @@ class RoleController extends Controller
     public function update(Request $request, Role $role)
     {
         if (Auth::user()->can('edit role')) {
-
+            $user_id = Auth::user()->creatorId();
             // Merge custom _name to apply uniqueness check with company ID
             $request->merge([
                 '_name' => $request->input('name') . '-' . Auth::user()->creatorId(),
@@ -167,8 +179,14 @@ class RoleController extends Controller
                 return redirect()->back()->with('error', $validator->errors()->first());
             }
 
+            if ($role->name == 'owner-' . $user_id || $role->name == 'tenant-' . $user_id || $role->name == 'maintainer-' . $user_id) {
+            } else {
+                $role->name = $request['_name'];
+            }
+
+
             // Update role
-            $role->name = $request['_name'];
+
             $role->save();
 
             // Sync permissions

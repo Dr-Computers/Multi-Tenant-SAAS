@@ -17,7 +17,7 @@ Route::group(
         'prefix' => 'company',
         'as' => 'company.',
         'namespace' => 'App\Http\Controllers\Company',
-        'middleware' => ['auth', 'XSS', 'revalidate'],
+        'middleware' => ['auth', 'XSS', 'revalidate','company_panel'],
     ],
     function () {
         Route::get('/', 'DashboardController@index')->name('dashboard');

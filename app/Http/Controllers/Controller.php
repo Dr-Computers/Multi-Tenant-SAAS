@@ -13,16 +13,21 @@ class Controller extends BaseController
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 
 
-    public function dashboard(){
+    public function dashboard()
+    {
         if (Auth::check()) {
             if (Auth::user()->type == 'super admin' || Auth::user()->type == 'admin staff') {
                 return redirect()->route('admin.dashboard');
-            }
-            else if (Auth::user()->type == 'company' || Auth::user()->type == 'company staff') {
+            } else if (Auth::user()->type == 'company' || Auth::user()->type == 'company staff') {
                 return redirect()->route('company.dashboard');
+            } else if (Auth::user()->type == 'owner') {
+                return redirect()->route('owner.dashboard');
+            } else if (Auth::user()->type == 'tenant') {
+                return redirect()->route('tenant.dashboard');
+            } else if (Auth::user()->type == 'maintainer') {
+                return redirect()->route('maintainer.dashboard');
             }
-        }
-        else{
+        } else {
             return redirect()->route('login');
         }
     }

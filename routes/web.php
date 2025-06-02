@@ -1034,4 +1034,7 @@ Route::get('{id}/{amount}/get-retainer-payment-status', [PaypalController::class
 
 require __DIR__ . '/admin.php';
 require __DIR__ . '/companies.php';
+require __DIR__ . '/owner.php';
+require __DIR__ . '/tenant.php';
+require __DIR__ . '/maintainer.php';
 require __DIR__ . '/customer.php';
