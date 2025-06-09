@@ -124,18 +124,16 @@ class RoleController extends Controller
                 $query->where('company_id', 'LIKE', '%' . $user_id . '%');
             });
 
-            if ('owner-' . $user_id) {
+            if ($role->name == 'owner' ) {
                 $permissions = $permissions->where('is_owner', 1);
-            } else if ('tenant-' . $user_id) {
+            } else if ($role->name == 'tenant') {
                 $permissions = $permissions->where('is_tenant', 1);
-            } else if ('maintainer-' . $user_id) {
+            } else if ($role->name == 'maintainer') {
                 $permissions = $permissions->where('is_maintainer', 1);
             }
 
             $permissions = $permissions->get();
-
-
-
+            
             return view('company.hrms.role.form', compact('role', 'permissions'));
         } else {
             return redirect()->back()->with('error', 'Permission denied.');

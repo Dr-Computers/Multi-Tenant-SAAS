@@ -142,7 +142,7 @@ class RoleController extends Controller
 
     public function destroy(Role $role)
     {
-        if (Auth::user()->can('delete role ')) {
+        if (Auth::user()->can('delete role')) {
             
           
             $this->logActivity(
@@ -156,7 +156,7 @@ class RoleController extends Controller
             
             $role->delete();
 
-            return redirect()->route('roles.index')->with(
+            return redirect()->route('admin.roles.index')->with(
                 'success',
                 'Role successfully deleted.'
             );

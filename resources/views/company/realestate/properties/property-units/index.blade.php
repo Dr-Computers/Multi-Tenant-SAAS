@@ -23,12 +23,12 @@
                 <div class="card">
                     <div class="card-body table-bUsers-style">
                         <div class="table-responsive">
-                            <table class="table datatable">
+                            <table class="table ">
                                 <thead>
                                     <tr>
                                         <th>#</th>
                                         <th class="text-start">Name</th>
-                                        <th class="text-start">Rent Type</th>
+                                        <th class="text-start">Type</th>
                                         <th class="text-start">Price</th>
                                         <th class="text-center">Rooms</th>
                                         <th class="text-center">Status</th>
@@ -45,7 +45,7 @@
                                                     {{ $unit->name }}
                                                 </a>
                                             </td>
-                                            <td class="text-start text-capitalize">{{ $unit->rent_type }}</td>
+                                            <td class="text-start text-capitalize">{{ $unit->property->mode }}</td>
                                             <td class="text-start">{{ $unit->price }}</td>
                                             <td class="text-center">
                                                 <span class="badge bg-dark p-1 px-3 rounded">Bedrooms :

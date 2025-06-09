@@ -78,22 +78,22 @@
 
                 {{-- Max Customers --}}
                 <div class="form-group col-md-6">
-                    <label for="max_customers" class="form-label">{{ __('Max Tenants') }}</label><x-required></x-required>
-                    <input type="number" name="max_customers" class="form-control" autocomplete="off"
-                        value="{{ isset($plan) ? $plan->max_tenants : old('max_customers') }}" required>
+                    <label for="max_tenants" class="form-label">{{ __('Max Tenants') }}</label><x-required></x-required>
+                    <input type="number" name="max_tenants" class="form-control" autocomplete="off"
+                        value="{{ isset($plan) ? $plan->max_tenants : old('max_tenants') }}" required>
                     <span class="small">{{ __('Note: "-1" for Unlimited') }}</span>
-                    @error('max_customers')
+                    @error('max_tenants')
                         <small class="text-danger">{{ $message }}</small>
                     @enderror
                 </div>
 
                 {{-- Max Customers --}}
                 <div class="form-group col-md-6">
-                    <label for="max_venders" class="form-label">{{ __('Max Owners') }}</label><x-required></x-required>
+                    <label for="max_owners" class="form-label">{{ __('Max Owners') }}</label><x-required></x-required>
                     <input type="number" name="max_owners" class="form-control" autocomplete="off"
-                        value="{{ isset($plan) ? $plan->max_owners : old('max_venders') }}" required>
+                        value="{{ isset($plan) ? $plan->max_owners : old('max_owners') }}" required>
                     <span class="small">{{ __('Note: "-1" for Unlimited') }}</span>
-                    @error('max_venders')
+                    @error('max_owners')
                         <small class="text-danger">{{ $message }}</small>
                     @enderror
                 </div>

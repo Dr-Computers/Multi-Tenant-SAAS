@@ -19,15 +19,15 @@
                 <div class="card-body table-border-style">
                     <div class="table-responsive">
                         @can('manage requested sections')
-                            <table class="table datatable">
+                            <table class="table">
 
                                 <thead>
                                     <tr>
                                         <th>{{ __('Company Name') }}</th>
                                         <th>{{ __('Section Name') }}</th>
-                                        <th>{{ __('Duration') }}</th>
-                                        <th>{{ __('Date') }}</th>
+                                        <th>{{ __('Requested Date') }}</th>
                                         <th>{{ __('Price') }}</th>
+                                        <th>{{ __('Status') }}</th>
                                         <th>{{ __('Action') }}</th>
 
                                     </tr>
@@ -37,31 +37,51 @@
                                         @foreach ($section_requests as $prequest)
                                             <tr>
                                                 <td>
-                                                    <div class="font-style font-weight-bold">{{ $prequest->user->name }}</div>
-                                                </td>
-                                                <td>
-                                                    <div class="font-style font-weight-bold">{{ $prequest->section->name }}
+                                                    <div class="font-style font-weight-bold">{{ $prequest->company->name }}
                                                     </div>
                                                 </td>
                                                 <td>
                                                     <div class="font-style font-weight-bold">
-                                                        {{ $prequest->section->duration }}
+                                                        @php
+                                                            $sections = \App\Models\Section::whereIn(
+                                                                'id',
+                                                                $prequest->section_ids,
+                                                            )
+                                                                ->pluck('name')
+                                                                ->toArray();
+                                                        @endphp
+                                                        {{ implode(', ', $sections) }}
                                                     </div>
                                                 </td>
+
                                                 <td>{{ App\Models\Utility::getDateFormated($prequest->created_at, true) }}</td>
-                                                <td>{{ $prequest->section->price }}</td>
+                                                <td>{{ adminPrice() }} {{ $prequest->grand_total }}</td>
+                                                <td>
+                                                    @if ($prequest->status === 'approved')
+                                                        <span class="badge bg-success text-white fw-bold">Approved</span>
+                                                    @elseif($prequest->status === 'pending')
+                                                        <span
+                                                            class="badge bg-warning text-dark text-white fw-bold">Pending</span>
+                                                    @elseif($prequest->status === 'rejected')
+                                                        <span class="badge bg-danger text-white fw-bold">Rejected</span>
+                                                    @else
+                                                        <span class="badge bg-secondary text-white fw-bold">Unknown</span>
+                                                    @endif
+                                                </td>
                                                 <td>
                                                     <div>
-                                                        <a href="{{ route('admin.response.request', [$prequest->id, 1]) }}"
+                                                        @if($prequest->status == 'pending')
+                                                        <a href="{{ route('admin.section.response.request', [$prequest->id, 1]) }}"
                                                             class="btn btn-success btn-sm me-2" data-bs-toggle="tooltip"
                                                             title="{{ __('Approve') }}">
                                                             <i class="ti ti-check"></i>
                                                         </a>
-                                                        <a href="{{ route('admin.response.request', [$prequest->id, 0]) }}"
+                                                        <a href="{{ route('admin.section.response.request', [$prequest->id, 0]) }}"
                                                             class="btn btn-danger btn-sm" data-bs-toggle="tooltip"
                                                             title="{{ __('Cancel') }}">
                                                             <i class="ti ti-x"></i>
                                                         </a>
+                                                        @endif
                                                     </div>
                                                 </td>
                                             </tr>

@@ -19,8 +19,12 @@ class Property extends Model
             $property->landmarks()->detach();
             $property->amenities()->detach();
             $property->furnishing()->detach();
+            $property->propertyImages()->detach();
+            $property->propertyDocuments()->detach();
+            
         });
     }
+
     public function amenities(): BelongsToMany
     {
         return $this->belongsToMany(RealestateAmenity::class, 'property_amenities', 'property_id', 'amenity_id');

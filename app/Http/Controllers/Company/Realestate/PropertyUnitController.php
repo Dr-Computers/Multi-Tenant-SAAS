@@ -54,7 +54,7 @@ class PropertyUnitController extends Controller
                     'balconies' => 'nullable|integer',
                     'other_rooms' => 'nullable|string',
                     'registration_no' => 'nullable|string',
-                    'rent_type' => 'required|string',
+                    'rent_type' => 'nullable|string',
                     'price' => 'required|numeric',
                     'deposite_type' => 'nullable|string',
                     'deposite_amount' => 'nullable|numeric',
@@ -91,14 +91,14 @@ class PropertyUnitController extends Controller
             $unit->balconies        = $request->balconies;
             $unit->other_rooms      = $request->other_rooms;
             $unit->registration_no  = $request->registration_no;
-            $unit->rent_type        = $request->rent_type;
+            $unit->rent_type        = $request->rent_type  ?? '';
             $unit->rent_duration    = $request->rent_duration ?? 1;
             $unit->price            = $request->price;
-            $unit->deposite_type    = $request->deposite_type;
-            $unit->deposite_amount  = $request->deposite_amount;
-            $unit->late_fee_type    = $request->late_fee_type;
-            $unit->late_fee_amount  = $request->late_fee_amount;
-            $unit->incident_reicept_amount   = $request->incident_reicept_amount;
+            $unit->deposite_type    = $request->deposite_type ?? '';
+            $unit->deposite_amount  = $request->deposite_amount  ?? '';
+            $unit->late_fee_type    = $request->late_fee_type  ?? '';
+            $unit->late_fee_amount  = $request->late_fee_amount  ?? '';
+            $unit->incident_reicept_amount   = $request->incident_reicept_amount  ?? '';
             $unit->notes            = $request->unique_info;
             $unit->thumbnail_image    =  isset($imagePath['coverImagePath']) ? $imagePath['coverImagePath'] : '';
             $unit->status           = 'unleashed';
@@ -115,10 +115,17 @@ class PropertyUnitController extends Controller
                     Auth::user()->id
                 );
                 DB::commit();
-                return redirect()->route('company.realestate.property.units.index', $id)->with('success', 'Property unit created successfully.');
+                return response()->json([
+                    'status' => 'success',
+                    'message' => 'Property unit created successfully',
+                    'redirect' => route('company.realestate.property.units.index', $id)
+                ]);
             } catch (Exception $e) {
                 DB::rollBack();
-                return redirect()->route('company.realestate.property.units.index', $id)->with('error', $e->getMessage());
+                return response()->json([
+                    'status' => 'error',
+                    'message' => $e->getMessage(),
+                ], 500);
             }
         } else {
             return redirect()->back()->with('error', 'Permission denied.');
@@ -163,7 +170,7 @@ class PropertyUnitController extends Controller
                     'balconies' => 'nullable|integer',
                     'other_rooms' => 'nullable|string',
                     'registration_no' => 'nullable|string',
-                    'rent_type' => 'required|string',
+                    'rent_type' => 'nullable|string',
                     'price' => 'required|numeric',
                     'deposite_type' => 'nullable|string',
                     'deposite_amount' => 'nullable|numeric',
@@ -220,6 +227,7 @@ class PropertyUnitController extends Controller
             $property_unit->other_rooms      = $request->other_rooms;
             $property_unit->registration_no  = $request->registration_no;
             $property_unit->rent_type        = $request->rent_type;
+            $property_unit->rent_duration    = $request->rent_duration;
             $property_unit->price            = $request->price;
             $property_unit->deposite_type    = $request->deposite_type;
             $property_unit->deposite_amount  = $request->deposite_amount;
@@ -241,7 +249,7 @@ class PropertyUnitController extends Controller
 
                 $this->logActivity(
                     'Update a Property Unit',
-                    'Unit Id ' . $unit->id,
+                    'Unit Id ' . $property_unit->id,
                     route('company.realestate.property.units.index', $property_id),
                     'A Property Unit updated successfully',
                     Auth::user()->creatorId(),
@@ -251,7 +259,7 @@ class PropertyUnitController extends Controller
                 return response()->json([
                     'status' => 'success',
                     'message' => 'Property unit updated successfully',
-                    // 'redirect' => route('company.realestate.property.units.index', ['property_id' => $property_unit->property_id])
+                    'redirect' => route('company.realestate.property.units.index', $property_unit->property_id)
                 ]);
             } catch (Exception $e) {
                 DB::rollBack();

@@ -12,13 +12,27 @@ class SectionPlanRequest extends Model
         'duration',
     ];
 
+    protected $appends = ['section_ids'];
+
+
     public function section()
     {
         return $this->hasOne('App\Models\Section', 'id', 'section_id');
     }
 
+    public function getSectionIdsAttribute()
+    {
+        return explode(',', $this->attributes['section_ids'] ?? '');
+    }
+
+    public function company()
+    {
+        return $this->hasOne('App\Models\User', 'id', 'company_id');
+    }
+
+
     public function user()
     {
-        return $this->hasOne('App\Models\User', 'id', 'user_id');
+        return $this->hasOne('App\Models\User', 'id', 'company_id');
     }
 }

@@ -29,9 +29,10 @@
                                     <tr>
                                         <th>{{ __('Company Name') }}</th>
                                         <th>{{ __('Plan Name') }}</th>
-                                        <th>{{ __('Duration') }}</th>
+                                        {{-- <th>{{ __('Duration') }}</th> --}}
                                         <th>{{ __('Date') }}</th>
                                         <th>{{ __('Price') }}</th>
+                                        <th>{{ __('Status') }}</th>
                                         <th>{{ __('Action') }}</th>
 
                                     </tr>
@@ -41,20 +42,33 @@
                                         @foreach ($plan_requests as $prequest)
                                             <tr>
                                                 <td>
-                                                    <div class="font-style font-weight-bold">{{ $prequest->user->name }}</div>
+                                                    <div class="font-style font-weight-bold">{{ $prequest->company->name }}</div>
                                                 </td>
                                                 <td>
                                                     <div class="font-style font-weight-bold">{{ $prequest->plan->name }}</div>
                                                 </td>
-                                                <td>
+                                                {{-- <td>
                                                     <div class="font-style font-weight-bold">
                                                         {{ $prequest->plan->duration }}
                                                     </div>
-                                                </td>
+                                                </td> --}}
                                                 <td>{{ App\Models\Utility::getDateFormated($prequest->created_at, true) }}</td>
-                                                <td>{{ $prequest->plan->price . ' ' . $currency_symbol }}</td>
+                                                <td>{{ adminPrice() }} {{ $prequest->plan->price }}</td>
+                                                <td>
+                                                    @if ($prequest->status === 'approved')
+                                                        <span class="badge bg-success text-white fw-bold">Approved</span>
+                                                    @elseif($prequest->status === 'pending')
+                                                        <span
+                                                            class="badge bg-warning text-dark text-white fw-bold">Pending</span>
+                                                    @elseif($prequest->status === 'rejected')
+                                                        <span class="badge bg-danger text-white fw-bold">Rejected</span>
+                                                    @else
+                                                        <span class="badge bg-secondary text-white fw-bold">Unknown</span>
+                                                    @endif
+                                                </td>
                                                 <td>
                                                     <div>
+                                                        @if($prequest->status == 'pending')
                                                         <a href="{{ route('admin.response.request', [$prequest->id, 1]) }}"
                                                             class="btn btn-success btn-sm me-2" data-bs-toggle="tooltip"
                                                             title="{{ __('Approve') }}">
@@ -65,6 +79,7 @@
                                                             title="{{ __('Cancel') }}">
                                                             <i class="ti ti-x"></i>
                                                         </a>
+                                                        @endif
                                                     </div>
                                                 </td>
                                             </tr>

@@ -65,19 +65,24 @@ class PlanController extends Controller
     {
 
         if (\Auth::user()->can('create plan')) {
-            $validation = [
+            $validator = Validator::make($request->all(), [
                 'name'          => 'required|unique:plans',
                 'price'         => 'required|numeric|min:0',
                 'duration'      => 'required',
                 'max_users'     => 'required|numeric',
-                'max_customers' => 'required|numeric',
-                'max_venders'   => 'required|numeric',
+                'max_tenants' => 'required|numeric',
+                'max_owners'   => 'required|numeric',
                 'storage_limit' => 'required|numeric',
                 'business_type' => 'required',
                 'description'   => 'nullable',
-            ];
+            ]);
 
-            $request->validate($validation);
+            // $request->validate($validator);
+
+            if ($validator->fails()) {
+                return redirect()->back()->with('error', $validator->errors()->first());
+            }
+
 
             $post = $request->all();
             if ($request->hasFile('image')) {
@@ -94,7 +99,7 @@ class PlanController extends Controller
             }
             try {
 
-                $plan = Plan::create($request->all());
+                $plan = Plan::create($post);
 
                 foreach ($request->sections ?? [] as $sec) {
                     $sections                    = new PlanModuleSection();
@@ -165,25 +170,25 @@ class PlanController extends Controller
                 // $request->validate($validation);
 
                 $validator = Validator::make(
-                $request->all(),
-                [
-                    'name' => 'required|unique:plans,name,' . $plan_id,
-                    'duration' => 'required',
-                    'max_users' => 'required|numeric',
-                    'max_owners' => 'required|numeric',
-                    'max_tenants' => 'nullable|numeric',
-                    'storage_limit' => 'required|numeric',
-                    'business_type' => 'required',
-                    'description' => 'nullable',
-                ]
-            );
-            if ($validator->fails()) {
-                $messages = $validator->getMessageBag();
+                    $request->all(),
+                    [
+                        'name' => 'required|unique:plans,name,' . $plan_id,
+                        'duration' => 'required',
+                        'max_users' => 'required|numeric',
+                        'max_tenants' => 'required|numeric',
+                        'max_owners' => 'nullable|numeric',
+                        'storage_limit' => 'required|numeric',
+                        'business_type' => 'required',
+                        'description' => 'nullable',
+                    ]
+                );
+                if ($validator->fails()) {
+                    $messages = $validator->getMessageBag();
 
-                return redirect()->back()->with('error', $messages->first());
-            }
+                    return redirect()->back()->with('error', $messages->first());
+                }
 
-                $post = $request->all();     
+                $post = $request->all();
 
                 if (array_key_exists('enable_chatgpt', $post)) {
                     $post['enable_chatgpt'] = 'on';

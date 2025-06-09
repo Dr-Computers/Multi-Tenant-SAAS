@@ -205,7 +205,7 @@ class SystemController extends Controller
 
     public function saveEmailSettings(Request $request)
     {
-        if (Auth::user()->can('manage system settings')) {
+        if (Auth::user()->can('email settings')) {
             $request->validate(
                 [
                     'mail_driver' => 'required|string|max:255',
@@ -303,7 +303,7 @@ class SystemController extends Controller
 
     public function savePaymentSettings(Request $request)
     {
-        if (\Auth::user()->can('manage stripe settings')) {
+        if (\Auth::user()->can('payment settings')) {
 
             $request->validate(
                 [

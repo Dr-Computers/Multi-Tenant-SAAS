@@ -180,7 +180,7 @@
 
         (function() {
             var options = {
-                series: [{{ 1000 / 5000 }}],
+                series: [{{ $totalStorage > 0 ? $usedStorage / $totalStorage : 0 }}],
                 chart: {
                     height: 260,
                     type: 'radialBar',
@@ -217,9 +217,36 @@
                 colors: ["#6FD943"],
                 labels: ['Used'],
             };
-            var chart = new ApexCharts(document.querySelector("#device-chart"), options);
+            var chart = new ApexCharts(document.querySelector("#storage-chart"), options);
             chart.render();
         })();
+    </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const alertId = 'company-expiry-alert';
+            const today = new Date().toISOString().split('T')[0];
+            const closedDate = localStorage.getItem(alertId);
+
+            // Show the alert if not already closed today
+            if (closedDate !== today) {
+                const alertBox = document.getElementById('daily-alert');
+                if (alertBox) {
+                    alertBox.style.display = 'block';
+                }
+            }
+
+            // Handle close click (event delegation like jQuery .on)
+            document.body.addEventListener('click', function(e) {
+                if (e.target && e.target.id === 'close-daily-alert') {
+                    alert(1);
+                    localStorage.setItem(alertId, today);
+                    const alertBox = document.getElementById('daily-alert');
+                    if (alertBox) {
+                        alertBox.style.display = 'none';
+                    }
+                }
+            });
+        });
     </script>
 @endpush
 
@@ -352,7 +379,7 @@
 
     .dashboard-card .card-inner .card-content p {
         font-size: 14px;
-        max-width: 80%;
+        max-width: 90%;
         width: 100%;
         display: -webkit-box;
         -webkit-line-clamp: 2;
@@ -411,82 +438,6 @@
         background-color: rgba(12, 175, 96, 0.4);
         border-radius: 80% 0 10px;
     }
-
-    /* .dashboard-wrp {
-        row-gap: 15px;
-        height: 100%;
-    }
-
-    .dashboard-project-card {
-        position: relative;
-        border-radius: 10px;
-        overflow: hidden;
-        align-items: center;
-        display: flex;
-        background-color: rgba(255, 58, 110, 0.1);
-        height: 100%;
-        width: 100%;
-    }
-
-    .dashboard-project-card .card-inner {
-        align-items: flex-start;
-        padding: 15px;
-        width: 100%;
-    }
-
-    .dashboard-project-card .card-content {
-        max-width: 70%;
-        width: 100%;
-    }
-
-    .dashboard-wrp .dashboard-project-card .theme-avtar {
-        position: relative;
-        border-radius: 4px;
-    }
-
-    .theme-avtar {
-        width: 45px;
-        height: 45px;
-        border-radius: 17.3552px;
-        color: #fff;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 20px;
-        flex-shrink: 0;
-    }
-
-    .dashboard-wrp .dashboard-project-card .theme-avtar::before {
-        content: '';
-        position: absolute;
-        width: 20px;
-        height: 20px;
-        border-radius: 50%;
-        background-color: #ff3a6e;
-        opacity: 30%;
-        bottom: 0;
-        right: -110%;
-        z-index: -1;
-    }
-
-    .dashboard-wrp .dashboard-project-card .theme-avtar::after {
-        content: '';
-        position: absolute;
-        width: 30px;
-        height: 30px;
-        border-radius: 50%;
-        background-color: #ff3a6e;
-        opacity: 30%;
-        top: 15%;
-        right: -25px;
-        z-index: -1;
-    }
-
-    .dashboard-project-card .card-content h3 {
-        font-size: 18px;
-        text-transform: capitalize;
-        word-break: break-word;
-    }*/
 
     .card {
         margin-bottom: 30px;
@@ -547,7 +498,7 @@
 </style>
 @section('content')
     <div class="row row-gap mb-4 ">
-        <div class="col-xl-12 col-12">
+        {{-- <div class="col-xl-12 col-12">
             <div class="dashboard-card">
                 <img src="https://dash-demo.workdo.io/assets/images/layer.png" class="dashboard-card-layer" alt="layer">
                 <div class="card-inner">
@@ -565,7 +516,34 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div> --}}
+        @if ($showExpiryAlert)
+            <div class="col-xl-12 col-12" id="daily-alert" style="display: none;">
+                <div class="dashboard-card position-relative">
+                    <img src="{{ asset('assets/images/layer.png') }}" class="dashboard-card-layer" alt="layer">
+                    {{-- <button id="close-daily-alert"
+                        class="btn btn-sm btn-light position-absolute top-0 end-0 m-2">&times;</button> --}}
+                    <div class="card-inner">
+                        <div class="card-content">
+                            <h2>Plan Expiring Soon</h2>
+                            <p class="my-2">
+                                Your subscription plan will expire on
+                                <strong>{{ $planExpiryDate->format('d M, Y') }}</strong>. Please renew to avoid service
+                                interruption.
+                            </p>
+                            <div class="btn-wrp d-flex gap-3">
+                                <a href="{{ route('company.plan.upgrade') }}"
+                                    class="btn btn-primary d-flex align-items-center gap-1 cp_link">
+                                    <i class="ti ti-link text-white"></i>
+                                    <span>Renew Subscription</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        @endif
+
         <div class="row mt-4">
             <div class="col-lg-9">
                 <div class="row mt-4">
@@ -642,20 +620,21 @@
                                 <div class="d-flex flex-column">
                                     <h3 class="card-title text-white">Bank Accounts </h3>
                                     <div class="d-inline-block">
-                                        <h2 class="text-white">{{ $bankAccountBalance }}</h2>
+                                        <h2 class="text-white">{{ $bankAccountBalance->count() }}</h2>
                                     </div>
                                 </div>
                                 <span class="float-right display-5 opacity-5"><i class="fa fa-users"></i></span>
                             </div>
                         </div>
                     </div>
+
                     <div class="col-lg-4 col-sm-6">
                         <div class="card gradient-1">
                             <div class="card-body d-flex justify-content-between">
                                 <div class="d-flex flex-column">
                                     <h3 class="card-title text-white">Expense</h3>
                                     <div class="d-inline-block">
-                                        <h2 class="text-white">4565</h2>
+                                        <h2 class="text-white">{{ \Auth::user()->priceFormat($totalExpenses) }}</h2>
                                     </div>
                                 </div>
 
@@ -663,26 +642,30 @@
                             </div>
                         </div>
                     </div>
+
                     <div class="col-lg-4 col-sm-6">
                         <div class="card gradient-2">
                             <div class="card-body d-flex justify-content-between">
                                 <div class="d-flex flex-column">
                                     <h3 class="card-title text-white">Deposit</h3>
                                     <div class="d-inline-block">
-                                        <h2 class="text-white"> 8541</h2>
+                                        <h2 class="text-white"> {{ \Auth::user()->priceFormat($totalDeposits) }}</h2>
                                     </div>
                                 </div>
                                 <span class="float-right display-5 opacity-5"><i class="fa fa-users"></i></span>
                             </div>
                         </div>
                     </div>
+
                     <div class="col-lg-4 col-sm-6">
                         <div class="card gradient-3">
                             <div class="card-body d-flex justify-content-between">
                                 <div class="d-flex flex-column">
                                     <h3 class="card-title text-white">Account Balance</h3>
                                     <div class="d-inline-block">
-                                        <h2 class="text-white">{{ \Auth::user()->priceFormat($bankAccountBalance) }}</h2>
+                                        <h2 class="text-white">
+                                            {{ \Auth::user()->priceFormat($bankAccountBalance->sum('current_balance')) }}
+                                        </h2>
                                     </div>
                                 </div>
                                 <span class="float-right display-5 opacity-5"><i class="fa fa-users"></i></span>
@@ -692,6 +675,7 @@
 
                 </div>
             </div>
+
             <div class="col-lg-3">
                 <div class="row mt-4">
 
@@ -700,12 +684,12 @@
                         <div class="card" style="height: 360px">
                             <div class="card-header">
                                 <h5>{{ __('Storage Status') }} </h5>
-                                <small class="mt-2">({{ 1000 . 'MB' }}
+                                <small class="mt-2">({{ $usedStorage . 'MB' }}
                                     /
-                                    {{ 5000 . 'MB' }})</small>
+                                    {{ $totalStorage . 'MB' }})</small>
                             </div>
                             <div class="card-body">
-                                <div id="device-chart"></div>
+                                <div id="storage-chart"></div>
                             </div>
                         </div>
 
@@ -730,7 +714,7 @@
                             <thead>
                                 <tr>
                                     <th>{{ __('Date') }}</th>
-                                    <th>{{ __('Customer') }}</th>
+                                    <th>{{ __('Tenant') }}</th>
                                     <th>{{ __('Amount Due') }}</th>
                                 </tr>
                             </thead>
@@ -771,7 +755,7 @@
                                 <thead>
                                     <tr>
                                         <th>{{ __('Date') }}</th>
-                                        <th>{{ __('Customer') }}</th>
+                                        <th>{{ __('Tenant/Owner') }}</th>
                                         <th>{{ __('Amount Due') }}</th>
                                     </tr>
                                 </thead>
@@ -801,57 +785,6 @@
 
         </div>
 
-
-        <div class="col-lg-6">
-            <div class="card" style="height: 415px">
-                <div class="card-header">
-                    <h5>{{ __('Income & Expense') }}
-                        <span class="float-end text-muted">{{ __('Current Year') . ' - ' . 2025 }}</span>
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <div id="incExpBarChart"></div>
-                </div>
-            </div>
-        </div>
-        <div class="col-xxl-6">
-            <div class="card">
-                <div class="card-header">
-                    <h5 class="mt-1 mb-0">{{ __('Account Balance') }}</h5>
-                </div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>{{ __('Bank') }}</th>
-                                    <th>{{ __('Holder Name') }}</th>
-                                    <th>{{ __('Balance') }}</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @forelse($bankAccountDetail ?? [] as $bankAccount)
-                                    <tr class="font-style">
-                                        <td>{{ $bankAccount->bank_name }}</td>
-                                        <td>{{ $bankAccount->holder_name }}</td>
-                                        <td>{{ \Auth::user()->priceFormat($bankAccount->opening_balance) }}
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="4">
-                                            <div class="text-center">
-                                                <h6>{{ __('there is no account balance') }}</h6>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
         <div class="col-xxl-6">
             <div class="card">
                 <div class="card-header">
@@ -973,254 +906,48 @@
                 </div>
             </div>
         </div>
+
+
         <div class="col-xxl-6">
-            <div class="card" style="height: 396px">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mt-1 mb-0">{{ __('Account Balance') }}</h5>
+                </div>
                 <div class="card-body">
-
-                    <ul class="nav nav-pills mb-5" id="pills-tab" role="tablist">
-                        <li class="nav-item">
-                            <a class="nav-link active" id="pills-Dashboard-tab" data-bs-toggle="pill"
-                                href="#invoice_weekly_statistics" role="tab" aria-controls="pills-home"
-                                aria-selected="true">{{ __('Invoices Weekly Statistics') }}</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" id="pills-profile-tab" data-bs-toggle="pill"
-                                href="#invoice_monthly_statistics" role="tab" aria-controls="pills-profile"
-                                aria-selected="false">{{ __('Invoices Monthly Statistics') }}</a>
-                        </li>
-                    </ul>
-                    <div class="tab-content" id="pills-tabContent">
-                        <div class="tab-pane fade show active" id="invoice_weekly_statistics" role="tabpanel"
-                            aria-labelledby="pills-home-tab">
-                            <div class="table-responsive">
-                                <table class="table align-items-center mb-0 ">
-                                    <tbody class="list">
-                                        <tr>
-                                            <td>
-                                                <h5 class="mb-0">{{ __('Total') }}</h5>
-                                                <p class="text-muted text-sm mb-0">
-                                                    {{ __('Invoice Generated') }}
-                                                </p>
-
-                                            </td>
-                                            <td>
-                                                <h4 class="text-muted">
-                                                    {{ \Auth::user()->priceFormat($weeklyInvoice['invoiceTotal'] ?? 0) }}
-                                                </h4>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>
-                                                <h5 class="mb-0">{{ __('Total') }}</h5>
-                                                <p class="text-muted text-sm mb-0">{{ __('Paid') }}</p>
-                                            </td>
-                                            <td>
-                                                <h4 class="text-muted">
-                                                    {{ \Auth::user()->priceFormat($weeklyInvoice['invoicePaid'] ?? 0) }}
-                                                </h4>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>
-                                                <h5 class="mb-0">{{ __('Total') }}</h5>
-                                                <p class="text-muted text-sm mb-0">{{ __('Due') }}</p>
-                                            </td>
-                                            <td>
-                                                <h4 class="text-muted">
-                                                    {{ \Auth::user()->priceFormat($weeklyInvoice['invoiceDue'] ?? 0) }}
-                                                </h4>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                        <div class="tab-pane fade" id="invoice_monthly_statistics" role="tabpanel"
-                            aria-labelledby="pills-profile-tab">
-                            <div class="table-responsive">
-                                <table class="table align-items-center mb-0 ">
-                                    <tbody class="list">
-                                        <tr>
-                                            <td>
-                                                <h5 class="mb-0">{{ __('Total') }}</h5>
-                                                <p class="text-muted text-sm mb-0">
-                                                    {{ __('Invoice Generated') }}
-                                                </p>
-
-                                            </td>
-                                            <td>
-                                                <h4 class="text-muted">
-                                                    {{ \Auth::user()->priceFormat($monthlyInvoice['invoiceTotal'] ?? 0) }}
-                                                </h4>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>
-                                                <h5 class="mb-0">{{ __('Total') }}</h5>
-                                                <p class="text-muted text-sm mb-0">{{ __('Paid') }}</p>
-                                            </td>
-                                            <td>
-                                                <h4 class="text-muted">
-                                                    {{ \Auth::user()->priceFormat($monthlyInvoice['invoicePaid'] ?? 0) }}
-                                                </h4>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>
-                                                <h5 class="mb-0">{{ __('Total') }}</h5>
-                                                <p class="text-muted text-sm mb-0">{{ __('Due') }}</p>
-                                            </td>
-                                            <td>
-                                                <h4 class="text-muted">
-                                                    {{ \Auth::user()->priceFormat($monthlyInvoice['invoiceDue'] ?? 0) }}
-                                                </h4>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>{{ __('Bank') }}</th>
+                                    <th>{{ __('Holder Name') }}</th>
+                                    <th>{{ __('Balance') }}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse($bankAccountDetail ?? [] as $bankAccount)
+                                    <tr class="font-style">
+                                        <td>{{ $bankAccount->bank_name }}</td>
+                                        <td>{{ $bankAccount->holder_name }}</td>
+                                        <td>{{ \Auth::user()->priceFormat($bankAccount->opening_balance) }}
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="4">
+                                            <div class="text-center">
+                                                <h6>{{ __('there is no account balance') }}</h6>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="col-xxl-6">
-            <div class="card" style="height: 396px">
-                <div class="card-body">
 
-                    <ul class="nav nav-pills mb-5" id="pills-tab" role="tablist">
-                        <li class="nav-item">
-                            <a class="nav-link active" id="pills-home-tab" data-bs-toggle="pill"
-                                href="#bills_weekly_statistics" role="tab" aria-controls="pills-home"
-                                aria-selected="true">{{ __('Bills Weekly Statistics') }}</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" id="pills-profile-tab" data-bs-toggle="pill"
-                                href="#bills_monthly_statistics" role="tab" aria-controls="pills-profile"
-                                aria-selected="false">{{ __('Bills Monthly Statistics') }}</a>
-                        </li>
-                    </ul>
-                    <div class="tab-content" id="pills-tabContent">
-                        <div class="tab-pane fade show active" id="bills_weekly_statistics" role="tabpanel"
-                            aria-labelledby="pills-home-tab">
-                            <div class="table-responsive">
-                                <table class="table align-items-center mb-0 ">
-                                    <tbody class="list">
-                                        <tr>
-                                            <td>
-                                                <h5 class="mb-0">{{ __('Total') }}</h5>
-                                                <p class="text-muted text-sm mb-0">{{ __('Bill Generated') }}
-                                                </p>
 
-                                            </td>
-                                            <td>
-                                                <h4 class="text-muted">
-                                                    {{ \Auth::user()->priceFormat($weeklyBill['billTotal'] ?? 0) }}
-                                                </h4>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>
-                                                <h5 class="mb-0">{{ __('Total') }}</h5>
-                                                <p class="text-muted text-sm mb-0">{{ __('Paid') }}</p>
-                                            </td>
-                                            <td>
-                                                <h4 class="text-muted">
-                                                    {{ \Auth::user()->priceFormat($weeklyBill['billPaid'] ?? 0) }}
-                                                </h4>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>
-                                                <h5 class="mb-0">{{ __('Total') }}</h5>
-                                                <p class="text-muted text-sm mb-0">{{ __('Due') }}</p>
-                                            </td>
-                                            <td>
-                                                <h4 class="text-muted">
-                                                    {{ \Auth::user()->priceFormat($weeklyBill['billDue'] ?? 0) }}
-                                                </h4>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                        <div class="tab-pane fade" id="bills_monthly_statistics" role="tabpanel"
-                            aria-labelledby="pills-profile-tab">
-                            <div class="table-responsive">
-                                <table class="table align-items-center mb-0 ">
-                                    <tbody class="list">
-                                        <tr>
-                                            <td>
-                                                <h5 class="mb-0">{{ __('Total') }}</h5>
-                                                <p class="text-muted text-sm mb-0">{{ __('Bill Generated') }}
-                                                </p>
 
-                                            </td>
-                                            <td>
-                                                <h4 class="text-muted">
-                                                    {{ \Auth::user()->priceFormat($monthlyBill['billTotal'] ?? 0) }}
-                                                </h4>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>
-                                                <h5 class="mb-0">{{ __('Total') }}</h5>
-                                                <p class="text-muted text-sm mb-0">{{ __('Paid') }}</p>
-                                            </td>
-                                            <td>
-                                                <h4 class="text-muted">
-                                                    {{ \Auth::user()->priceFormat($monthlyBill['billPaid'] ?? 0) }}
-                                                </h4>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>
-                                                <h5 class="mb-0">{{ __('Total') }}</h5>
-                                                <p class="text-muted text-sm mb-0">{{ __('Due') }}</p>
-                                            </td>
-                                            <td>
-                                                <h4 class="text-muted">
-                                                    {{ \Auth::user()->priceFormat($monthlyBill['billDue'] ?? 0) }}
-                                                </h4>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-lg-6">
-            <div class="card" style="height: 415px">
-                <div class="card-header">
-                    <h5>{{ __('Income By Category') }}
-                        <span class="float-end text-muted">{{ __('Year') . ' - ' . 2025 }}</span>
-                    </h5>
-
-                </div>
-                <div class="card-body">
-                    <div id="incomeByCategory"></div>
-                </div>
-            </div>
-        </div>
-        <div class="col-lg-6">
-            <div class="card" style="height: 415px">
-                <div class="card-header">
-                    <h5>{{ __('Expense By Category') }}
-                        <span class="float-end text-muted">{{ __('Year') . ' - ' . 2025 }}</span>
-                    </h5>
-
-                </div>
-                <div class="card-body">
-                    <div id="expenseByCategory"></div>
-                </div>
-            </div>
-        </div>
-       
     </div>
 @endsection

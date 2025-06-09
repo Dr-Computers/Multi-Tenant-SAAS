@@ -27,14 +27,7 @@
         </div>
         <div class="ms-auto">
             <ul class="list-unstyled">
-                @impersonating($guard = null)
-                    <li class="dropdown dash-h-item drp-company">
-                        <a class="btn btn-danger btn-sm me-3" href="{{ route('admin.exit.company') }}"><i
-                                class="ti ti-ban"></i>
-                            {{ __('Exit Company Login') }}
-                        </a>
-                    </li>
-                @endImpersonating
+               
                 <li class="dropdown dash-h-item drp-language">
                     <a class="dash-head-link dropdown-toggle arrow-none me-0" data-bs-toggle="dropdown" href="#"
                         role="button" aria-haspopup="false" aria-expanded="false">
@@ -82,7 +75,7 @@
                     </a>
                     <div class="dropdown-menu dash-h-dropdown">
 
-                        <a href="{{ route('company.profile') }}" class="dropdown-item">
+                        <a href="{{ route('owner.profile') }}" class="dropdown-item">
                             <i class="ti ti-user"></i> <span>{{ __('My Profile') }}</span>
                         </a>
 

@@ -6,14 +6,25 @@ use App\Http\Controllers\Controller;
 use App\Models\BalanceSheet;
 use App\Models\BankAccount;
 use App\Models\Bill;
+use App\Models\Company;
+use App\Models\CompanySubscription;
+use App\Models\Coupon;
+use App\Models\Expense;
 use App\Models\Goal;
 use App\Models\Invoice;
+use App\Models\MediaFile;
 use App\Models\Order;
 use App\Models\Payment;
 use App\Models\Plan;
+use App\Models\PlanRequest;
 use App\Models\ProductServiceCategory;
 use App\Models\ProductServiceUnit;
+use App\Models\Property;
+use App\Models\RealestateInvoice;
+use App\Models\RealestateLease;
 use App\Models\Revenue;
+use App\Models\Section;
+use App\Models\SectionPlanRequest;
 use App\Models\SupportTicket;
 use App\Models\Tax;
 use App\Models\Utility;
@@ -22,6 +33,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Traits\Media\HandlesMediaFolders;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Validator;
 
 class DashboardController extends Controller
 {
@@ -45,82 +58,35 @@ class DashboardController extends Controller
     {
 
         if (Auth::check()) {
+            $company_id                     =   Auth::user()->creatorId();
+            $data['total_staff_users']      =   User::where('type', 'company-staff')->where('parent', $company_id)->count();
+            $data['total_owners']           =   User::where('type', 'owner')->where('parent', $company_id)->count();
+            $data['total_tenants']          =   User::where('type', 'tenant')->where('parent', $company_id)->count();
+            $data['total_propeties']        =   Property::where('company_id', $company_id)->count();
+            $data['total_ticket']           =   SupportTicket::where('company_id', $company_id)->count();
+            $data['bankAccounts']           =   BankAccount::where('company_id', $company_id)->count();
+            $data['bankAccountDetail']      =   BankAccount::where('company_id', '=', $company_id)->get();
+            $data['totalExpenses']          =   Expense::where('company_id', $company_id)->sum('amount');
+            $data['totalDeposits']          =   RealestateLease::where('company_id', $company_id)->sum('security_deposit');
+            $data['bankAccountBalance']     =   BankAccount::where('company_id', $company_id)->get();
+            $data['latestIncome']           =   Revenue::where('created_by', '=', $company_id)->orderBy('id', 'desc')->limit(5)->get() ?? collect();
+            $data['latestExpense']          =   Expense::where('company_id', '=', $company_id)->orderBy('id', 'desc')->limit(5)->get() ?? collect();
+            $data['recentInvoices']         =   RealestateInvoice::where('company_id', '=', $company_id)->get();
+            $data['recentBills']            =   Invoice::where('company_id', '=', $company_id)->get();
+            $data['totalStorage']           =   Company::where('user_id', $company_id)->first()->storage_capacity;
+            $data['usedStorage']            =   number_format(MediaFile::where('company_id', $company_id)->sum('size') / (1024 * 1024), 2);
 
-            $data['total_staff_users']      = User::where('parent', Auth::user()->creatorId())->count();
-            $data['total_owners']           = User::where('parent', Auth::user()->creatorId())->count();
-            $data['total_tenants']          = User::where('parent', Auth::user()->creatorId())->count();
-            $data['total_propeties']        = User::where('parent', Auth::user()->creatorId())->count();
-            $data['total_ticket']           = SupportTicket::count();
-            $data['open_ticket']            = SupportTicket::where('status', 0)->count();
-            $data['close_ticket']           = SupportTicket::where('status', 1)->count();
-            $data['bankAccountBalance']            = BankAccount::where('company_id', Auth::user()->creatorId())->sum('current_balance');
-            $data['latestIncome']  = Revenue::where('created_by', '=', Auth::user()->creatorId())->orderBy('id', 'desc')->limit(5)->get() ?? collect();
-            $data['latestExpense'] = Payment::where('created_by', '=', Auth::user()->creatorId())->orderBy('id', 'desc')->limit(5)->get() ?? collect();
-            $data['incExpBarChartData']  = Auth::user()->getincExpBarChartData();
-            $data['incExpLineChartData'] = Auth::user()->getIncExpLineChartDate();
-            
-            $incomeCategory = ProductServiceCategory::where('created_by', '=', Auth::user()->creatorId())->where('type', '=', 'income')->get();
-            $inColor        = array();
-            $inCategory     = array();
-            $inAmount       = array();
-            for ($i = 0; $i < count($incomeCategory); $i++) {
-                $inColor[]    = $incomeCategory[$i]->color;
-                $inCategory[] = $incomeCategory[$i]->name;
-                $inAmount[]   = $incomeCategory[$i]->incomeCategoryRevenueAmount();
-            }
+            $users = User::find($company_id);
 
+            $company = $users->company;
 
-            $data['incomeCategoryColor'] = $inColor;
-            $data['incomeCategory']      = $inCategory;
-            $data['incomeCatAmount']     = $inAmount;
+            $planExpiryDate = Carbon::parse($company->activeSubscription->end_of_date);
+            $today = Carbon::today();
 
-            
-
-            $expenseCategory = ProductServiceCategory::where('created_by', '=', Auth::user()->creatorId())->where('type', '=', 'expense')->get();
-            $exColor         = array();
-            $exCategory      = array();
-            $exAmount        = array();
-            for ($i = 0; $i < count($expenseCategory); $i++) {
-                $exColor[]    = $expenseCategory[$i]->color;
-                $exCategory[] = $expenseCategory[$i]->name;
-                $exAmount[]   = $expenseCategory[$i]->expenseCategoryAmount();
-            }
-
-            $data['expenseCategoryColor'] = $exColor;
-            $data['expenseCategory']      = $exCategory;
-            $data['expenseCatAmount']     = $exAmount;
-
- 
-
-            $data['currentYear']  = date('Y');
-            $data['currentMonth'] = date('M');
-
-            $constant['taxes']         = Tax::where('created_by', Auth::user()->creatorId())->count();
-            $constant['category']      = ProductServiceCategory::where('created_by', Auth::user()->creatorId())->count();
-            $constant['units']         = ProductServiceUnit::where('created_by', Auth::user()->creatorId())->count();
-            $constant['bankAccount']   = BankAccount::where('created_by', Auth::user()->creatorId())->count();
-            $data['constant']          = $constant;
-            $data['bankAccountDetail'] = BankAccount::where('created_by', '=', Auth::user()->creatorId())->get();
-            $data['recentInvoice']     = Invoice::where('created_by', '=', Auth::user()->creatorId())->orderBy('id', 'desc')->limit(5)->get();
-            $data['weeklyInvoice']     = Auth::user()->weeklyInvoice();
-            $data['monthlyInvoice']    = Auth::user()->monthlyInvoice();
-            $data['recentBill']        = Bill::where('created_by', '=', Auth::user()->creatorId())->orderBy('id', 'desc')->limit(5)->get();
-            $data['weeklyBill']        = Auth::user()->weeklyBill();
-            $data['monthlyBill']       = Auth::user()->monthlyBill();
-            $data['goals']             = Goal::where('created_by', '=', Auth::user()->creatorId())->where('is_display', 1)->get();
+            $showExpiryAlert = $planExpiryDate->isAfter($today) && $planExpiryDate->diffInDays($today) <= 7;
 
 
-
-            $users = User::find(Auth::user()->creatorId());
-            $plan = Plan::find($users->company->plan_id);
-            if ($plan && $plan->storage_limit > 0) {
-                $storage_limit = ($users->storage_limit / $plan->storage_limit) * 100;
-            } else {
-                $storage_limit = 0;
-            }
-
-
-            return view('company.dashboard.index', $data, compact('users', 'plan', 'storage_limit'));
+            return view('company.dashboard.index', $data, compact('users', 'showExpiryAlert', 'planExpiryDate'));
         }
     }
 
@@ -211,5 +177,210 @@ class DashboardController extends Controller
         } else {
             return redirect()->route('company.profile', \Auth::user()->id)->with('error', __('Something is wrong.'));
         }
+    }
+
+
+
+
+    public function planUpgrade()
+    {
+        // if (Auth::user()->can('company plan upgrade')) {
+        $company_id         = Auth::user()->creatorId();
+        $user = User::find($company_id);
+        $company = $user->company;
+        $plans = Plan::where('business_type', $company->bussiness_type)->get();
+        $existingRequests = PlanRequest::where('company_id', $company_id)->get();
+        return view('company.dashboard.upgrade-plan', compact('user', 'plans', 'existingRequests'));
+        // } else {
+        //     return redirect()->back()->with('error', 'Permission denied.');
+        // }
+    }
+    public function planUpgradeStore(Request $request)
+    {
+
+        // if (Auth::user()->can('company addon features')) {
+        if (isset($request->purchase) && $request->purchase != null || isset($request->renew) && $request->renew != null) {
+            $company_id         = Auth::user()->creatorId();
+            $new                = new PlanRequest();
+            $new->company_id    = $company_id;
+            $new->plan_id        = $request->purchase ?? $request->renew;
+            $new->duration      = '';
+            $new->save();
+            return redirect()->back()->with('success', 'Plan Request Sent Successfully!');
+        } else {
+            return redirect()->back()->with('error', 'Invalide Request.');
+        }
+        // } else {
+        //     return redirect()->back()->with('error', 'Permission denied.');
+        // }
+    }
+
+    public function addonFeatures()
+    {
+        // if (Auth::user()->can('company addon features')) {
+        $company_id         = Auth::user()->creatorId();
+        $existingSectionIds = CompanySubscription::where('company_id', $company_id)->get();
+        $addonSections    = Section::get();
+        $user             = User::where('id', $company_id)->first();
+
+        $existingSections = Section::with(['addedSections' => function ($query) use ($company_id) {
+            $query->where('company_id', $company_id);
+        }])
+            ->whereHas('addedSections', function ($q) use ($company_id) {
+                $q->where('company_id', $company_id);
+            })
+            ->get();
+        $existingRequests  = SectionPlanRequest::where('company_id', $company_id)->get();
+
+        return view('company.dashboard.addon-features', compact('existingSections', 'existingSectionIds', 'existingRequests', 'addonSections', 'user'));
+        // } else {
+        //     return redirect()->back()->with('error', 'Permission denied.');
+        // }
+    }
+    public function addonFeaturesStore(Request $request)
+    {
+        $company_id = Auth::user()->creatorId();
+
+        // if (Auth::user()->can('company addon features')) {
+        $validator = Validator::make(
+            $request->all(),
+            [
+                'features'     => 'required|array',
+                'features.*'   => 'required|integer',
+                'subtotal'     => 'nullable|numeric',
+                'tax'          => 'nullable|numeric',
+                'discount'     => 'nullable|numeric',
+                'grandtotal'   => 'nullable|numeric',
+                'coupon_code'  => 'nullable|string',
+                'coupon_id'    => 'nullable|integer',
+            ]
+        );
+
+        if ($validator->fails()) {
+            return redirect()->back()->with('error', $validator->errors()->first());
+        }
+
+        $features = $request->features ?? [];
+        $featuresIds = implode(',', $features);
+        $subTotal = Section::whereIn('id', $features)->sum('price');
+
+        $coupon = Coupon::where('code', $request->coupon_code)->where('is_active', true)->first();
+        $discountAmount = $coupon ? $coupon->discount : 0;
+
+        $taxPercent = 5;
+        $taxableAmount = max($subTotal - $discountAmount, 0);
+        $taxAmount = ($taxableAmount * $taxPercent) / 100;
+        $grandTotal = $taxableAmount + $taxAmount;
+
+        // $features = $request->features ?? [];
+        // $featuresIds = '';
+        // $subTotal = 0;
+        // $taxAmount = 0;
+        // $finalAmount = 0;
+
+        // if (count($features) > 0) {
+        //     $featuresIds = implode(',', $features);
+        //     $subTotal = Section::whereIn('id', $features)->sum('price');
+
+        //     // Apply coupon if valid
+        //     $coupon = Coupon::where('code', $request->coupon_code)
+        //         ->where('is_active', true)
+        //         ->first();
+
+        //     $discount = $coupon ? $coupon->discount : ($request->discount ?? 0);
+        //     $finalAmount = max($subTotal - $discount, 0);
+
+        //     // Tax calculation (e.g., 5%)
+        //     $taxRate = 0.05;
+        //     $taxAmount = round($finalAmount * $taxRate, 2);
+        // }
+
+        // $grandTotal = $finalAmount + $taxAmount;
+
+        $new = new SectionPlanRequest();
+        $new->company_id    = $company_id;
+        $new->section_ids   = $featuresIds;
+        $new->duration      = ''; // Add logic if duration is needed
+        $new->coupon        = $request->coupon_code ?? '';
+        $new->coupon_id     = $request->coupon_id ?? ($coupon->id ?? null);
+        $new->discount      = $discount ?? 0;
+        $new->tax_total     = $taxAmount;
+        $new->sub_total     = $subTotal;
+        $new->grand_total   = $grandTotal;
+        $new->save();
+
+        $this->logActivity(
+            'Addon Feature Request Sent Successfully',
+            'Addon Feature Request',
+            route('company.addon.features'),
+            'Addon Feature Request Sent Successfully',
+            Auth::user()->creatorId(),
+            Auth::user()->id
+        );
+
+
+        return back()->with('success', 'Request Sent Successfully!');
+        // } else {
+        //     return redirect()->back()->with('error', 'Permission denied.');
+        // }
+    }
+
+
+    public function existingFeaturesRemove($company_id, $id)
+    {
+
+
+        // if (Auth::user()->can('company addon features')) {
+        if (!$id) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Section ID is required.'
+            ], 400);
+        }
+
+        $addedSection = CompanySubscription::where('section_id', $id)
+            ->where('company_id', $company_id)
+            ->first();
+
+        if (!$addedSection) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Feature not found.'
+            ], 404);
+        }
+
+        $addedSection->delete();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Feature removed successfully.'
+        ]);
+        // } else {
+        //     return redirect()->back()->with('error', 'Permission denied.');
+        // }
+
+    }
+
+    public function couponValidate(Request $request)
+    {
+        $coupon = Coupon::where('code', $request->code)->where('is_active', true)->first();
+
+        if ($coupon) {
+            return response()->json([
+                'success' => true,
+                'amount' => $coupon->discount,
+            ]);
+        }
+
+        return response()->json([
+            'success' => false,
+        ]);
+    }
+
+
+
+    public function planExpired()
+    {
+        return view('company.dashboard.plan-expired');
     }
 }

@@ -498,7 +498,7 @@ class  CompanyController extends Controller
             Company::planOrderStore($plan, $company_id);
             $this->logActivity(
                 'Company Plan Upgrade',
-                'Company Id ' . $user->id,
+                'Company Id ' . $company_id,
                 route('admin.company.index'),
                 'Company Plan Upgraded successfully',
                 Auth::user()->creatorId(),

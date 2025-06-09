@@ -12,18 +12,28 @@ use App\Http\Controllers\Company\Realestate\PaymentPayableController;
 use App\Http\Controllers\Company\Realestate\ReportController;
 use Illuminate\Support\Facades\Route;
 
+
+        Route::get('company/plan-expired', 'App\Http\Controllers\Company\DashboardController@planExpired')->name('company.plan-expired');
 Route::group(
     [
         'prefix' => 'company',
         'as' => 'company.',
         'namespace' => 'App\Http\Controllers\Company',
-        'middleware' => ['auth', 'XSS', 'revalidate','company_panel'],
+        'middleware' => ['auth', 'XSS', 'revalidate', 'company_panel', 'check.plan.expiry'],
     ],
     function () {
         Route::get('/', 'DashboardController@index')->name('dashboard');
         Route::get('profile', 'DashboardController@profile')->name('profile');
         Route::post('profile', 'DashboardController@editprofile')->name('profile.update');
         Route::post('password', 'DashboardController@updatePassword')->name('profile.update.password');
+
+
+        Route::get('plan/upgrade', 'DashboardController@planUpgrade')->name('plan.upgrade');
+        Route::post('plan/upgrade/store', 'DashboardController@planUpgradeStore')->name('plan.upgrade.store');
+        Route::get('addon/features', 'DashboardController@addonFeatures')->name('addon.features');
+        Route::post('addon/features/store', 'DashboardController@addonFeaturesStore')->name('addon.features.store');
+        Route::post('coupon/validate', 'DashboardController@couponValidate')->name('coupon.validate');
+
 
         // HRMS
         Route::group([

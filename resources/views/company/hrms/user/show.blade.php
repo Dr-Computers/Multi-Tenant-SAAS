@@ -11,7 +11,7 @@
     <div class="d-flex">
         <a href="{{ route('company.hrms.users.index') }}" title="{{ __('Back to Users') }}"
             class="btn btn-sm btn-primary me-2">
-            <i class="ti ti-arrow-left"></i>
+            <i class="ti ti-arrow-left"></i> Back
         </a>
     </div>
 @endsection
@@ -39,14 +39,14 @@
                                 <a class="nav-link {{ $tab == 'activity_logs' ? 'active' : '' }}"
                                     href="{{ route('company.hrms.users.show', $user->id) }}?tab=activity_logs">Activity Log</a>
                             </li>
-                            <li class="nav-item">
+                            {{-- <li class="nav-item">
                                 <a class="nav-link {{ $tab == 'attendences' ? 'active' : '' }}"
                                     href="{{ route('company.hrms.users.show', $user->id) }}?tab=attendences">Attendence</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link {{ $tab == 'payrolls' ? 'active' : '' }}"
                                     href="{{ route('company.hrms.users.show', $user->id) }}?tab=payrolls">Payrolls</a>
-                            </li>
+                            </li> --}}
                         </ul>
 
                         {{-- Tab Content --}}

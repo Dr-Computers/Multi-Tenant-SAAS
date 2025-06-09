@@ -101,6 +101,8 @@ Route::group(
 
 
         Route::get('plan/section-request', 'SectionRequestController@index')->name('plans.section_request.index');
+        Route::get('section/request-response/{id}/{response}', 'SectionRequestController@acceptRequest')->name('section.response.request');
+
 
         Route::get('plan/plan-trial/{id}', 'PlanController@PlanTrial')->name('plan.trial');
         Route::resource('plans', 'PlanController');

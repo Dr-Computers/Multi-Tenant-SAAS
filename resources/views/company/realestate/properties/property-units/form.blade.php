@@ -12,6 +12,82 @@
 @endsection
 
 @push('header')
+    <script src="https://cdn.tailwindcss.com"></script> 
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+        }
+    </script>
+    <style>
+        .loader-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.3s ease-in-out;
+        }
+
+        .loader-overlay.hidden {
+            display: none;
+        }
+
+        .spinner {
+            border: 8px solid rgba(255, 255, 255, 0.3);
+            border-top: 8px solid white;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .theme-toggle {
+            display: none !important;
+        }
+
+
+        input.form-control,
+        select.form-control,
+        .select2.select2-container {
+            width: 100% !important;
+        }
+
+        .select2-container .select2-selection--single {
+            height: 40px !important;
+            border: var(--bb-border-width) var(--bb-border-style) var(--bb-border-color) !important;
+        }
+
+        .select2-container--default .select2-selection--single {
+            border-radius: 6px !important;
+        }
+
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+            line-height: 35px !important;
+        }
+
+        .select2-container--default .select2-selection--single .select2-selection__clear {
+            height: 35px !important;
+        }
+
+        .select2-container--default .select2-selection--single .select2-selection__arrow {
+            height: 36px !important;
+        }
+    </style>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.js"></script>
 @endpush
@@ -26,27 +102,31 @@
 
 @section('content')
     @canany(['create a unit', 'edit a unit'])
-        <div class="row">
-            <div class="col-md-12">
-                <form x-data="formHandler()" @submit.prevent="submitForm($event)" id="propertyFrom"
-                    action="{{ $unit->exists ? route('company.realestate.property.units.update', ['property_id' => $property->id, 'unit' => $unit->id]) : route('company.realestate.property.units.store', $property->id) }}"
-                    method="POST" enctype="multipart/form-data">
-                    @csrf
-                    @if ($unit->exists)
-                        @method('PUT')
-                    @endif
-                    <div class="card">
-                        <div class="card-body row">
 
-                            <div x-show="showToast" x-transition
-                                :class="toastType === 'success' ? 'bg-success text-light' : 'bg-danger text-light'"
-                                class="fixed top-5 text-white p-3 rounded shadow-lg transition">
-                                <p x-html="toastMessage"></p>
+        <form x-data="formHandler()" @submit.prevent="submitForm($event)" id="propertyFrom"
+            action="{{ $unit->exists ? route('company.realestate.property.units.update', ['property_id' => $property->id, 'unit' => $unit->id]) : route('company.realestate.property.units.store', $property->id) }}"
+            method="POST" enctype="multipart/form-data">
+            @csrf
+            @if ($unit->exists)
+                @method('PUT')
+            @endif
+            <div class="card shadow-lg p-lg-6 p-2.5 mt-5">
+                <div class="card-body row">
 
-                            </div>
-                            <div id="loader" class="loader-overlay hidden">
-                                <div class="spinner"></div>
-                            </div>
+                    <div class="pb-1 text-end">
+                        <div x-show="showToast" x-transition
+                            :class="toastType === 'success' ? 'bg-success text-light' : 'bg-danger text-light'"
+                            class="fixed top-5 text-white p-3 rounded shadow-lg transition">
+                            <p x-html="toastMessage"></p>
+
+                        </div>
+                    </div>
+                    <div id="loader" class="loader-overlay hidden">
+                        <div class="spinner"></div>
+                    </div>
+
+                    <div class="col-md-12">
+                        <div class="row">
                             <!-- Name -->
                             <div class="form-group col-md-6">
                                 <label for="name">{{ __('Name') }}<sup class="text-danger fs-6 d-none">*</sup></label>
@@ -339,74 +419,83 @@
                             </div>
 
 
+                            @if ($property->mode == 'rent')
+                                <!-- Rent Type -->
+                                <div class="form-group col-md-6">
+                                    <label for="rent_type">{{ __('Rent Type') }}</label>
+                                    <select name="rent_type" class="form-control" form="propertyFrom">
+                                        <option value="">{{ __('Select Rent Type') }}</option>
+                                        <option value="monthly"
+                                            {{ old('rent_type', $unit->rent_type) == 'monthly' ? 'selected' : '' }}>Monthly
+                                        </option>
+                                        <option value="yearly"
+                                            {{ old('rent_type', $unit->rent_type) == 'yearly' ? 'selected' : '' }}>Yearly
+                                        </option>
+                                    </select>
+                                </div>
 
-                            <!-- Rent Type -->
-                            <div class="form-group col-md-6">
-                                <label for="rent_type">{{ __('Rent Type') }}</label>
-                                <select name="rent_type" class="form-control" form="propertyFrom">
-                                    <option value="">{{ __('Select Rent Type') }}</option>
-                                    <option value="monthly"
-                                        {{ old('rent_type', $unit->rent_type) == 'monthly' ? 'selected' : '' }}>Monthly
-                                    </option>
-                                    <option value="yearly"
-                                        {{ old('rent_type', $unit->rent_type) == 'yearly' ? 'selected' : '' }}>Yearly</option>
-                                </select>
-                            </div>
+                                <!-- Rent Duration -->
+                                <div class="form-group col-md-6">
+                                    <label for="rent_type">{{ __('Rent Duration') }}</label>
+                                    <input type="number" form="propertyFrom" autocomplete="off"
+                                        name="rent_duration" value="{{ old('rent_duration', $unit->rent_duration) }}"
+                                        class="form-control">
+                                </div>
 
+                                <!-- Deposit Type -->
+                                <div class="form-group col-md-6">
+                                    <label for="deposite_type">{{ __('Deposit Type') }}</label>
+                                    <select name="deposite_type" class="form-control" form="propertyFrom">
+                                        <option value="">{{ __('Select Type') }}</option>
+                                        <option value="fixed"
+                                            {{ old('deposite_type', $unit->deposite_type) == 'fixed' ? 'selected' : '' }}>Fixed
+                                        </option>
+                                        <option value="percentage"
+                                            {{ old('deposite_type', $unit->deposite_type) == 'percentage' ? 'selected' : '' }}>
+                                            Percentage</option>
+                                    </select>
+                                </div>
 
+                                <!-- Deposit Amount -->
+                                <div class="form-group col-md-6">
+                                    <label for="deposite_amount">{{ __('Deposit Amount') }}</label>
+                                    <input type="number" step="0.01" form="propertyFrom" autocomplete="off"
+                                        name="deposite_amount" value="{{ old('deposite_amount', $unit->deposite_amount) }}"
+                                        class="form-control">
+                                </div>
 
-                            <!-- Deposit Type -->
-                            <div class="form-group col-md-6">
-                                <label for="deposite_type">{{ __('Deposit Type') }}</label>
-                                <select name="deposite_type" class="form-control" form="propertyFrom">
-                                    <option value="">{{ __('Select Type') }}</option>
-                                    <option value="fixed"
-                                        {{ old('deposite_type', $unit->deposite_type) == 'fixed' ? 'selected' : '' }}>Fixed
-                                    </option>
-                                    <option value="percentage"
-                                        {{ old('deposite_type', $unit->deposite_type) == 'percentage' ? 'selected' : '' }}>
-                                        Percentage</option>
-                                </select>
-                            </div>
+                                <!-- Late Fee Type -->
+                                <div class="form-group col-md-6">
+                                    <label for="late_fee_type">{{ __('Late Fee Type') }}</label>
+                                    <select name="late_fee_type" class="form-control" form="propertyFrom">
+                                        <option value="">{{ __('Select Type') }}</option>
+                                        <option value="fixed"
+                                            {{ old('late_fee_type', $unit->late_fee_type) == 'fixed' ? 'selected' : '' }}>Fixed
+                                        </option>
+                                        <option value="percentage"
+                                            {{ old('late_fee_type', $unit->late_fee_type) == 'percentage' ? 'selected' : '' }}>
+                                            Percentage</option>
+                                    </select>
+                                </div>
 
-                            <!-- Deposit Amount -->
-                            <div class="form-group col-md-6">
-                                <label for="deposite_amount">{{ __('Deposit Amount') }}</label>
-                                <input type="number" step="0.01" form="propertyFrom" autocomplete="off"
-                                    name="deposite_amount" value="{{ old('deposite_amount', $unit->deposite_amount) }}"
-                                    class="form-control">
-                            </div>
+                                <!-- Late Fee Amount -->
+                                <div class="form-group col-md-6">
+                                    <label for="late_fee_amount">{{ __('Late Fee Amount') }}</label>
+                                    <input type="number" form="propertyFrom" autocomplete="off" step="0.01"
+                                        name="late_fee_amount" value="{{ old('late_fee_amount', $unit->late_fee_amount) }}"
+                                        class="form-control">
+                                </div>
 
-                            <!-- Late Fee Type -->
-                            <div class="form-group col-md-6">
-                                <label for="late_fee_type">{{ __('Late Fee Type') }}</label>
-                                <select name="late_fee_type" class="form-control" form="propertyFrom">
-                                    <option value="">{{ __('Select Type') }}</option>
-                                    <option value="fixed"
-                                        {{ old('late_fee_type', $unit->late_fee_type) == 'fixed' ? 'selected' : '' }}>Fixed
-                                    </option>
-                                    <option value="percentage"
-                                        {{ old('late_fee_type', $unit->late_fee_type) == 'percentage' ? 'selected' : '' }}>
-                                        Percentage</option>
-                                </select>
-                            </div>
+                                <!-- Incident Receipt -->
+                                <div class="form-group col-md-6">
+                                    <label for="incident_reicept_amount">{{ __('Incident Receipt Amount') }}</label>
+                                    <input type="number" form="propertyFrom" autocomplete="off" step="0.01"
+                                        name="incident_reicept_amount"
+                                        value="{{ old('incident_reicept_amount', $unit->incident_reicept_amount) }}"
+                                        class="form-control">
+                                </div>
+                            @endif
 
-                            <!-- Late Fee Amount -->
-                            <div class="form-group col-md-6">
-                                <label for="late_fee_amount">{{ __('Late Fee Amount') }}</label>
-                                <input type="number" form="propertyFrom" autocomplete="off" step="0.01"
-                                    name="late_fee_amount" value="{{ old('late_fee_amount', $unit->late_fee_amount) }}"
-                                    class="form-control">
-                            </div>
-
-                            <!-- Incident Receipt -->
-                            <div class="form-group col-md-6">
-                                <label for="incident_reicept_amount">{{ __('Incident Receipt Amount') }}</label>
-                                <input type="number" form="propertyFrom" autocomplete="off" step="0.01"
-                                    name="incident_reicept_amount"
-                                    value="{{ old('incident_reicept_amount', $unit->incident_reicept_amount) }}"
-                                    class="form-control">
-                            </div>
 
                             <!-- Price -->
                             <div class="form-group col-md-6">
@@ -414,7 +503,7 @@
                                 <input type="number" form="propertyFrom" autocomplete="off" name="price" step="0.01"
                                     oninput="convertToWords()" placeholder="Enter price" max="999999999" type="number"
                                     id="priceInput" value="{{ old('price', $unit->price) }}" class="form-control">
-                                <p class="mt-4 text-dark-700">Price in words: <span id="priceInWords"></span></p>
+                                <p class="mt-2 text-dark-700">Price in words: <span id="priceInWords"></span></p>
 
                             </div>
 
@@ -540,18 +629,21 @@
                                 </div>
 
 
-                                <!-- Submit Button -->
-                                <div class="form-group col-md-12 mt-4">
-                                    <button type="submit"
-                                        class="btn btn-primary">{{ $unit->exists ? __('Update') : __('Create') }}</button>
-                                    <a href="{{ route('company.realestate.property.units.index', $property->id) }}"
-                                        class="btn btn-secondary">{{ __('Cancel') }}</a>
-                                </div>
                             </div>
                         </div>
-                </form>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="form-group col-md-12 mt-4">
+                        <button type="submit"
+                            class="btn btn-primary">{{ $unit->exists ? __('Update') : __('Create') }}</button>
+                        <a href="{{ route('company.realestate.property.units.index', $property->id) }}"
+                            class="btn btn-secondary">{{ __('Cancel') }}</a>
+                    </div>
+                </div>
             </div>
-        </div>
+        </form>
+
     @endcanany
 @endsection
 
@@ -589,14 +681,14 @@
 
             // Ensure the input is within the maximum allowed value (AED 100 Crore)
             if (num > 999999999) {
-                alert('Price cannot exceed AED 99.9 Crore');
+                alert('Price cannot exceed  99.9 Crore');
                 document.getElementById('priceInput').value = 999999999; // Set to the maximum value
                 return;
             }
 
             // Convert the number to words
             const words = numberToWords(parseInt(num));
-            document.getElementById('priceInWords').textContent = 'AED  ' + (words || 'Zero');
+            document.getElementById('priceInWords').textContent = '  ' + (words || 'Zero');
         }
 
         function numberToWords(num) {
@@ -654,17 +746,17 @@
                 addImages(event) {
                     const files = event.target.files || event.dataTransfer.files;
                     Array.from(files).forEach(file => {
-                        if (file.size <= 2 * 1024 * 1024 && file.type.startsWith('image/')) {
-                            const fileObject = {
-                                url: URL.createObjectURL(file), // Blob URL for preview
-                                file: file, // The actual file object for uploading
-                                name: file.name // Original file name
-                            };
-                            this.images.push(fileObject);
-                            this.files.push(file); // Store the file object for uploading
-                        } else {
-                            alert('Image not allowed to be more than 2 MB');
-                        }
+                        //if (file.size <= 2 * 1024 * 1024 && file.type.startsWith('image/')) {
+                        const fileObject = {
+                            url: URL.createObjectURL(file), // Blob URL for preview
+                            file: file, // The actual file object for uploading
+                            name: file.name // Original file name
+                        };
+                        this.images.push(fileObject);
+                        this.files.push(file); // Store the file object for uploading
+                        // } else {
+                        //     alert('Image not allowed to be more than 2 MB');
+                        // }
                     });
                 },
 

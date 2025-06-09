@@ -451,12 +451,12 @@
                                     <div class="float-end"><i class="ti ti-chevron-right"></i></div>
                                 </a>
                             @endcan
-                            @can('reset permissions')
+                            {{-- @can('reset permissions') --}}
                                 <a href="#useradd-10"
                                     class="list-group-item list-group-item-action border-0">{{ __('Reset Permissions') }}
                                     <div class="float-end"><i class="ti ti-chevron-right"></i></div>
                                 </a>
-                            @endcan
+                            {{-- @endcan --}}
                         </div>
                     </div>
                 </div>
@@ -1982,7 +1982,7 @@
                             </div>
                         </div>
                     @endcan
-                    @can('reset permissions')
+                    {{-- @can('reset permissions') --}}
                         <!-- reset permissions   -->
                         <div id="useradd-10" class="card">
                             <div class="card-header">
@@ -1997,7 +1997,7 @@
                             </div>
                             {{ Form::close() }}
                         </div>
-                    @endcan
+                    {{-- @endcan --}}
                     <!-- [ sample-page ] end -->
                 </div>
             </div>

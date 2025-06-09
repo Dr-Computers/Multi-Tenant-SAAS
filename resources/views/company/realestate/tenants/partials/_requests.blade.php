@@ -18,7 +18,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @forelse ($tenant->unitLeases ?? [] as $key => $lease)
+                            @forelse ($tenant->unitLeases->whereNotNull('property_id')->whereNotNull('unit_id')->where('status','under review') ?? [] as $key => $lease)
                                 <tr>
                                     <td>{{ $key + 1 }}</td>
                                     <td>

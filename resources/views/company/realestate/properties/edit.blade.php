@@ -1,6 +1,7 @@
 @extends('layouts.company')
 
 @push('header')
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
         .loader-overlay {
             position: fixed;
@@ -182,8 +183,11 @@
                                 <!-- Step Titles -->
                                 <div class="ms-2 lg:ml-0 lg:mt-4">
                                     <p class="text-sm font-medium mb-3"
-                                        :class="{ 'text-blue-500': index === currentStep, 'text-gray-600': index !==
-                                            currentStep }"
+                                        :class="{
+                                            'text-blue-500': index === currentStep,
+                                            'text-gray-600': index !==
+                                                currentStep
+                                        }"
                                         x-text="step.title"></p>
                                 </div>
                             </li>
@@ -932,7 +936,7 @@
                                                                             <!-- Facility Select Box -->
                                                                             <div class="col-lg-6 mb-2">
                                                                                 <select form="propertyFrom"
-                                                                                    name="facilities[100{{ $keyFac }}][id]"
+                                                                                    name="landmarks[100{{ $keyFac }}][id]"
                                                                                     class="w-full p-2 bg-gray-100 border border-gray-300 rounded-md">
                                                                                     <option value="">Select Landmark
                                                                                     </option>
@@ -948,7 +952,7 @@
                                                                             <!-- Custom Facility Input Box -->
                                                                             <div class="col-lg-6 mb-2">
                                                                                 <input type="text"
-                                                                                    name="facilities[100{{ $keyFac }}][distance]"
+                                                                                    name="landmarks[100{{ $keyFac }}][distance]"
                                                                                     value="{{ $exFacility->pivot->landmark_value }}"
                                                                                     autocomplete="off" form="propertyFrom"
                                                                                     class="w-full p-2 mt-1 border border-gray-300 rounded-md"
@@ -996,7 +1000,7 @@
                                                                             <!-- Custom landmark Input Box -->
                                                                             <div class="col-lg-6 mb-2">
                                                                                 <input type="text"
-                                                                                    :name="'facilities[' + index +
+                                                                                    :name="'landmarks[' + index +
                                                                                         '][distance]'"
                                                                                     autocomplete="off" form="propertyFrom"
                                                                                     x-model="landmark.distance"
@@ -1180,7 +1184,7 @@
                                                         <div class="mb-2">
                                                             <label
                                                                 class="flex items-center space-x-2 text-dark cursor-pointer ">
-                                                                <input type="radio" name="coverImage" form="propertyFrom"
+                                                                <input type="radio" name="ExistingCoverImage" form="propertyFrom"
                                                                     value="{{ $image->id }}"
                                                                     @change="setCoverImage({{ $key + 200 }})"
                                                                     {{ $property->thumbnail_image == $image->id ? 'checked' : '' }}>
@@ -1311,49 +1315,47 @@
                                                 <strong class="mb-3">Status:</strong>
                                                 <div class="d-flex gap-4 mt-3 flex-wrap">
                                                     <div class="form-check">
-                                                        <input type="radio" id="statusUnread" name="moderation_status"
-                                                            value="draft" class="form-check-input"
+                                                        <input type="radio" id="statusUnread" form="propertyFrom"
+                                                            name="moderation_status" value="draft" class="form-check-input"
                                                             {{ $property->moderation_status === 'draft' ? 'checked' : '' }}>
                                                         <label for="statusUnread" class="form-check-label">Draft</label>
                                                     </div>
                                                     <div class="form-check">
-                                                        <input type="radio" id="statusSuspended" name="moderation_status"
-                                                            value="suspended" class="form-check-input"
+                                                        <input type="radio" id="statusSuspended" form="propertyFrom"
+                                                            name="moderation_status" value="suspended"
+                                                            class="form-check-input"
                                                             {{ $property->moderation_status === 'suspended' ? 'checked' : '' }}>
                                                         <label for="statusSuspended"
                                                             class="form-check-label">Suspended</label>
                                                     </div>
-                                                    <div class="form-check">
-                                                        <input type="radio" id="statusApproved" name="moderation_status"
-                                                            value="approved" class="form-check-input"
-                                                            {{ $property->moderation_status === 'approved' ? 'checked' : '' }}>
-                                                        <label for="statusApproved" class="form-check-label">Approved</label>
-                                                    </div>
+                                                 
                                                     @if ($property->type == 'rent')
                                                         <div class="form-check">
-                                                            <input type="radio" id="statusRenting" name="moderation_status"
-                                                                value="renting" class="form-check-input"
+                                                            <input type="radio" id="statusRenting" form="propertyFrom"
+                                                                name="moderation_status" value="renting"
+                                                                class="form-check-input"
                                                                 {{ $property->moderation_status === 'renting' ? 'checked' : '' }}>
                                                             <label for="statusRenting"
                                                                 class="form-check-label">Renting</label>
                                                         </div>
 
                                                         <div class="form-check">
-                                                            <input type="radio" id="statusRented" name="moderation_status"
-                                                                value="rented" class="form-check-input"
+                                                            <input type="radio" id="statusRented" form="propertyFrom"
+                                                                name="moderation_status" value="rented"
+                                                                class="form-check-input"
                                                                 {{ $property->moderation_status === 'rented' ? 'checked' : '' }}>
                                                             <label for="statusRented" class="form-check-label">Rented</label>
                                                         </div>
                                                     @else
                                                         <div class="form-check">
-                                                            <input type="radio" id="statusSelling" name="moderation_status"
+                                                            <input type="radio" id="statusSelling" name="moderation_status" form="propertyFrom"
                                                                 value="selling" class="form-check-input"
                                                                 {{ $property->moderation_status === 'selling' ? 'checked' : '' }}>
                                                             <label for="statusSelling"
                                                                 class="form-check-label">Selling</label>
                                                         </div>
                                                         <div class="form-check">
-                                                            <input type="radio" id="statusSold" name="moderation_status"
+                                                            <input type="radio" id="statusSold" name="moderation_status" form="propertyFrom"
                                                                 value="sold" class="form-check-input"
                                                                 {{ $property->moderation_status === 'sold' ? 'checked' : '' }}>
                                                             <label for="statusSold" class="form-check-label">Sold</label>
@@ -1547,7 +1549,7 @@
                 addImages(event) {
                     const files = event.target.files || event.dataTransfer.files;
                     Array.from(files).forEach(file => {
-                        if (file.size <= 2 * 1024 * 1024 && file.type.startsWith('image/')) {
+                        // if (file.size <= 2 * 1024 * 1024 && file.type.startsWith('image/')) {
                             const fileObject = {
                                 url: URL.createObjectURL(file), // Blob URL for preview
                                 file: file, // The actual file object for uploading
@@ -1555,9 +1557,9 @@
                             };
                             this.images.push(fileObject);
                             this.files.push(file); // Store the file object for uploading
-                        } else {
-                            alert('Image not allowed to be more than 2 MB');
-                        }
+                        // } else {
+                        //     alert('Image not allowed to be more than 2 MB');
+                        // }
                     });
                 },
 
@@ -1612,7 +1614,7 @@
                         const isAllowedDocx = file.type ===
                             'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
 
-                        if (file.size <= 2 * 1024 * 1024 && (isAllowedImage || isAllowedPdf || isAllowedDocx)) {
+                        // if (file.size <= 2 * 1024 * 1024 && (isAllowedImage || isAllowedPdf || isAllowedDocx)) {
                             let previewUrl = isAllowedImage ?
                                 URL.createObjectURL(file) :
                                 isAllowedPdf ?
@@ -1627,9 +1629,9 @@
                             };
                             this.documents.push(fileObject);
                             this.files.push(file);
-                        } else {
-                            alert('Only image, PDF, and DOCX files under 2 MB are allowed.');
-                        }
+                        // } else {
+                        //     alert('Only image, PDF, and DOCX files under 2 MB are allowed.');
+                        // }
                     });
                 },
 

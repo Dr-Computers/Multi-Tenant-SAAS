@@ -123,12 +123,12 @@ class PropertyController extends Controller
                 $property->insurance_end_date = $request->insurance_end_date ?? null;
                 $property->building_no        = $request->building_no ?? null;
                 $property->lifts              = '';
-                $property->moderation_status = '1';
+                $property->moderation_status = $request->moderation_status;
                 $property->author_id        = auth()->user()->id;
                 $property->latitude         = $request->latitude ?? null;
                 $property->longitude        = $request->longitude ?? null;
                 $property->location         = $request->location_info ?? null;
-                $property->description      = $request->description ?? null;
+                $property->unique_info      = $request->unique_info ?? null;
                 $property->unique_id        = Auth::user()->creatorId() . date('maYdhis');
                 $property->views            = 0;
                 $property->is_featured      = 0;
@@ -244,6 +244,8 @@ class PropertyController extends Controller
                 $imagePath = null;
                 $videoPath = null;
                 $documentPath = null;
+                $removedImages = [];
+                $removedDocs   = [];
 
 
                 // Handle videos upload
@@ -251,9 +253,16 @@ class PropertyController extends Controller
                     $videoPath = $this->storeFiles($request->file('videos'));
                 }
 
+                if ($request->has('ExistingCoverImage')) {
+                    $CoverImage = $request->ExistingCoverImage;
+                } else {
+                    $CoverImage = $request->coverImage;
+                }
+
+
                 // Handle images upload
                 if ($request->hasFile('images')) {
-                    $imagePath = $this->storeFiles($request->file('images') ?? [], $request->coverImage);
+                    $imagePath = $this->storeFiles($request->file('images') ?? [], $CoverImage);
                 }
 
 
@@ -326,7 +335,7 @@ class PropertyController extends Controller
                 $property->open_parking     = $request->open_parking ?? null;
                 $property->availability_status = $request->available_status ?? null;
                 $property->age_property       = $request->property_age ?? null;
-                $property->thumbnail_image    =  isset($imagePath['coverImagePath']) ? $imagePath['coverImagePath'] : '';
+                $property->thumbnail_image    =  isset($imagePath['coverImagePath']) ? $imagePath['coverImagePath'] : ($request->has('ExistingCoverImage') ? $request->ExistingCoverImage : '');
                 $property->youtube_video      = $youtube_video ?? null;
                 $property->maintatenance_type = '';
                 $property->maintatenace_fee   = '';
@@ -341,12 +350,12 @@ class PropertyController extends Controller
                 $property->insurance_end_date = $request->insurance_end_date ?? null;
                 $property->building_no        = $request->building_no ?? null;
                 $property->lifts              = '';
-                $property->moderation_status = '1';
+                $property->moderation_status =  $request->moderation_status;
                 $property->author_id        = auth()->user()->id;
                 $property->latitude         = $request->latitude ?? null;
                 $property->longitude        = $request->longitude ?? null;
                 $property->location         = $request->location_info ?? null;
-                $property->description      = $request->description ?? null;
+                $property->unique_info      = $request->unique_info ?? null;
                 if ($property->unique_id == '') {
                     $property->unique_id        = $request->account . date('mYdhisa');
                 }
@@ -509,7 +518,6 @@ class PropertyController extends Controller
 
     protected function landmarks(Property $property, array $facilities = []): void
     {
-
         PropertyLandmark::where('property_id', $property->id)->delete();
 
         foreach ($facilities ?? [] as $facilityValue) {
@@ -517,7 +525,7 @@ class PropertyController extends Controller
                 $faciDistance              = new PropertyLandmark();
                 $faciDistance->property_id  = $property->id;
                 $faciDistance->landmark_id   = $facilityValue['id'];
-                $faciDistance->landmark_value        = $facilityValue['distance'] ?? '';
+                $faciDistance->landmark_value  = $facilityValue['distance'] ?? '';
                 $faciDistance->save();
             }
         }

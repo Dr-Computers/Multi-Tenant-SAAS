@@ -104,7 +104,7 @@
                 <div class="row row-in">
                     <div class="col-md-6 row-in-br">
                         <div class="col-in row">
-                            <h3 class="box-title">Total Properties</h3>
+                            <h3 class="box-title">Total Works</h3>
                             <div class="d-flex justify-content-between">
                                 <div class="col-xs-4"><i class="ti ti-checkbox fs-2 text-success"></i></div>
                                 <div class="col-xs-8 text-right fs-3 fw-bold">0</div>
@@ -125,7 +125,7 @@
                 <div class="row row-in">
                     <div class="col-md-6 row-in-br">
                         <div class="col-in row">
-                            <h3 class="box-title">Total Invoices</h3>
+                            <h3 class="box-title">Pending Works</h3>
                             <div class="d-flex justify-content-between">
                                 <div class="col-xs-4"><i class="ti ti-files fs-2 text-warning"></i></div>
                                 <div class="col-xs-8 text-right fs-3 fw-bold">0</div>
@@ -134,7 +134,7 @@
                     </div>
                     <div class="col-md-6 row-in-br b-r-none">
                         <div class="col-in row">
-                            <h3 class="box-title">Pending Invoices</h3>
+                            <h3 class="box-title">Completed Works</h3>
                             <div class="d-flex justify-content-between">
                                 <div class="col-xs-4"><i class="ti ti-files fs-2 text-danger"></i></div>
                                 <div class="col-xs-8 text-right fs-3 fw-bold">15</div>
@@ -142,27 +142,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="row row-in">
-
-                    <div class="col-md-6 row-in-br b-r-none">
-                        <div class="col-in row">
-                            <h3 class="box-title">Total Amount</h3>
-                            <div class="d-flex justify-content-between">
-                                <div class="col-xs-2"><i class="ti ti-cash fs-2 text-info"></i></div>
-                                <div class="col-xs-10 text-right fs-3 fw-bold">0 </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6 row-in-br">
-                        <div class="col-in row">
-                            <h3 class="box-title">Due Amount</h3>
-                            <div class="d-flex justify-content-between">
-                                <div class="col-xs-4"><i class="ti ti-cash fs-2 text-danger"></i></div>
-                                <div class="col-xs-8 text-right fs-3 fw-bold">0</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                
             </div>
         </div>
 
@@ -185,10 +165,10 @@
                 <div class="col-md-12 my-4 ">
                     <label class="mb-2"><b>Role</b></label>
                     <div class="d-flex gap-2">
-                        <img src="https://avatar.iran.liara.run/maintainername?background=000&color=fff&uppercase=true&maintainername={{ $maintainer->getRoleNames()->first() }}"
+                        <img src="https://avatar.iran.liara.run/maintainername?background=000&color=fff&uppercase=true&maintainername={{ $maintainer->role_name }}"
                             alt="maintainer" class="rounded-circle mb-2 w-10 h-10">
                         <label
-                            class="text-capitalize fw-bold text-primary mt-2">{{ $maintainer->getRoleNames()->first() }}</label>
+                            class="text-capitalize fw-bold text-primary mt-2">{{ $maintainer->role_name }}</label>
                     </div>
                 </div>
 

@@ -185,10 +185,10 @@
                 <div class="col-md-12 my-4 ">
                     <label class="mb-2"><b>Role</b></label>
                     <div class="d-flex gap-2">
-                        <img src="https://avatar.iran.liara.run/tenantname?background=000&color=fff&uppercase=true&tenantname={{ $tenant->getRoleNames()->first() }}"
+                        <img src="https://avatar.iran.liara.run/tenantname?background=000&color=fff&uppercase=true&tenantname={{ $tenant->role_name }}"
                             alt="tenant" class="rounded-circle mb-2 w-10 h-10">
                         <label
-                            class="text-capitalize fw-bold text-primary mt-2">{{ $tenant->getRoleNames()->first() }}</label>
+                            class="text-capitalize fw-bold text-primary mt-2">{{ $tenant->role_name }}</label>
                     </div>
                 </div>
 

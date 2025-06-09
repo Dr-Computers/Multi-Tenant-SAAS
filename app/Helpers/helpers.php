@@ -477,6 +477,19 @@ if (!function_exists('priceFormat')) {
     }
 }
 
+function currencySymbol()
+{
+    $settings = Utility::settings();
+
+    // dd($settings['site_currency_symbol'],$settings['site_currency']);
+    return $settings['site_currency_symbol'];
+}
+
+function adminPrice()
+{
+    return 'AED';
+}
+
 
 if (!function_exists('dateTimeFormat')) {
 
@@ -582,6 +595,8 @@ if (!function_exists('getCompanyAllDetails')) {
         }
     }
 }
+
+
 
 
 

@@ -67,45 +67,66 @@
 
                         {{-- Tab Content --}}
                         <div class="tab-content p-4 border border-top-0 rounded-bottom">
-                            @if ($tab == 'all-requests')
-                                @include('company.realestate.maintenance-requests.partials.all-requests', [
-                                    'allRequests' => $allRequests,
-                                ])
-                            @elseif($tab == 'pending-requests')
-                                @include(
-                                    'company.realestate.maintenance-requests.partials.pending-requests',
-                                    [
-                                        'pendingRequests' => $pendingRequests,
-                                    ]
-                                )
-                            @elseif($tab == 'in-progress-requests')
-                                @include(
-                                    'company.realestate.maintenance-requests.partials.in-progress-requests',
-                                    [
-                                        'InprogressRequests' => $InprogressRequests,
-                                    ]
-                                )
-                            @elseif($tab == 'completed-requests')
-                                @include(
-                                    'company.realestate.maintenance-requests.partials.completed-requests',
-                                    [
-                                        'completedRequests' => $completedRequests,
-                                    ]
-                                )
-                            @elseif($tab == 'ungenerated-invoices')
-                                @include(
-                                    'company.realestate.maintenance-requests.partials.ungenerated-invoices',
-                                    ['ungeneratedInvoices' => $ungeneratedInvoices]
-                                )
-                            @elseif($tab == 'due-invoices')
-                                @include('company.realestate.maintenance-requests.partials.due-invoices', [
-                                    'dueInvoices' => $dueInvoices,
-                                ])
-                            @elseif($tab == 'paid-invoices')
-                                @include('company.realestate.maintenance-requests.partials.paid-invoices', [
-                                    'paidInvoices' => $paidInvoices,
-                                ])
-                            @endif
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <div class="card">
+                                        <div class="card-body table-bUsers-style">
+                                            <div class="table-responsive" style="min-height:80vh;">
+
+                                                @if ($tab == 'all-requests')
+                                                    @include(
+                                                        'company.realestate.maintenance-requests.partials.request-table',
+                                                        [
+                                                            'tabRequests' => $allRequests,
+                                                            'status'      => 'show',
+                                                        ]
+                                                    )
+                                                @elseif($tab == 'pending-requests')
+                                                    @include(
+                                                        'company.realestate.maintenance-requests.partials.request-table',
+                                                        [
+                                                            'tabRequests' => $pendingRequests,
+                                                        ]
+                                                    )
+                                                @elseif($tab == 'in-progress-requests')
+                                                    @include(
+                                                        'company.realestate.maintenance-requests.partials.request-table',
+                                                        [
+                                                            'tabRequests' => $InprogressRequests,
+                                                        ]
+                                                    )
+                                                @elseif($tab == 'completed-requests')
+                                                    @include(
+                                                        'company.realestate.maintenance-requests.partials.request-table',
+                                                        [
+                                                            'tabRequests' => $completedRequests,
+                                                        ]
+                                                    )
+                                                @elseif($tab == 'ungenerated-invoices')
+                                                    @include(
+                                                        'company.realestate.maintenance-requests.partials.request-table',
+                                                        ['tabRequests' => $ungeneratedInvoices]
+                                                    )
+                                                @elseif($tab == 'due-invoices')
+                                                    @include(
+                                                        'company.realestate.maintenance-requests.partials.request-table',
+                                                        [
+                                                            'tabRequests' => $dueInvoices,
+                                                        ]
+                                                    )
+                                                @elseif($tab == 'paid-invoices')
+                                                    @include(
+                                                        'company.realestate.maintenance-requests.partials.request-table',
+                                                        [
+                                                            'tabRequests' => $paidInvoices,
+                                                        ]
+                                                    )
+                                                @endif
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     @endcan
                 </div>

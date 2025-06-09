@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Company\Realestate;
 
 use App\Http\Controllers\Controller;
+use App\Models\InvoiceSetting;
 use App\Models\MaintenanceRequestAttachment;
 use App\Models\MaintenanceTypes;
 use App\Models\MediaFile;
@@ -21,6 +22,9 @@ use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use App\Traits\ActivityLogger;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\File;
+use Svg\Tag\Rect;
 
 class MaintenanceRequestController extends Controller
 {
@@ -34,9 +38,21 @@ class MaintenanceRequestController extends Controller
             $pendingRequests = PropertyMaintenanceRequest::where('status', 'pending')->where('company_id', Auth::user()->creatorId())->get();
             $InprogressRequests      = PropertyMaintenanceRequest::where('status', 'inprogress')->where('company_id', Auth::user()->creatorId())->get();
             $completedRequests = PropertyMaintenanceRequest::where('status', 'completed')->where('company_id', Auth::user()->creatorId())->get();
-            $ungeneratedInvoices = PropertyMaintenanceRequest::where('company_id', Auth::user()->creatorId())->get();
-            $dueInvoices = PropertyMaintenanceRequest::where('company_id', Auth::user()->creatorId())->get();
-            $paidInvoices = PropertyMaintenanceRequest::where('company_id', Auth::user()->creatorId())->get();
+            $ungeneratedInvoices = PropertyMaintenanceRequest::where('company_id', Auth::user()->creatorId())->where('status', 'completed')->where('invoice_id','0')->get();
+            $paidInvoices = PropertyMaintenanceRequest::where('company_id', Auth::user()->creatorId())
+                ->whereHas('invoice', function ($query) {
+                    $query->where('status', 'closed');
+                })
+                ->get();
+
+            // Due Invoices (status != 'closed' and end_date <= today)
+            $dueInvoices = PropertyMaintenanceRequest::where('company_id', Auth::user()->creatorId())
+                ->whereHas('invoice', function ($query) {
+                    $query
+                        // ->where('status', '!=', 'closed')
+                        ->whereDate('end_date', '<=', Carbon::today());
+                })
+                ->get();
             return view('company.realestate.maintenance-requests.index', compact('allRequests', 'InprogressRequests', 'pendingRequests', 'completedRequests', 'ungeneratedInvoices', 'dueInvoices', 'paidInvoices'));
         } else {
             return redirect()->back()->with('error', 'Permission denied.');
@@ -128,7 +144,12 @@ class MaintenanceRequestController extends Controller
     }
 
 
-    public function show() {}
+    public function show($id)
+    {
+        $maintenanceRequest = PropertyMaintenanceRequest::where('company_id', Auth::user()->creatorId())->where('id', $id)->first();
+
+        return view('company.realestate.maintenance-requests.show', compact('maintenanceRequest'));
+    }
     public function edit($id)
     {
         if (Auth::user()->can('edit a maintenance request')) {
@@ -431,10 +452,165 @@ class MaintenanceRequestController extends Controller
     }
 
 
-    public function  invoiceEdit($id) {}
-    public function invoiceUpdate($id) {}
+    public function  invoiceEdit($id)
+    {
+        if (Auth::user()->can('create a maintenance invoice')) {
+            $Mrequest         = PropertyMaintenanceRequest::where('id', $id)->where('company_id', Auth::user()->creatorId())->first() ?? abort(404);
+            $invoicePeriods = [
+                '1' => '1 Year',
+                '2' => '2 Years',
+                '3' => '3 Years',
+                '4' => '4 Years',
+                '5' => '5 Years',
+                '6' => '6 Years',
+                '7' => '7 Year',
+                '8' => '8 Years',
+                '9' => '9 Years',
+                '10' => '10 Years',
+                // Add other periods as needed
+            ];
+            $invoiceNumber = $this->invoiceNumber();
 
-    public function invoiceDownload($id) {}
+            $maintenanceInvoice = RealestateInvoice::where('id', $Mrequest->invoice_id)->first();
+            return view('company.realestate.maintenance-requests.invoice-form', compact('Mrequest', 'invoiceNumber', 'invoicePeriods', 'maintenanceInvoice'));
+        } else {
+            return redirect()->back()->with('error', 'Permission denied.');
+        }
+    }
+    public function invoiceUpdate($id, Request $request)
+    {
+
+        if (Auth::user()->can('create a maintenance invoice')) {
+            DB::beginTransaction();
+            $Mrequest = PropertyMaintenanceRequest::where('id', $id)
+                ->where('company_id', Auth::user()->creatorId())
+                ->firstOrFail();
+
+            $invoice = RealestateInvoice::where('company_id', Auth::user()->creatorId())
+                ->where('id', $Mrequest->invoice_id)
+                ->first();
+
+            try {
+                $validator = Validator::make(
+                    $request->all(),
+                    [
+                        'end_date' => 'required|date',
+                        'invoice_id' => 'required|string|unique:realestate_invoices,invoice_id,' . $invoice->id,
+                        'invoice_period' => 'nullable|string',
+                        'invoice_period_end_date' => 'nullable|date',
+                        'types.*.invoice_type' => 'required|string',
+                        'types.*.description' => 'nullable|string',
+                        'types.*.amount' => 'required|numeric|min:0',
+                        'types.*.grand_amount' => 'required|numeric|min:0',
+                        'types.*.vat_amount' => 'nullable|numeric|min:0',
+                        // 'types.*.vat_inclusion' => 'required|in:included,excluded', // ✅ Fixed VAT inclusion validation
+                        'discount_amount' => 'nullable|numeric|min:0',
+                        'discount_reason' => 'nullable|string',
+                        'tax_type' => 'nullable|string'
+                    ],
+                    ['end_date.required' => 'The end date field is required.']
+                );
+
+                if ($validator->fails()) {
+                    return redirect()->back()->with('error', $validator->errors()->first())->withInput();
+                }
+
+
+                $invoice->end_date = $request->end_date;
+                $invoice->notes = $request->notes;
+                $invoice->invoice_period = $request->invoice_period ?? NULL;
+                $invoice->invoice_period_end_date = $request->invoice_period_end_date ?? NULL;
+                $invoice->status = 'open';
+                $invoice->tax_type = $request->tax_type ?? '';
+                $invoice->parent_id = Auth::user()->creatorId();
+                $invoice->discount_reason = $request->discount_reason ?? '';
+                $invoice->discount_amount = $request->discount_amount ?? 0;
+                $types = $request->types;
+
+                $subTotal = 0;
+                $totalTax = 0;
+                $grandTotal = 0;
+
+                $invoice->save();
+
+                RealestateInvoiceItem::where('invoice_id', $invoice->id)->delete();
+
+                foreach ($types ?? [] as $type) {
+                    $amount = (float) $type['amount'];
+                    $vatAmount = (float) $type['vat_amount'];
+                    $grandAmount = (float) $type['grand_amount'];
+
+                    $subTotal += $amount;
+                    $totalTax += $vatAmount;
+                    $grandTotal += $grandAmount;
+
+                    $invoiceItem = new RealestateInvoiceItem();
+                    $invoiceItem->invoice_id = $invoice->id;
+                    $invoiceItem->invoice_type = $type['invoice_type'];
+                    $invoiceItem->description = $type['description'] ?? null;
+                    $invoiceItem->amount = $amount;
+                    $invoiceItem->tax_amount = $vatAmount;
+                    $invoiceItem->grand_amount = $grandAmount;
+                    $invoiceItem->vat_inclusion = isset($type['vat_inclusion']) ? $type['vat_inclusion'] : 'excluded';
+                    $invoiceItem->save();
+                }
+
+                // Apply discount
+                $discountAmount = (float) ($request->discount_amount ?? 0);
+                $finalGrandTotal = max($grandTotal - $discountAmount, 0); // prevent negative total
+
+                // Update invoice totals
+                $invoice->sub_total = $subTotal;
+                $invoice->total_tax = $totalTax;
+                $invoice->grand_total = $finalGrandTotal;
+                $invoice->save();
+
+                $this->logActivity(
+                    'Update a Maintenance Request Invoice',
+                    'Request Id ' . $Mrequest->id,
+                    route('company.realestate.maintenance-requests.index'),
+                    'A Maintenance Request Invoice Updated successfully',
+                    Auth::user()->creatorId(),
+                    Auth::user()->id
+                );
+
+                DB::commit();
+                return redirect()->back()->with('success', __('Invoice successfully updated.'));
+            } catch (\Exception $e) {
+                DB::rollBack();
+                return redirect()->back()->with('error', $e->getMessage())->withInput();
+            }
+        } else {
+            return redirect()->back()->with('error', 'Permission denied.');
+        }
+    }
+
+    public function invoiceDownload($id)
+    {
+        $companyTemplate = InvoiceSetting::where('user_id', Auth::user()->creatorId())->first();
+        $invoice         = RealestateInvoice::where('company_id', Auth::user()->creatorId())->first();
+
+        // return view('pdf.invoices.partial.customer-invoice', compact('invoice', 'companyTemplate'));
+        $pdf = PDF::loadView('pdf.invoices.partial.customer-invoice', compact('invoice', 'companyTemplate'))->setPaper('a4', 'portrait');
+
+        // Save PDF to temporary location
+        $relativePath = 'public/uploads/invoices/invoice-' . $invoice->order_id . '.pdf';
+        $absolutePath = storage_path('app/' . $relativePath);
+
+        File::ensureDirectoryExists(dirname($absolutePath));
+        $pdf->save($absolutePath);
+        $this->logActivity(
+            'Maintaince Invoice Downloded',
+            'Maintaince Number ' . $id,
+            route('admin.realestate.maintenance-requests.index'),
+            'Maintaince  Invoice Downloded successfully',
+            Auth::user()->creatorId(),
+            Auth::user()->id
+        );
+
+        // Return the file as download and delete after response
+        return response()->download($absolutePath)->deleteFileAfterSend(true);
+    }
 
     protected function storeFiles($files)
     {

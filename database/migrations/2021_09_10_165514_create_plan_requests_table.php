@@ -17,11 +17,12 @@ class CreatePlanRequestsTable extends Migration
         //     $table->integer('requested_plan')->default(0)->after('plan_expire_date');
         // });
 
-        Schema::create('plan_requests', function (Blueprint $table){
+        Schema::create('plan_requests', function (Blueprint $table) {
             $table->id();
             $table->foreignId('company_id')->constrained('users')->onDelete('cascade');
             $table->integer('plan_id')->nullable();
             $table->string('duration', 20)->default('monthly');
+            $table->string('status')->default('pending')->nullable();
             $table->timestamps();
         });
     }

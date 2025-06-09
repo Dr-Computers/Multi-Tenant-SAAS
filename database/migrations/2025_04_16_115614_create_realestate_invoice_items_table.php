@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('invoice_id')->default(0);
             $table->foreign('invoice_id')->references('id')->on('realestate_invoices')->onDelete('cascade');
-            $table->integer('invoice_type')->default(0);
+            $table->string('invoice_type')->nullable()->default(0);
             $table->float('amount', 10, 2)->default(0.00);
             $table->text('description')->nullable();
             $table->float('tax_amount', 10, 2)->default(0.00);

@@ -18,9 +18,9 @@
             </tr>
         </thead>
         <tbody>
-            @if ($order->plan && $order->plan->count() > 0)
-
-                @foreach ($order->plan ?? [] as $index => $item)
+           
+            @if ($invoice->plan && $invoice->plan->count() > 0)
+                @foreach ($invoice->plan ?? [] as $index => $item)
                     <tr>
                         <td>{{ $index + 1 }}</td>
                         <td>{{ $item->name }}</td>
@@ -33,8 +33,10 @@
                     @endphp
                 @endforeach
             @else
-                @if ($order->companySubscriptions && $order->companySubscriptions->count() > 0)
-                    @foreach ($order->companySubscriptions ?? [] as $index => $sections)
+         
+  
+                @if ($invoice->companySubscriptions && $invoice->companySubscriptions->count() > 0)
+                    @foreach ($invoice->companySubscriptions ?? [] as $index => $sections)
                         <tr>
                             <td>{{ $index + 1 }}</td>
                             <td>{{ $sections->section->name }}</td>
@@ -47,6 +49,7 @@
                         @endphp
                     @endforeach
                 @endif
+                 
             @endif
         </tbody>
     </table>
@@ -80,5 +83,5 @@
             all particulars are true and correct.</p>
         <p>This is a Computer Generated Invoice</p>
     </div>
-
+  
 @endsection

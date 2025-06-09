@@ -124,6 +124,19 @@ class User extends Authenticatable implements MustVerifyEmail
         );
     }
 
+    public function propertyLeases()
+    {
+        return $this->hasManyThrough(
+            RealestateLease::class,  // Final model
+            Property::class,      // Intermediate model
+            'owner_id',           // Foreign key on Property table
+            'property_id',        // Foreign key on PropertyUnit table
+            'id',                 // Local key on User table
+            'id'                  // Local key on Property table
+        );
+    }
+
+
     public function personal()
     {
         return $this->hasOne(PersonalDetail::class, 'user_id', 'id');
@@ -139,6 +152,11 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasOne(MaintenanceJob::class, 'user_id', 'id');
     }
 
+    public function maintainceWorks()
+    {
+        return $this->hasMany(PropertyMaintenanceRequest::class, 'maintainer_id', 'id');
+    }
+
     public function creatorId1()
     {
         if ($this->type == 'super admin') {
@@ -147,7 +165,6 @@ class User extends Authenticatable implements MustVerifyEmail
             return $this->created_by;
         }
     }
-
 
     public function currentLanguage()
     {

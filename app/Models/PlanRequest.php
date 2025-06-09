@@ -17,8 +17,8 @@ class PlanRequest extends Model
         return $this->hasOne('App\Models\Plan', 'id', 'plan_id');
     }
 
-    public function user()
+    public function company()
     {
-        return $this->hasOne('App\Models\User', 'id', 'user_id');
+        return $this->hasOne('App\Models\User', 'id', 'company_id');
     }
 }

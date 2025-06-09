@@ -102,7 +102,7 @@
             </div>
             <div class="user-btm-box">
                 <div class="row row-in">
-                    <div class="col-md-6 row-in-br">
+                   {{--  <div class="col-md-6 row-in-br">
                         <div class="col-in row">
                             <h3 class="box-title">Total Working Days</h3>
                             <div class="d-flex justify-content-between">
@@ -120,10 +120,10 @@
                                 <div class="col-xs-10 text-right fs-3 fw-bold">0 hrs </div>
                             </div>
                         </div>
-                    </div>
+                    </div> --}}
                 </div>
                 <div class="row row-in">
-                    <div class="col-md-6 row-in-br">
+                    {{-- <div class="col-md-6 row-in-br">
                         <div class="col-in row">
                             <h3 class="box-title">Leaves Taken</h3>
                             <div class="d-flex justify-content-between">
@@ -140,7 +140,7 @@
                                 <div class="col-xs-8 text-right fs-3 fw-bold">15</div>
                             </div>
                         </div>
-                    </div>
+                    </div> --}}
                 </div>
                 <div class="row row-in">
                     <div class="col-md-6 row-in-br">
@@ -152,14 +152,14 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-6 row-in-br b-r-none">
+                    {{-- <div class="col-md-6 row-in-br b-r-none">
                         <div class="col-in row">
                             <div class="d-flex justify-content-between">
                                 <h3 class="box-title">View Task on Calendar</h3>
                                 <div class="col-xs-4"><i class="ti ti-calendar fs-2 text-success"></i></div>
                             </div>
                         </div>
-                    </div>
+                    </div> --}}
                 </div>
 
             </div>
@@ -183,10 +183,10 @@
                 <div class="col-md-12 my-4 ">
                     <label class="mb-2"><b>Role</b></label>
                     <div class="d-flex gap-2">
-                        <img src="https://avatar.iran.liara.run/username?background=000&color=fff&uppercase=true&username={{ $user->getRoleNames()->first() }}"
+                        <img src="https://avatar.iran.liara.run/username?background=000&color=fff&uppercase=true&username={{ $user->role_name }}"
                             alt="user" class="rounded-circle mb-2 w-10 h-10">
                         <label
-                            class="text-capitalize fw-bold text-primary mt-2">{{ $user->getRoleNames()->first() }}</label>
+                            class="text-capitalize fw-bold text-primary mt-2">{{ $user->role_name }}</label>
                     </div>
                 </div>
 

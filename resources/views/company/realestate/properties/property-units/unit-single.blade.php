@@ -12,6 +12,10 @@
         <i class="ti ti-arrow-left"></i> {{ __('Back') }}
     </a>
 @endsection
+
+@push('header')
+    <script src="https://cdn.tailwindcss.com"></script>
+@endpush
 @section('content')
     @can('unit details')
         <div class="row">

@@ -39,6 +39,31 @@ class RealestateInvoice extends Model
         return $this->hasOne('App\Models\user', 'id', 'tenant_id');
     }
 
+
+    public function company()
+    {
+        return $this->hasOne('App\Models\User', 'id', 'company_id');
+    }
+
+
+    public function user()
+    {
+        return $this->hasOneThrough(
+            User::class,               // Final model
+            RealestateLease::class,   // Intermediate model
+            'property_id',            // Foreign key on leases table (RealestateLease) pointing to invoice property_id
+            'id',                     // Foreign key on users table (User::id)
+            'property_id',            // Local key on invoices table (RealestateInvoice)
+            'tenant_id'               // Local key on leases table (RealestateLease)
+        );
+    }
+
+
+    public function invoiceItems()
+    {
+        return $this->hasMany(RealestateInvoiceItem::class, 'invoice_id', 'id');
+    }
+
     public function units()
     {
         return $this->hasOne('App\Models\PropertyUnit', 'id', 'unit_id');
@@ -48,7 +73,7 @@ class RealestateInvoice extends Model
     {
         return $this->hasMany('App\Models\RealestateInvoiceItem', 'invoice_id', 'id');
     }
-   
+
 
     public function payments()
     {
@@ -95,7 +120,7 @@ class RealestateInvoice extends Model
         }
         return $invoiceSubTotal;
     }
-    
+
 
     public function getInvoiceDueAmount()
     {
@@ -146,5 +171,4 @@ class RealestateInvoice extends Model
     {
         return $this->hasMany(RealestateChequeDetail::class, 'invoice_id'); // Replace 'invoice_id' with the actual foreign key in check_details table
     }
-
 }

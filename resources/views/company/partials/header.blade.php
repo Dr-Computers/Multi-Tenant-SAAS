@@ -5,7 +5,7 @@
     $currantLang = $users->currentLanguage();
     $languages = \App\Models\Language::where('code', $currantLang)->first();
     $mode_setting = \App\Models\Utility::getLayoutsSetting();
- 
+
 @endphp
 
 <header
@@ -27,6 +27,19 @@
         </div>
         <div class="ms-auto">
             <ul class="list-unstyled">
+                <li class="dropdown dash-h-item drp-company">
+                    <a class="btn btn-primary btn-sm me-3" href="{{ route('company.plan.upgrade') }}"><i
+                            class="ti ti-shopping-cart-plus"></i>
+                        {{ __('Upgrade Plan') }}
+                    </a>
+                </li>
+                <li class="dropdown dash-h-item drp-company">
+                    <a class="btn btn-success btn-sm me-3" href="{{ route('company.addon.features') }}"><i
+                            class="ti ti-apps"></i>
+                        {{ __('Addon Features') }}
+                    </a>
+                </li>
+
                 @impersonating($guard = null)
                     <li class="dropdown dash-h-item drp-company">
                         <a class="btn btn-danger btn-sm me-3" href="{{ route('admin.exit.company') }}"><i

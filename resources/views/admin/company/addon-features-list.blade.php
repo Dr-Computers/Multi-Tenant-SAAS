@@ -13,7 +13,7 @@
                                 </div>
                                 <div class="card-body">
                                     <div class="row">
-        
+
                                         @foreach ($groupedSections as $section)
                                             @php
                                                 // Check if this section already exists
@@ -32,7 +32,7 @@
                                                             data-price="{{ $section->price }}"
                                                             value="{{ $section->id }}"
                                                             id="section_{{ $section->id }}">
-                                                        <label class="form-check-label text-sm"
+                                                        <label class="form-check-label text-sm text-capitalize"
                                                             for="section_{{ $section->id }}">
                                                             {{ $section->name }} -
                                                             ₹{{ number_format($section->price, 2) }}
@@ -46,7 +46,7 @@
                                                             class="form-check-input input-primary pointer"
                                                             value="{{ $section->id }}"
                                                             id="section_{{ $section->id }}">
-                                                        <label class="form-check-label text-sm"
+                                                        <label class="form-check-label text-sm text-capitalize"
                                                             for="section_{{ $section->id }}">
                                                             {{ $section->name }} -
                                                             ₹{{ number_format($section->price, 2) }}
@@ -75,19 +75,20 @@
 
                     <h6 class="my-4">Sub Total: ₹<span id="subtotal">0.00</span></h6>
 
-                    <div class="my-2 d-none">
-                        <label class="form-label small mb-1">Tax (%)</label>
-                        <input type="number" class="form-control form-control-sm" id="tax" name="tax"
-                            value="0" min="0">
-                    </div>
 
-                    <div class="my-4 d-none">
+                    <div class="my-4">
                         <label class="form-label small mb-1">Coupon Code</label>
                         <div class="input-group input-group-sm">
                             <input type="text" class="form-control" id="coupon_code_input">
                             <button class="btn btn-primary" type="button" id="apply_coupon">Apply</button>
                         </div>
                         <small class="text-success" id="coupon_result"></small>
+                    </div>
+
+                    <h6 class="my-4">Discount1: {{ adminPrice() }}<span id="discount">0.00</span></h6>
+                    <div class="my-2 d-flex gap-3">
+                        <h6 class="form-label  mb-1">Tax (5%) : {{ adminPrice() }}</h6>
+                        <h6 id="tax">0.00</h6>
                     </div>
 
                     {{-- Hidden Fields to submit values --}}

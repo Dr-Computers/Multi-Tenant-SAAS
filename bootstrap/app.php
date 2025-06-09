@@ -42,6 +42,8 @@ return Application::configure(basePath: dirname(__DIR__))
             'tenant_panel' => \App\Http\Middleware\TenantPanel::class,
             'owner_panel' => \App\Http\Middleware\OwnerPanel::class,
             'maintainer_panel' => \App\Http\Middleware\MaintainerPanel::class,
+            'check.plan.expiry' => \App\Http\Middleware\CheckPlanExpiry::class,
+
         ]);
 
         // middlewareGroups / Group Middleware

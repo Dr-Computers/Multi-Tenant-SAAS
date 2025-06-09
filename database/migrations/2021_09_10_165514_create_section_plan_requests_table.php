@@ -17,7 +17,7 @@ class CreateSectionPlanRequestsTable extends Migration
         //     $table->integer('requested_plan')->default(0)->after('plan_expire_date');
         // });
 
-        Schema::create('section_plan_requests', function (Blueprint $table){
+        Schema::create('section_plan_requests', function (Blueprint $table) {
             $table->id();
             $table->foreignId('company_id')->constrained('users')->onDelete('cascade');
             $table->string('section_ids')->nullable();
@@ -25,9 +25,10 @@ class CreateSectionPlanRequestsTable extends Migration
             $table->string('coupon')->nullable();
             $table->integer('coupon_id')->nullable();
             $table->integer('discount')->nullable();
-            $table->decimal('tax_total',8,2)->nullable();
-            $table->decimal('sub_total',8,2)->nullable();
-            $table->decimal('grand_total',8,2)->nullable();
+            $table->decimal('tax_total', 8, 2)->nullable();
+            $table->decimal('sub_total', 8, 2)->nullable();
+            $table->decimal('grand_total', 8, 2)->nullable();
+            $table->string('status')->default('pending')->nullable();
             $table->timestamps();
         });
     }

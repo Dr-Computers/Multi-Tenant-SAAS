@@ -11,7 +11,7 @@
         <div class="d-flex">
             <a href="{{ route('company.realestate.properties.create') }}" title="{{ __('Create New Property') }}"
                 class="btn btn-sm btn-primary me-2">
-                <i class="ti ti-plus"></i>
+                <i class="ti ti-plus"></i> Create a Property
             </a>
         </div>
     @endcan
@@ -56,12 +56,12 @@
                                                 </a>
                                             </td>
                                             <td>
-                                                @if ($property->moderation_status == '1')
-                                                    <span class="badge bg-success p-1 px-3 rounded">
-                                                        {{ ucfirst('Enabled') }}</span>
+                                                @if ($property->moderation_status == 'selling' || $property->moderation_status == 'renting')
+                                                    <span class="text-capitalize badge bg-success p-1 px-3 rounded">
+                                                        {{ $property->moderation_status }}</span>
                                                 @else
-                                                    <span class="badge bg-danger p-1 px-3 rounded">
-                                                        {{ ucfirst('Disabled') }}</span>
+                                                    <span class="text-capitalize badge bg-danger p-1 px-3 rounded">
+                                                       {{ $property->moderation_status }} </span>
                                                 @endif
                                             </td>
 

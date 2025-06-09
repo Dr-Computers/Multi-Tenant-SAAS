@@ -18,7 +18,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @forelse ($owner->propertyUnits ?? [] as $key => $unit)
+                            @forelse ($owner->propertyLeases ?? [] as $key => $unit)
                                 <tr>
                                     <td>{{ $key + 1 }}</td>
                                     <td>
@@ -27,12 +27,11 @@
                                         Reg no : {{ $unit->registration_no }}
                                     </td>
                                     <td>{{ $unit->property->owner->name }}</td>
-                                    <td>{{ $unit->lease->tenant->name }}</td>
+                                    <td>{{ $unit->lease ? $unit->lease->tenant->name : '' }}</td>
                                     <td class="text-center">{{ $unit->rent_duration }} Month</td>
                                     <td class="text-end">{{ $unit->deposite_amount }}/ {{ $unit->deposite_type }}</td>
                                     <td class="text-end">{{ $unit->price }}/ {{ $unit->rent_type }}</td>
-                                    <td class="text-center">{{ $unit->lease->no_of_payments }}</td>
-
+                                    <td class="text-center">{{ $unit->lease ? $unit->lease->no_of_payments : '' }}</td>
                                     <td>
                                         <div class="btn-group card-option">
                                             <button type="button" class="btn dropdown-toggle" data-bs-toggle="dropdown"

@@ -45,7 +45,7 @@ trait Emails
 
 
 
-    public static function sendOrderInvoice($order, $email = null)
+    public static function sendOrderInvoice($invoice, $email = null)
     {
         self::configureMailFromSettings();
 
@@ -65,10 +65,10 @@ trait Emails
 
         $adminTemplate = InvoiceSetting::where('user_id', Auth::user()->creatorId())->first();
 
-        $pdf = PDF::loadView('pdf.invoices.partial.admin-invoice', compact('order', 'adminTemplate'))->setPaper('a4', 'portrait');
+        $pdf = PDF::loadView('pdf.invoices.partial.admin-invoice', compact('invoice', 'adminTemplate'))->setPaper('a4', 'portrait');
 
         // Save PDF to temporary location
-        $relativePath = 'public/uploads/invoices/invoice-' . $order->order_id . '.pdf';
+        $relativePath = 'public/uploads/invoices/invoice-' . $invoice->order_id . '.pdf';
         $absolutePath = storage_path('app/' . $relativePath);
 
         File::ensureDirectoryExists(dirname($absolutePath));
@@ -78,14 +78,14 @@ trait Emails
 
         self::email(new \App\Jobs\Email([
             'emailClass'  => 'DefaultMail',
-            'to'          => $email ?? $order->company->email,
+            'to'          => $email ?? $invoice->company->email,
             'bccStatus'   => false,
-            'subject'     => 'Order Confirmation - Order No : ' . $order->order_id,
+            'subject'     => 'Order Confirmation - Order No : ' . $invoice->order_id,
             'contents'    => view('pdf.invoices.partial.admin-invoice', [
                 'adminTemplate' => $adminTemplate,
-                'order'    => $order
+                'invoice'    => $invoice
             ])->render(),
-            'files' => [asset('storage/uploads/invoices/invoice-' . $order->order_id . '.pdf')],
+            'files' => [asset('storage/uploads/invoices/invoice-' . $invoice->order_id . '.pdf')],
         ]));
 
         // To admin

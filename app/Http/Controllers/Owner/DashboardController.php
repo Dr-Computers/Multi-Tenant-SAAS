@@ -154,7 +154,7 @@ class DashboardController extends Controller
     {
         $userDetail              = Auth::user();
 
-        return view('company.profile.index', compact('userDetail'));
+        return view('owner.profile.index', compact('userDetail'));
     }
 
     public function editprofile(Request $request)
@@ -204,12 +204,14 @@ class DashboardController extends Controller
                 $obj_user->password = Hash::make($request_data['new_password']);;
                 $obj_user->save();
 
-                return redirect()->route('company.profile', $objUser->id)->with('success', __('Password successfully updated.'));
+                return redirect()->route('owner.profile', $objUser->id)->with('success', __('Password successfully updated.'));
             } else {
-                return redirect()->route('company.profile', $objUser->id)->with('error', __('Please enter correct current password.'));
+                return redirect()->route('owner.profile', $objUser->id)->with('error', __('Please enter correct current password.'));
             }
         } else {
-            return redirect()->route('company.profile', \Auth::user()->id)->with('error', __('Something is wrong.'));
+            return redirect()->route('owner.profile', \Auth::user()->id)->with('error', __('Something is wrong.'));
         }
     }
+
+    
 }

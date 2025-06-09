@@ -15,7 +15,7 @@ return new class extends Migration
             Schema::table('properties', function (Blueprint $table) {
                 $table->string('mode')->nullable(1)->after('purpose_type');  
                 $table->integer('author_id')->default(1)->after('thumbnail_image');   
-                $table->integer('moderation_status')->default(1)->after('author_id');   
+                $table->string('moderation_status')->default('draft')->after('author_id');   
                 $table->string('unique_id')->default(1)->after('moderation_status'); 
                 $table->string('location')->nullable()->after('unique_id');   
                 $table->string('latitude')->nullable()->after('location');   

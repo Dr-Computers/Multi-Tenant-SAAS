@@ -11,7 +11,7 @@
         <div class="d-flex">
             <a href="#" data-size="md" data-url="{{ route('company.realestate.owners.create') }}" data-ajax-popup="true"
                 data-bs-toggle="tooltip" title="{{ __('Create New Owner') }}" class="btn btn-sm btn-primary me-2">
-                <i class="ti ti-plus"></i>
+                <i class="ti ti-plus"></i> Create a Owner
             </a>
         </div>
     @endcan

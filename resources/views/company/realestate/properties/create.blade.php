@@ -1,43 +1,6 @@
 @extends('layouts.company')
 @push('header')
-    <style>
-        .loader-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            z-index: 9999;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            transition: opacity 0.3s ease-in-out;
-        }
-
-        .loader-overlay.hidden {
-            display: none;
-        }
-
-        .spinner {
-            border: 8px solid rgba(255, 255, 255, 0.3);
-            border-top: 8px solid white;
-            border-radius: 50%;
-            width: 60px;
-            height: 60px;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            0% {
-                transform: rotate(0deg);
-            }
-
-            100% {
-                transform: rotate(360deg);
-            }
-        }
-    </style>
+    <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -1353,7 +1316,7 @@
                 addImages(event) {
                     const files = event.target.files || event.dataTransfer.files;
                     Array.from(files).forEach(file => {
-                        if (file.size <= 2 * 1024 * 1024 && file.type.startsWith('image/')) {
+                        // if (file.size <= 2 * 1024 * 1024 && file.type.startsWith('image/')) {
                             const fileObject = {
                                 url: URL.createObjectURL(file), // Blob URL for preview
                                 file: file, // The actual file object for uploading
@@ -1361,9 +1324,9 @@
                             };
                             this.images.push(fileObject);
                             this.files.push(file); // Store the file object for uploading
-                        } else {
-                            alert('Image not allowed to be more than 2 MB');
-                        }
+                        // } else {
+                        //     alert('Image not allowed to be more than 2 MB');
+                        // }
                     });
                 },
 
@@ -1418,7 +1381,7 @@
                         const isAllowedDocx = file.type ===
                             'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
 
-                        if (file.size <= 2 * 1024 * 1024 && (isAllowedImage || isAllowedPdf || isAllowedDocx)) {
+                        // if (file.size <= 2 * 1024 * 1024 && (isAllowedImage || isAllowedPdf || isAllowedDocx)) {
                             let previewUrl = isAllowedImage ?
                                 URL.createObjectURL(file) :
                                 isAllowedPdf ?
@@ -1433,9 +1396,9 @@
                             };
                             this.documents.push(fileObject);
                             this.files.push(file);
-                        } else {
-                            alert('Only image, PDF, and DOCX files under 2 MB are allowed.');
-                        }
+                        // } else {
+                        //     alert('Only image, PDF, and DOCX files under 2 MB are allowed.');
+                        // }
                     });
                 },
 
