@@ -6,42 +6,47 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('realestate_leases', function (Blueprint $table) {
             $table->id();
+
+            // Foreign keys (ensure these tables exist and use $table->id())
             $table->foreignId('company_id')->constrained('users')->onDelete('cascade');
-            $table->unsignedBigInteger('tenant_id'); // FK to tenants
-            $table->string('property');
-            $table->string('unit');
+            $table->foreignId('tenant_id')->constrained('users')->onDelete('cascade');
+            $table->foreignId('property_id')->constrained('properties')->onDelete('cascade');
+            // $table->foreignId('unit_id')->constrained('property_units')->onDelete('cascade');
+            $table->unsignedBigInteger('unit_id')->nullable();
+            // $table->foreign('unit_id')->references('id')->on('property_units')->onDelete('cascade');
+
+            // Lease dates
             $table->date('lease_start_date');
             $table->date('lease_end_date');
             $table->date('free_period_start')->nullable();
             $table->date('free_period_end')->nullable();
-            $table->decimal('unit_price', 10, 2)->nullable();
-            $table->enum('status', [
-                'active', 'renewed', 'canceled', 'case',
-                'under review', 'procedure_still_pending',
-                'under_management', 'awaiting_activation'
-            ])->default('active');
-            $table->enum('renewal_status', ['renew_applied', 'renewal_approved', 'renewal_canceled'])->nullable();
 
-            $table->unsignedBigInteger('previous_lease_id')->nullable();
-            $table->enum('renewal_option', ['yes', 'no', 'pending'])->default('pending');
+            // Pricing & Payment
+            $table->decimal('unit_price', 10, 2)->nullable();
             $table->decimal('rent_increase', 10, 2)->nullable();
             $table->decimal('security_deposit', 10, 2)->nullable();
             $table->enum('payment_frequency', ['monthly', 'quarterly', 'annually'])->default('quarterly');
-            $table->text('notes')->nullable();
 
-            $table->unsignedBigInteger('created_by')->nullable();
-            $table->unsignedBigInteger('updated_by')->nullable();
+            // Status & Renewal
+            $table->enum('status', [
+                'active',
+                'renewed',
+                'canceled',
+                'case',
+                'under review',
+                'procedure_still_pending',
+                'under_management',
+                'awaiting_activation'
+            ])->default('active');
 
-            $table->unsignedBigInteger('property_id')->nullable();
-            $table->unsignedBigInteger('unit_id')->nullable();
+            $table->enum('renewal_status', ['renew_applied', 'renewal_approved', 'renewal_canceled'])->nullable();
+            $table->enum('renewal_option', ['yes', 'no', 'pending'])->default('pending');
 
+            // Extra Info
             $table->timestamp('cancellation_date')->nullable();
             $table->string('property_number')->nullable();
             $table->string('contract_number')->nullable();
@@ -51,22 +56,19 @@ return new class extends Migration
             $table->decimal('tawtheeq_fees', 10, 2)->nullable();
             $table->decimal('new_managemenmt_contract_fees', 10, 2)->nullable();
 
+            $table->unsignedBigInteger('previous_lease_id')->nullable(); // Optional relation to same table
+            $table->unsignedBigInteger('created_by')->nullable();
+            $table->unsignedBigInteger('updated_by')->nullable();
+
+            $table->text('notes')->nullable();
+
             $table->timestamps();
 
-            // Foreign keys
-            $table->foreign('tenant_id')->references('id')->on('users')->onDelete('cascade');
-            $table->foreign('previous_lease_id')->references('id')->on('realestate_leases')->onDelete('set null');
-            $table->foreign('property_id')->references('id')->on('properties')->onDelete('set null');
-            $table->foreign('unit_id')->references('id')->on('property_units')->onDelete('set null');
-     
-           
-           
+            // Optional: if you want to enforce foreign key to same table
+            // $table->foreign('previous_lease_id')->references('id')->on('realestate_leases')->nullOnDelete();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('realestate_leases');

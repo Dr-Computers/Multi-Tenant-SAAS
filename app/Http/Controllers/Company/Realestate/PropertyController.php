@@ -123,7 +123,7 @@ class PropertyController extends Controller
                 $property->insurance_end_date = $request->insurance_end_date ?? null;
                 $property->building_no        = $request->building_no ?? null;
                 $property->lifts              = '';
-                $property->moderation_status = $request->moderation_status;
+                $property->moderation_status = $request->mode == 'rent' ? 'renting' : 'selling';
                 $property->author_id        = auth()->user()->id;
                 $property->latitude         = $request->latitude ?? null;
                 $property->longitude        = $request->longitude ?? null;
@@ -350,7 +350,7 @@ class PropertyController extends Controller
                 $property->insurance_end_date = $request->insurance_end_date ?? null;
                 $property->building_no        = $request->building_no ?? null;
                 $property->lifts              = '';
-                $property->moderation_status =  $request->moderation_status;
+                $property->moderation_status =  $request->moderation_status ??  $property->moderation_status;
                 $property->author_id        = auth()->user()->id;
                 $property->latitude         = $request->latitude ?? null;
                 $property->longitude        = $request->longitude ?? null;

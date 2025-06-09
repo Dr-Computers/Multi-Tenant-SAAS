@@ -214,7 +214,7 @@ class SystemController extends Controller
 
     public function saveCompanySettings(Request $request)
     {
-        if (\Auth::user()->can('manage company settings')) {
+        if (\Auth::user()->can('brand settings')) {
             DB::beginTransaction();
             try {
 
@@ -437,7 +437,7 @@ class SystemController extends Controller
 
     public function saveSystemSettings(Request $request)
     {
-        if (\Auth::user()->can('manage company settings')) {
+        if (\Auth::user()->can('system settings')) {
 
             DB::beginTransaction();
             try {
@@ -494,7 +494,7 @@ class SystemController extends Controller
     public function saveBusinessSettings(Request $request)
     {
 
-        if (\Auth::user()->can('manage business settings')) {
+        if (\Auth::user()->can('brand settings')) {
             DB::beginTransaction();
             try {
                 $user = Auth::user();
@@ -703,7 +703,7 @@ class SystemController extends Controller
         $usr = Auth::user();
 
         if ($usr->type == 'company') {
-            if (Auth::user()->can('manage company settings')) {
+            if (Auth::user()->can('brand settings')) {
                 $settings                = Utility::settings();
                 $company_payment_setting = Utility::getCompanyPaymentSetting(\Auth::user()->id);
 
