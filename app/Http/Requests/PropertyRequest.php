@@ -36,8 +36,8 @@ class PropertyRequest extends FormRequest
             'type' => 'required',
             'mode' => 'required',
             'ownership' => 'required',
-            'insurance_start_date' => 'required',
-            'insurance_end_date' => 'required',
+            // 'insurance_start_date' => 'required',
+            // 'insurance_end_date' => 'required',
             'owner' => 'required'
         ];
     }

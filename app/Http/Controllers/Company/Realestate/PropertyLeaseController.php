@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Str;
 use App\Traits\Media\HandlesMediaFolders;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
 
 
 class PropertyLeaseController extends Controller
@@ -42,9 +43,10 @@ class PropertyLeaseController extends Controller
     }
 
     //new lease request
-    public function store(Request $request, $unit)
+    public function store(Request $request, $unit_id)
     {
-        $validated = $request->validate([
+
+        $validator = Validator::make($request->all(), [
             'no_of_payments' => 'required|numeric',
             'lease_start_date' => 'required|date',
             'lease_end_date' => 'required|date|after_or_equal:lease_start_date',
@@ -61,12 +63,22 @@ class PropertyLeaseController extends Controller
             'notes.*' => 'nullable|string',
         ]);
 
+        if ($validator->fails()) {
+            $messages = $validator->getMessageBag();
+
+            return redirect()->back()->with('error', $messages->first());
+        }
+
         DB::beginTransaction();
-
-        $property           = Property::where('id', $unit->id)->where('company_id', $company_id)->first();
-
         $company_id         = Auth::user()->creatorId();
-        $unit               = PropertyUnit::where('id', $unit->id)->where('company_id', $company_id)->first();
+        $unit               = PropertyUnit::where('id', $unit_id)->where('company_id', $company_id)->first();
+
+        if (!$unit) {
+
+            return redirect()->back()->with('error', 'Invalid Request');
+        }
+        $property           = Property::where('id', $unit->property_id)->where('company_id', $company_id)->first();
+
 
         try {
             // `property`, 
@@ -88,7 +100,7 @@ class PropertyLeaseController extends Controller
             $lease->cancellation_date   = $request->lease_end_date;
             $lease->property_number     = $request->property_number;
             $lease->contract_number     = $request->contract_number;
-            if ($property->ownerDetail->is_tenants_approval == '0') {
+            if ($property->ownerDetail && $property->ownerDetail->is_tenants_approval == '0') {
                 $lease->status              = 'active';
             } else {
                 $lease->status              = 'under review';

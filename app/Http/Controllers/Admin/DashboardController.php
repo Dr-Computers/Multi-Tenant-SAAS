@@ -48,7 +48,7 @@ class DashboardController extends Controller
     public function index()
     {
         if (Auth::check()) {
-            if (Auth::user()->type == 'super admin' || Auth::user()->type == 'admin staff') {
+            if (Auth::user()->type == 'super admin' || Auth::user()->type == 'admin-staff') {
                 $user                           = Auth::user();
 
                 $user['total_companies']        = $user->countCompanies();

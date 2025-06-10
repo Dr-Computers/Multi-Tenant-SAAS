@@ -23,7 +23,7 @@ class PropertyUnitController extends Controller
     {
         if (Auth::user()->can('unit listing')) {
             $property = Property::where('id', $id)->first() ?? abort(404);
-            $units = PropertyUnit::all();
+            $units = PropertyUnit::where('property_id', $id)->get();
             return view('company.realestate.properties.property-units.index', compact('units', 'property'));
         } else {
             return redirect()->back()->with('error', 'Permission denied.');

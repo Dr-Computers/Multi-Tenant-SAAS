@@ -854,10 +854,11 @@ class  CompanyController extends Controller
                 $request->all(),
                 [
                     'features' => 'required|array',
+                    'features.*'   => 'required|integer',
                     'subtotal' => 'required|numeric',
-                    'tax' => 'required|numeric',
+                    'tax' => 'nullable|numeric',
                     'discount' => 'nullable|numeric',
-                    'grandtotal' => 'required|numeric',
+                    'grandtotal' => 'nullable|numeric',
                     'coupon_code' => 'nullable|string',
                 ]
             );
@@ -870,7 +871,18 @@ class  CompanyController extends Controller
 
             $features = $request->features ?? [];
 
-            Company::sectionOrderStore($features, $company_id, $request->tax, $request->subtotal, $request->discount, $request->coupon_code, $request->grandtotal);
+            $subTotal = Section::whereIn('id', $features)->sum('price');
+
+            $coupon = Coupon::where('code', $request->coupon_code)->where('is_active', true)->first();
+            $discountAmount = $coupon ? $coupon->discount : 0;
+
+            $taxPercent = 5;
+            $taxableAmount = max($subTotal - $discountAmount, 0);
+            $taxAmount = ($taxableAmount * $taxPercent) / 100;
+            $grandTotal = $taxableAmount + $taxAmount;
+
+
+            Company::sectionOrderStore($features, $company_id, $taxAmount, $subTotal, $discountAmount, $request->coupon_code ?? '', $grandTotal);
 
             $this->logActivity(
                 'Company Feature Purchasing Completed',
@@ -894,7 +906,7 @@ class  CompanyController extends Controller
         if ($coupon) {
             return response()->json([
                 'success' => true,
-                'amount' => $coupon->discount_amount,
+                'amount' => $coupon->discount,
             ]);
         }
 

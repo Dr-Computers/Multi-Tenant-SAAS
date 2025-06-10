@@ -13,43 +13,39 @@
             <tr>
                 <th>Sl. No.</th>
                 <th>Description</th>
-                <th>VAT (AED)</th>
-                <th>Amount (AED)</th>
+                {{-- <th>VAT ({{ adminPrice() }})</th> --}}
+                <th>Amount ({{ adminPrice() }})</th>
             </tr>
         </thead>
         <tbody>
-           
+
             @if ($invoice->plan && $invoice->plan->count() > 0)
                 @foreach ($invoice->plan ?? [] as $index => $item)
                     <tr>
                         <td>{{ $index + 1 }}</td>
                         <td>{{ $item->name }}</td>
-                        <td>{{ number_format($item->tax, 2) }}</td>
-                        <td>{{ $item->price_currency }} {{ number_format($item->price, 2) }}</td>
+                        {{-- <td>{{ number_format($item->tax, 2) }}</td> --}}
+                        <td>{{ adminPrice() }} {{ number_format($item->price, 2) }}</td>
                     </tr>
                     @php
-                        $currency = $item->price_currency;
                         $total = $total + (number_format($item->price, 2) + number_format($item->tax, 2));
                     @endphp
                 @endforeach
             @else
-         
-  
-                @if ($invoice->companySubscriptions && $invoice->companySubscriptions->count() > 0)
-                    @foreach ($invoice->companySubscriptions ?? [] as $index => $sections)
+                @if ($invoice->order_items && $invoice->order_items->count() > 0)
+                    @foreach ($invoice->order_items ?? [] as $index => $sections)
                         <tr>
                             <td>{{ $index + 1 }}</td>
-                            <td>{{ $sections->section->name }}</td>
+                            <td>{{ ucfirst($sections->name) }}</td>
                             <td>{{ 0 }}</td>
-                            <td>{{ number_format($sections->section->price, 2) }}</td>
+                            <td>{{ number_format($sections->price, 2) }}</td>
                         </tr>
                         @php
-                            $currency = $sections->section->price_currency;
-                            $total = $total + number_format($sections->section->price, 2);
+                            $total = $total + number_format($sections->price, 2);
                         @endphp
                     @endforeach
                 @endif
-                 
+
             @endif
         </tbody>
     </table>
@@ -57,12 +53,18 @@
     <table width="100%" style="margin-top: 20px;">
         <tr>
             <td style="width: 50%; vertical-align: top;">
-                <p><strong>Total:</strong></p>
+                <p><strong>Sub Total:</strong></p>
+                <p><strong>Discount Total:</strong></p>
+                <p><strong>Tax:</strong></p>
+                <p><strong>Grand Total:</strong></p>
                 <p><strong>Total (in words):</strong></p>
             </td>
             <td style="width: 50%; text-align: right; vertical-align: top; text-transform: capitalize;">
-                <p><strong> AED {{ number_format($total) }}</strong></p>
-                <p>{{ numberToWords($total) }} United Arab Emirates dirhams</p>
+                <p><strong> {{ adminPrice() }} {{ number_format($invoice->subtotal) }}</strong></p>
+                <p><strong> {{ adminPrice() }} {{ number_format($invoice->discount) }}</strong></p>
+                <p><strong> {{ adminPrice() }} {{ number_format($invoice->tax) }}</strong></p>
+                <p><strong> {{ adminPrice() }} {{ number_format($invoice->price) }}</strong></p>
+                <p>{{ numberToWords($invoice->price) }} United Arab Emirates dirhams</p>
             </td>
         </tr>
     </table>
@@ -83,5 +85,5 @@
             all particulars are true and correct.</p>
         <p>This is a Computer Generated Invoice</p>
     </div>
-  
+
 @endsection

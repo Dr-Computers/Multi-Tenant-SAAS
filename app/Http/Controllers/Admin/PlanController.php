@@ -30,7 +30,6 @@ class PlanController extends Controller
     public function index()
     {
         if (\Auth::user()->can('plan listing')) {
-
             // Extract unique business types based on relationship
             $businessTypes = BusinessType::get();
             $plans                 = Plan::orderBy('price', 'asc')->get();
@@ -76,6 +75,8 @@ class PlanController extends Controller
                 'business_type' => 'required',
                 'description'   => 'nullable',
             ]);
+
+            
 
             // $request->validate($validator);
 

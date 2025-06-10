@@ -256,11 +256,11 @@
 
             if (vatIncluded) {
                 console.log("inc");
-                vatAmount = amount * vatRate;
-                grandAmount = amount;
+                vatAmount = 0;
+                grandAmount = amount + vatAmount;
             } else {
                 console.log("exc");
-                vatAmount = amount * vatRate;
+                vatAmount = amount * vatRate;;
                 grandAmount = amount + vatAmount;
             }
 

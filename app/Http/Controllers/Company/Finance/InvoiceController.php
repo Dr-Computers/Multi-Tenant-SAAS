@@ -69,7 +69,7 @@ class InvoiceController extends Controller
             $property->prepend(__('Select Property'), '');
 
 
-            $types = RealestateType::where('parent_id', creatorId())->where('type', 'invoice')->get()->pluck('title', 'id');
+            $types = RealestateType::where('type', 'invoice')->get()->pluck('title', 'id');
             $types->prepend(__('Select Type'), '');
             $invoicePeriods = [
                 '1' => '1 Year',

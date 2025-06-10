@@ -67,18 +67,22 @@
         let discount = 0;
 
         function updateCart() {
-            let subtotal = cart.reduce((sum, item) => sum + item.price, 0);
-            let tax = parseFloat(document.getElementById('tax').value) || 0;
-            let taxAmount = subtotal * (tax / 100);
-            let grandtotal = subtotal + taxAmount - discount;
 
-            document.getElementById('subtotal').innerText = subtotal.toFixed(2);
-            document.getElementById('grandtotal').innerText = grandtotal.toFixed(2);
+            var discountAmount = parseFloat(document.getElementById('hidden_discount').value) || 0;
+            let subtotal = cart.reduce((sum, item) => sum + item.price, 0);
+            let tax = parseFloat(0.05) || 0.00;
+            let taxAmount = (subtotal - discountAmount) * tax;
+            let grandtotal = subtotal + taxAmount - discountAmount;
+
+            document.getElementById('subtotal').innerText = `{{ adminPrice() }} ` + subtotal.toFixed(2);
+            document.getElementById('grandtotal').innerText = `{{ adminPrice() }} ` + grandtotal.toFixed(2);
+            document.getElementById('tax').innerText = `{{ adminPrice() }} ` + taxAmount.toFixed(2);
+
 
             // Update hidden fields
             document.getElementById('hidden_subtotal').value = subtotal.toFixed(2);
             document.getElementById('hidden_grandtotal').value = grandtotal.toFixed(2);
-            document.getElementById('hidden_discount').value = discount.toFixed(2);
+            document.getElementById('hidden_discount').value = discountAmount.toFixed(2);
 
             let cartList = document.getElementById('cart-list');
             cartList.innerHTML = '';
@@ -94,6 +98,7 @@
                 });
             }
         }
+
 
         document.querySelectorAll('.section-checkbox').forEach(checkbox => {
             checkbox.addEventListener('change', function() {
@@ -120,6 +125,12 @@
 
         document.getElementById('apply_coupon').addEventListener('click', function() {
             let code = document.getElementById('coupon_code_input').value.trim();
+            var sub = document.getElementById('hidden_subtotal').value.trim();
+            if (sub <= 0) {
+                document.getElementById('coupon_result').innerText = "Sub Total is Zero.";
+                return;
+            }
+
             if (!code) return;
 
             fetch('{{ route('admin.company.coupon.validate') }}', {
@@ -136,17 +147,33 @@
                 .then(data => {
                     if (data.success) {
                         discount = parseFloat(data.amount);
-                        document.getElementById('coupon_result').innerText = "Coupon applied: ₹" + discount
+                        console.log(data);
+
+                        document.getElementById('coupon_result').innerText =
+                            "Coupon applied Discount: {{ adminPrice() }}" + discount
                             .toFixed(2);
                         document.getElementById('hidden_coupon_code').value = code;
+                        document.getElementById('discount').innerText = `- {{ adminPrice() }} ` + discount;
+                        document.getElementById('hidden_discount').value = discount;
+
                     } else {
                         discount = 0;
                         document.getElementById('coupon_result').innerText = "Invalid coupon.";
                         document.getElementById('hidden_coupon_code').value = "";
+                        document.getElementById('discount').innerText = `- {{ adminPrice() }} ` + 0;
+
+                        document.getElementById('hidden_discount').value = 0;
                     }
                     updateCart();
                 })
                 .catch(error => console.error('Error:', error));
+        });
+
+
+
+        // Before form submit, update all hidden fields again
+        document.getElementById('purchase-form').addEventListener('submit', function() {
+            updateCart(); // ensure final values updated
         });
 
         // Before form submit, update all hidden fields again

@@ -85,11 +85,11 @@
                                             <div class="row">
                                                 <h5 class="text-success font-bold mb-4"><u>Amenities : </u></h5>
                                                 <div class="row">
-                                                    @foreach ($property->features ?? [] as $key => $feature)
+                                                  @foreach ($property->amenities ?? [] as $key => $amenity)
                                                         <div class="col-lg-3 mb-3">
                                                             <div class="d-flex  flex-warp items-center">
-                                                                <img src="{{ $feature->image_url }}" class="">
-                                                                <span class="ms-2 text-sm">{{ $feature->name }}</span>
+                                                                <img src="{{ $amenity->image_url }}" class="">
+                                                                <span class="ms-2 text-sm">{{ $amenity->name }}</span>
                                                             </div>
                                                         </div>
                                                     @endforeach

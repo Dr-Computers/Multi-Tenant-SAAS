@@ -188,10 +188,10 @@
         const vatRate = 0.05;
         let vatAmount, grandAmount;
         if (vatIncluded) {
-            vatAmount = amount * vatRate;
+            vatAmount = amount * 0; 
             grandAmount = amount;
         } else {
-            vatAmount = amount * 0;
+            vatAmount = amount * vatRate;
             grandAmount = amount;
         }
 

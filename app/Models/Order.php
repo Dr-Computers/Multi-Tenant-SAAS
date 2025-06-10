@@ -34,7 +34,8 @@ class Order extends Model
         return $this->hasOne(Company::class, 'user_id', 'company_id');
     }
 
-    public function companySubscriptions(){
+    public function companySubscriptions()
+    {
         return $this->hasMany(CompanySubscription::class, 'order_id', 'id');
     }
 
@@ -59,17 +60,22 @@ class Order extends Model
         return $this->hasOne('App\Models\UserCoupon', 'order', 'order_id');
     }
 
-     public static function pendingInvoices()
-     {
-         return Order::where('payment_status', 'pending')->count();
-     }
- 
-     public static function dueInvoices()
-     {
-         return Order::where('payment_status', 'pending')
-             ->whereRaw('DATE_ADD(created_at, INTERVAL 7 DAY) < NOW()')
-             ->count();
-     }
+    public static function pendingInvoices()
+    {
+        return Order::where('payment_status', 'pending')->count();
+    }
+
+    public static function dueInvoices()
+    {
+        return Order::where('payment_status', 'pending')
+            ->whereRaw('DATE_ADD(created_at, INTERVAL 7 DAY) < NOW()')
+            ->count();
+    }
+
+    public function order_items()
+    {
+        return $this->belongsToMany(Section::class, 'order_items', 'order_id', 'item_id')->where('item_section','feature');
+    }
 
 
     public static function totalAmount()
@@ -88,6 +94,4 @@ class Order extends Model
             ->whereRaw('DATE_ADD(created_at, INTERVAL 7 DAY) < NOW()')
             ->sum('price');
     }
-
-    
 }

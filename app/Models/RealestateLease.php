@@ -43,6 +43,10 @@ class RealestateLease extends Model
         return $this->belongsTo(User::class, 'tenant_id');
     }
 
+    public function property(){
+        return $this->hasOne(Property::class, 'id', 'property_id');
+    }
+
     public function cheques()
     {
         return $this->hasMany(RealestateChequeDetail::class, 'lease_id', 'id');

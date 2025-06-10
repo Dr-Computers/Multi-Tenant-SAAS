@@ -92,6 +92,12 @@ class Company extends Model
             $subSection->order_id          = $order->id;
             $subSection->company_id        = $company_id;
             $subSection->save();
+
+            $newItem                = new OrderItem();
+            $newItem->item_section  = 'feature';
+            $newItem->item_id       = $section->section_id;
+            $newItem->order_id      = $order->id;
+            $newItem->save();
         }
 
 
@@ -195,6 +201,13 @@ class Company extends Model
                 }
             }
             $subSection->save();
+
+            $newItem                = new OrderItem();
+            $newItem->item_section  = 'feature';
+            $newItem->item_id       = $section;
+            $newItem->order_id      = $order->id;
+            $newItem->save();
+
 
             if ($subSection) {
                 foreach ($subSection->section->permissions ?? [] as $permission) {

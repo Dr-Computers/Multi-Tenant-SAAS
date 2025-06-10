@@ -16,9 +16,10 @@ class Controller extends BaseController
     public function dashboard()
     {
         if (Auth::check()) {
-            if (Auth::user()->type == 'super admin' || Auth::user()->type == 'admin staff') {
+
+            if (Auth::user()->type == 'super admin' || Auth::user()->type == 'admin-staff') {
                 return redirect()->route('admin.dashboard');
-            } else if (Auth::user()->type == 'company' || Auth::user()->type == 'company staff') {
+            } else if (Auth::user()->type == 'company' || Auth::user()->type == 'company-staff') {
                 return redirect()->route('company.dashboard');
             } else if (Auth::user()->type == 'owner') {
                 return redirect()->route('owner.dashboard');

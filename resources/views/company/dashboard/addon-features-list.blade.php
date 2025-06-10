@@ -73,7 +73,9 @@
                         <li class="list-group-item text-muted small">No sections added yet.</li>
                     </ul>
 
-                    <h6 class="my-4">Sub Total: {{ adminPrice() }}<span id="subtotal">0.00</span></h6>
+                    <h6 class="my-4">Sub Total: {{ adminPrice() }} <span id="subtotal">0.00</span></h6>
+
+
                     <div class="my-4">
                         <label class="form-label small mb-1">Coupon Code</label>
                         <div class="input-group input-group-sm">
@@ -85,23 +87,17 @@
 
                     <h6 class="my-4">Discount: {{ adminPrice() }}<span id="discount">0.00</span></h6>
                     <div class="my-2 d-flex gap-3">
-                        <h6 class="form-label  mb-1">Tax (5%) : {{ adminPrice() }}</h6><h6 id="tax">0.00</h6>
+                        <h6 class="form-label  mb-1">Tax (5%) : {{ adminPrice() }}</h6>
+                        <h6 id="tax">0.00</h6>
                     </div>
 
                     {{-- Hidden Fields to submit values --}}
-                    <input type="hidden" name="subtotal" id="hidden_subtotal" value="0">
-                    <input type="hidden" name="discount" id="hidden_discount" value="0">
-                    <input type="hidden" name="grandtotal" id="hidden_grandtotal" value="0">
-                    <input type="hidden" name="coupon_code" id="hidden_coupon_code" value="0">
+                    <input type="hidden" name="subtotal" id="hidden_subtotal">
+                    <input type="hidden" name="discount" id="hidden_discount">
+                    <input type="hidden" name="grandtotal" id="hidden_grandtotal">
+                    <input type="hidden" name="coupon_code" id="hidden_coupon_code">
 
-                    <h6 class="my-4">Discount : {{ adminPrice() }}<span id="grandtotal">0.00</span></h6>
-
-                    <div class="my-2">
-                        <label class="form-label small mb-1">Tax (%)</label>
-                        <input type="number" class="form-control form-control-sm" id="tax" name="tax"
-                            value="0" min="0">
-                    </div>
-                    <h6 class="my-4">Grand Total: {{ adminPrice() }}<span id="grandtotal">0.00</span></h6>
+                    <h6 class="my-4">Grand Total: {{ adminPrice() }} <span id="grandtotal">0.00</span></h6>
 
                     <div class="my-4">
                         <button type="submit" class="btn btn-success btn-sm w-100">Purchase</button>

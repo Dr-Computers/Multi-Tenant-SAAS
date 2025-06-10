@@ -10,6 +10,7 @@ Route::group(
         'prefix' => 'admin',  // URL prefix
         'as' => 'admin.',     // Name prefix
         'middleware' => [
+            'admin_panel',
             'auth',       // Ensures user is logged in
             'XSS',        // Custom middleware for XSS prevention
             'revalidate', // Prevents back button after logout
@@ -18,7 +19,7 @@ Route::group(
     ],
     function () {
 
-        Route::get('/', 'DashboardController@index')->name('dashboard')->middleware(['XSS', 'revalidate']);
+        Route::get('/', 'DashboardController@index')->name('dashboard');
         Route::get('profile', 'DashboardController@profile')->name('profile');
         Route::post('profile', 'DashboardController@editprofile')->name('profile.update');
         Route::post('password', 'DashboardController@updatePassword')->name('profile.update.password');
