@@ -87,7 +87,8 @@
                                             <td>
                                                 @if ($payment->payment_type == 'cash')
                                                     <span class="badge bg-success">Cash
-                                                        ({{ str_replace('_', ' ', $payment->payment_for) }})</span>
+                                                        ({{ str_replace('_', ' ', $payment->payment_for) }})
+                                                    </span>
                                                 @elseif($payment->payment_type == 'cheque')
                                                     <span class="badge bg-info">Cheque
                                                         ({{ str_replace('_', ' ', $payment->payment_for) }})</span>
@@ -181,39 +182,39 @@
                             </table>
 
                         </div>
-                        @endforeach
-                    </div>
+                    @endcan
                 </div>
             </div>
         </div>
+    </div>
 
-    @endsection
-
-
-
-
-    @push('script-page')
-        <script>
-            $(document).on('change', '#password_switch', function() {
-                if ($(this).is(':checked')) {
-                    $('.ps_div').removeClass('d-none');
-                    $('#password').attr("required", true);
+@endsection
 
 
-                } else {
-                    $('.ps_div').addClass('d-none');
-                    $('#password').val(null);
-                    $('#password').removeAttr("required");
-                }
-            });
-            $(document).on('click', '.login_enable', function() {
-                setTimeout(function() {
-                    $('.modal-body').append($('<input>', {
-                        type: 'hidden',
-                        val: 'true',
-                        name: 'login_enable'
-                    }));
-                }, 2000);
-            });
-        </script>
-    @endpush
+
+
+@push('script-page')
+    <script>
+        $(document).on('change', '#password_switch', function() {
+            if ($(this).is(':checked')) {
+                $('.ps_div').removeClass('d-none');
+                $('#password').attr("required", true);
+
+
+            } else {
+                $('.ps_div').addClass('d-none');
+                $('#password').val(null);
+                $('#password').removeAttr("required");
+            }
+        });
+        $(document).on('click', '.login_enable', function() {
+            setTimeout(function() {
+                $('.modal-body').append($('<input>', {
+                    type: 'hidden',
+                    val: 'true',
+                    name: 'login_enable'
+                }));
+            }, 2000);
+        });
+    </script>
+@endpush

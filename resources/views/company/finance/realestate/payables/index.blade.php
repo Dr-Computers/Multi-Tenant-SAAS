@@ -70,9 +70,7 @@
                                         <th>{{ __('Amount') }}</th>
                                         <th>{{ __('Bank') }}</th>
                                         <th>{{ __('Note') }}</th>
-
                                         <th class="text-right">{{ __('Action') }}</th>
-
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -87,9 +85,7 @@
                                                 <td>{{ $payment->notes ?? 'N/A' }}</td>
 
                                                 <td class="text-right ">
-
                                                     <div class="action-btn">
-
                                                         {!! Form::open([
                                                             'method' => 'DELETE',
                                                             'route' => ['company.finance.realestate.payments.payables.destroy', $payment->id],
@@ -101,10 +97,8 @@
                                                             <i class="ti ti-trash text-white"></i>
                                                         </a>
                                                         {!! Form::close() !!}
-
                                                     </div>
                                                 </td>
-
                                             </tr>
                                         @endforeach
                                     @else

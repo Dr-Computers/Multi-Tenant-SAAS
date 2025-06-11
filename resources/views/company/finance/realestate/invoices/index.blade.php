@@ -83,8 +83,6 @@
                                 <tbody>
                                     @forelse($invoices as $invoice)
                                         <tr role="row">
-                                            {{-- <td>{{invoicePrefix().$invoice->invoice_id}} </td>
-                                    --}}
                                             <td>
                                                 {{ (optional($invoice->properties)->invoice_prefix ?: invoicePrefix()) . $invoice->invoice_id }}
                                             </td>
@@ -97,9 +95,6 @@
                                             <td>{{ !empty($invoice->units) ? $invoice->units->name : '-' }} </td>
                                             <td>{{ date('F Y', strtotime($invoice->invoice_month)) }} </td>
                                             <td>{{ \Carbon\Carbon::parse($invoice->end_date)->format('d/m/Y') }}</td>
-                                            {{-- <td>{{priceFormat($invoice->getInvoiceSubTotalAmount())}}</td>
-                            
-                                       <td>{{priceFormat($invoice->getInvoiceDueAmount())}} </td> --}}
 
                                             <td>{{ $invoice->getInvoiceSubTotalAmount() }}</td>
 
@@ -159,50 +154,9 @@
                                                 </div>
                                             </td>
 
-                                            {{-- @if (Gate::check('edit invoice') || Gate::check('delete invoice') || Gate::check('show invoice'))
-                                            <td class="text-end">
-                                                <div class="d-flex justify-content-end">
-                                                    @can('show invoice')
-                                                        <div class="action-btn me-2">
-                                                            <a href="{{ route('invoice.show', $invoice->id) }}"
-                                                                class="btn btn-sm d-inline-flex align-items-center bg-info"
-                                                                data-bs-toggle="tooltip" title="{{ __('View') }}">
-                                                                <i class="ti ti-eye text-white"></i>
-                                                            </a>
-                                                        </div>
-                                                    @endcan
-
-                                                    @can('edit invoice')
-                                                        <div class="action-btn me-2">
-                                                            <a href="{{ route('invoice.edit', $invoice->id) }}"
-                                                                class="btn btn-sm d-inline-flex align-items-center bg-warning"
-                                                                data-bs-toggle="tooltip" title="{{ __('Edit') }}">
-                                                                <i class="ti ti-pencil text-white"></i>
-                                                            </a>
-                                                        </div>
-                                                    @endcan
-
-                                                    @can('delete invoice')
-                                                        <div class="action-btn">
-                                                            {!! Form::open([
-                                                                'method' => 'DELETE',
-                                                                'route' => ['invoice.destroy', $invoice->id],
-                                                                'id' => 'delete-form-' . $invoice->id,
-                                                            ]) !!}
-                                                            <a href="#"
-                                                                class="btn btn-sm d-inline-flex align-items-center bg-danger bs-pass-para"
-                                                                data-bs-toggle="tooltip" title="{{ __('Delete') }}">
-                                                                <i class="ti ti-trash text-white"></i>
-                                                            </a>
-                                                            {!! Form::close() !!}
-                                                        </div>
-                                                    @endcan
-                                                </div>
-                                            </td>
-                                        @endif --}}
+                                           
 
                                         </tr>
-
                                     @empty
                                         <tr>
                                             <td colspan="7" class="text-center">
