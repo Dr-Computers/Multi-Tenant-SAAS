@@ -498,25 +498,7 @@
 </style>
 @section('content')
     <div class="row row-gap mb-4 ">
-        {{-- <div class="col-xl-12 col-12">
-            <div class="dashboard-card">
-                <img src="https://dash-demo.workdo.io/assets/images/layer.png" class="dashboard-card-layer" alt="layer">
-                <div class="card-inner">
-                    <div class="card-content">
-                        <h2>Plan Expiring Soon</h2>
-                        <p class="my-2">
-                            Your plan expiring soon please renew subscription
-                        </p>
-                        <div class="btn-wrp d-flex gap-3">
-                            <a href="#" class="btn btn-primary d-flex align-items-center gap-1 cp_link">
-                                <i class="ti ti-link text-white"></i>
-                                <span>Renew Subscription</span>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div> --}}
+       
         @if ($showExpiryAlert)
             <div class="col-xl-12 col-12" id="daily-alert" style="display: none;">
                 <div class="dashboard-card position-relative">

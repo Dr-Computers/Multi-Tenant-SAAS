@@ -83,8 +83,8 @@ class DashboardController extends Controller
             $planExpiryDate = Carbon::parse($company->activeSubscription->end_of_date);
             $today = Carbon::today();
 
-            $showExpiryAlert = $planExpiryDate->isAfter($today) && $planExpiryDate->diffInDays($today) <= 7;
-
+            $showExpiryAlert = $planExpiryDate->isAfter($today) && $today->diffInDays($planExpiryDate) <= 7;
+            
 
             return view('company.dashboard.index', $data, compact('users', 'showExpiryAlert', 'planExpiryDate'));
         }
