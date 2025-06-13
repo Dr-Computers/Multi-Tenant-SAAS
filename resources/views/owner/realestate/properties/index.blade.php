@@ -47,13 +47,8 @@
                                                 </a>
                                             </td>
                                             <td>
-                                                @if ($property->moderation_status == '1')
-                                                    <span class="badge bg-success p-1 px-3 rounded">
-                                                        {{ ucfirst('Enabled') }}</span>
-                                                @else
-                                                    <span class="badge bg-danger p-1 px-3 rounded">
-                                                        {{ ucfirst('Disabled') }}</span>
-                                                @endif
+                                                    <span class="badge bg-info p-1 px-3 rounded">
+                                                        {{ ucfirst($property->moderation_status) }}</span>
                                             </td>
 
                                             <td>

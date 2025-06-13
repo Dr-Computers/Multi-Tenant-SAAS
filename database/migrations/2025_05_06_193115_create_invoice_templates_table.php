@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('invoice_templates', function (Blueprint $table) {
             $table->id();
             $table->string('name')->nullable();
+            $table->string('type')->default('company')->nullable();
             $table->string('image')->nullable();
             $table->string('file_path')->nullable();
             $table->timestamps();

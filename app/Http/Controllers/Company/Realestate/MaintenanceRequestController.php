@@ -11,6 +11,7 @@ use App\Models\Property;
 use App\Models\PropertyMaintenanceRequest;
 use App\Models\RealestateInvoice;
 use App\Models\RealestateInvoiceItem;
+use App\Models\RealestateLease;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -38,7 +39,7 @@ class MaintenanceRequestController extends Controller
             $pendingRequests = PropertyMaintenanceRequest::where('status', 'pending')->where('company_id', Auth::user()->creatorId())->get();
             $InprogressRequests      = PropertyMaintenanceRequest::where('status', 'inprogress')->where('company_id', Auth::user()->creatorId())->get();
             $completedRequests = PropertyMaintenanceRequest::where('status', 'completed')->where('company_id', Auth::user()->creatorId())->get();
-            $ungeneratedInvoices = PropertyMaintenanceRequest::where('company_id', Auth::user()->creatorId())->where('status', 'completed')->where('invoice_id','0')->get();
+            $ungeneratedInvoices = PropertyMaintenanceRequest::where('company_id', Auth::user()->creatorId())->where('status', 'completed')->where('invoice_id', '0')->get();
             $paidInvoices = PropertyMaintenanceRequest::where('company_id', Auth::user()->creatorId())
                 ->whereHas('invoice', function ($query) {
                     $query->where('status', 'closed');
@@ -371,30 +372,37 @@ class MaintenanceRequestController extends Controller
                     ->where('company_id', Auth::user()->creatorId())
                     ->firstOrFail();
 
-                $invoice = new RealestateInvoice();
-                $invoice->company_id =  Auth::user()->creatorId();
-                $invoice->invoice_id = $request->invoice_id;
-                $invoice->property_id = $Mrequest->property_id;
-                $invoice->unit_id = $Mrequest->unit_id;
-                $invoice->created_in_month = now()->format('Y-m');
-                $invoice->invoice_month = now()->format('F Y');
-                $invoice->end_date = $request->end_date;
-                $invoice->invoice_type = 'maintenance_invoice';
-                $invoice->notes = $request->notes;
-                $invoice->invoice_period = $request->invoice_period ?? NULL;
-                $invoice->invoice_period_end_date = $request->invoice_period_end_date ?? NULL;
-                $invoice->status = 'open';
-                $invoice->tax_type = $request->tax_type ?? '';
-                $invoice->parent_id = Auth::user()->creatorId();
-                $invoice->discount_reason = $request->discount_reason ?? '';
-                $invoice->discount_amount = $request->discount_amount ?? 0;
-                $types = $request->types;
+                $lease   = RealestateLease::where('unit_id', $Mrequest->unit_id)->first();
 
+
+
+                $invoice                    = new RealestateInvoice();
+                $invoice->company_id        =  Auth::user()->creatorId();
+                $invoice->invoice_id        = $request->invoice_id;
+                $invoice->property_id       = $Mrequest->property_id;
+                $invoice->unit_id           = $Mrequest->unit_id;
+                $invoice->created_in_month  = now()->format('Y-m');
+                $invoice->invoice_month     = now()->format('F Y');
+                $invoice->end_date          = $request->end_date;
+                $invoice->invoice_to        = $lease->tenant_id;
+                $invoice->invoice_purpose   = $request->invoice_purpose ?? 'Service';
+                $invoice->invoice_type_to   = 'tenant';
+                $invoice->invoice_type      = 'maintenance_invoice';
+                $invoice->notes             = $request->notes;
+                $invoice->invoice_period    = $request->invoice_period ?? NULL;
+                $invoice->invoice_period_end_date = $request->invoice_period_end_date ?? NULL;
+                $invoice->status            = 'open';
+                $invoice->tax_type          = $request->tax_type ?? '';
+                $invoice->parent_id         = Auth::user()->creatorId();
+                $invoice->discount_reason   = $request->discount_reason ?? '';
+                $invoice->discount_amount   = $request->discount_amount ?? 0;
+             
+
+                $invoice->save();
+                $types                      = $request->types;
                 $subTotal = 0;
                 $totalTax = 0;
                 $grandTotal = 0;
-
-                $invoice->save();
 
                 foreach ($types as $type) {
                     $amount = (float) $type['amount'];

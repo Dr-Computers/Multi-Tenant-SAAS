@@ -24,102 +24,137 @@
                         <div class="card-body">
                             <div class="row">
 
-                                <h6 class="text-md fw-bold text-secondary text-sm">Invoice Details</h6>
 
-                                <!-- Property Selection -->
-                                <div class="col-md-6 col-lg-4">
-                                    <div class="form-group">
-                                        <label class="form-label">Property <x-required /></label>
-                                        <select name="property_id" class="form-control hidesearch" id="property_id" required>
-                                            @foreach ($property as $id => $name)
-                                                <option value="{{ $id }}"
-                                                    {{ $invoice->property_id == $id ? 'selected' : '' }}>{{ $name }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                        @error('property_id')
-                                            <small class="text-danger">{{ $message }}</small>
-                                        @enderror
-                                    </div>
-                                </div>
 
-                                <!-- Unit Selection -->
-                                <div class="col-md-6 col-lg-4">
-                                    <div class="form-group">
-                                        <label class="form-label">Unit <x-required /></label>
-                                        <div class="unit_div">
-                                            <select class="form-control hidesearch unit" id="unit" name="unit_id" required>
-                                                <option value="{{ $invoice->unit_id }}">
-                                                    {{ optional($invoice->unit)->name ?? __('Select Unit') }}</option>
-                                            </select>
-                                        </div>
-                                        @error('unit_id')
-                                            <small class="text-danger">{{ $message }}</small>
-                                        @enderror
-                                    </div>
-                                </div>
-
-                                <!-- Invoice Number -->
                                 <div class="form-group col-md-6 col-lg-4">
                                     <div class="form-group">
                                         <label for="invoice_id" class="form-label">
-                                            {{ __('Invoice Number') }} <span class="text-danger">*</span>
+                                            {{ __('Invoice Number') }}
+                                            <span class="text-danger">*</span>
                                         </label>
                                         <div class="input-group">
-                                            <span class="input-group-text"
-                                                id="invoice_prefix">{{ invoicePrefix() ?? '#INVOICE' }}</span>
+                                            <span class="input-group-text" id="invoice_prefix">
+                                                <!-- You can display prefix like this -->
+                                                {{ invoicePrefix() ?? '#INVOICE' }}
+                                            </span>
                                             <input type="text" name="invoice_id" id="invoice_id" class="form-control"
-                                                placeholder="{{ __('Enter Invoice Number') }}"
-                                                value="{{ old('invoice_id', $invoice->invoice_id) }}">
+                                                readonly placeholder="{{ __('Enter Invoice Number') }}"
+                                                value="{{ old('invoice_id') ?? $invoiceNumber }}">
                                         </div>
-                                    </div>
-                                </div>
-
-                                <!-- Invoice Period Block -->
-                                <div class="col-md-6 col-lg-4" id="invoice_period_block"
-                                    style="display: {{ $invoice->invoice_period ? 'block' : 'none' }};">
-                                    <div class="form-group">
-                                        <label class="form-label">Invoice Period <x-required /></label>
-                                        <select name="invoice_period" class="form-control">
-                                            @foreach ($invoicePeriods as $key => $value)
-                                                <option value="{{ $key }}"
-                                                    {{ $invoice->invoice_period == $key ? 'selected' : '' }}>
-                                                    {{ $value }}</option>
-                                            @endforeach
-                                        </select>
-                                        @error('invoice_period')
-                                            <small class="text-danger">{{ $message }}</small>
-                                        @enderror
-                                    </div>
-                                </div>
-
-                                <!-- Invoice Month Block -->
-                                <div class="col-md-6 col-lg-4" id="invoice_month_block"
-                                    style="display: {{ $invoice->invoice_month ? 'block' : 'none' }};">
-                                    <div class="form-group">
-                                        <label class="form-label">Invoice Month <x-required /></label>
-                                        <input type="month" name="invoice_month" class="form-control"
-                                            value="{{ old('invoice_month', $invoice->invoice_month ? date('Y-m', strtotime($invoice->invoice_month)) : date('Y-m')) }}">
-                                        @error('invoice_month')
-                                            <small class="text-danger">{{ $message }}</small>
-                                        @enderror
                                     </div>
                                 </div>
 
                                 <!-- Invoice Date -->
                                 <div class="col-md-6 col-lg-4">
                                     <div class="form-group">
-                                        <label class="form-label">Invoice Date <x-required /></label>
+                                        <label class="form-label">Invoice Due Date <x-required /></label>
+
                                         <input type="date" name="end_date" class="form-control"
-                                            value="{{ old('end_date', $invoice->end_date ? date('Y-m-d', strtotime($invoice->end_date)) : date('Y-m-d')) }}"
-                                            required>
+                                            value="{{ $invoice->end_date ?? date('Y-m-d') }}" required>
                                         @error('end_date')
                                             <small class="text-danger">{{ $message }}</small>
                                         @enderror
                                     </div>
                                 </div>
+                                <div class="col-md-6 col-lg-4">
+                                    <label class="form-label">Payment For</label>
+                                    <select name="invoice_purpose" class="form-control hidesearch">
+                                        @foreach ($types as $key => $value)
+                                            <option value="{{ $value }}"
+                                                {{ $invoice->invoice_purpose == $value ? 'selected' : '' }}>
+                                                {{ $value }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
 
-                                <!-- Notes -->
+
+                                <h6 class="text-md fw-bold text-secondary text-sm">Invoice To</h6>
+                                <div class=" my-3 d-flex gap-3">
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" disabled
+                                            {{ $invoice->invoice_type_to == 'normal' ? 'checked' : '' }} type="radio"
+                                            name="invoice_type" id="normalRadio" value="normal">
+                                        <label class="form-check-label" for="normalRadio">Normal</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" disabled
+                                            {{ $invoice->invoice_type_to == 'owner' ? 'checked' : '' }} type="radio"
+                                            name="invoice_type" id="ownerRadio" value="owner">
+                                        <label class="form-check-label" for="ownerRadio">Owner</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" disabled
+                                            {{ $invoice->invoice_type_to == 'tenant' ? 'checked' : '' }} type="radio"
+                                            name="invoice_type" id="tenantRadio" value="tenant">
+                                        <label class="form-check-label" for="tenantRadio">Tenant</label>
+                                    </div>
+                                </div>
+                                @if ($invoice->invoice_type_to == 'normal')
+                                    <div class="col-lg-12">
+                                        {{-- //normal invoice add invoice to details --}}
+                                        <div class="normal-section mb-3 col-lg-6">
+                                            <label class="mb-1">Invoice To</label>
+                                            <textarea class="form-control" rows="5" name="inovice_normal">{{ $invoice->invoice_to }}</textarea>
+                                        </div>
+                                    </div>
+                                @elseif($invoice->invoice_type_to == 'owner')
+                                    {{-- //property invoice add invoice to details --}}
+                                    <div class="owner-section mb-3 col-md-6 col-lg-4">
+                                        {{-- Tenant Selection --}}
+                                        <div class="form-group ">
+                                            <label for="owner_id" class="form-label">Owner <span
+                                                    class="text-danger">*</span></label>
+                                            <input type="text" class="form-control" disabled
+                                                value="{{ $invoice->owner ? $invoice->owner->name : '' }}" readonly>
+                                        </div>
+
+                                    </div>
+                                @elseif($invoice->invoice_type_to == 'tenant')
+                                    {{-- //tenant invoice add invoice to details --}}
+                                    <div class="tenant-section mb-3 col-md-6 col-lg-4">
+                                        {{-- Tenant Selection --}}
+                                        <div class="form-group">
+                                            <label for="tenant_id" class="form-label">Tenant <span
+                                                    class="text-danger">*</span></label>
+                                            <input type="text" class="form-control" disabled
+                                                value="{{ $invoice->tenant ? $invoice->tenant->name : '' }}" readonly>
+
+                                        </div>
+                                    </div>
+                                @endif
+                                @if ($invoice->invoice_type_to == 'owner' || $invoice->invoice_type_to == 'tenant')
+                                    <div class="owner-tenant-section d-none row col-md-6 col-lg-8">
+                                        <!-- Property Selection -->
+                                        <div class="col-md-6 col-lg-6">
+                                            <div class="form-group">
+                                                <label class="form-label">Property </label>
+                                                <select name="property_id" class="form-control hidesearch properties"
+                                                    id='property_id'>
+                                                    <option value="">{{ __('Select Property') }}</option>
+                                                </select>
+                                                @error('property_id')
+                                                    <small class="text-danger">{{ $message }}</small>
+                                                @enderror
+                                            </div>
+                                        </div>
+                                        <!-- Unit Selection -->
+                                        <div class="col-md-6 col-lg-6">
+                                            <div class="form-group">
+                                                <label class="form-label">Unit </label>
+
+                                                <select class="form-control hidesearch units" id="unit" name="unit_id">
+                                                    <option value="">{{ __('Select Unit') }}</option>
+                                                </select>
+
+                                                @error('unit_id')
+                                                    <small class="text-danger">{{ $message }}</small>
+                                                @enderror
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endif
+
+
                                 <div class="col-md-12">
                                     <div class="form-group">
                                         <label class="form-label">Notes</label>
@@ -134,25 +169,16 @@
                                 <div class="col-md-12 mt-4">
                                     <h6 class="text-md fw-bold text-secondary text-sm">Invoice Items</h6>
                                     <div class="repeater" data-value='{!! json_encode($invoice->types) !!}'>
-                                        <div class="d-flex justify-content-between align-items-center mb-3">
-                                            <h5 class="mb-0">Invoice Types</h5>
-                                            <button type="button" class="btn btn-primary btn-sm" data-repeater-create>
-                                                <i class="ti-plus me-1"></i> Add Type
-                                            </button>
-                                        </div>
 
-
-                                        <input type="hidden" name="tax_type" id="tax_type" value="included">
 
                                         <table class="table" data-repeater-list="types">
                                             <thead>
                                                 <tr>
-                                                    <th>{{ __('Type') }}</th>
+                                                    <th>{{ __('Description') }}</th>
                                                     <th>{{ __('Amount') }}</th>
                                                     <th>{{ __('VAT Inclusion') }}</th>
                                                     <th class="vat-column">{{ __('VAT Amount') }}</th>
                                                     <th>{{ __('Total Amount') }}</th>
-                                                    <th>{{ __('Description') }}</th>
                                                     <th>#</th>
                                                 </tr>
 
@@ -160,21 +186,25 @@
                                             <tbody data-repeater-item>
                                                 <tr>
                                                     {{ Form::hidden('id', null, ['class' => 'form-control type_id']) }}
+
                                                     <td width="20%">
-                                                        {{ Form::select('invoice_type', $types, null, ['class' => 'form-control hidesearch']) }}
+                                                        {{ Form::textarea('description', null, ['class' => 'form-control', 'rows' => 1]) }}
                                                     </td>
                                                     <td>
-                                                        {{ Form::number('amount', null, ['class' => 'form-control', 'step' => '0.01', 'oninput' => 'calculateVAT(this)', 'id' => 'total_amount']) }}
+                                                        {{ Form::number('amount', null, [
+                                                            'class' => 'form-control',
+                                                            'step' => '0.01',
+                                                            'oninput' => 'calculateVAT(this)',
+                                                        ]) }}
+
+
                                                     </td>
                                                     <td>
-                                                        <input type="radio" name="vat_inclusion" value="included"
-                                                            {{ old('vat_inclusion') == 'included' ? 'checked' : '' }}
-                                                            onchange="calculateVAT(this.closest('tr'))">
+                                                        {{ Form::radio('vat_inclusion', 'included', null, ['onchange' => 'calculateVAT(this)']) }}
                                                         {{ __('Included') }}
-                                                        <input type="radio" name="vat_inclusion" value="excluded"
-                                                            {{ old('vat_inclusion') == 'excluded' ? 'checked' : '' }}
-                                                            onchange="calculateVAT(this.closest('tr'))">
+                                                        {{ Form::radio('vat_inclusion', 'excluded', null, ['onchange' => 'calculateVAT(this)']) }}
                                                         {{ __('Excluded') }}
+
                                                     </td>
 
                                                     <!-- VAT Amount (Readonly) -->
@@ -186,35 +216,69 @@
                                                     <td>
                                                         {{ Form::number('grand_amount', null, ['class' => 'form-control', 'step' => '0.01', 'id' => 'grand_amount']) }}
                                                     </td>
+
                                                     <td>
-                                                        {{ Form::textarea('description', null, ['class' => 'form-control', 'rows' => 1]) }}
-                                                    </td>
-                                                    <td>
-                                                        <a class="text-danger" data-repeater-delete data-bs-toggle="tooltip"
-                                                            data-bs-original-title="{{ __('Detete') }}" href="#"> <i
-                                                                data-feather="trash-2"></i></a>
+                                                        <button type="button" class="btn btn-danger btn-sm"
+                                                            data-repeater-delete>
+                                                            <i class="ti ti-trash"></i>
+                                                        </button>
                                                     </td>
                                                 </tr>
                                             </tbody>
 
                                         </table>
-
+                                        <div class="d-flex justify-content-end align-items-center my-3">
+                                            <button type="button" class="btn btn-primary btn-sm" data-repeater-create>
+                                                <i class="ti ti-plus me-1"></i> Add Type
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
 
                             </div>
+                            <!-- Totals Section -->
+                            <div class="mt-4 d-flex flex-column justify-content-end gap-1 align-items-end mb-3">
+                                <div class="col-lg-3">
+                                    <label class="form-label">Subtotal</label>
+                                    <input type="text" value="{{ isset($invoice) ? $invoice->sub_total : '' }}"
+                                        class="form-control" id="subtotal" readonly>
+                                </div>
+
+                                <div class="col-lg-3">
+                                    <label class="form-label">Total VAT</label>
+                                    <input type="text" value="{{ isset($invoice) ? $invoice->total_tax : '' }}"
+                                        class="form-control" id="total_vat" readonly>
+                                </div>
+
+                                <div class="col-lg-3">
+                                    <label class="form-label">Discount Type/Reason</label>
+                                    <input type="text" value="{{ isset($invoice) ? $invoice->discount_reason : '' }}"
+                                        class="form-control" name="discount_reason" id="discount_reason"
+                                        value="{{ old('discount_reason', $invoice->discount_reason ?? '') }}">
+                                </div>
+
+                                <div class="col-lg-3">
+                                    <label class="form-label">Discount Amount</label>
+                                    <input type="number" value="{{ isset($invoice) ? $invoice->discount_amount : '' }}"
+                                        class="form-control" name="discount_amount" id="discount_amount" step="0.01"
+                                        value="{{ old('discount_amount', $invoice->discount_amount ?? 0) }}"
+                                        oninput="calculateFinalTotal()">
+                                </div>
+
+                                <div class="col-lg-3">
+                                    <label class="form-label fw-bold">Grand Total</label>
+                                    <input type="text" value="{{ isset($invoice) ? $invoice->grand_total : '' }}"
+                                        class="form-control fw-bold" id="grand_total" readonly>
+                                </div>
+                            </div>
                         </div>
 
-                        <div class="modal-footer m-5">
-                            <a href="{{ route('company.finance.realestate.invoices.index') }}"
-                                class="btn btn-light">Cancel</a>
+                        <div class="text-center m-5">
                             <button type="submit" class="btn btn-primary">Update Invoice</button>
                         </div>
                     </div>
                 </div>
             </form>
-
-
         </div>
     @endcan
 @endsection
@@ -224,36 +288,28 @@
     <script src="{{ asset('js/jquery-ui.min.js') }}"></script>
     <script src="{{ asset('js/jquery.repeater.min.js') }}"></script>
 
-
-
     <script>
         const taxRate = 0.05;
 
         function calculateVAT(element) {
             // Get the closest row (assuming 'tr' is the row context or replace with proper container)
             const row = element.closest('tr') || element.closest('tbody');
-            console.log("Row being processed:", row);
-
             // Select the amount input dynamically based on partial match in the name
             const amountInput = row.querySelector('input[name*="[amount]"]');
-            console.log("Amount input element:", amountInput); // Log to see if amountInput is null or defined
-
             if (!amountInput) {
                 console.log("Amount input not found within this row.");
                 return; // Exit if amountInput does not exist
             }
 
             const amount = parseFloat(amountInput.value) || 0;
-            console.log("Amount entered:", amount);
-
             // Attempt to get the VAT inclusion selection
-            const vatInclusion = row.querySelector('[name*="[vat_inclusion]"]:checked');
+            // const vatInclusion = row.querySelector('[name*="[vat_inclusion]"]:checked');
+            const vatInclusion = row.querySelector('input[type="radio"]:checked');
+
             if (!vatInclusion) {
-                console.log("VAT inclusion option not found or not selected.");
                 return;
             }
 
-            console.log("VAT inclusion option selected:", vatInclusion.value);
 
             // Proceed with VAT calculation logic
 
@@ -261,21 +317,15 @@
             if (vatInclusion.value === 'excluded') {
                 vatAmount = amount * (taxRate / 100);
             }
-            console.log("Calculated VAT amount:", vatAmount.toFixed(2));
-
 
             // Target the VAT display element in the current row
             // Find the VAT column and set the VAT amount
 
             row.querySelector('input[name*="[tax_amount]"]')
             const vatColumn = row.querySelector('input[name*="[tax_amount]"]');
-            console.log("VAT display element:", vatColumn);
 
             if (vatColumn) {
                 vatColumn.value = vatAmount.toFixed(2); // Set the VAT amount in the input field
-                console.log("VAT amount set in VAT column:", vatAmount.toFixed(2));
-            } else {
-                console.log("VAT column element not found in this row.");
             }
 
             // Optionally, calculate the total amount
@@ -283,89 +333,39 @@
             if (totalAmountInput) {
                 const totalAmount = amount + vatAmount;
                 totalAmountInput.value = totalAmount.toFixed(2); // Set the grand total
-                console.log("Total amount set:", totalAmount.toFixed(2));
             }
+
+            calculateInvoiceSummary();
+        }
+
+        function calculateInvoiceSummary() {
+            let subtotal = 0;
+            let totalVAT = 0;
+
+            $('table tbody tr').each(function() {
+                const amount = parseFloat($(this).find('[name$="[amount]"]').val()) || 0;
+                const vatAmount = parseFloat($(this).find('[name$="[tax_amount]"]').val()) || 0;
+
+                subtotal += amount;
+                totalVAT += vatAmount;
+            });
+
+            $('#subtotal').val(subtotal.toFixed(2));
+            $('#total_vat').val(totalVAT.toFixed(2));
+
+            calculateFinalTotal();
+        }
+
+        function calculateFinalTotal() {
+            const subtotal = parseFloat($('#subtotal').val()) || 0;
+            const totalVAT = parseFloat($('#total_vat').val()) || 0;
+            const discount = parseFloat($('#discount_amount').val()) || 0;
+
+            const grandTotal = subtotal + totalVAT - discount;
+            $('#grand_total').val(grandTotal.toFixed(2));
         }
     </script>
-    <script>
-        $(document).ready(function() {
-            // Initially Hide Invoice Period and Invoice Month
-            // $('#invoice_period').hide();
-            //  $('#invoice_month').hide();
-            $(document).on('change', '#unit', function() {
-                "use strict";
-                var unit_id = $(this).val();
-                var url = '{{ route('company.realestate.unit.rent_type', ':id') }}';
-                url = url.replace(':id', unit_id);
-                $.ajax({
-                    url: url,
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                    },
-                    data: {
-                        unit_id: unit_id,
-                    },
-                    contentType: false,
-                    processData: false,
-                    type: 'GET',
-                    success: function(response) {
-                        $('#invoice_month').hide();
-                        $('#invoice_period').hide();
-                        if (response == 'monthly') {
-                            $('#invoice_month').show();
-                        } else if (response == 'yearly') {
-                            $('#invoice_period').show();
-                        }
-                    },
-                });
-            });
-        });
-    </script>
-    <script>
-        $('#property_id').on('change', function() {
-            "use strict";
-            var property_id = $(this).val();
 
-            var url = '{{ route('company.realestate.property.unit', ':id') }}';
-            url = url.replace(':id', property_id);
-            $.ajax({
-                url: url,
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                },
-                data: {
-                    property_id: property_id,
-                },
-                contentType: false,
-                processData: false,
-                type: 'GET',
-                success: function(data) {
-                    $('.unit').empty();
-                    var unit =
-                        `<select class="form-control hidesearch unit" id="unit" name="unit_id"></select>`;
-                    $('.unit_div').html(unit);
-
-                    $.each(data.units, function(key, value) {
-                        var oldUnit = '{{ old('unit_id') }}';
-                        var isSelected = (key == oldUnit) ? 'selected' :
-                            ''; // Check if it matches old value
-                        $('.unit').append('<option value="' + key + '" ' +
-                            isSelected + '>' + value + '</option>');
-                    });
-
-                    // $('.hidesearch').select2({
-                    //     minimumResultsForSearch: -1
-                    // });
-                    if (data.invoice_prefix) {
-                        $('#invoice_prefix').text(data.invoice_prefix);
-                    }
-                },
-
-            });
-        });
-
-        $('#property_id').trigger('change');
-    </script>
     <script>
         var selector = "body";
         if ($(selector + " .repeater").length) {
@@ -382,30 +382,19 @@
                     //     minimumResultsForSearch: -1
                     // });
                     $(this).slideDown();
+                    // Fix: set "excluded" as default checked manually
+                    $(this).find('input[type="radio"][value="excluded"]').prop('checked', true);
+
 
                 },
                 hide: function(deleteElement) {
                     console.log('Delete triggered'); // Add this
                     if (confirm('Are you sure you want to delete this element?')) {
-                        var el = $(this).parent().parent();
-                        var id = $(el.find('.type_id')).val();
-                        $.ajax({
-                            url: '{{ route('company.finance.realestate.invoice.type.destroy') }}',
-                            type: 'DELETE',
-                            headers: {
-                                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                            },
-                            data: {
-                                'id': id
-                            },
-                            cache: false,
-                            success: function(data) {
-                                $(this).slideUp(deleteElement);
-                                $(this).remove();
-                            },
+
+                        $(this).slideUp(deleteElement, function() {
+                            calculateInvoiceSummary();
                         });
-
-
+                        $(this).remove();
                     }
                 },
                 ready: function(setIndexes) {
@@ -417,6 +406,9 @@
             if (typeof value != 'undefined' && value.length != 0) {
                 value = JSON.parse(value);
                 $repeater.setList(value);
+                setTimeout(() => {
+                    calculateInvoiceSummary(); // ✅ recalculate after load
+                }, 100);
             }
         }
     </script>

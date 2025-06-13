@@ -24,7 +24,7 @@
                 <div class="card-body">
                     @can('maintenance requests listing')
                         {{-- Tabs --}}
-                        <ul class="nav nav-tabs" id="ownerTabs">
+                        {{-- <ul class="nav nav-tabs" id="ownerTabs">
                             @php
                                 $tab = request()->get('tab', 'all-requests');
                             @endphp
@@ -63,25 +63,22 @@
                                     href="{{ route('owner.realestate.maintenance-requests.index') }}?tab=paid-invoices">
                                     Paid Invoices</a>
                             </li>
-                        </ul>
+                        </ul> --}}
 
                         {{-- Tab Content --}}
-                        <div class="tab-content p-4 border border-top-0 rounded-bottom">
+                        {{-- <div class="tab-content p-4 border border-top-0 rounded-bottom">
                             <div class="row">
                                 <div class="col-sm-12">
                                     <div class="card">
                                         <div class="card-body table-bUsers-style">
                                             <div class="table-responsive" style="min-height:80vh;">
 
-                                                @if ($tab == 'all-requests')
-                                                    @include(
-                                                        'owner.realestate.maintenance-requests.partials.request-table',
-                                                        [
-                                                            'tabRequests' => $allRequests,
-                                                            'status'      => 'show',
-                                                        ]
-                                                    )
-                                                @elseif($tab == 'pending-requests')
+                                                @if ($tab == 'all-requests') --}}
+                        @include('owner.realestate.maintenance-requests.partials.request-table', [
+                            'tabRequests' => $allRequests,
+                            'status' => 'show',
+                        ])
+                        {{-- @elseif($tab == 'pending-requests')
                                                     @include(
                                                         'owner.realestate.maintenance-requests.partials.request-table',
                                                         [
@@ -116,13 +113,13 @@
                                                             'tabRequests' => $paidInvoices,
                                                         ]
                                                     )
-                                                @endif
-                                            </div>
+                                                @endif --}}
+                        {{-- </div>
                                         </div>
                                     </div>
-                                </div>
-                            </div>
-                        </div>
+                                </div> --}}
+                        {{-- </div>
+                        </div> --}}
                     @endcan
                 </div>
             </div>

@@ -41,32 +41,13 @@
                                             <div class="dropdown-menu dropdown-menu-end">
                                                 <a class="dropdown-item" data-bs-toggle="tooltip"
                                                     title="{{ __('Unit Detailed View') }}" target="_blank"
-                                                    href="{{ route('company.realestate.property.units.show', ['property_id' => $unit->property_id, 'unit' => $unit->id]) }}"
+                                                    href="{{ route('owner.realestate.property.units.show', ['property_id' => $unit->property_id, 'unit' => $unit->id]) }}"
                                                     data-original-title="{{ __('Unit Detailed View') }}"
                                                     href="#">
                                                     <span> <i class="ti ti-eye text-dark"></i>
                                                         {{ __('Unit View') }}</span>
                                                 </a>
-                                                {!! Form::open([
-                                                    'method' => 'POST',
-                                                    'route' => ['company.realestate.properties.lease.cancel', $unit->id],
-                                                    'id' => 'cancel-form-' . $unit->id,
-                                                ]) !!}
-                                                <a href="#" class="dropdown-item bs-pass-para "
-                                                    data-bs-toggle="tooltip" title="{{ __('Cancel Lease') }}">
-                                                    <i class="ti ti-x text-dark "></i>
-                                                    {{ __('Cancel Lease') }}</a>
-                                                {!! Form::close() !!}
-                                                {!! Form::open([
-                                                    'method' => 'DELETE',
-                                                    'route' => ['company.realestate.properties.lease.destroy', $unit->id],
-                                                    'id' => 'delete-form-' . $unit->id,
-                                                ]) !!}
-                                                <a href="#" class="dropdown-item bs-pass-para "
-                                                    data-bs-toggle="tooltip" title="{{ __('Delete Lease') }}">
-                                                    <i class="ti ti-trash text-dark "></i>
-                                                    {{ __('Delete Lease') }}</a>
-                                                {!! Form::close() !!}
+                                               
                                             </div>
                                         </div>
                                     </td>

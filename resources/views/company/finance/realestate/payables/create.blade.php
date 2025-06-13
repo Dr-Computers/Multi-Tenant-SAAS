@@ -11,10 +11,10 @@
 
 @section('action-btn')
     <div class="d-flex">
-        <a href="#" data-size="md" data-url="{{ route('company.finance.realestate.invoices.create') }}"
-            data-ajax-popup="true" data-bs-toggle="tooltip" title="{{ __('Create New Invoice') }}"
+        <a href="{{ route('company.finance.realestate.payments.payables.index') }}"
+             title="{{ __('Back to Invoice') }}"
             class="btn btn-sm btn-primary me-2">
-            <i class="ti ti-plus"></i>
+            <i class="ti ti-arrow-left"></i> Back
         </a>
     </div>
 @endsection
@@ -40,9 +40,9 @@
                                 [
                                     '' => '--Select--',
                                     'tenant' => __('Tenants'),
-                                    'supplier' => __('Supplier'),
+                                    'owner' => __('Owner'),
                                     'maintainer' => __('Maintenars'),
-                                    'staff' => __('Staff'),
+                                    'company-staff' => __('Staff'),
                                 ],
                                 null,
                                 ['class' => 'form-control hidesearch', 'id' => 'pay_to'],
@@ -127,8 +127,8 @@
                     success: function(data) {
                         if (pay_to_type === 'tenant') {
                             $('label[for="user"]').text('Client List');
-                        } else if (pay_to_type === 'supplier') {
-                            $('label[for="user"]').text('Supplier');
+                        } else if (pay_to_type === 'owner') {
+                            $('label[for="user"]').text('Owner');
                         } else if (pay_to_type === 'maintainer') {
                             $('label[for="user"]').text('Maintenars');
                         } else if (pay_to_type === 'staff') {
@@ -187,8 +187,8 @@
                     success: function(data) {
                         if (pay_to_type === 'tenant') {
                             $('label[for="user"]').text('Client List');
-                        } else if (pay_to_type === 'supplier') {
-                            $('label[for="user"]').text('Supplier');
+                        } else if (pay_to_type === 'owner') {
+                            $('label[for="user"]').text('Owner');
                         } else if (pay_to_type === 'maintainer') {
                             $('label[for="user"]').text('Maintenars');
                         } else if (pay_to_type === 'staff') {
@@ -215,7 +215,7 @@
 
                         if (pay_to_type !== '') {
                             $('#select_user_div')
-                        .show(); // Show the div when a valid value is selected
+                                .show(); // Show the div when a valid value is selected
                         }
 
                         $('.hidesearch').select2({

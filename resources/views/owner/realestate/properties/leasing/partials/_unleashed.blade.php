@@ -45,14 +45,12 @@
 
                                                 <a class="dropdown-item" data-bs-toggle="tooltip"
                                                     title="{{ __('Unit Detailed View') }}" target="_blank"
-                                                    href="{{ route('company.realestate.property.units.show', ['property_id' => $unit->property_id, 'unit' => $unit->id]) }}"
+                                                    href="{{ route('owner.realestate.property.units.show', ['property_id' => $unit->property_id, 'unit' => $unit->id]) }}"
                                                     data-original-title="{{ __('Unit Detailed View') }}"
                                                     href="#">
                                                     <span> <i class="ti ti-eye text-dark"></i>
                                                         {{ __('Unit View') }}</span>
                                                 </a>
-
-                 
                                             </div>
                                         </div>
                                     </td>

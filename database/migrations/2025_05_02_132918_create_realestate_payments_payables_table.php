@@ -20,7 +20,6 @@ return new class extends Migration
             $table->float('amount')->default(0);
             $table->string('for_reason')->nullable();
             $table->unsignedBigInteger('bank_account_id')->nullable();
-          
             $table->text('notes')->nullable();
             $table->timestamps();
             

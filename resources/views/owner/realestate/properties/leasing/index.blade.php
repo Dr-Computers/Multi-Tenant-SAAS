@@ -1,6 +1,6 @@
 @extends('layouts.owner')
 
-@section('page-title', 'Owner Details')
+@section('page-title', 'Lease Details')
 
 @section('breadcrumb')
     <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Dashboard</a></li>

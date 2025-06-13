@@ -161,42 +161,30 @@
                         <ul
                             class="dash-submenu {{ Request::routeIs('company.finance.realestate.invoice.*') == 'finance' ? 'show' : '' }}">
 
-                            <li
-                                class="dash-item dash-hasmenu {{ Request::routeIs('company.finance.realestate.invoice.realestate.*') ? 'active dash-trigger' : '' }}">
-                                <a href="#!" class="dash-link">
-                                    {{ __('Real Estate') }}
-                                    <span class="dash-arrow"><i data-feather="chevron-right"></i></span>
-                                </a>
-
-                                <ul
-                                    class="dash-submenu {{ Request::routeIs('company.finance.realestate.*') ? 'show' : '' }}">
-                                    @can('invoice listing')
-                                        <li
-                                            class="dash-item {{ Request::routeIs('company.finance.realestate.invoices.*') ? 'active' : '' }}">
-                                            <a href="{{ route('company.finance.realestate.invoice.choose') }}"
-                                                class="dash-link">{{ __('Invoices') }}</a>
-                                        </li>
-                                    @endcan
-                                    @can('invoice receivable listing')
-                                        <li
-                                            class="dash-item {{ Request::routeIs('company.finance.realestate.invoice.payments.*', 'company.finance.realestate.other.payments.*') ? 'active' : '' }}">
-                                            <a href="{{ route('company.finance.realestate.payments.choose') }}"
-                                                class="dash-link">
-                                                {{ __('Payments Receivable') }}
-                                            </a>
-                                        </li>
-                                    @endcan
-                                    @can('invoice payable listing')
-                                        <li
-                                            class="dash-item {{ Request::routeIs('company.finance.realestate.payments.payables.*') ? 'active' : '' }}">
-                                            <a href="{{ route('company.finance.realestate.payments.payables.index') }}"
-                                                class="dash-link">
-                                                {{ __('Payments Payables') }}
-                                            </a>
-                                        </li>
-                                    @endcan
-                                </ul>
-                            </li>
+                            @can('invoice listing')
+                                <li
+                                    class="dash-item {{ Request::routeIs('company.finance.realestate.invoices.*') ? 'active' : '' }}">
+                                    <a href="{{ route('company.finance.realestate.invoices.index') }}"
+                                        class="dash-link">{{ __('Invoices') }}</a>
+                                </li>
+                            @endcan
+                            @can('invoice receivable listing')
+                                <li
+                                    class="dash-item {{ Request::routeIs('company.finance.realestate.invoice.payments.*', 'company.finance.realestate.other.payments.*') ? 'active' : '' }}">
+                                    <a href="{{ route('company.finance.realestate.invoice.payments.index') }}" class="dash-link">
+                                        {{ __('Payments Receivable') }}
+                                    </a>
+                                </li>
+                            @endcan
+                            @can('invoice payable listing')
+                                <li
+                                    class="dash-item {{ Request::routeIs('company.finance.realestate.payments.payables.*') ? 'active' : '' }}">
+                                    <a href="{{ route('company.finance.realestate.payments.payables.index') }}"
+                                        class="dash-link">
+                                        {{ __('Payments Payables') }}
+                                    </a>
+                                </li>
+                            @endcan
                             @can('bank account lising')
                                 <li
                                     class="dash-item {{ Request::routeIs('company.finance.bank-accounts.*') ? 'active' : '' }}">
@@ -380,16 +368,15 @@
                         </a>
                     </li>
                 @endcan
-                  @canany(['plan listing', 'section listing', 'role listing'])
+                @canany(['plan listing', 'section listing', 'role listing'])
                     <li
-                        class="dash-item dash-hasmenu {{ Request::routeIs('company.subcriptions.*')  ? ' active dash-trigger' : '' }}">
+                        class="dash-item dash-hasmenu {{ Request::routeIs('company.subcriptions.*') ? ' active dash-trigger' : '' }}">
                         <a href="#!" class="dash-link "><span class="dash-micon"><i
                                     class="ti ti-building-bank"></i></span><span
                                 class="dash-mtext">{{ __('Subcriptions') }}</span>
                             <span class="dash-arrow"><i data-feather="chevron-right"></i></span>
                         </a>
-                        <ul
-                            class="dash-submenu {{ Request::routeIs('company.subcriptions.*') ? 'show' : '' }}">
+                        <ul class="dash-submenu {{ Request::routeIs('company.subcriptions.*') ? 'show' : '' }}">
                             {{-- -------  Plan---------- --}}
                             @can('plan listing')
                                 <li
@@ -409,7 +396,8 @@
                                 </li>
                             @endcan
                             @can('plan listing')
-                                <li class="dash-item {{ Request::routeIs('company.subcriptions.orders.*') ? 'active' : '' }}">
+                                <li
+                                    class="dash-item {{ Request::routeIs('company.subcriptions.orders.*') ? 'active' : '' }}">
                                     <a href="{{ route('company.subcriptions.orders.index') }}" class="dash-link ">
                                         <span class="dash-micon"><i class="ti ti-shopping-cart-plus"></i></span>
                                         <span class="dash-mtext">{{ __('Orders') }}</span>
@@ -428,16 +416,20 @@
                                         class="dash-submenu {{ Request::segment(1) == 'plan_request' || Request::segment(1) == 'sections' ? 'show' : '' }}">
                                         {{-- -------  Plan---------- --}}
                                         @can('manage requested plans')
-                                            <li class="dash-item {{ Request::routeIs('company.subcriptions.plan_request.*') ? 'active' : '' }}">
-                                                <a href="{{ route('company.subcriptions.plan_request.index') }}" class="dash-link  ">
+                                            <li
+                                                class="dash-item {{ Request::routeIs('company.subcriptions.plan_request.*') ? 'active' : '' }}">
+                                                <a href="{{ route('company.subcriptions.plan_request.index') }}"
+                                                    class="dash-link  ">
                                                     <span class="dash-micon"><i class="ti ti-trophy"></i></span>
                                                     <span class="dash-mtext">{{ __('Plan') }}</span>
                                                 </a>
                                             </li>
                                         @endcan
                                         @can('manage requested sections')
-                                            <li class="dash-item  {{ Request::routeIs('company.subcriptions.section_request.*') ? 'active' : '' }}">
-                                                <a href="{{ route('company.subcriptions.section_request.index') }}" class="dash-link">
+                                            <li
+                                                class="dash-item  {{ Request::routeIs('company.subcriptions.section_request.*') ? 'active' : '' }}">
+                                                <a href="{{ route('company.subcriptions.section_request.index') }}"
+                                                    class="dash-link">
                                                     <span class="dash-micon"><i class="ti ti-activity"></i></span>
                                                     <span class="dash-mtext">{{ __('Features') }}</span>
                                                 </a>

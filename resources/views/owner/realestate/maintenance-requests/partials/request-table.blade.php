@@ -59,7 +59,7 @@
                                   {!! Form::close() !!}
                               @endif
                               <a class="dropdown-item" data-size="lg"
-                                  data-url="{{ route('company.realestate.maintenance-requests.show', $req->id) }}"
+                                  data-url="{{ route('owner.realestate.maintenance-requests.show', $req->id) }}"
                                   data-ajax-popup2="true" data-bs-toggle="tooltip" title="{{ __('View Request') }}">
                                   <span> <i class="ti ti-eye text-dark"></i>
                                       {{ __('View') }}</span>

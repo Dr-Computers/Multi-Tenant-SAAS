@@ -164,6 +164,7 @@
         $('.repeater').repeater({
             show: function() {
                 $(this).slideDown();
+                $(this).find('input[type="radio"][value="excluded"]').prop('checked', true);
 
             },
             hide: function(deleteElement) {
@@ -188,7 +189,7 @@
         const vatRate = 0.05;
         let vatAmount, grandAmount;
         if (vatIncluded) {
-            vatAmount = amount * 0; 
+            vatAmount = amount * 0;
             grandAmount = amount;
         } else {
             vatAmount = amount * vatRate;

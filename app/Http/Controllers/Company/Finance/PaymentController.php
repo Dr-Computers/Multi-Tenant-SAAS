@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Company\Realestate;
+namespace App\Http\Controllers\Company\Finance;
 
 use App\Http\Controllers\Controller;
 use App\Models\BankAccount;
@@ -18,7 +18,6 @@ use Illuminate\Validation\Rule;
 
 class PaymentController extends Controller
 {
-
     public function choosePayment()
     {
         return view('company.finance.realestate.payments.choose');
@@ -28,8 +27,9 @@ class PaymentController extends Controller
     {
         // Fetch all payments with related invoices, properties, and tenants
         $query = RealestatePayment::with(['invoice', 'invoice.properties', 'invoice.units', 'invoice.properties.leases.tenant'])
-            ->where('payment_for', '!=', 'security_deposit')
-            ->where('type', 'property')->orderBy('created_at', 'DESC') // Correct method name
+            // ->where('payment_for', '!=', 'security_deposit')
+            // ->where('type', 'property')
+            ->orderBy('created_at', 'DESC') // Correct method name
             ->where('parent_id', creatorId()) // ← This line adds the check
             ->when($request->property, function ($query, $property) {
                 return $query->where('property_id', $property);
@@ -51,14 +51,19 @@ class PaymentController extends Controller
 
         return view('company.finance.realestate.payments.index', compact('payments'));
     }
-    public function create()
+    public function create($invoice_id)
     {
         $property = Property::where('company_id', Auth::user()->creatorId())->get()->pluck('name', 'id');
         $property->prepend(__('Select Property'), '');
-
-
-        return view('company.finance.realestate.payments.create', compact('property'));
+        $invoice     = RealestateInvoice::where('id', $invoice_id)->where('company_id', Auth::user()->creatorId())->first();
+        $bankAccounts = BankAccount::where('company_id', Auth::user()->creatorId())->get();
+        if ($invoice) {
+            return view('company.finance.realestate.payments.create', compact('property', 'invoice', 'bankAccounts'));
+        } else {
+            return redirect()->back()->with('error', 'Invalid Attempt.');
+        }
     }
+
     public function getChequeDetails($id)
     {
         // Find the invoice by its ID
@@ -90,6 +95,7 @@ class PaymentController extends Controller
         // Return the cheque details as a JSON response
         return response()->json($cheque);
     }
+
     public function getDueAmount(Request $request)
     {
         $request->validate([
@@ -104,22 +110,24 @@ class PaymentController extends Controller
 
         return response()->json(['due_amount' => $dueAmount]);
     }
-    public function store(Request $request)
+
+    public function store(Request $request, $invoice_id)
     {
+
+
+
+
         $validator = \Validator::make(
             $request->all(),
             [
-                'choose_type' => 'required',
-                'invoice_id' => 'required_if:choose_type,property', // Required only if type is property
-                'tenant'  => 'required_if:choose_type,other',
                 'payment_date' => 'required',
                 'payment_method' => 'required_if:choose_type,property', // Required only if type is property
                 // 'cheque_id' => 'required_if:choose_type,property|required_if:payment_method,cheque', // Req
-                'cheque_id' => Rule::requiredIf(
-                    fn() =>
-                    $request->input('choose_type') === 'property' &&
-                        $request->input('payment_method') === 'cheque'
-                ),
+                // 'cheque_id' => Rule::requiredIf(
+                //     fn() =>
+                //     $request->input('choose_type') === 'property' &&
+                //         $request->input('payment_method') === 'cheque'
+                // ),
 
                 'account_id' => 'required',
                 'amount' => 'required',
@@ -142,162 +150,231 @@ class PaymentController extends Controller
             return redirect()->back()->with('error', $messages->first())->withInput(); // Add withInput() here
         }
 
-        if ($request->choose_type == 'property') {
-            $invoice = RealestateInvoice::find($request->invoice_id);
-            if (!$invoice) {
-                return redirect()->back()->with('error', __('Invoice not found'))->withInput();
-            }
 
-            if ($invoice->getInvoiceDueAmount() <= 0) {
-                return redirect()->back()->with('error', __('The invoice is already paid. No further payments can be made.'))->withInput();
-            }
-
-            $lease = RealestateLease::where('property_id', $request->property_id)
-                ->where('unit_id', $request->unit_id)
-                // ->whereDate('lease_start_date', '<=', now())
-                ->whereDate('lease_end_date', '>=', now())
-                ->first();
-
-            // Check if lease exists and is active
-            if (!$lease) {
-                return redirect()->back()->with('error', __('No active lease found for the selected unit.'))->withInput();
-            }
-
-            // Extract tenant_id from the lease
-            $tenantId = $lease->tenant_id;
+        // receipt		
 
 
-            // Check the invoice due amount
+        $invoice = RealestateInvoice::where('id', $invoice_id)->first();
+        $payment = new RealestatePayment();
+        $payment->invoice_id = $invoice->id;
+        $payment->type = $invoice->invoice_type;
+        $payment->payment_date = $request->payment_date;
+        $payment->unit_id = $invoice->property_id;
+        $payment->property_id = $invoice->unit_id;
+        $payment->payment_type = $request->payment_method;
+        $payment->receipt_number = $this->generateReceiptNumber();
+        $payment->transaction_id = substr(uniqid(), -4);
+        $payment->notes = $request->notes;
+        $payment->bank_account_id = $request->account_id;
+        $payment->reference_no = $request->reference_no;
+        $payment->amount = $request->amount;
+        $payment->parent_id = creatorId();
+        $payment->payment_for = $request->payment_for;
+        $payment->tenant_id = null;
+        $payment->cheque_id =  null;
+        $payment->save();
 
-            $payment = new RealestatePayment();
-            $payment->invoice_id = $request->invoice_id;
-            $payment->type = $request->choose_type;
-            $payment->payment_date = $request->payment_date;
-            $payment->unit_id = $request->unit_id;
-            $payment->property_id = $request->property_id;
-            $payment->payment_type = $request->payment_method;
-            $payment->receipt_number = $this->generateReceiptNumber();
-            // $payment->transaction_id = md5(time());
-            $payment->transaction_id = substr(uniqid(), -4);
-            $payment->notes = $request->notes;
-            $payment->bank_account_id = $request->account_id;
-            $payment->reference_no = $request->reference_no;
-            $payment->amount = $request->amount;
-            $payment->parent_id = creatorId();
-            $payment->payment_for = $request->payment_for;
-            $payment->tenant_id = $tenantId;
-            $payment->cheque_id = !empty($request->cheque_id) ? $request->cheque_id : null;
-            $paymentSave = $payment->save();
+        if ($payment->payment_for == 'full_payment') {
+            $invoice->status = 'paid';
+            $invoice->save();
+        } else {
+            $invoice->status = 'partial_paid';
+            $invoice->save();
+        }
 
+        // Check if payment method is bank transfer and update bank account balance
+        if ($request->payment_method === 'bank_transfer' && !empty($request->account_id)) {
+            $this->updateBankAccountBalance($request->account_id, $request->amount, 'deposit', $request->invoice_id);
+        }
+        if ($payment) {
+            $this->updateBankAccountBalance($request->account_id, $request->amount, 'deposit', $request->invoice_id);
+        }
 
-            // Check if payment method is bank transfer and update bank account balance
-            //  if ($request->payment_method === 'bank_transfer' && !empty($request->account_id)) {
-            //     $this->updateBankAccountBalance($request->account_id, $request->amount, 'deposit', $request->invoice_id);
-            // }
-            if ($paymentSave) {
-                $this->updateBankAccountBalance($request->account_id, $request->amount, 'deposit', $request->invoice_id);
-            }
+        return redirect()->route('company.finance.realestate.invoices.index')->with('success', __('Payment successfully created.'));
 
-            RealestateChequeDetail::where('id', $payment->cheque_id)
-                ->update(['status' => 'paid']);  // Change status to 'Paid'
-            $invoice = RealestateInvoice::find($payment->invoice_id);
-            if ($invoice->getInvoiceDueAmount() <= 0) {
-                $status = 'paid';
-            } else {
-                $status = 'partial_paid';
-            }
-            RealestateInvoice::statusChange($invoice->id, $status);
-            return redirect()->route('company.finance.realestate.invoice.payments.index')->with('success', __('Payment successfully created.'));
-        } elseif ($request->choose_type == 'other' && $request->invoice_id) {
-            $invoice = RealestateInvoice::find($request->invoice_id);
-            if (!$invoice) {
-                return redirect()->back()->with('error', __('Invoice not found'))->withInput();
-            }
+        // if ($request->choose_type == 'property') {
+        //     $invoice = RealestateInvoice::find($request->invoice_id);
+        //     if (!$invoice) {
+        //         return redirect()->back()->with('error', __('Invoice not found'))->withInput();
+        //     }
 
-            if ($invoice->getInvoiceDueAmount() <= 0) {
-                return redirect()->back()->with('error', __('The invoice is already paid. No further payments can be made.'))->withInput();
-            }
+        //     if ($invoice->getInvoiceDueAmount() <= 0) {
+        //         return redirect()->back()->with('error', __('The invoice is already paid. No further payments can be made.'))->withInput();
+        //     }
 
-            $tenant = User::where('id', $invoice->tenant_id)->first();
+        //     $lease = RealestateLease::where('property_id', $request->property_id)
+        //         ->where('unit_id', $request->unit_id)
+        //         // ->whereDate('lease_start_date', '<=', now())
+        //         ->whereDate('lease_end_date', '>=', now())
+        //         ->first();
 
+        //     // Check if lease exists and is active
+        //     if (!$lease) {
+        //         return redirect()->back()->with('error', __('No active lease found for the selected unit.'))->withInput();
+        //     }
 
-
-            // Extract tenant_id from the lease
-            $tenantId = $tenant->id;
-
-
-            // Check the invoice due amount
-
-            $payment = new RealestatePayment();
-            $payment->invoice_id = $request->invoice_id;
-            $payment->type = $request->choose_type;
-            $payment->payment_date = $request->payment_date;
-            $payment->unit_id = null;
-            $payment->property_id = null;
-            $payment->payment_type = null;
-            $payment->receipt_number = $this->generateReceiptNumber();
-            // $payment->transaction_id = md5(time());
-            $payment->transaction_id = substr(uniqid(), -4);
-            $payment->notes = $request->notes;
-            $payment->bank_account_id = $request->account_id;
-            $payment->reference_no = $request->reference_no;
-            $payment->amount = $request->amount;
-            $payment->parent_id = creatorId();
-            $payment->payment_for = $request->payment_for;
-            $payment->tenant_id = $request->tenant;
-            $payment->cheque_id =  null;
-            $paymentSave = $payment->save();
+        //     // Extract tenant_id from the lease
+        //     $tenantId = $lease->tenant_id;
 
 
-            // Check if payment method is bank transfer and update bank account balance
-            //  if ($request->payment_method === 'bank_transfer' && !empty($request->account_id)) {
-            //     $this->updateBankAccountBalance($request->account_id, $request->amount, 'deposit', $request->invoice_id);
-            // }
-            if ($paymentSave) {
-                $this->updateBankAccountBalance($request->account_id, $request->amount, 'deposit', $request->invoice_id);
-            }
+        //     // Check the invoice due amount
+
+        //     $payment = new RealestatePayment();
+        //     $payment->invoice_id = $request->invoice_id;
+        //     $payment->type = $request->choose_type;
+        //     $payment->payment_date = $request->payment_date;
+        //     $payment->unit_id = $request->unit_id;
+        //     $payment->property_id = $request->property_id;
+        //     $payment->payment_type = $request->payment_method;
+        //     $payment->receipt_number = $this->generateReceiptNumber();
+        //     // $payment->transaction_id = md5(time());
+        //     $payment->transaction_id = substr(uniqid(), -4);
+        //     $payment->notes = $request->notes;
+        //     $payment->bank_account_id = $request->account_id;
+        //     $payment->reference_no = $request->reference_no;
+        //     $payment->amount = $request->amount;
+        //     $payment->parent_id = creatorId();
+        //     $payment->payment_for = $request->payment_for;
+        //     $payment->tenant_id = $tenantId;
+        //     $payment->cheque_id = !empty($request->cheque_id) ? $request->cheque_id : null;
+        //     $paymentSave = $payment->save();
 
 
-            $invoice = RealestateInvoice::find($payment->invoice_id);
-            if ($invoice->getInvoiceDueAmount() <= 0) {
-                $status = 'paid';
-            } else {
-                $status = 'partial_paid';
-            }
-            RealestateInvoice::statusChange($invoice->id, $status);
-            return redirect()->route('company.finance.realestate.other.payments.index')->with('success', __('Payment successfully created.'));
+        //     // Check if payment method is bank transfer and update bank account balance
+        //     //  if ($request->payment_method === 'bank_transfer' && !empty($request->account_id)) {
+        //     //     $this->updateBankAccountBalance($request->account_id, $request->amount, 'deposit', $request->invoice_id);
+        //     // }
+        //     if ($paymentSave) {
+        //         $this->updateBankAccountBalance($request->account_id, $request->amount, 'deposit', $request->invoice_id);
+        //     }
+
+        //     RealestateChequeDetail::where('id', $payment->cheque_id)
+        //         ->update(['status' => 'paid']);  // Change status to 'Paid'
+        //     $invoice = RealestateInvoice::find($payment->invoice_id);
+        //     if ($invoice->getInvoiceDueAmount() <= 0) {
+        //         $status = 'paid';
+        //     } else {
+        //         $status = 'partial_paid';
+        //     }
+        //     RealestateInvoice::statusChange($invoice->id, $status);
+        //     return redirect()->route('company.finance.realestate.invoice.payments.index')->with('success', __('Payment successfully created.'));
+        // } elseif ($request->choose_type == 'other' && $request->invoice_id) {
+        //     $invoice = RealestateInvoice::find($request->invoice_id);
+        //     if (!$invoice) {
+        //         return redirect()->back()->with('error', __('Invoice not found'))->withInput();
+        //     }
+
+        //     if ($invoice->getInvoiceDueAmount() <= 0) {
+        //         return redirect()->back()->with('error', __('The invoice is already paid. No further payments can be made.'))->withInput();
+        //     }
+
+        //     $tenant = User::where('id', $invoice->tenant_id)->first();
+
+
+
+        //     // Extract tenant_id from the lease
+        //     $tenantId = $tenant->id;
+
+
+        //     // Check the invoice due amount
+
+        //     $payment = new RealestatePayment();
+        //     $payment->invoice_id = $request->invoice_id;
+        //     $payment->type = $request->choose_type;
+        //     $payment->payment_date = $request->payment_date;
+        //     $payment->unit_id = null;
+        //     $payment->property_id = null;
+        //     $payment->payment_type = null;
+        //     $payment->receipt_number = $this->generateReceiptNumber();
+        //     // $payment->transaction_id = md5(time());
+        //     $payment->transaction_id = substr(uniqid(), -4);
+        //     $payment->notes = $request->notes;
+        //     $payment->bank_account_id = $request->account_id;
+        //     $payment->reference_no = $request->reference_no;
+        //     $payment->amount = $request->amount;
+        //     $payment->parent_id = creatorId();
+        //     $payment->payment_for = $request->payment_for;
+        //     $payment->tenant_id = $request->tenant;
+        //     $payment->cheque_id =  null;
+        //     $paymentSave = $payment->save();
+
+
+        //     // Check if payment method is bank transfer and update bank account balance
+        //     //  if ($request->payment_method === 'bank_transfer' && !empty($request->account_id)) {
+        //     //     $this->updateBankAccountBalance($request->account_id, $request->amount, 'deposit', $request->invoice_id);
+        //     // }
+        //     if ($paymentSave) {
+        //         $this->updateBankAccountBalance($request->account_id, $request->amount, 'deposit', $request->invoice_id);
+        //     }
+
+
+        //     $invoice = RealestateInvoice::find($payment->invoice_id);
+        //     if ($invoice->getInvoiceDueAmount() <= 0) {
+        //         $status = 'paid';
+        //     } else {
+        //         $status = 'partial_paid';
+        //     }
+        //     RealestateInvoice::statusChange($invoice->id, $status);
+        //     return redirect()->route('company.finance.realestate.other.payments.index')->with('success', __('Payment successfully created.'));
+        // } else {
+
+        //     $payment = new RealestatePayment();
+        //     $payment->invoice_id = null;
+        //     $payment->type = $request->choose_type;
+        //     $payment->payment_date = $request->payment_date;
+        //     $payment->unit_id = null;
+        //     $payment->property_id = null;
+        //     $payment->payment_type = null;
+        //     $payment->receipt_number = $this->generateReceiptNumber();
+        //     // $payment->transaction_id = md5(time());
+        //     $payment->transaction_id = substr(uniqid(), -4);
+        //     $payment->notes = $request->notes;
+        //     $payment->bank_account_id = $request->account_id;
+        //     $payment->reference_no = $request->reference_no;
+        //     $payment->amount = $request->amount;
+        //     $payment->parent_id = creatorId();
+        //     $payment->payment_for = $request->payment_for;
+        //     $payment->tenant_id = $request->tenant;
+        //     $payment->cheque_id =  null;
+        //     $paymentSave = $payment->save();
+
+
+        //     // Check if payment method is bank transfer and update bank account balance
+        //     //  if ($request->payment_method === 'bank_transfer' && !empty($request->account_id)) {
+        //     //     $this->updateBankAccountBalance($request->account_id, $request->amount, 'deposit', $request->invoice_id);
+        //     // }
+        //     if ($paymentSave) {
+        //         $this->updateBankAccountBalance($request->account_id, $request->amount, 'deposit', $request->invoice_id);
+        //     }
+
+        //     return redirect()->route('company.finance.realestate.other.payments.index')->with('success', __('Payment successfully created.'));
+        // }
+    }
+
+
+    public function destroy($id)
+    {
+        if (Auth::user()->can('delete a invoice')) {
+            RealestatePayment::where('id', $id)->delete();
+            // $this->logActivity(
+
+            //     'Delete a Invoice',
+
+            //     'Payment Id ' . $id,
+            //     route('company.finance.realestate.invoices.index'),
+
+            //     'A Invoice deleted successfully',
+
+            //     Auth::user()->creatorId(),
+
+            //     Auth::user()->id
+
+            // );
+
+            return redirect()->route('company.finance.realestate.invoice.payments.index')->with('success', __('Payment successfully deleted.'));
         } else {
 
-            $payment = new RealestatePayment();
-            $payment->invoice_id = null;
-            $payment->type = $request->choose_type;
-            $payment->payment_date = $request->payment_date;
-            $payment->unit_id = null;
-            $payment->property_id = null;
-            $payment->payment_type = null;
-            $payment->receipt_number = $this->generateReceiptNumber();
-            // $payment->transaction_id = md5(time());
-            $payment->transaction_id = substr(uniqid(), -4);
-            $payment->notes = $request->notes;
-            $payment->bank_account_id = $request->account_id;
-            $payment->reference_no = $request->reference_no;
-            $payment->amount = $request->amount;
-            $payment->parent_id = creatorId();
-            $payment->payment_for = $request->payment_for;
-            $payment->tenant_id = $request->tenant;
-            $payment->cheque_id =  null;
-            $paymentSave = $payment->save();
-
-
-            // Check if payment method is bank transfer and update bank account balance
-            //  if ($request->payment_method === 'bank_transfer' && !empty($request->account_id)) {
-            //     $this->updateBankAccountBalance($request->account_id, $request->amount, 'deposit', $request->invoice_id);
-            // }
-            if ($paymentSave) {
-                $this->updateBankAccountBalance($request->account_id, $request->amount, 'deposit', $request->invoice_id);
-            }
-
-            return redirect()->route('company.finance.realestate.other.payments.index')->with('success', __('Payment successfully created.'));
+            return redirect()->back()->with('error', __('Permission Denied!'));
         }
     }
     private function updateBankAccountBalance($bankAccountId, $amount, $transactionType, $reference = null)

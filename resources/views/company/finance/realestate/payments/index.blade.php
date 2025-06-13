@@ -8,12 +8,12 @@
 @endsection
 @section('action-btn')
     @can('invoice payable manage')
-        <div class="d-flex">
+        {{-- <div class="d-flex">
             <a href="{{ route('company.finance.realestate.invoice.payments.create', 0) }}" class="btn btn-sm btn-primary"
                 data-bs-toggle="tooltip" title="{{ __('Create') }}">
                 <i class="ti ti-plus"></i>
             </a>
-        </div>
+        </div> --}}
     @endcan
 @endsection
 
@@ -80,11 +80,11 @@
                                 <tbody>
                                     @foreach ($payments as $payment)
                                         <tr role="row">
-                                            <td>{{ \Carbon\Carbon::parse($payment->payment_date)->format('Y-m-d') }}</td>
-                                            <td>{{ ucwords(str_replace('_', ' ', $payment->payment_for)) }}</td>
-                                            <td>{{ $payment->amount }}</td>
+                                            <td  class="text-md">{{ dateFormat($payment->payment_date) }}</td>
+                                            <td  class="text-md">{{ ucwords(str_replace('_', ' ', $payment->payment_for)) }}</td>
+                                            <td  class="text-md">{{ \Auth::user()->priceFormat($payment->amount) }}</td>
 
-                                            <td>
+                                            <td  class="text-md">
                                                 @if ($payment->payment_type == 'cash')
                                                     <span class="badge bg-success">Cash
                                                         ({{ str_replace('_', ' ', $payment->payment_for) }})
@@ -101,14 +101,14 @@
                                                 @endif
                                             </td>
 
-                                            <td>{{ optional(optional($payment->invoice)->properties)->name ?? 'N/A' }}</td>
-                                            <td>{{ $payment->invoice_id ? invoicePrefix() . $payment->invoice->invoice_id : 'N/A' }}
+                                            <td class="text-md">{{ optional(optional($payment->invoice)->properties)->name ?? 'N/A' }}</td>
+                                            <td class="text-md">{{ $payment->invoice_id ? invoicePrefix() . $payment->invoice->invoice_id : 'N/A' }}
                                             </td>
-                                            <td>{{ optional(optional($payment->invoice)->units)->name ?? 'N/A' }}</td>
+                                            <td class="text-md">{{ optional(optional($payment->invoice)->units)->name ?? 'N/A' }}</td>
 
-                                            <td>{{ optional(optional(optional($payment->invoice)->units)->tenants())->name ?? 'N/A' }}
+                                            <td class="text-md">{{ optional(optional(optional($payment->invoice)->units)->tenants())->name ?? 'N/A' }}
                                             </td>
-                                            <td>{{ $payment->notes ?? 'N/A' }}</td>
+                                            <td class="text-md">{{ $payment->notes ?? 'N/A' }}</td>
 
 
                                             {{-- <td class="text-right">
@@ -163,7 +163,7 @@
 
                                                     {!! Form::open([
                                                         'method' => 'DELETE',
-                                                        'route' => ['company.finance.realestate.invoices.destroy', $payment->id],
+                                                        'route' => ['company.finance.realestate.invoice.payments.destroy', $payment->id],
                                                         'id' => 'delete-form-' . $payment->id,
                                                     ]) !!}
                                                     <a href="#"

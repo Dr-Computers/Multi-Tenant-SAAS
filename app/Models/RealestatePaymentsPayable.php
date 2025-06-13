@@ -15,7 +15,8 @@ class RealestatePaymentsPayable extends Model
         'for_reason',
         'bank_account_id',
         'notes',
-        'pay_to'
+        'pay_to',
+        'company_id'
     ];
 
     public function bankAccount()

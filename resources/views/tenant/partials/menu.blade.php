@@ -34,33 +34,24 @@
                         <span class="dash-mtext">{{ __('Dashboard') }}</span>
                     </a>
                 </li>
-                @canany(['properties listing'])
-                <li
-                    class="dash-item dash-hasmenu {{ Request::routeIs('company.realestate.*') ? ' active dash-trigger' : '' }}">
-                    <a href="#!" class="dash-link "><span class="dash-micon"><i
-                                class="ti ti-propeller"></i></span><span
-                            class="dash-mtext">{{ __('Real estate') }}</span>
-                        <span class="dash-arrow"><i data-feather="chevron-right"></i></span>
-                    </a>
-                    <ul class="dash-submenu {{ Request::routeIs('company.realestate.*') ? 'show' : '' }}">
-                        @can('properties listing')
-                            <li class="dash-item {{ Request::routeIs('tenant.realestate.properties.*') ? ' active' : '' }}">
-                                <a class="dash-link" href="{{ route('tenant.realestate.properties.index') }}">
-                                    <span class="dash-mtext">
-                                        {{ __('Properties') }}
-                                    </span>
-                                </a>
-                            </li>
-                            <li class="dash-item">
-                                <a class="dash-link" href="{{ route('tenant.realestate.properties.lease.index') }}">
-                                    <span class="dash-mtext">
-                                        {{ __('Lease Units') }}
-                                    </span>
-                                </a>
-                            </li>
-                        @endcan
-                    </ul>
-                </li>
+
+                @can('properties listing')
+                    <li class="dash-item {{ Request::routeIs('tenant.realestate.properties.*') ? ' active' : '' }}">
+                        <a class="dash-link" href="{{ route('tenant.realestate.properties.index') }}">
+                               <span class="dash-micon"><i class="ti ti-home"></i></span>
+                            <span class="dash-mtext">
+                                {{ __('Properties') }}
+                            </span>
+                        </a>
+                    </li>
+                    <li class="dash-item">
+                        <a class="dash-link" href="{{ route('tenant.realestate.properties.lease.index') }}">
+                               <span class="dash-micon"><i class="ti ti-home"></i></span>
+                            <span class="dash-mtext">
+                                {{ __('Lease Units') }}
+                            </span>
+                        </a>
+                    </li>
                 @endcan
 
                 @can('maintenance requests listing')
@@ -74,55 +65,25 @@
                         </a>
                     </li>
                 @endcan
-                {{-- @can('invoice listing')
-                    <li class="dash-item {{ Request::routeIs('tenant.finance.invoices.*') ? 'active' : '' }}">
-                        <a href="{{ route('tenant.finance.invoices.index') }}" class="dash-link">
-                            <span class="dash-micon"><i class="ti ti-home"></i></span>
-                            <span class="dash-mtext">
-                                {{ __('Invoices') }}
-                            </span>
-                        </a>
-                    </li>
-                @endcan --}}
-{{-- 
-                @can('reports')
-                    <li
-                        class="dash-item dash-hasmenu {{ Request::routeIs('tenant.report.*') ? ' active dash-trigger' : '' }}">
-                        <a href="#!" class="dash-link "><span class="dash-micon"><i
-                                    class="ti ti-file-report"></i></span><span
-                                class="dash-mtext">{{ __('Reports') }}</span>
-                            <span class="dash-arrow"><i data-feather="chevron-right"></i></span>
-                        </a>
-                        <ul class="dash-submenu {{ Request::routeIs('tenant.report.*') ? 'show' : '' }}">
-                            @can('maintenance report')
-                                <li class="dash-item {{ Request::routeIs('tenant.report.maintenances.*') ? ' active' : '' }}">
-                                    <a class="dash-link"
-                                        href="{{ route('tenant.report.maintenances.index') }}">{{ __('Maintenance Report') }}</a>
-                                </li>
-                            @endcan
 
-                            @can('invoice report')
-                                <li class="dash-item {{ Request::routeIs('tenant.report.invoices.*') ? ' active' : '' }}">
-                                    <a class="dash-link"
-                                        href="{{ route('tenant.report.invoices.index') }}">{{ __('Invoice Report') }}</a>
-                                </li>
-                            @endcan
+                <li class="dash-item {{ Request::routeIs('tenant.finance.invoices.index') ? ' active' : '' }}">
+                    <a class="dash-link" href="{{ route('tenant.finance.invoices.index') }}">
+                        <span class="dash-micon"><i class="ti ti-home"></i></span>
+                        <span class="dash-mtext">
+                            {{ __('Invoices') }}
+                        </span>
+                    </a>
+                </li>
 
-                            @can('properties report')
-                                <li class="dash-item {{ Request::routeIs('tenant.report.properties.*') ? ' active' : '' }}">
-                                    <a class="dash-link"
-                                        href="{{ route('tenant.report.properties.index') }}">{{ __('Properties Report') }}</a>
-                                </li>
-                            @endcan
-                            @can('units report')
-                                <li class="dash-item {{ Request::routeIs('tenant.report.units.*') ? ' active' : '' }}">
-                                    <a class="dash-link"
-                                        href="{{ route('tenant.report.units.index') }}">{{ __('Units Report') }}</a>
-                                </li>
-                            @endcan
-                        </ul>
-                    </li>
-                @endcan --}}
+                <li class="dash-item {{ Request::routeIs('tenant.finance.payable.*') ? ' active' : '' }}">
+                    <a class="dash-link" href="{{ route('tenant.finance.payable.index') }}">
+                        <span class="dash-micon"><i class="ti ti-home"></i></span>
+                        <span class="dash-mtext">
+                            {{ __('Payment Receivable') }}
+                        </span>
+                    </a>
+                </li>
+
 
                 <li class="dash-item {{ Request::routeIs('tenant.settings.*') ? 'active' : '' }}">
                     <a href="{{ route('tenant.settings.index') }}"

@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('realestate_payments', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('property_id')->constrained('properties')->onDelete('cascade');
+            $table->integer('property_id')->default(0)->nullable();
             $table->string('type')->nullable();
             $table->foreignId('invoice_id')->constrained('realestate_invoices')->onDelete('cascade');
             $table->string('transaction_id')->nullable();

@@ -1,13 +1,15 @@
 <?php
 
-namespace App\Http\Controllers\Company\Realestate;
+namespace App\Http\Controllers\Company\Finance;
 
 use App\Http\Controllers\Controller;
 use App\Models\BankAccount;
 use App\Models\BankTransaction;
+use App\Models\RealestateInvoice;
 use App\Models\RealestatePaymentsPayable;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class PaymentPayableController extends Controller
 {
@@ -16,6 +18,7 @@ class PaymentPayableController extends Controller
      */
     public function index(Request $request)
     {
+
 
         $payments = RealestatePaymentsPayable::when($request->user, function ($query, $user) {
             return $query->where('user_id', $user);
@@ -38,7 +41,9 @@ class PaymentPayableController extends Controller
     {
 
         $bankaccount = BankAccount::get()->pluck('holder_name', 'id');
-        return view('company.finance.realestate.payables.create', compact('bankaccount'));
+    
+            return view('company.finance.realestate.payables.create', compact('bankaccount'));
+
     }
     public function store(Request $request)
     {
@@ -78,6 +83,7 @@ class PaymentPayableController extends Controller
             'for_reason' => $request->reason_for,
             'bank_account_id' => $request->from, //bank_account_id
             'notes' => $request->note,
+            'company_id'=> creatorId(),
         ]);
 
         if ($payableSave) {
@@ -192,7 +198,7 @@ class PaymentPayableController extends Controller
     }
     public function fetchUsersByType($type)
     {
-        $users = User::where('type', $type)->where('is_active', 1)->get()->pluck('name', 'id');
+        $users = User::where('type', $type)->where('parent',creatorId())->where('is_active', 1)->get()->pluck('name', 'id');
         return response()->json($users);
     }
 }

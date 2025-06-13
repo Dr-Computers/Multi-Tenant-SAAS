@@ -56,13 +56,10 @@
                                                     {{ $unit->kitchen }}</span>
                                             </td>
                                             <td class="text-center">
-                                                @if ($unit->status == '1')
-                                                    <span class="badge bg-success p-1 px-3 rounded">
-                                                        {{ ucfirst('Leased') }}</span>
-                                                @else
-                                                    <span class="badge bg-danger p-1 px-3 rounded">
-                                                        {{ ucfirst('Unleased') }}</span>
-                                                @endif
+                                              
+                                                    <span class="badge bg-info p-1 px-3 rounded">
+                                                        {{ ucfirst($unit->status) }}</span>
+                                               
                                             </td>
                                             <td class="text-end">
                                                 <div class="btn-group card-option">

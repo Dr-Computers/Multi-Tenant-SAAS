@@ -94,7 +94,7 @@ class BankAccountController extends Controller
             $this->logActivity(
                 'Create a Bank Account',
                 'Holder Name ' . $bankAccount->holder_name,
-                route('company.finance.bank_accounts.index'),
+                route('company.finance.bank-accounts.index'),
                 'A New Bank Account Created successfully',
                 Auth::user()->creatorId(),
                 Auth::user()->id
@@ -186,7 +186,7 @@ class BankAccountController extends Controller
             $this->logActivity(
                 'Update a Bank Account',
                 'Holder Name ' . $bankAccount->holder_name,
-                route('company.finance.bank_accounts.index'),
+                route('company.finance.bank-accounts.index'),
                 'A Bank Account Updated successfully',
                 Auth::user()->creatorId(),
                 Auth::user()->id
@@ -213,7 +213,7 @@ class BankAccountController extends Controller
             $this->logActivity(
                 'Delete a Bank Account',
                 'Holder Name ' . $bankAccount->holder_name,
-                route('company.finance.bank_accounts.index'),
+                route('company.finance.bank-accounts.index'),
                 'A Bank Account Deleted successfully',
                 Auth::user()->creatorId(),
                 Auth::user()->id

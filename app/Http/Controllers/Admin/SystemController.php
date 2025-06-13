@@ -32,7 +32,7 @@ class SystemController extends Controller
         // if (\Auth::user()->can('manage system settings')) {
         $settings              = Utility::settings();
         $admin_payment_setting = Utility::getAdminPaymentSetting();
-        $invoiceTemplates      = InvoiceTemplate::get();
+        $invoiceTemplates      = InvoiceTemplate::where('type','admin')->get();
         $InvoiceSettings = InvoiceSetting::where('user_id', Auth::user()->creatorId())->first();
 
         $letterPadTemplates      = LetterPadTemplate::get();

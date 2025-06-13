@@ -13,6 +13,9 @@ use App\Models\Payment;
 use App\Models\Plan;
 use App\Models\ProductServiceCategory;
 use App\Models\ProductServiceUnit;
+use App\Models\Property;
+use App\Models\PropertyUnit;
+use App\Models\RealestatePaymentsPayable;
 use App\Models\Revenue;
 use App\Models\SupportTicket;
 use App\Models\Tax;
@@ -46,81 +49,17 @@ class DashboardController extends Controller
 
         if (Auth::check()) {
 
-            $data['total_staff_users']      = User::where('parent', Auth::user()->creatorId())->count();
-            $data['total_owners']           = User::where('parent', Auth::user()->creatorId())->count();
-            $data['total_tenants']          = User::where('parent', Auth::user()->creatorId())->count();
-            $data['total_propeties']        = User::where('parent', Auth::user()->creatorId())->count();
-            $data['total_ticket']           = SupportTicket::count();
-            $data['open_ticket']            = SupportTicket::where('status', 0)->count();
-            $data['close_ticket']           = SupportTicket::where('status', 1)->count();
-            $data['bankAccountBalance']            = BankAccount::where('company_id', Auth::user()->creatorId())->sum('current_balance');
-            $data['latestIncome']  = Revenue::where('created_by', '=', Auth::user()->creatorId())->orderBy('id', 'desc')->limit(5)->get() ?? collect();
-            $data['latestExpense'] = Payment::where('created_by', '=', Auth::user()->creatorId())->orderBy('id', 'desc')->limit(5)->get() ?? collect();
-            $data['incExpBarChartData']  = Auth::user()->getincExpBarChartData();
-            $data['incExpLineChartData'] = Auth::user()->getIncExpLineChartDate();
-            
-            $incomeCategory = ProductServiceCategory::where('created_by', '=', Auth::user()->creatorId())->where('type', '=', 'income')->get();
-            $inColor        = array();
-            $inCategory     = array();
-            $inAmount       = array();
-            for ($i = 0; $i < count($incomeCategory); $i++) {
-                $inColor[]    = $incomeCategory[$i]->color;
-                $inCategory[] = $incomeCategory[$i]->name;
-                $inAmount[]   = $incomeCategory[$i]->incomeCategoryRevenueAmount();
-            }
+            $user_id = auth()->user()->id;
+            $data['total_propeties']        = Property::where('owner_id', $user_id)->count();
+            $data['total_units']            = PropertyUnit::with([
+                'property' => function ($query) use ($user_id) {
+                    $query->where('owner_id', $user_id);
+                }
+            ])->count();
+            $data['total_amounts']          = RealestatePaymentsPayable::where('user_id', $user_id)->sum('amount');
+            $users = User::find($user_id);
 
-
-            $data['incomeCategoryColor'] = $inColor;
-            $data['incomeCategory']      = $inCategory;
-            $data['incomeCatAmount']     = $inAmount;
-
-            
-
-            $expenseCategory = ProductServiceCategory::where('created_by', '=', Auth::user()->creatorId())->where('type', '=', 'expense')->get();
-            $exColor         = array();
-            $exCategory      = array();
-            $exAmount        = array();
-            for ($i = 0; $i < count($expenseCategory); $i++) {
-                $exColor[]    = $expenseCategory[$i]->color;
-                $exCategory[] = $expenseCategory[$i]->name;
-                $exAmount[]   = $expenseCategory[$i]->expenseCategoryAmount();
-            }
-
-            $data['expenseCategoryColor'] = $exColor;
-            $data['expenseCategory']      = $exCategory;
-            $data['expenseCatAmount']     = $exAmount;
-
- 
-
-            $data['currentYear']  = date('Y');
-            $data['currentMonth'] = date('M');
-
-            $constant['taxes']         = Tax::where('created_by', Auth::user()->creatorId())->count();
-            $constant['category']      = ProductServiceCategory::where('created_by', Auth::user()->creatorId())->count();
-            $constant['units']         = ProductServiceUnit::where('created_by', Auth::user()->creatorId())->count();
-            $constant['bankAccount']   = BankAccount::where('created_by', Auth::user()->creatorId())->count();
-            $data['constant']          = $constant;
-            $data['bankAccountDetail'] = BankAccount::where('created_by', '=', Auth::user()->creatorId())->get();
-            $data['recentInvoice']     = Invoice::where('created_by', '=', Auth::user()->creatorId())->orderBy('id', 'desc')->limit(5)->get();
-            $data['weeklyInvoice']     = Auth::user()->weeklyInvoice();
-            $data['monthlyInvoice']    = Auth::user()->monthlyInvoice();
-            $data['recentBill']        = Bill::where('created_by', '=', Auth::user()->creatorId())->orderBy('id', 'desc')->limit(5)->get();
-            $data['weeklyBill']        = Auth::user()->weeklyBill();
-            $data['monthlyBill']       = Auth::user()->monthlyBill();
-            $data['goals']             = Goal::where('created_by', '=', Auth::user()->creatorId())->where('is_display', 1)->get();
-
-
-
-            $users = User::find(Auth::user()->creatorId());
-            $plan = Plan::find($users->company->plan_id);
-            if ($plan && $plan->storage_limit > 0) {
-                $storage_limit = ($users->storage_limit / $plan->storage_limit) * 100;
-            } else {
-                $storage_limit = 0;
-            }
-
-
-            return view('owner.dashboard.index', $data, compact('users', 'plan', 'storage_limit'));
+            return view('owner.dashboard.index', $data, compact('users'));
         }
     }
 
@@ -212,6 +151,4 @@ class DashboardController extends Controller
             return redirect()->route('owner.profile', \Auth::user()->id)->with('error', __('Something is wrong.'));
         }
     }
-
-    
 }

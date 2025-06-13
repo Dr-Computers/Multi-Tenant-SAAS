@@ -246,25 +246,7 @@
 </style>
 @section('content')
     <div class="row row-gap mb-4 ">
-        <div class="col-xl-12 col-12">
-            <div class="dashboard-card">
-                <img src="https://dash-demo.workdo.io/assets/images/layer.png" class="dashboard-card-layer" alt="layer">
-                <div class="card-inner">
-                    <div class="card-content">
-                        <h2>Lease Expiring Soon</h2>
-                        <p class="my-2">
-                            Your property lease expiring soon
-                        </p>
-                        <div class="btn-wrp d-flex gap-3">
-                            <a href="#" class="btn btn-primary d-flex align-items-center gap-1 cp_link">
-                                <i class="ti ti-link text-white"></i>
-                                <span>More details</span>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+       
         <div class="row mt-4">
             <div class="col-lg-12">
                 <div class="row mt-4">
@@ -274,7 +256,7 @@
                                 <div class="d-flex flex-column">
                                     <h3 class="card-title text-white">Total Properties</h3>
                                     <div class="d-inline-block">
-                                        <h2 class="text-white">{{ $total_staff_users }}</h2>
+                                        <h2 class="text-white">{{ $total_propeties }}</h2>
                                     </div>
                                 </div>
 
@@ -288,7 +270,7 @@
                                 <div class="d-flex flex-column">
                                     <h3 class="card-title text-white">Total Units</h3>
                                     <div class="d-inline-block">
-                                        <h2 class="text-white"> {{ $total_owners }}</h2>
+                                        <h2 class="text-white"> {{ $total_units }}</h2>
                                     </div>
                                 </div>
                                 <span class="float-right display-5 opacity-5"><i class="fa fa-users"></i></span>
@@ -301,15 +283,13 @@
                                 <div class="d-flex flex-column">
                                     <h3 class="card-title text-white">Total Amount</h3>
                                     <div class="d-inline-block">
-                                        <h2 class="text-white">{{ $total_tenants }}</h2>
+                                        <h2 class="text-white">{{ $total_amounts }}</h2>
                                     </div>
                                 </div>
                                 <span class="float-right display-5 opacity-5"><i class="fa fa-users"></i></span>
                             </div>
                         </div>
                     </div>
-
-                  
 
                 </div>
             </div>

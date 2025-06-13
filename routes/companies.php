@@ -7,13 +7,13 @@ use App\Http\Controllers\Company\Realestate\PropertyController;
 use App\Http\Controllers\Company\Finance\BankAccountController;
 use App\Http\Controllers\Company\Finance\ExpenseController;
 use App\Http\Controllers\Company\LiabilityController;
-use App\Http\Controllers\Company\Realestate\PaymentController;
-use App\Http\Controllers\Company\Realestate\PaymentPayableController;
+use App\Http\Controllers\Company\Finance\PaymentController;
+use App\Http\Controllers\Company\Finance\PaymentPayableController;
 use App\Http\Controllers\Company\Realestate\ReportController;
 use Illuminate\Support\Facades\Route;
 
 
-        Route::get('company/plan-expired', 'App\Http\Controllers\Company\DashboardController@planExpired')->name('company.plan-expired');
+Route::get('company/plan-expired', 'App\Http\Controllers\Company\DashboardController@planExpired')->name('company.plan-expired');
 Route::group(
     [
         'prefix' => 'company',
@@ -27,12 +27,15 @@ Route::group(
         Route::post('profile', 'DashboardController@editprofile')->name('profile.update');
         Route::post('password', 'DashboardController@updatePassword')->name('profile.update.password');
 
-
         Route::get('plan/upgrade', 'DashboardController@planUpgrade')->name('plan.upgrade');
         Route::post('plan/upgrade/store', 'DashboardController@planUpgradeStore')->name('plan.upgrade.store');
         Route::get('addon/features', 'DashboardController@addonFeatures')->name('addon.features');
         Route::post('addon/features/store', 'DashboardController@addonFeaturesStore')->name('addon.features.store');
         Route::post('coupon/validate', 'DashboardController@couponValidate')->name('coupon.validate');
+
+        Route::get('ajax/owner-properties/{owner_id}', 'Finance\InvoiceController@ownerProperties')->name('ajax.owner-properties');
+        Route::get('ajax/tenant-properties/{tenant_id}', 'Finance\InvoiceController@tenantProperties')->name('ajax.tenant-properties');
+        Route::get('ajax/property-units/{tenant_id}', 'Finance\InvoiceController@propertyUnits')->name('ajax.property-units');
 
 
         // HRMS
@@ -136,8 +139,8 @@ Route::group(
 
                 //invoice Payments
                 Route::get('/invoice-payments', [PaymentController::class, 'index'])->name('invoice.payments.index');
-                Route::get('/invoice-payments/create', [PaymentController::class, 'create'])->name('invoice.payments.create');
-                Route::post('/invoice-payments', [PaymentController::class, 'store'])->name('invoice.payments.store');
+                Route::get('/invoice-payments/create/{invoice_id}', [PaymentController::class, 'create'])->name('invoice.payments.create');
+                Route::post('/invoice-payments/{invoice_id}', [PaymentController::class, 'store'])->name('invoice.payments.store');
                 Route::get('/invoice-payments/{payment}/edit', [PaymentController::class, 'edit'])->name('invoice.payments.edit');
                 Route::put('/invoice-payments/{payment}', [PaymentController::class, 'update'])->name('invoice.payments.update');
                 Route::delete('/invoice-payments/{payment}', [PaymentController::class, 'destroy'])->name('invoice.payments.destroy');
@@ -152,13 +155,14 @@ Route::group(
                 Route::get('other-payments/tenant/{pid}/invoice', [PaymentController::class, 'getInvoices'])->name('tenant.invoices');
 
                 //Payments Payable
+
                 Route::resource('/payments/payable', PaymentPayableController::class)->names('payments.payables');
                 Route::get('user/{tid}/type', [PaymentPayableController::class, 'fetchUsersByType'])->name('user.type');
             });
 
             // Bank Accounts
             Route::get('/bank-account/details', [BankAccountController::class, 'getAccountDetails'])->name('bank-account.fetchdetails');
-            Route::resource('bank-accounts', BankAccountController::class);
+            Route::resource('bank-accounts', BankAccountController::class)->names('bank-accounts');
             Route::resource('expense', ExpenseController::class);
         });
 

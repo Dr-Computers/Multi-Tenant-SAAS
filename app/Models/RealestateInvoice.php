@@ -36,8 +36,13 @@ class RealestateInvoice extends Model
     }
     public function tenant()
     {
-        return $this->hasOne('App\Models\user', 'id', 'tenant_id');
+        return $this->hasOne('App\Models\user', 'id', 'invoice_to');
     }
+    public function owner()
+    {
+        return $this->hasOne('App\Models\user', 'id', 'invoice_to');
+    }
+
 
 
     public function company()
@@ -77,7 +82,7 @@ class RealestateInvoice extends Model
 
     public function payments()
     {
-        return $this->hasMany('App\Models\InvoicePayment', 'invoice_id', 'id');
+        return $this->hasMany(RealestatePayment::class, 'invoice_id', 'id');
     }
 
     public function getInvoiceTotalWithoutVatAmount()

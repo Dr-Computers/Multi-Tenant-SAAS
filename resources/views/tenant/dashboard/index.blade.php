@@ -245,29 +245,11 @@
     }
 </style>
 @section('content')
-    <div class="row row-gap mb-4 ">
-        <div class="col-xl-12 col-12">
-            <div class="dashboard-card">
-                <img src="https://dash-demo.workdo.io/assets/images/layer.png" class="dashboard-card-layer" alt="layer">
-                <div class="card-inner">
-                    <div class="card-content">
-                        <h2>Lease Expiring Soon</h2>
-                        <p class="my-2">
-                            Your property lease expiring soon
-                        </p>
-                        <div class="btn-wrp d-flex gap-3">
-                            <a href="#" class="btn btn-primary d-flex align-items-center gap-1 cp_link">
-                                <i class="ti ti-link text-white"></i>
-                                <span>More details</span>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="row mt-4">
+    <div class="row  mb-4 ">
+      
+        <div class="row">
             <div class="col-lg-12">
-                <div class="row mt-4">
+                <div class="row ">
                     <div class="col-lg-4 col-sm-6">
                         <div class="card gradient-1">
                             <div class="card-body d-flex justify-content-between">

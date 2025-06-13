@@ -36,7 +36,7 @@ class SystemController extends Controller
         // if (\Auth::user()->can('manage system settings')) {
         $settings              = Utility::settings();
         $company_payment_setting = Utility::getAdminPaymentSetting();
-        $invoiceTemplates      = InvoiceTemplate::get();
+        $invoiceTemplates      = InvoiceTemplate::where('type', 'company')->get();
         $InvoiceSettings = InvoiceSetting::where('user_id', Auth::user()->creatorId())->first();
 
         $letterPadTemplates      = LetterPadTemplate::get();
@@ -807,7 +807,7 @@ class SystemController extends Controller
         $user->permissions()->detach();
 
         $company_id = Auth::user()->creatorId();
-        
+
         // $companySubscriptions = CompanySubscription::where('company_id',$company_id)->where('status',1)->get();
 
         $permissionIds = CompanyPermission::where('company_id', $company_id)->pluck('permission_id');
@@ -821,20 +821,19 @@ class SystemController extends Controller
                     $permission = Permission::find($permissionId);
                     if ($permission) {
                         $role->givePermissionTo($permission);
-                 
                     }
                 }
             }
         }
 
-            // If you need permission names (Spatie expects names), retrieve them:
-            $permissionNames = Permission::whereIn('id', $permissionIds)->pluck('name')->toArray();
+        // If you need permission names (Spatie expects names), retrieve them:
+        $permissionNames = Permission::whereIn('id', $permissionIds)->pluck('name')->toArray();
 
-            // Assign permissions back to the user
-            $user->givePermissionTo($permissionNames);
+        // Assign permissions back to the user
+        $user->givePermissionTo($permissionNames);
 
-            // Clear cached permissions
-            app()[PermissionRegistrar::class]->forgetCachedPermissions();
+        // Clear cached permissions
+        app()[PermissionRegistrar::class]->forgetCachedPermissions();
 
         // $roles = $user->roles;
 
