@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Owner\Realestate;
+namespace App\Http\Controllers\Tenant\Realestate;
 
 use App\Http\Controllers\Controller;
 use App\Models\MediaFile;
@@ -30,16 +30,8 @@ class PropertyLeaseController extends Controller
         $leasing_units              = PropertyUnit::whereHas('property', function ($query) use ($user_id) {
             $query->where('owner_id', 'LIKE', '%' . $user_id . '%');
         })->where('company_id', $company_id)->where('status', 'leasing')->get();
-        $unleashed_units            = PropertyUnit::whereHas('property', function ($query) use ($user_id) {
-            $query->where('owner_id', 'LIKE', '%' . $user_id . '%');
-        })->where('status', 'unleashed')->where('company_id', $company_id)->get();
-        $leasing_cancelled_units    = PropertyUnit::whereHas('property', function ($query) use ($user_id) {
-            $query->where('owner_id', 'LIKE', '%' . $user_id . '%');
-        })->where('status', 'canceled')->where('company_id', $company_id)->get();
-        $in_hold_units              = PropertyUnit::whereHas('property', function ($query) use ($user_id) {
-            $query->where('owner_id', 'LIKE', '%' . $user_id . '%');
-        })->where('status', 'case')->where('company_id', $company_id)->get();
-        return view('owner.realestate.properties.leasing.index', compact('leasing_units', 'unleashed_units', 'leasing_cancelled_units', 'in_hold_units'));
+        
+        return view('tenant.realestate.properties.leasing.index', compact('leasing_units'));
     }
 
     public function cancel(PropertyUnit $unit)

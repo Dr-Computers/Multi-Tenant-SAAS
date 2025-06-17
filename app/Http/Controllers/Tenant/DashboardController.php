@@ -13,6 +13,9 @@ use App\Models\Payment;
 use App\Models\Plan;
 use App\Models\ProductServiceCategory;
 use App\Models\ProductServiceUnit;
+use App\Models\Property;
+use App\Models\PropertyUnit;
+use App\Models\RealestatePaymentsPayable;
 use App\Models\Revenue;
 use App\Models\SupportTicket;
 use App\Models\Tax;
@@ -45,11 +48,24 @@ class DashboardController extends Controller
     {
 
         if (Auth::check()) {
-            $data['total_units']            = User::where('parent', Auth::user()->creatorId())->count();
-            $data['total_propeties']        = User::where('parent', Auth::user()->creatorId())->count();
+            $user_id = auth()->user()->id;
+            $data['total_units']            = PropertyUnit::with([
+                                                                'lease' => function ($query) use ($user_id) {
+                                                                    $query->where('tenant_id', '=', $user_id);
+                                                                }
+                                                            ])->count();
+
+            $data['total_propeties']        = Property::with([
+                                                                'lease' => function ($query) use ($user_id) {
+                                                                    $query->where('tenant_id', '=', $user_id);
+                                                                }
+                                                            ])->count();
+              
+            $data['total_amount']           = RealestatePaymentsPayable::where('user_id', $user_id)->sum('amount');
+
             $users = User::find(Auth::user()->creatorId());
-            
-            return view('tenant.dashboard.index', $data, compact('users', 'plan', 'storage_limit'));
+
+            return view('tenant.dashboard.index', $data, compact('users'));
         }
     }
 

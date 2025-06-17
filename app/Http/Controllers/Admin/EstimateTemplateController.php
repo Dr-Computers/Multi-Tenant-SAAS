@@ -58,7 +58,7 @@ class EstimateTemplateController extends Controller
             $this->logActivity(
                 'Estimate Template as Created',
                 'Estimate Template ' . $new->name,
-                route('admin.estimate.index'),
+                route('admin.templates.estimates.index'),
                 'Estimate Template Created successfully',
                 Auth::user()->creatorId(),
                 Auth::user()->id
@@ -109,7 +109,7 @@ class EstimateTemplateController extends Controller
             $this->logActivity(
                 'Estimate Template as Updated',
                 'Estimate Template ' . $new->name,
-                route('admin.estimate.index'),
+                route('admin.templates.estimates.index'),
                 'Estimate Template Updated successfully',
                 Auth::user()->creatorId(),
                 Auth::user()->id
@@ -137,7 +137,7 @@ class EstimateTemplateController extends Controller
             $this->logActivity(
                 'Estimate Template as Deleted',
                 'Estimate Template ' . $template->name,
-                route('admin.estimate.index'),
+                route('admin.templates.estimates.index'),
                 'Estimate Template Deleted successfully',
                 Auth::user()->creatorId(),
                 Auth::user()->id

@@ -1,4 +1,4 @@
-@extends($adminTemplate && $adminTemplate->templateData->file_path ? $adminTemplate->templateData->file_path : 'pdf.base')
+@extends($adminTemplate && $adminTemplate->templateData->file_path ? $adminTemplate->templateData->file_path : 'pdf.invoices.base')
 
 @section('content')
 

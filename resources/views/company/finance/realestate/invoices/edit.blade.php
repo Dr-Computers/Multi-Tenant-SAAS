@@ -89,6 +89,7 @@
                                         <label class="form-check-label" for="tenantRadio">Tenant</label>
                                     </div>
                                 </div>
+                             
                                 @if ($invoice->invoice_type_to == 'normal')
                                     <div class="col-lg-12">
                                         {{-- //normal invoice add invoice to details --}}
@@ -123,15 +124,13 @@
                                     </div>
                                 @endif
                                 @if ($invoice->invoice_type_to == 'owner' || $invoice->invoice_type_to == 'tenant')
-                                    <div class="owner-tenant-section d-none row col-md-6 col-lg-8">
+                   
+                                    <div class="owner-tenant-section row col-md-6 col-lg-8">
                                         <!-- Property Selection -->
                                         <div class="col-md-6 col-lg-6">
                                             <div class="form-group">
                                                 <label class="form-label">Property </label>
-                                                <select name="property_id" class="form-control hidesearch properties"
-                                                    id='property_id'>
-                                                    <option value="">{{ __('Select Property') }}</option>
-                                                </select>
+                                                <input type="text" disabled value="{{ $invoice->properties ? $invoice->properties->name : '---' }}" class="form-control">
                                                 @error('property_id')
                                                     <small class="text-danger">{{ $message }}</small>
                                                 @enderror
@@ -141,10 +140,7 @@
                                         <div class="col-md-6 col-lg-6">
                                             <div class="form-group">
                                                 <label class="form-label">Unit </label>
-
-                                                <select class="form-control hidesearch units" id="unit" name="unit_id">
-                                                    <option value="">{{ __('Select Unit') }}</option>
-                                                </select>
+                                                <input type="text" disabled value="{{ $invoice->units ? $invoice->units->name : '---' }}" class="form-control">
 
                                                 @error('unit_id')
                                                     <small class="text-danger">{{ $message }}</small>

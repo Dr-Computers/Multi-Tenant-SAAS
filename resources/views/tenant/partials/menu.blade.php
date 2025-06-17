@@ -36,14 +36,7 @@
                 </li>
 
                 @can('properties listing')
-                    <li class="dash-item {{ Request::routeIs('tenant.realestate.properties.*') ? ' active' : '' }}">
-                        <a class="dash-link" href="{{ route('tenant.realestate.properties.index') }}">
-                               <span class="dash-micon"><i class="ti ti-home"></i></span>
-                            <span class="dash-mtext">
-                                {{ __('Properties') }}
-                            </span>
-                        </a>
-                    </li>
+                  
                     <li class="dash-item">
                         <a class="dash-link" href="{{ route('tenant.realestate.properties.lease.index') }}">
                                <span class="dash-micon"><i class="ti ti-home"></i></span>

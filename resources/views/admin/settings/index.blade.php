@@ -330,7 +330,7 @@
 
             var size = 'md';
             var url = $(this).attr('data-url');
-           
+
             if (typeof url != 'undefined') {
                 $("#commonPopModal .modal-title").html(title);
                 $("#commonPopModal .modal-dialog").addClass('modal-' + size);
@@ -451,11 +451,15 @@
                                     <div class="float-end"><i class="ti ti-chevron-right"></i></div>
                                 </a>
                             @endcan
+                            <a href="#useradd-11"
+                                class="list-group-item list-group-item-action border-0">{{ __('Chat GPT Key Settings') }}
+                                <div class="float-end"><i class="ti ti-chevron-right"></i></div>
+                            </a>
                             {{-- @can('reset permissions') --}}
-                                <a href="#useradd-10"
-                                    class="list-group-item list-group-item-action border-0">{{ __('Reset Permissions') }}
-                                    <div class="float-end"><i class="ti ti-chevron-right"></i></div>
-                                </a>
+                            <a href="#useradd-10"
+                                class="list-group-item list-group-item-action border-0">{{ __('Reset Permissions') }}
+                                <div class="float-end"><i class="ti ti-chevron-right"></i></div>
+                            </a>
                             {{-- @endcan --}}
                         </div>
                     </div>
@@ -797,7 +801,7 @@
                                 <h5>{{ __('Email Settings') }}</h5>
                                 <small
                                     class="text-muted">{{ __('This SMTP will be used for system-level email sending. Additionally, if a company user does not set their SMTP,
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  then this SMTP will be used for sending emails.') }}</small>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      then this SMTP will be used for sending emails.') }}</small>
                             </div>
                             <div class="card-body">
                                 {{ Form::model($settings, ['route' => 'admin.email.settings', 'method' => 'post', 'class' => 'mb-0']) }}
@@ -1796,7 +1800,7 @@
                             </div>
                             <div class="card-body">
                                 <div class="row">
-                                  
+
                                     <div class="col-lg-6">
                                         <div class="form-group">
                                             {{ Form::label('meta_keywords', __('Meta Keywords'), ['class' => 'col-form-label']) }}
@@ -1883,7 +1887,7 @@
                             <div
                                 class="card-body cookieDiv {{ $settings['enable_cookie'] == 'off' ? 'disabledCookie ' : '' }}">
                                 <div class="row ">
-                                  
+
                                     <div class="col-md-6">
                                         <div class="form-check form-switch custom-switch-v1" id="cookie_log">
                                             <input type="checkbox" name="cookie_logging"
@@ -1982,21 +1986,48 @@
                             </div>
                         </div>
                     @endcan
-                    {{-- @can('reset permissions') --}}
-                        <!-- reset permissions   -->
-                        <div id="useradd-10" class="card">
-                            <div class="card-header">
-                                {{ Form::model($settings, ['route' => 'admin.settings.reset-permissions', 'method' => 'post', 'class' => 'mb-0']) }}
-                                <h5>{{ __('Reset Role based allowed permission') }}</h5>
-                                <small>{{ __('Reset your permissions') }}</small>
-                            </div>
-
-                            <div class="card-footer text-end">
-                                <button class="btn btn-primary m-r-10"
-                                    type="submit">{{ __('Reset Permissions') }}</button>
-                            </div>
-                            {{ Form::close() }}
+                    <!-- chatgpt key  -->
+                    <div id="useradd-11" class="card">
+                        <div class="card-header">
+                            {{ Form::model($settings, ['route' => 'admin.settings.chatgptkey', 'method' => 'post', 'class' => 'mb-0']) }}
+                            <h5>{{ __('Chat GPT Key Settings') }}</h5>
+                            <small>{{ __('Edit your key details') }}</small>
                         </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="form-group col-6">
+                                    <label for="Current cache size"
+                                        class="col-form-label bold">{{ __('Chat GPT Key') }}</label>
+                                    {{ Form::text('chatgpt_key', isset($settings['chatgpt_key']) ? $settings['chatgpt_key'] : '', ['class' => 'form-control', 'placeholder' => __('Enter Chatgpt Key Here')]) }}
+                                </div>
+
+                                <div class="form-group col-6">
+                                    <label for="Current cache size"
+                                        class="col-form-label bold">{{ __('Chat GPT Model name') }}</label>
+                                    {{ Form::text('chatgpt_model_name', isset($settings['chatgpt_model_name']) ? $settings['chatgpt_model_name'] : '', ['class' => 'form-control', 'placeholder' => __('Enter Chatgpt Model Name')]) }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer text-end">
+                            <button class="btn btn-primary m-r-10" type="submit">{{ __('Save Changes') }}</button>
+                        </div>
+                        {{ Form::close() }}
+                    </div>
+                    {{-- @can('reset permissions') --}}
+                    <!-- reset permissions   -->
+                    <div id="useradd-10" class="card">
+                        <div class="card-header">
+                            {{ Form::model($settings, ['route' => 'admin.settings.reset-permissions', 'method' => 'post', 'class' => 'mb-0']) }}
+                            <h5>{{ __('Reset Role based allowed permission') }}</h5>
+                            <small>{{ __('Reset your permissions') }}</small>
+                        </div>
+
+                        <div class="card-footer text-end">
+                            <button class="btn btn-primary m-r-10"
+                                type="submit">{{ __('Reset Permissions') }}</button>
+                        </div>
+                        {{ Form::close() }}
+                    </div>
                     {{-- @endcan --}}
                     <!-- [ sample-page ] end -->
                 </div>

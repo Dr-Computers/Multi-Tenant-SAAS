@@ -50,9 +50,9 @@
     @can('create a expense')
         <div class="d-flex">
             <a data-size="lg" data-url="{{ route('company.finance.expense.create') }}" data-ajax-popup2="true"
-                data-bs-toggle="tooltip" title="{{ __('Create Expense') }}" class="btn btn-sm btn-primary" data-bs-toggle="tooltip"
+                data-bs-toggle="tooltip" title="{{ __('Create Expense') }}" class="btn btn-sm btn-primary text-light" data-bs-toggle="tooltip"
                 title="{{ __('Create Expense') }}">
-                <i class="ti ti-plus"></i>
+                <i class="ti ti-plus"></i> {{ __('Create Expense') }}
             </a>
         </div>
     @endcan
@@ -147,18 +147,18 @@
                                                 <td> {{ $expense->title }} </td>
                                                 <td> {{ $expense->reference_no }} </td>
                                                 <td> {{ $expense->vendor }} </td>
-                                                <td> {{ !empty($expense->properties) ? $expense->properties->name : '-' }}
+                                                <td> {{ !empty($expense->property) ? $expense->property->name : '-' }}
                                                 </td>
-                                                <td> {{ !empty($expense->units) ? $expense->units->name : '-' }} </td>
+                                                <td> {{ !empty($expense->unit) ? $expense->unit->name : '-' }} </td>
                                                 <td>
                                                     {{ !empty($expense->types) && $expense->types->id !== 0 ? $expense->types->title : 'Property' }}
                                                 </td>
                                                 <td> {{ dateFormat($expense->date) }} </td>
-                                                <td> {{ priceFormat($expense->base_amount) }} </td>
-                                                <td> {{ priceFormat($expense->vat_amount) }} </td>
-                                                <td> {{ priceFormat($expense->amount) }} </td>
+                                                <td> {{ \Auth::user()->priceFormat($expense->base_amount) }} </td>
+                                                <td> {{ \Auth::user()->priceFormat($expense->vat_amount) }} </td>
+                                                <td> {{ \Auth::user()->priceFormat($expense->amount) }} </td>
                                                 <td>
-                                                    {{ !empty($expense->account) ? $expense->account->account_name : '-' }}
+                                                    {{ !empty($expense->account) ? $expense->account->holder_name : '-' }}
                                                 </td>
                                                 <td class="text-right">
                                                     <div class="cart-action">

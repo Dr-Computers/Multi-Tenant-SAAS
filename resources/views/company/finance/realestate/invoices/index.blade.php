@@ -97,7 +97,14 @@
                                                 @endif
                                             </td>
                                             <td>
-                                                @if ($invoice->payments->count() && $invoice->payments->where('payment_for','full_payment')->count())
+
+                                                <div class="action-btn me-2">
+                                                    <a href="{{ route('company.finance.realestate.invoices.show', $invoice->id) }}"
+                                                        class="mx-3 btn btn-sm d-inline-flex align-items-center bg-info">
+                                                        <span><i class="ti ti-download text-white"></i></span>
+                                                    </a>
+                                                </div>
+                                                @if ($invoice->payments->count() && $invoice->payments->where('payment_for', 'full_payment')->count())
                                                 @else
                                                     <div class="action-btn me-2">
                                                         <a data-size="lg"
@@ -109,41 +116,37 @@
                                                                 style="font-size: 11px">Pay</span>
                                                         </a>
                                                     </div>
+                                                    <div class="action-btn me-2">
+
+                                                        <a href="{{ route('company.finance.realestate.invoices.edit', $invoice->id) }}"
+                                                            class="mx-3 btn btn-sm d-inline-flex align-items-center bg-warning"
+                                                            data-bs-toggle="tooltip" title="{{ __('Edit') }}"
+                                                            data-original-title="{{ __('Edit') }}">
+                                                            <span><i class="ti ti-pencil text-white"></i></span>
+                                                        </a>
+
+                                                    </div>
+                                                    <div class="action-btn">
+
+                                                        {!! Form::open([
+                                                            'method' => 'DELETE',
+                                                            'route' => ['company.finance.realestate.invoices.destroy', $invoice->id],
+                                                            'id' => 'delete-form-' . $invoice->id,
+                                                        ]) !!}
+                                                        <a href="#"
+                                                            class="mx-4 btn btn-sm align-items-center bs-pass-para bg-danger"
+                                                            data-bs-toggle="tooltip" title="{{ __('Delete') }}">
+                                                            <i class="ti ti-trash text-white"></i>
+                                                        </a>
+                                                        {!! Form::close() !!}
+
+                                                    </div>
                                                 @endif
 
-                                                <div class="action-btn me-2">
-                                                    <a href="{{ route('company.finance.realestate.invoices.show', $invoice->id) }}"
-                                                        class="mx-3 btn btn-sm d-inline-flex align-items-center bg-info">
-                                                        <span><i class="ti ti-download text-white"></i></span>
-                                                    </a>
-                                                </div>
 
-                                                <div class="action-btn me-2">
 
-                                                    <a href="{{ route('company.finance.realestate.invoices.edit', $invoice->id) }}"
-                                                        class="mx-3 btn btn-sm d-inline-flex align-items-center bg-warning"
-                                                        data-bs-toggle="tooltip" title="{{ __('Edit') }}"
-                                                        data-original-title="{{ __('Edit') }}">
-                                                        <span><i class="ti ti-pencil text-white"></i></span>
-                                                    </a>
 
-                                                </div>
 
-                                                <div class="action-btn">
-
-                                                    {!! Form::open([
-                                                        'method' => 'DELETE',
-                                                        'route' => ['company.finance.realestate.invoices.destroy', $invoice->id],
-                                                        'id' => 'delete-form-' . $invoice->id,
-                                                    ]) !!}
-                                                    <a href="#"
-                                                        class="mx-4 btn btn-sm align-items-center bs-pass-para bg-danger"
-                                                        data-bs-toggle="tooltip" title="{{ __('Delete') }}">
-                                                        <i class="ti ti-trash text-white"></i>
-                                                    </a>
-                                                    {!! Form::close() !!}
-
-                                                </div>
                                             </td>
 
 

@@ -234,6 +234,8 @@ Route::group(
         Route::post('invoice/template/settings/store', 'SystemController@invoiceTemplateStore')->name('invoice.template.settings.store');
         Route::post('letter-pad/template/settings/store', 'SystemController@letterPadTemplateStore')->name('letter-pad.template.settings.store');
         Route::post('estimate/template/settings/store', 'SystemController@estimateTemplateStore')->name('estimate.template.settings.store');
+        Route::post('chatgptkey', 'SystemController@chatgptkey')->name('settings.chatgptkey');
+
         //End Settings
 
         Route::group(

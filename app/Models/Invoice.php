@@ -120,6 +120,14 @@ class Invoice extends Model
         return $this->hasMany('App\Models\CreditNote', 'invoice', 'id');
     }
 
+
+    //  public function chequeDetails()
+    // {
+
+    //     return $this->hasMany('App\Models\ChequeDetails', 'invoice', 'id');
+    // }
+    
+
     public function invoiceTotalCreditNote()
     {
         return $this->hasMany('App\Models\CreditNote', 'invoice', 'id')->sum('amount');

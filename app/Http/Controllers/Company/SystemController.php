@@ -866,4 +866,40 @@ class SystemController extends Controller
         app()[PermissionRegistrar::class]->forgetCachedPermissions();
         return redirect()->back()->with('success', __('Permissions reset successfully'));
     }
+
+
+     public function chatgptkey(Request $request)
+    {
+        // if (\Auth::user()->type == 'super admin') {
+            $user = \Auth::user();
+            if (!empty($request->chatgpt_key)) {
+                $post = $request->all();
+                $post['chatgpt_key'] = $request->chatgpt_key;
+                $post['chatgpt_model_name'] = $request->chatgpt_model_name;
+
+                unset($post['_token']);
+                foreach ($post as $key => $data) {
+
+                    $settings = Utility::settings();
+
+                    if (in_array($key, array_keys($settings))) {
+
+                        \DB::insert(
+                            'insert into settings (`value`, `name`,`created_by`,`created_at`,`updated_at`) values (?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE `value` = VALUES(`value`) ',
+                            [
+                                $data,
+                                $key,
+                                \Auth::user()->creatorId(),
+                                date('Y-m-d H:i:s'),
+                                date('Y-m-d H:i:s'),
+                            ]
+                        );
+                    }
+                }
+            }
+            return redirect()->back()->with('success', __('Chatgpykey successfully saved.'));
+        // } else {
+        //     return redirect()->back()->with('error', __('Permission denied.'));
+        // }
+    }
 }

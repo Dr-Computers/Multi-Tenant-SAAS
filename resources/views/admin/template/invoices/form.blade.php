@@ -32,8 +32,19 @@
                     @enderror
                 </div>
             </div>
-            
+            <div class="col-md-12">
+                <div class="form-group">
+                    {{ Form::label('type', __('Type'), ['class' => 'form-label']) }}<x-required></x-required>
+                    {{ Form::select('type', ['admin' => 'Admin', 'company' => 'Company'], isset($template) ? $template->type : null, ['class' => 'form-control', 'placeholder' => __('Select Type'), 'required' => 'required']) }}
+                    @error('type')
+                        <small class="invalid-name" template="alert">
+                            <strong class="text-danger">{{ $message }}</strong>
+                        </small>
+                    @enderror
+                </div>
             </div>
+
+
         </div>
     </div>
 

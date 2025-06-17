@@ -41,7 +41,7 @@
                                     @foreach ($templates ?? [] as $key => $template)
                                         <tr>
                                             <td>{{ $key + 1 }}</td>
-                                            <td> <img src="{{ asset('storage/' . $template->image) }}" class="w-20"> </td>
+                                            <td> <img src="{{ asset('storage/' . $template->image) }}" class="w-25"> </td>
                                             <td>{{ $template->name }}</td>
                                             <td>
                                                 <div class="dt-buttons">

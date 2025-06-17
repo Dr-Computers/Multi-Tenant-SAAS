@@ -246,7 +246,7 @@
 </style>
 @section('content')
     <div class="row  mb-4 ">
-      
+
         <div class="row">
             <div class="col-lg-12">
                 <div class="row ">
@@ -256,7 +256,7 @@
                                 <div class="d-flex flex-column">
                                     <h3 class="card-title text-white">Total Properties</h3>
                                     <div class="d-inline-block">
-                                        <h2 class="text-white">{{ $total_staff_users }}</h2>
+                                        <h2 class="text-white">{{ $total_propeties }}</h2>
                                     </div>
                                 </div>
 
@@ -270,7 +270,7 @@
                                 <div class="d-flex flex-column">
                                     <h3 class="card-title text-white">Total Units</h3>
                                     <div class="d-inline-block">
-                                        <h2 class="text-white"> {{ $total_owners }}</h2>
+                                        <h2 class="text-white"> {{ $total_units }}</h2>
                                     </div>
                                 </div>
                                 <span class="float-right display-5 opacity-5"><i class="fa fa-users"></i></span>
@@ -283,7 +283,7 @@
                                 <div class="d-flex flex-column">
                                     <h3 class="card-title text-white">Total Amount</h3>
                                     <div class="d-inline-block">
-                                        <h2 class="text-white">{{ $total_tenants }}</h2>
+                                        <h2 class="text-white">{{ $total_amount }}</h2>
                                     </div>
                                 </div>
                                 <span class="float-right display-5 opacity-5"><i class="fa fa-users"></i></span>
@@ -291,15 +291,13 @@
                         </div>
                     </div>
 
-                  
+
 
                 </div>
             </div>
-           
+
 
         </div>
 
     </div>
-
-   
 @endsection

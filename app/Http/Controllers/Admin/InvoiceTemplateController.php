@@ -47,6 +47,7 @@ class InvoiceTemplateController extends Controller
 
             $new = new InvoiceTemplate();
             $new->name = $request->name;
+            $new->type = $request->type;
 
             if ($request->hasFile('image')) {
                 $path = $request->file('image')->store('app/public/uploads/templates');
@@ -58,7 +59,7 @@ class InvoiceTemplateController extends Controller
             $this->logActivity(
                 'Invoice Template as Created',
                 'Invoice Template ' . $new->name,
-                route('admin.invoice.index'),
+                route('admin.templates.invoices.index'),
                 'Invoice Template Created successfully',
                 Auth::user()->creatorId(),
                 Auth::user()->id
@@ -95,6 +96,7 @@ class InvoiceTemplateController extends Controller
 
             $new = InvoiceTemplate::findOrFail($id);
             $new->name = $request->name;
+            $new->type = $request->type;
             if ($request->hasFile('image')) {
 
                 // Delete old image if exists
@@ -109,7 +111,7 @@ class InvoiceTemplateController extends Controller
             $this->logActivity(
                 'Invoice Template as Updated',
                 'Invoice Template ' . $new->name,
-                route('admin.invoice.index'),
+                route('admin.templates.invoices.index'),
                 'Invoice Template Updated successfully',
                 Auth::user()->creatorId(),
                 Auth::user()->id
@@ -138,7 +140,7 @@ class InvoiceTemplateController extends Controller
             $this->logActivity(
                 'Invoice Template as Deleted',
                 'Invoice Template ' . $template->name,
-                route('admin.invoice.index'),
+                route('admin.templates.invoices.index'),
                 'Invoice Template Deleted successfully',
                 Auth::user()->creatorId(),
                 Auth::user()->id

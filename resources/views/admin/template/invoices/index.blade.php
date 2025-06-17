@@ -34,6 +34,7 @@
                                         <th scope="col" class="sort" data-sort="section">#</th>
                                         <th scope="col" class="sort" data-sort="name"> {{ __('image') }}</th>
                                         <th scope="col" class="sort" data-sort="section"> {{ __('Template Name') }}</th>
+                                        <th scope="col" class="sort" data-sort="name"> {{ __('Type') }}</th>
                                         <th class="text-end">{{ __('Action') }}</th>
                                     </tr>
                                 </thead>
@@ -41,8 +42,9 @@
                                     @foreach ($templates ?? [] as $key => $template)
                                         <tr>
                                             <td>{{ $key + 1 }}</td>
-                                            <td> <img src="{{ asset('storage/' . $template->image) }}" class="w-20"> </td>
+                                            <td> <img src="{{ asset('storage/' . $template->image) }}" class="w-25"> </td>
                                             <td>{{ $template->name }}</td>
+                                              <td>{{ $template->type }}</td>
                                             <td>
                                                 <div class="dt-buttons">
                                                     <div class="text-end">

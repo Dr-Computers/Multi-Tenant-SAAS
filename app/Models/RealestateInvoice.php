@@ -174,6 +174,6 @@ class RealestateInvoice extends Model
     // }
     public function chequeDetails()
     {
-        return $this->hasMany(RealestateChequeDetail::class, 'invoice_id'); // Replace 'invoice_id' with the actual foreign key in check_details table
+        return $this->hasMany(RealestateChequeDetail::class, 'lease_id'); // Replace 'invoice_id' with the actual foreign key in check_details table
     }
 }

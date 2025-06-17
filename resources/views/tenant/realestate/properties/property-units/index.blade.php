@@ -36,7 +36,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach ($units as $key => $unit)
+                                    @foreach ($property->units as $key => $unit)
                                         <tr>
                                             <td>{{ $key + 1 }}</td>
                                             <td class="text-start text-capitalize">

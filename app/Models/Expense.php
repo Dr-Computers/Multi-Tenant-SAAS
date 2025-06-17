@@ -23,4 +23,12 @@ class Expense extends Model
     public function account(){
         return $this->hasOne(BankAccount::class,'id','bank_account_id');
     }
+      public function property()
+    {
+        return $this->belongsTo(Property::class);
+    }
+      public function unit()
+    {
+        return $this->belongsTo(PropertyUnit::class);
+    }
 }
