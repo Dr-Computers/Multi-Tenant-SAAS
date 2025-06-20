@@ -37,6 +37,8 @@ Route::group(
         Route::get('ajax/tenant-properties/{tenant_id}', 'Finance\InvoiceController@tenantProperties')->name('ajax.tenant-properties');
         Route::get('ajax/property-units/{tenant_id}', 'Finance\InvoiceController@propertyUnits')->name('ajax.property-units');
 
+        Route::get('login-with-company/exit', 'DashboardController@ExitCompany')->name('exit.company');
+
 
         // HRMS
         Route::group([
@@ -213,16 +215,17 @@ Route::group(
 
 
         Route::group([
-            'prefix' => 'media',
+            'prefix' => 'subcriptions',
             'as' => 'subcriptions.',
         ], function () {
-            Route::get('plans/features', 'MediaController@showFileUploadForm')->name('plans.sections');
-            Route::resource('plans', 'SupportTicketController')->names('plans');
-            Route::resource('orders', 'SupportTicketController')->names('orders');
-            Route::resource('plan-requests', 'MediaController@showFileUploadForm')->names('plan_request');
-            Route::resource('section-requests', 'MediaController@showFileUploadForm')->names('section_request');
-        });
+            Route::get('plans/features', 'DashboardController@addonFeatures')->name('plans.sections');
+            Route::get('plans', 'DashboardController@planUpgrade')->name('plans.index');
+            Route::get('orders', 'DashboardController@ordersListing')->name('orders.index');
+            Route::get('plan-requests', 'DashboardController@planRequets')->name('plan_request.index');
+            Route::get('plans/features?tab=existing-requests', 'DashboardController@addonFeatures')->name('section_request.index');
+            Route::get('order/download/invoice/{order}', 'DashboardController@downloadInvoice')->name('order.download.invoice');
 
+        });
 
         //Settingd
         Route::resource('settings', 'SystemController');

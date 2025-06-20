@@ -49,14 +49,14 @@ Route::group(
 
         Route::post('company/coupon-validate', 'CompanyController@validateCoupon')->name('company.coupon.validate');
 
-        Route::get('company-login/{id}', 'CompanyController@LoginWithCompany')->name('company.login');
-        Route::get('company-login-activty/{id}', 'CompanyController@LoginManage')->name('company.login_fn');
 
         Route::get('login-with-company/exit', 'CompanyController@ExitCompany')->name('exit.company');
         Route::get('company-info/{id}', 'CompanyController@CompnayInfo')->name('company.info');
         Route::get('company/{id}/plan', 'CompanyController@upgradePlan')->name('company.plan.upgrade');
         Route::post('company/{company_id}/plan/{id}', 'CompanyController@upgradePlanStore')->name('company.plan.upgrade.store');
         Route::get('company/{id}/plan/{pid}', 'CompanyController@activePlan')->name('plan.active');
+        Route::get('company-login/{id}', 'CompanyController@LoginWithCompany')->name('company.login');
+        Route::get('company-login-activty/{id}', 'CompanyController@LoginManage')->name('company.login_fn');
         Route::resource('company', 'CompanyController')->names('company');
 
         Route::resource('settings', 'SystemController');

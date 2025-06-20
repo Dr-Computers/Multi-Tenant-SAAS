@@ -192,7 +192,7 @@
             <div class="col-md-12 mb-3">
                 <div class="card shadow">
                     <div class="card-body">
-                        <p class="class="mb-2"><strong>Property Landmarks:</strong>
+                        <p class="mb-2"><strong>Property Landmarks:</strong>
                             @if ($property->landmarks)
                                 @foreach ($property->landmarks ?? [] as $landmark)
                                     <div class="row mb-2">
@@ -213,7 +213,7 @@
             <div class="col-md-12 mb-3">
                 <div class="card shadow">
                     <div class="card-body">
-                        <p><strong>Property Images:</strong>
+                        <p><strong>Property Images:</strong></p>
                         <div class="row mt-4">
                             @foreach ($property->propertyImages ?? [] as $key => $image)
                                 @php
@@ -225,7 +225,7 @@
                                             => '/assets/icons/docx-icon.png',
                                         default => '/assets/icons/file-icon.png',
                                     };
-                                    $thumbnail2 = $isImage2 ? asset('storage/' . $image->file_url) : asset($icon);
+                                    $thumbnail2 = $isImage2 ? asset('storage/' . $image->file_url) : asset($icon2);
                                 @endphp
                                 <div class="col-lg-2 mb-2">
                                     <div class="relative text-center group border rounded-lg overflow-hidden ">
@@ -238,7 +238,6 @@
                             @endforeach
                         </div>
 
-                        </p>
                     </div>
                 </div>
             </div>
@@ -246,7 +245,7 @@
             <div class="col-md-12 mb-3">
                 <div class="card shadow">
                     <div class="card-body">
-                        <p><strong>Property Documents:</strong>
+                        <p><strong>Property Documents:</strong></p>
                         <div class="row mt-4">
                             @foreach ($property->propertyDocuments ?? [] as $key => $document)
                                 @php
@@ -270,7 +269,6 @@
                                 </div>
                             @endforeach
                         </div>
-                        </p>
                     </div>
                 </div>
             </div>

@@ -42,7 +42,7 @@
 
                 @impersonating($guard = null)
                     <li class="dropdown dash-h-item drp-company">
-                        <a class="btn btn-danger btn-sm me-3" href="{{ route('admin.exit.company') }}"><i
+                        <a class="btn btn-danger btn-sm me-3" href="{{ route('company.exit.company') }}"><i
                                 class="ti ti-ban"></i>
                             {{ __('Exit Company Login') }}
                         </a>

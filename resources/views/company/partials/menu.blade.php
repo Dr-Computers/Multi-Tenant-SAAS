@@ -419,7 +419,7 @@
                                             <li
                                                 class="dash-item {{ Request::routeIs('company.subcriptions.plan_request.*') ? 'active' : '' }}">
                                                 <a href="{{ route('company.subcriptions.plan_request.index') }}"
-                                                    class="dash-link  ">
+                                                    class="dash-link">
                                                     <span class="dash-micon"><i class="ti ti-trophy"></i></span>
                                                     <span class="dash-mtext">{{ __('Plan') }}</span>
                                                 </a>

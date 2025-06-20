@@ -98,11 +98,12 @@
                                             <div class="row">
                                                 <h5 class="text-success font-bold mb-4"><u>Amenities : </u></h5>
                                                 <div class="row">
-                                                    @foreach ($property->features ?? [] as $key => $feature)
+
+                                                    @foreach ($property->amenities ?? [] as $key => $amenity)
                                                         <div class="col-lg-3 mb-3">
                                                             <div class="d-flex  flex-warp items-center">
-                                                                <img src="{{ $feature->image_url }}" class="">
-                                                                <span class="ms-2 text-sm">{{ $feature->name }}</span>
+                                                                <img src="{{ $amenity->image_url }}" class="">
+                                                                <span class="ms-2 text-sm">{{ $amenity->name }}</span>
                                                             </div>
                                                         </div>
                                                     @endforeach
@@ -182,14 +183,22 @@
                 </div>
             </div>
 
+
+
+
             <div class="col-md-12 mb-3">
                 <div class="card shadow">
                     <div class="card-body">
-                        <p><strong>Property Images:</strong>
-                            @if (is_array($property->images))
-                                @foreach ($property->images ?? [] as $image)
-                                    <div>
-                                        <img src="{{ asset('images/' . $image) }}" class="w-100 rounded-3 object-cover" />
+                        <p class="mb-2"><strong>Property Landmarks:</strong>
+                            @if ($property->landmarks)
+                                @foreach ($property->landmarks ?? [] as $landmark)
+                                    <div class="row mb-2">
+                                        <div class="col-lg-4">
+                                            {{ $landmark->name }}
+                                        </div>
+                                        <div class="col-lg-8">
+                                            {{ $landmark->pivot->landmark_value }}
+                                        </div>
                                     </div>
                                 @endforeach
                             @endif
@@ -201,15 +210,62 @@
             <div class="col-md-12 mb-3">
                 <div class="card shadow">
                     <div class="card-body">
-                        <p><strong>Property Documents:</strong>
-                            @if (is_array($property->images))
-                                @foreach ($property->images ?? [] as $image)
-                                    <div>
-                                        <img src="{{ asset('images/' . $image) }}" class="w-100 rounded-3 object-cover" />
+                        <p><strong>Property Images:</strong></p>
+                        <div class="row mt-4">
+                            @foreach ($property->propertyImages ?? [] as $key => $image)
+                                @php
+                                    $isImage2 = Str::startsWith($image->mime_type, 'image/');
+                                    $icon2 = match (true) {
+                                        Str::contains($image->mime_type, 'pdf') => '/assets/icons/pdf-icon.png',
+                                        Str::contains($image->mime_type, 'msword'),
+                                        Str::contains($image->mime_type, 'wordprocessingml')
+                                            => '/assets/icons/docx-icon.png',
+                                        default => '/assets/icons/file-icon.png',
+                                    };
+                                    $thumbnail2 = $isImage2 ? asset('storage/' . $image->file_url) : asset($icon2);
+                                @endphp
+                                <div class="col-lg-2 mb-2">
+                                    <div class="relative text-center group border rounded-lg overflow-hidden ">
+                                        <img src="{{ $thumbnail2 }}" alt="{{ $image->alt ?? $image->name }}"
+                                            class="w-auto object-cover mx-auto mb-2 rounded"
+                                            style="height: 100px;width: 100%;">
+                                        <span title="{{ $image->name }}">{{ $image->name }}</span>
                                     </div>
-                                @endforeach
-                            @endif
-                        </p>
+                                </div>
+                            @endforeach
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-12 mb-3">
+                <div class="card shadow">
+                    <div class="card-body">
+                        <p><strong>Property Documents:</strong></p>
+                        <div class="row mt-4">
+                            @foreach ($property->propertyDocuments ?? [] as $key => $document)
+                                @php
+                                    $isImage = Str::startsWith($document->mime_type, 'image/');
+                                    $icon = match (true) {
+                                        Str::contains($document->mime_type, 'pdf') => '/assets/icons/pdf-icon.png',
+                                        Str::contains($document->mime_type, 'msword'),
+                                        Str::contains($document->mime_type, 'wordprocessingml')
+                                            => '/assets/icons/docx-icon.png',
+                                        default => '/assets/icons/file-icon.png',
+                                    };
+                                    $thumbnail = $isImage ? asset('storage/' . $document->file_url) : asset($icon);
+                                @endphp
+                                <div class="col-lg-2 mb-2">
+                                    <div class="relative text-center group border rounded-lg overflow-hidden ">
+                                        <img src="{{ $thumbnail }}" alt="{{ $document->alt ?? $document->name }}"
+                                            class="w-auto  object-cover mx-auto mb-2 py-3 rounded"
+                                            style="height: 100px;width: 100%;">
+                                        <span title="{{ $document->name }}">{{ $document->name }}</span>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
                     </div>
                 </div>
             </div>
@@ -236,7 +292,7 @@
                                         <td>{{ $key2 + 1 }}</td>
                                         <td class="text-start text-capitalize">
                                             <a title="{{ $unit->name }}"
-                                                href="{{ route('owner.realestate.property.units.show', [$property->id, $unit->id]) }}">
+                                                href="{{ route('company.realestate.property.units.show', [$property->id, $unit->id]) }}">
                                                 {{ $unit->name }}
                                             </a>
                                         </td>
@@ -259,24 +315,19 @@
                                             @endif
                                         </td>
                                         <td class="text-end">
-                                 
+
                                             <div class="btn-group card-option">
                                                 <button type="button" class="btn dropdown-toggle" data-bs-toggle="dropdown">
                                                     <i class="ti ti-dots-vertical"></i>
                                                 </button>
                                                 <div class="dropdown-menu dropdown-menu-end">
                                                     @can('unit details')
-                                                    <a href="{{ route('owner.realestate.property.units.show', [$property->id, $unit->id]) }}"
-                                                        class="dropdown-item">
-                                                        <i class="ti ti-eye text-dark"></i> {{ __('Show') }}
-                                                    </a>
+                                                        <a href="{{ route('company.realestate.property.units.show', [$property->id, $unit->id]) }}"
+                                                            class="dropdown-item">
+                                                            <i class="ti ti-eye text-dark"></i> {{ __('Show') }}
+                                                        </a>
                                                     @endcan
-                                                    @can('edit a unit')
-                                                    <a href="{{ route('owner.realestate.property.units.edit', [$property->id, $unit->id]) }}"
-                                                        class="dropdown-item">
-                                                        <i class="ti ti-pencil text-dark"></i> {{ __('Edit') }}
-                                                    </a>
-                                                    @endcan
+                                                   
                                                     {!! Form::close() !!}
                                                 </div>
                                             </div>

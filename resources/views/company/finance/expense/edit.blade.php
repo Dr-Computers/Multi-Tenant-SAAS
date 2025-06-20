@@ -1,5 +1,5 @@
 @can('edit a expense')
-    {{ Form::model($expense, ['route' => ['expense.update', $expense->id], 'method' => 'PUT', 'enctype' => 'multipart/form-data']) }}
+    {{ Form::model($expense, ['route' => ['company.finance.expense.update', $expense->id], 'method' => 'PUT', 'enctype' => 'multipart/form-data']) }}
     <div class="modal-body">
         <div class="row">
             <div class="form-group  col-md-12 col-lg-12">
@@ -122,13 +122,13 @@
 @endcan
 
 @php
-    $settings = settings();
-    $taxRate = 0;
+
+    $settings = App\Models\Utility::settings();
+    $taxRate = 5;
 
     if ($settings) {
-        $taxTypeId = $settings['tax_type_id']; // Ensure this key exists in your settings array
-        $taxType = \App\Models\TaxType::find($taxTypeId);
-        $taxRate = $taxType ? $taxType->rate : 0; // Default to 0 if not found
+        $taxTypeId = $settings['tax_type_id'] ?? ''; // Ensure this key exists in your settings array
+        $taxRate = 5; // Default to 0 if not found
     }
 @endphp
 <script>
@@ -191,6 +191,7 @@
                             '</option>');
                     });
 
+                    $('#unit_id').val('{{ $expense->unit_id }}')
 
                 }
             });

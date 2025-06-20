@@ -115,9 +115,9 @@ class ExpenseController extends Controller
             $expense = new Expense();
             $expense->title = $request->title;
             $expense->expense_id = $request->expense_id;
-            $expense->property_id = !empty($request->property_id) ? $request->property_id : null;
+            $expense->property_id = !empty($request->property_id) ? $request->property_id : 0;
             $expense->liability_id = !empty($request->liability_id) ? $request->liability_id : null;
-            $expense->unit_id = !empty($request->unit_id) ? $request->unit_id : null;
+            $expense->unit_id = !empty($request->unit_id) ? $request->unit_id : 0;
             $expense->expense_type = $request->expense_type;
             $expense->bank_account_id = $request->account_id;
             $expense->vendor = $request->vendor ?: null;
@@ -222,7 +222,7 @@ class ExpenseController extends Controller
     public function show(Expense $expense)
     {
         if (\Auth::user()->can('expense details')) {
-            return view('expense.show', compact('expense'));
+            return view('company.finance.expense.show', compact('expense'));
         } else {
             return redirect()->back()->with('error', __('Permission Denied!'));
         }
@@ -233,13 +233,13 @@ class ExpenseController extends Controller
         if (\Auth::user()->can('edit a expense')) {
             $property = Property::where('company_id', Auth::user()->creatorId())->get()->pluck('name', 'id');
             $property->prepend(__('Select Property'), '');
-            $types = Type::where('company_id', Auth::user()->creatorId())->where('type', 'expense')->get()->pluck('title', 'id');
+            $types = RealestateType::where('type', 'expense')->get()->pluck('title', 'id');
 
-            $accounts = BankAccount::pluck('account_name', 'id');
+            $accounts = BankAccount::pluck('holder_name', 'id');
             $liabilities = Liability::all();
 
             $billNumber = $expense->expense_id;
-            return view('expense.edit', compact('liabilities', 'types', 'property', 'billNumber', 'expense', 'accounts'));
+            return view('company.finance.expense.edit', compact('liabilities', 'types', 'property', 'billNumber', 'expense', 'accounts'));
         } else {
             return redirect()->back()->with('error', __('Permission Denied!'));
         }
@@ -384,9 +384,9 @@ class ExpenseController extends Controller
 
             $expense->title = $request->title;
             $expense->expense_id = $request->expense_id;
-            $expense->property_id = $request->property_id ?: null;
+            $expense->property_id = $request->property_id ?: 0;
             $expense->liability_id = $request->liability_id ?: null;
-            $expense->unit_id = $request->unit_id ?: null;
+            $expense->unit_id = $request->unit_id ?: 0;
             $expense->expense_type = $request->expense_type;
             $expense->bank_account_id = $request->account_id;
             $expense->vendor = $request->vendor ?: null;

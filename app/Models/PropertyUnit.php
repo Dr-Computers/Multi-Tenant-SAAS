@@ -88,11 +88,10 @@ class PropertyUnit extends Model
         return $this->hasOne(RealestateLease::class, 'unit_id', 'id');
     }
 
-
+   
 
     public function propertyUnitImages()
     {
         return $this->belongsToMany(MediaFile::class, 'property_unit_images', 'property_id', 'file_id');
     }
-
 }

@@ -176,23 +176,14 @@ class  CompanyController extends Controller
                 'password' => $psw,
             ];
 
-            try {
-                $resp = Utility::sendEmailTemplate('user_created', [$user->id => $user->email], $uArr);
-            } catch (\Exception $e) {
-                $smtp_error = __('E-Mail has been not sent due to SMTP configuration');
-            }
+            // try {
+            //     $resp = Utility::sendEmailTemplate('user_created', [$user->id => $user->email], $uArr);
+            // } catch (\Exception $e) {
+            //     $smtp_error = __('E-Mail has been not sent due to SMTP configuration');
+            // }
 
+            $this->resetPermissions($request, $user->id);
 
-            $uArr = [
-                'email' => $user->email,
-                'password' => $psw,
-            ];
-
-            try {
-                $resp = Utility::sendEmailTemplate('user_created', [$user->id => $user->email], $uArr);
-            } catch (\Exception $e) {
-                $smtp_error = __('E-Mail has been not sent due to SMTP configuration');
-            }
 
             DB::commit();
 
@@ -493,6 +484,8 @@ class  CompanyController extends Controller
 
     public function upgradePlanStore(Request $request, $company_id, $plan_id)
     {
+
+
         if (Auth::user()->can('company plan upgrade')) {
             $plan = Plan::where('id', $plan_id)->first();
             Company::planOrderStore($plan, $company_id);
@@ -504,7 +497,21 @@ class  CompanyController extends Controller
                 Auth::user()->creatorId(),
                 Auth::user()->id
             );
+            $subSections = CompanySubscription::where('company_id', $company_id)
+                ->where('plan_id', '!=', $plan_id)
+                ->whereNotNull('plan_id')
+                ->get();
 
+
+
+            foreach ($subSections as $sec) {
+                foreach ($sec->section->permissions ?? [] as $piv) {
+                    $permissionId = $piv->pivot ? $piv->pivot->permission_id : 0;
+                    CompanyPermission::where('company_id', $company_id)->where('permission_id', $permissionId)->delete();
+                }
+            }
+
+            $this->resetPermissions($request, $company_id);
             return redirect()->back()->with('success', __('successfully upgraded.'));
         } else {
             return redirect()->back()->with('error', 'Permission denied.');
@@ -767,7 +774,7 @@ class  CompanyController extends Controller
 
 
 
-    public function existingFeaturesRemove($company_id, $id)
+    public function existingFeaturesRemove(Request $request, $company_id, $id)
     {
         if (Auth::user()->can('company addon features')) {
             if (!$id) {
@@ -788,7 +795,14 @@ class  CompanyController extends Controller
                 ], 404);
             }
 
+            foreach ($addedSection->section->permissions ?? [] as $piv) {
+                $permissionId = $piv->pivot ? $piv->pivot->permission_id : 0;
+                CompanyPermission::where('company_id', $company_id)->where('permission_id', $permissionId)->delete();
+            }
+
             $addedSection->delete();
+
+            $this->resetPermissions($request, $company_id);
 
             return response()->json([
                 'status' => true,
@@ -811,8 +825,6 @@ class  CompanyController extends Controller
 
             // Detach all current permissions
             $user->permissions()->detach();
-
-
 
             // Fetch allowed permission IDs for this company
             $permissionIds = CompanyPermission::where('company_id', $company_id)->pluck('permission_id');
@@ -883,6 +895,8 @@ class  CompanyController extends Controller
 
 
             Company::sectionOrderStore($features, $company_id, $taxAmount, $subTotal, $discountAmount, $request->coupon_code ?? '', $grandTotal);
+
+            $this->resetPermissions($request, $company_id);
 
             $this->logActivity(
                 'Company Feature Purchasing Completed',

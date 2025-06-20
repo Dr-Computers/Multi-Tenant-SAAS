@@ -50,8 +50,8 @@
     @can('create a expense')
         <div class="d-flex">
             <a data-size="lg" data-url="{{ route('company.finance.expense.create') }}" data-ajax-popup2="true"
-                data-bs-toggle="tooltip" title="{{ __('Create Expense') }}" class="btn btn-sm btn-primary text-light" data-bs-toggle="tooltip"
-                title="{{ __('Create Expense') }}">
+                data-bs-toggle="tooltip" title="{{ __('Create Expense') }}" class="btn btn-sm btn-primary text-light"
+                data-bs-toggle="tooltip" title="{{ __('Create Expense') }}">
                 <i class="ti ti-plus"></i> {{ __('Create Expense') }}
             </a>
         </div>
@@ -120,9 +120,8 @@
                         </form>
                         <div class="card-body table-bUsers-style">
 
-                            <div class="table-responsive">
+                            <div class="table-responsive" style="min-height: 80vh">
                                 <table class="table ">
-
                                     <thead>
                                         <tr>
                                             <th>{{ __('Expense') }}</th>
@@ -161,31 +160,49 @@
                                                     {{ !empty($expense->account) ? $expense->account->holder_name : '-' }}
                                                 </td>
                                                 <td class="text-right">
-                                                    <div class="cart-action">
-                                                        {!! Form::open(['method' => 'DELETE', 'route' => ['company.finance.expense.destroy', $expense->id]]) !!}
-                                                        @can('expense details')
-                                                            <a class="text-warning customModal" data-size="lg"
-                                                                data-bs-toggle="tooltip"
-                                                                data-bs-original-title="{{ __('View') }}" href="#"
-                                                                data-url="{{ route('company.finance.expense.show', $expense->id) }}"
-                                                                data-title="{{ __('Expense Details') }}"> <i
-                                                                    data-feather="eye"></i></a>
-                                                        @endcan
-                                                        @can('edit a expense')
-                                                            <a class="text-success customModal" data-size="lg"
-                                                                data-bs-toggle="tooltip"
-                                                                data-bs-original-title="{{ __('Edit') }}" href="#"
-                                                                data-url="{{ route('company.finance.expense.edit', $expense->id) }}"
-                                                                data-title="{{ __('Edit Expense') }}"> <i
-                                                                    data-feather="edit"></i></a>
-                                                        @endcan
-                                                        @can('delete a expense')
-                                                            <a class=" text-danger bs-pass-para" data-bs-toggle="tooltip"
-                                                                data-bs-original-title="{{ __('Delete') }}" href="#"> <i
-                                                                    data-feather="trash-2"></i></a>
-                                                        @endcan
-                                                        {!! Form::close() !!}
+                                                    <div class="btn-group card-option">
+
+                                                        <button type="button" class="btn dropdown-toggle"
+                                                            data-bs-toggle="dropdown" aria-haspopup="true"
+                                                            aria-expanded="false">
+                                                            <i class="ti ti-dots-vertical"></i>
+                                                        </button>
+
+                                                        <div class="dropdown-menu dropdown-menu-end">
+
+                                                            @can('expense details')
+                                                                <a class="dropdown-item" role="button" data-size="lg" data-ajax-popup="true"
+                                                                    data-bs-toggle="tooltip"
+                                                                    data-bs-original-title="{{ __('View') }}" href="#"
+                                                                    data-url="{{ route('company.finance.expense.show', $expense->id) }}"
+                                                                    data-title="{{ __('Expense Details') }}">
+                                                                    <span> <i class="ti ti-eye text-dark"></i>
+                                                                        {{ __('Expense Details') }}</span>
+                                                                </a>
+                                                            @endcan
+                                                            @can('edit a expense')
+                                                                <a class="dropdown-item" role="button" data-size="lg"
+                                                                    data-bs-toggle="tooltip"
+                                                                    data-bs-original-title="{{ __('Edit') }}" href="#" data-ajax-popup2="true"
+                                                                    data-url="{{ route('company.finance.expense.edit', $expense->id) }}"
+                                                                    data-title="{{ __('Edit Expense') }}">
+                                                                    <i class="ti ti-pencil text-dark"></i>
+                                                                    {{ __('Edit Expense') }}
+                                                                </a>
+                                                            @endcan
+                                                            {!! Form::open(['method' => 'DELETE', 'route' => ['company.finance.expense.destroy', $expense->id]]) !!}
+                                                            @can('delete a expense')
+                                                                <a class="dropdown-item  bs-pass-para" data-bs-toggle="tooltip"
+                                                                    data-bs-original-title="{{ __('Delete') }}" href="#">
+                                                                    <i class="ti ti-trash text-dark"></i>
+                                                                    {{ __('Expense Delete') }}
+                                                                </a>
+                                                            @endcan
+                                                            {!! Form::close() !!}
+
+                                                        </div>
                                                     </div>
+
                                                 </td>
                                             </tr>
                                         @empty

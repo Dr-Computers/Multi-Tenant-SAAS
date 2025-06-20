@@ -85,7 +85,7 @@
                                             <div class="row">
                                                 <h5 class="text-success font-bold mb-4"><u>Amenities : </u></h5>
                                                 <div class="row">
-                                                  @foreach ($property->amenities ?? [] as $key => $amenity)
+                                                    @foreach ($property->amenities ?? [] as $key => $amenity)
                                                         <div class="col-lg-3 mb-3">
                                                             <div class="d-flex  flex-warp items-center">
                                                                 <img src="{{ $amenity->image_url }}" class="">
@@ -172,15 +172,29 @@
             <div class="col-md-12 mb-3">
                 <div class="card shadow">
                     <div class="card-body">
-                        <p><strong>Property Images:</strong>
-                            @if (is_array($property->images))
-                                @foreach ($property->images ?? [] as $image)
-                                    <div>
-                                        <img src="{{ asset('images/' . $image) }}" class="w-100 rounded-3 object-cover" />
+                        <p><strong>Property Images:</strong></p>
+                        <div class="row mt-4">
+                            @foreach ($property->propertyImages ?? [] as $key => $image)
+                                @php
+                                    $isImage2 = Str::startsWith($image->mime_type, 'image/');
+                                    $icon2 = match (true) {
+                                        Str::contains($image->mime_type, 'pdf') => '/assets/icons/pdf-icon.png',
+                                        Str::contains($image->mime_type, 'msword'),
+                                        Str::contains($image->mime_type, 'wordprocessingml')
+                                            => '/assets/icons/docx-icon.png',
+                                        default => '/assets/icons/file-icon.png',
+                                    };
+                                    $thumbnail2 = $isImage2 ? asset('storage/' . $image->file_url) : asset($icon2);
+                                @endphp
+                                <div class="col-lg-2 mb-2">
+                                    <div class="relative text-center group border rounded-lg overflow-hidden ">
+                                        <img src="{{ $thumbnail2 }}" alt="{{ $image->alt ?? $image->name }}"
+                                            class="w-auto object-cover mx-auto mb-2 rounded" style="height: 100px;width: 100%;">
+                                        <span title="{{ $image->name }}">{{ $image->name }}</span>
                                     </div>
-                                @endforeach
-                            @endif
-                        </p>
+                                </div>
+                            @endforeach
+                        </div>
                     </div>
                 </div>
             </div>
@@ -188,15 +202,30 @@
             <div class="col-md-12 mb-3">
                 <div class="card shadow">
                     <div class="card-body">
-                        <p><strong>Property Documents:</strong>
-                            @if (is_array($property->images))
-                                @foreach ($property->images ?? [] as $image)
-                                    <div>
-                                        <img src="{{ asset('images/' . $image) }}" class="w-100 rounded-3 object-cover" />
+                        <p><strong>Property Documents:</strong></p>
+                        <div class="row mt-4">
+                            @foreach ($property->propertyDocuments ?? [] as $key => $document)
+                                @php
+                                    $isImage = Str::startsWith($document->mime_type, 'image/');
+                                    $icon = match (true) {
+                                        Str::contains($document->mime_type, 'pdf') => '/assets/icons/pdf-icon.png',
+                                        Str::contains($document->mime_type, 'msword'),
+                                        Str::contains($document->mime_type, 'wordprocessingml')
+                                            => '/assets/icons/docx-icon.png',
+                                        default => '/assets/icons/file-icon.png',
+                                    };
+                                    $thumbnail = $isImage ? asset('storage/' . $document->file_url) : asset($icon);
+                                @endphp
+                                <div class="col-lg-2 mb-2">
+                                    <div class="relative text-center group border rounded-lg overflow-hidden ">
+                                        <img src="{{ $thumbnail }}" alt="{{ $document->alt ?? $document->name }}"
+                                            class="w-auto  object-cover mx-auto mb-2 py-3 rounded"
+                                            style="height: 100px;width: 100%;">
+                                        <span title="{{ $document->name }}">{{ $document->name }}</span>
                                     </div>
-                                @endforeach
-                            @endif
-                        </p>
+                                </div>
+                            @endforeach
+                        </div>
                     </div>
                 </div>
             </div>
@@ -267,7 +296,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-6 mb-3">
+                    {{-- <div class="col-md-6 mb-3">
                         <div class="card shadow">
                             <div class="card-body">
                                 <p><strong>Property Documents:</strong>
@@ -282,7 +311,7 @@
                                 </p>
                             </div>
                         </div>
-                    </div>
+                    </div> --}}
                 </div>
             </div>
             @if ($unit->lease)
@@ -381,6 +410,41 @@
                         </div>
                     </div>
                 </div>
+
+                <div class="col-md-12 mb-3">
+                    <div class="card shadow">
+                        <div class="card-body">
+                            <p><strong>Unit Images:</strong></p>
+                            <div class="row mt-4">
+                                @foreach ($unit->propertyUnitImages ?? [] as $key => $unitImage)
+                                    @php
+                                        $isImage3 = Str::startsWith($unitImage->mime_type, 'image/');
+                                        $icon3 = match (true) {
+                                            Str::contains($unitImage->mime_type, 'pdf') => '/assets/icons/pdf-icon.png',
+                                            Str::contains($unitImage->mime_type, 'msword'),
+                                            Str::contains($unitImage->mime_type, 'wordprocessingml')
+                                                => '/assets/icons/docx-icon.png',
+                                            default => '/assets/icons/file-icon.png',
+                                        };
+                                        $thumbnail3 = $isImage3
+                                            ? asset('storage/' . $unitImage->file_url)
+                                            : asset($icon3);
+                                    @endphp
+                                    <div class="col-lg-2 mb-2">
+                                        <div class="relative text-center group border rounded-lg overflow-hidden ">
+                                            <img src="{{ $thumbnail3 }}" alt="{{ $unitImage->alt ?? $unitImage->name }}"
+                                                class="w-auto object-cover mx-auto mb-2 rounded"
+                                                style="height: 100px;width: 100%;">
+                                            <span title="{{ $unitImage->name }}">{{ $unitImage->name }}</span>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+              
                 @can('edit a unit')
                     <div class="col-lg-12 mb-3 text-center">
                         <div class="btn-group">

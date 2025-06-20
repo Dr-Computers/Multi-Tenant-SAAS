@@ -12,6 +12,7 @@ use App\Models\Coupon;
 use App\Models\Expense;
 use App\Models\Goal;
 use App\Models\Invoice;
+use App\Models\InvoiceSetting;
 use App\Models\MediaFile;
 use App\Models\Order;
 use App\Models\Payment;
@@ -35,9 +36,13 @@ use Illuminate\Support\Facades\Hash;
 use App\Traits\Media\HandlesMediaFolders;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Validator;
+use App\Traits\ActivityLogger;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\File;
 
 class DashboardController extends Controller
 {
+    use ActivityLogger;
     use HandlesMediaFolders;
     /**
      * Create a new controller instance.
@@ -84,7 +89,7 @@ class DashboardController extends Controller
             $today = Carbon::today();
 
             $showExpiryAlert = $planExpiryDate->isAfter($today) && $today->diffInDays($planExpiryDate) <= 7;
-            
+
 
             return view('company.dashboard.index', $data, compact('users', 'showExpiryAlert', 'planExpiryDate'));
         }
@@ -178,9 +183,6 @@ class DashboardController extends Controller
             return redirect()->route('company.profile', \Auth::user()->id)->with('error', __('Something is wrong.'));
         }
     }
-
-
-
 
     public function planUpgrade()
     {
@@ -377,10 +379,83 @@ class DashboardController extends Controller
         ]);
     }
 
+    public function ExitCompany(Request $request)
+    {
+
+        Auth::user()->leaveImpersonation($request->user());
+        $this->logActivity(
+            'Company Account Existed',
+            'Company Account Existed',
+            route('admin.company.index'),
+            'Company Account Existed successfully',
+            Auth::user()->creatorId(),
+            Auth::user()->id
+        );
+
+        return redirect('/');
+    }
 
 
     public function planExpired()
     {
         return view('company.dashboard.plan-expired');
+    }
+
+     public function planRequets()
+    {
+        // if (Auth::user()->type == 'super admin') {
+        $company_id   = Auth::user()->creatorId();
+        $plan_requests = PlanRequest::where('company_id',$company_id)->get();
+
+        return view('company.dashboard.plan_requests', compact('plan_requests'));
+        // } else {
+        //     return redirect()->back()->with('error', __('Permission Denied.'));
+        // }
+    }
+
+
+    public function ordersListing()
+    {
+        $company_id = Auth::user()->creatorId();
+        $orders = Order::select([
+            'orders.*',
+            'users.name as user_name',
+        ])->join('users', 'orders.company_id', '=', 'users.id')
+            ->orderBy('orders.created_at', 'DESC')
+            ->with('total_coupon_used.coupon_detail')
+            ->with(['total_coupon_used.coupon_detail'])
+            ->where('company_id', $company_id)
+            ->get();
+        return view('company.dashboard.orders', compact('orders'));
+    }
+
+
+    public function downloadInvoice(Order $order)
+    {
+        $adminId  = User::where('type','super admin')->pluck('id')->first();
+        $adminTemplate = InvoiceSetting::where('user_id', $adminId)->first();
+        $invoice  = $order;
+
+        // return view('pdf.invoices.partial.admin-invoice', compact('invoice', 'adminTemplate'));
+        $pdf = PDF::loadView('pdf.invoices.partial.admin-invoice', compact('invoice', 'adminTemplate'))->setPaper('a4', 'portrait');
+
+        // Save PDF to temporary location
+        $relativePath = 'public/uploads/invoices/invoice-' . $invoice->order_id . '.pdf';
+        $absolutePath = storage_path('app/' . $relativePath);
+
+        File::ensureDirectoryExists(dirname($absolutePath));
+        $pdf->save($absolutePath);
+
+        $this->logActivity(
+            'Order Invoice Downloded',
+            'Order Number ' . $invoice->order_id,
+            route('admin.order.index'),
+            'Company Name ' . $invoice->user->name . ', Order Number ' . $invoice->order_id . ' : Order Invoice Downloded successfully',
+            Auth::user()->creatorId(),
+            Auth::user()->id
+        );
+
+        // Return the file as download and delete after response
+        return response()->download($absolutePath)->deleteFileAfterSend(true);
     }
 }
